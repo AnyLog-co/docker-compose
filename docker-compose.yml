@@ -31,7 +31,7 @@ services:
       - grafana-log:/var/log/grafana
       - grafana-config:/etc/grafana
   remote-cli:
-    image: remote-cli:latest
+    image: anylogco/remote-cli:latest
     container_name: remote-cli
     network_mode: host
     stdin_open: true
@@ -41,7 +41,7 @@ services:
       - CONN_PORT=8000
   anylog-node:
     # supported version: develop, develop-alpine, predevelop, predevelop-alpine
-    image: oshadmon/anylog:predevelop
+    image: anylogco/anylog-network:predevelop
     container_name: anylog-node
     network_mode: host
     stdin_open: true  # -i
@@ -89,7 +89,7 @@ services:
       - al-anylog-node-data-volume:/app/AnyLog-Network/data
       - al-anylog-node-local-scripts-volume:/app/AnyLog-Network/local_sripts
   anylog-gui:
-    image: anylog-gui:latest
+    image: anylogco/anylog-gui:latest
     container_name: anylog-gui
     network_mode: host
     stdin_open: true  # -i
