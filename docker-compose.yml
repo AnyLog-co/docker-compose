@@ -52,9 +52,9 @@ services:
     image: anylogco/anylog-network:predevelop
     container_name: anylog-node
     ports:
-      - "3480:3480"
-      - "3481:3481"
-      - "3482:3482"
+      - "3480/tcp"
+      - "3481/tcp"
+      - "3482/tcp"
     stdin_open: true  # -i
     tty: true         # -t
     environment:
