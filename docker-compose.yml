@@ -51,12 +51,10 @@ services:
      # supported version: develop, develop-alpine, predevelop, predevelop-alpine
     image: anylogco/anylog-network:predevelop
     container_name: anylog-node
-    networks:
-      - anylog-net
     ports:
-      - "3480/tcp"
-      - "3481/tcp"
-      - "3482/tcp"
+#      - "3480/tcp"
+      - "3481:3481"
+#      - "3482/tcp"
     stdin_open: true  # -i
     tty: true         # -t
     environment:
@@ -132,8 +130,6 @@ volumes:
     external: false
   al-anylog-node-local-scripts-volume:
     external: false
-networks:
-  anylog-net:
   # al-anylog-node-anylog-volume:
   #   external: false
   # al-anylog-node-blockchain-volume:
