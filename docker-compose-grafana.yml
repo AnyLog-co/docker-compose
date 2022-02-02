@@ -39,7 +39,7 @@ services:
       - CONN_IP=127.0.0.1 # IP address should be updated to be your physical IP
       - CONN_PORT=8000
 #    volumes:
-#      - remote-cli:/app/Remote-CLI/anylog_query/static/json
+#      - /app/Remote-CLI/anylog_query/static/json/
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
