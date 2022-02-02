@@ -18,25 +18,40 @@ services:
     image: grafana/grafana:7.5.7
     container_name: grafana
     ports:
-      - 3000:3000
+      - "3000:3000"
     networks:
       - frontend
     environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_ALLOW_EMBEDDING=true
       - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel
-#    volumes:
-#      - grafana-data:/var/lib/grafana
-#      - grafana-log:/var/log/grafana
-#      - grafana-config:/etc/grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
   remote-cli:
     image: anylogco/remote-cli:latest
     container_name: remote-cli
     ports:
-      - 8000:8000
+      - "8000:8000"
     networks:
       - frontend
     environment:
       - CONN_IP=127.0.0.1 # IP address should be updated to be your physical IP
       - CONN_PORT=8000
+    volumes:
+      - remote-cli:/app/Remote-CLI/anylog_query\static\json
+  anylog-gui:
+    image: anylogco/anylog-gui:latest
+    container_name: anylog-gui
+    ports:
+      - "5000:5000"
+    networks:
+      frontend:
+    environment:
+      - CONFIG_FOLDER=views
+      - CONFIG_FILE=testnet.json
+    volumes:
+      - anylog-gui-volume:/app/AnyLog-GUI/views
 
 #  anylog-node:
 #    image: anylogco/anylog-network:test
@@ -56,9 +71,8 @@ volumes:
     external: false
   grafana-data:
     external: false
-  grafana-log:
+  anylog-gui-volume:
     external: false
-  grafana-config:
+  remote-cli:
     external: false
-
 
