@@ -57,13 +57,10 @@ services:
     container_name: anylog-node
     ports:
       - protocol: TCP
-        port: 3480
         target: 3480
       - protocol: TCP
-        port: 3481
         target: 3481
       - protocol: TCP
-        port: 3482
         target: 3482
     networks:
       frontend:
