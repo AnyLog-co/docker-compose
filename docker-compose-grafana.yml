@@ -51,7 +51,16 @@ services:
     environment:
       - CONFIG_FOLDER=views
       - CONFIG_FILE=testnet.json
-#
+  anylog-node:
+    image: anylogco/anylog-network:test
+    container_name: anylog-node
+    ports:
+      - "3481:3481"
+    networks:
+      frontend:
+    environment:
+      - NODE_TYPE=rest
+      - ANYLOG_REST_PORT=3481
 #    volumes:
 #      - anylog-gui-volume:/app/AnyLog-GUI/
 #  anylog-node:
