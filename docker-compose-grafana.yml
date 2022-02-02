@@ -33,12 +33,13 @@ services:
     ports:
       - "3481:3841"
     networks:
-      - frontend
+      - anylog-net
     environment:
       - NODE_TYPE=rest
       - ANYLOG_REST_PORT=3481
 networks:
   frontend:
+  anylog-net:
 volumes:
   pgdata:
     external: false
