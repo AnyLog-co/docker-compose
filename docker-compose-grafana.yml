@@ -6,7 +6,7 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - 5432:5432
+      - "5432:5432"
     networks:
       - frontend
     environment:
