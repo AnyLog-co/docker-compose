@@ -18,28 +18,28 @@ services:
     image: grafana/grafana:7.5.7
     container_name: grafana
     ports:
-      - "3000:3000"
+      - 3000:3000
     networks:
       - frontend
     environment:
       - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - grafana-log:/var/log/grafana
-      - grafana-config:/etc/grafana
+#    volumes:
+#      - grafana-data:/var/lib/grafana
+#      - grafana-log:/var/log/grafana
+#      - grafana-config:/etc/grafana
   anylog-node:
     image: anylogco/anylog-network:test
     container_name: anylog-node
     ports:
       - "3481:3841"
     networks:
-      - anylog-net
+      - frontend
     environment:
       - NODE_TYPE=rest
       - ANYLOG_REST_PORT=3481
 networks:
   frontend:
-  anylog-net:
+    driver: bridge
 volumes:
   pgdata:
     external: false
