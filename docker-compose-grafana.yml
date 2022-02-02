@@ -27,16 +27,27 @@ services:
 #      - grafana-data:/var/lib/grafana
 #      - grafana-log:/var/log/grafana
 #      - grafana-config:/etc/grafana
-  anylog-node:
-    image: anylogco/anylog-network:test
-    container_name: anylog-node
+  remote-cli:
+    image: anylogco/remote-cli:latest
+    container_name: remote-cli
     ports:
-      - "3481:3841"
+      - 8000:8000
     networks:
       - frontend
     environment:
-      - NODE_TYPE=rest
-      - ANYLOG_REST_PORT=3481
+      - CONN_IP=127.0.0.1 # IP address should be updated to be your physical IP
+      - CONN_PORT=8000
+
+#  anylog-node:
+#    image: anylogco/anylog-network:test
+#    container_name: anylog-node
+#    ports:
+#      - "3481:3841"
+#    networks:
+#      - frontend
+#    environment:
+#      - NODE_TYPE=rest
+#      - ANYLOG_REST_PORT=3481
 networks:
   frontend:
     driver: bridge
