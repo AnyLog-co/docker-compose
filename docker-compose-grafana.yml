@@ -27,6 +27,16 @@ services:
       - grafana-data:/var/lib/grafana
       - grafana-log:/var/log/grafana
       - grafana-config:/etc/grafana
+  anylog-node:
+    image: anylogco/anylog-network:test
+    container_name: anylog-node
+    ports:
+      - "3481:3841"
+    networks:
+      - frontend
+    environment:
+      - NODE_TYPE=rest
+      - ANYLOG_REST_PORT=3481
 networks:
   frontend:
 volumes:
