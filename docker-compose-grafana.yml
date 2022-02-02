@@ -56,18 +56,15 @@ services:
     image: anylogco/anylog-network:test
     container_name: anylog-node
     ports:
-      - name: anylog-tcp
-        protocol: TCP
+      - protocol: TCP
         port: 3480
-        targetPort: 3480
-      - name: anylog-rest
-        protocol: TCP
+        target: 3480
+      - protocol: TCP
         port: 3481
-        targetPort: 3481
-      - name: anylog-msg
-        protocol: TCP
+        target: 3481
+      - protocol: TCP
         port: 3482
-        targetPort: 3482
+        target: 3482
     networks:
       frontend:
     environment:
