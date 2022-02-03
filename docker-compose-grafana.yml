@@ -60,7 +60,6 @@ services:
         target: 3480
       - protocol: TCP
         target: 3481
-        host_ip: 10.0.0.91
       - protocol: TCP
         target: 3482
     networks:
