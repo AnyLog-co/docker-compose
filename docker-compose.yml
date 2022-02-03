@@ -1,148 +1,91 @@
-#---------------------------------------------------------------------------------------------------------------------
-# The following docker image is intended to support AnyLog docker containers using Ubuntu 20.04 LTS base operating
-# system. The package deploys:
-#   - AnyLog v. predevelop
-#   - Postgres v.14.0-alpine
-#   - Grafana v.7.5.7
-#   - Remote-CLI a proprietary REST interface dedicated to AnyLog
-#----------------------------------------------------------------------------------------------------------------------
-version: "3"
+version: "3.4"
 services:
-  # when updating POSGTRES_USER or POSTGRES_PASSWORD, make sure to update the "DB_USER" env variable in anylog-node
   database:
     image: postgres:14.0-alpine
     container_name: postgres
-    ports:
-      - 5432:5432
     stdin_open: true
     tty: true
+    ports:
+      - protocol: tcp
+        target: 5432
+    networks:
+      - frontend
     environment:
       - POSTGRES_USER=anylog
       - POSTGRES_PASSWORD=demo
-    volumes:
-      - pgdata:/var/lib/postgresql/
-    labels:
-      kompose.service.type: NodePort
-      kompose.service.nodeport.port: "30002"
+#    volumes:
+#      - /usr/local/postgres:/var/lib/postgresql/:rw
   grafana:
     image: grafana/grafana:7.5.7
     container_name: grafana
     ports:
-      - 3000:3000
+      - protocol: TCP
+        target: 3000
+    networks:
+      - frontend
     environment:
+      - GF_AUTH_DISABLE_LOGIN_FORM=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_ALLOW_EMBEDDING=true
       - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - grafana-log:/var/log/grafana
-      - grafana-config:/etc/grafana
-    labels:
-      kompose.service.type: NodePort
-      kompose.service.nodeport.port: "30002"
-  # remote-cli:
-  #   image: anylogco/remote-cli:latest
-  #   container_name: remote-cli
-  #   network_mode: host
-  #   stdin_open: true
-  #   tty: true
-  #   environment:
-  #     - CONN_IP=10.0.0.133 # IP address should be updated to be your physical IP
-  #     - CONN_PORT=8000
+#    volumes:
+#      - /usr/local/grafana:/var/lib/grafana:rw
+  remote-cli:
+    image: anylogco/remote-cli:latest
+    container_name: remote-cli
+    ports:
+      - protocol: TCP
+        target: 8000
+    networks:
+      - frontend
+    environment:
+      - CONN_IP=127.0.0.1 # IP address should be updated to be your physical IP
+      - CONN_PORT=8000
+#    volumes:
+#      - /app/Remote-CLI/anylog_query/static/json/
+  anylog-gui:
+    image: anylogco/anylog-gui:latest
+    container_name: anylog-gui
+    ports:
+      - protocol: TCP
+        target: 5000
+    networks:
+      frontend:
+    environment:
+      - CONFIG_FOLDER=views
+      - CONFIG_FILE=testnet.json
+#    volumes:
+#      - anylog-gui-volume:/app/AnyLog-GUI/
   anylog-node:
-     # supported version: develop, develop-alpine, predevelop, predevelop-alpine
-    image: anylogco/anylog-network:predevelop
+    image: anylogco/anylog-network:test
     container_name: anylog-node
     ports:
-#      - "3480/tcp"
-      - "3481:3481"
-#      - "3482/tcp"
-    stdin_open: true  # -i
-    tty: true         # -t
+      - protocol: TCP
+        target: 13480
+      - protocol: TCP
+        target: 13481
+      - protocol: TCP
+        target: 13482
+    networks:
+      frontend:
     environment:
-      - NODE_TYPE=rest # Node types: none, master, operator, publisher, single-node, single-node-publisher, rest
-      - NODE_NAME=anylog-node
-      - COMPANY_NAME=AnyLog # Your company name, used as part of the policy(es) used on the blockchain
-      #- EXTERNAL_IP=<EXTERNAL IP> # External IP to use instead of the default settings
-      #- LOCAL_IP=<LOCAL IP> # Local IP to use instead of the default setting
-      - ANYLOG_SERVER_PORT=3480
-      - ANYLOG_REST_PORT=3481
-      - ANYLOG_BROKER_PORT=3482 #  # Port used for internal MQTT Broker
-      - MASTER_NODE=10.0.0.213:2049 # TCP Master Node credentials - not needed for none type nodes
-      - SYNC_TIME="30 second" # frequency to sync blockchain from master
-      - DB_TYPE=psql # physical database type. support psql (PostgreSQL) & sqlite
-      - DB_USER=anylog@127.0.0.1:demo # database credentials
-      - DB_PORT=5432 # physical database access port
-      #- DEFAULT_DBMS=<DEFAULT DBMS> # logical database to store data in - required for nodes of type operator & single-node
-      #- CLUTSER_NAME=<CLUSTER NAME> # cluster correlated with operator node
-      - ENABLE_PARTITION=false   # Whether to enable data partitioning (true | false)
-      #-PARTITION_COLUMN=PARTITION COLUMN> #  (timestamp) column to partition by - required when partition is enabled
-      #- PARTITION_INTERVAL=<PARTITION_INTERVAL> # period of time to partition by - required when partition is enabled
-      #- PARTITION_KEEP=<PARTITION_KEEP> # number of partitions to keep - required if drop partition is enabled
-      - ENABLE_DATA_MONITOR=false #  whether to monitor data (true | false)
-      #- TABLE_NAME=* #  table(s) to monitor (all tables: *) - required when data monitoring is enabled
-      #- INTERVAL_VALUE=<INTERVAL_VALUE> #  number of times to keep monitored results - required when data monitoring is enabled
-      #- DATA_MONITOR_INTERVAL=<DATA_MONITOR_INTERVAL> # frequency of data monitoring - required when data monitoring is enabled
-      #- DATA_MONITOR_COLUMN=<DATA_MONITOR_COLUMN> # column to monitor by - required when data monitoring is enabled
-      - MQTT_ENABLE=false # Whether enable MQTT (true | false)
-      #- BROKER=<BROKER> # MQTT broker - required only if MQTT is enabled
-      #- MQTT_PORT=<MQTT PORT> # MQTT port - required only if MQTT is enabled
-      #- MQTT_USER=<MQTT USER> # MQTT user - required only if MQTT is enabled
-      #- MQTT_PASSWORD=<MQTT_PASSWORD> # MQTT user password - required only if MQTT is enabled
-      - MQTT_LOG=false # whether to enable MQTT logging - required only if MQTT is enabled (true | false)
-      #- MQTT_TOPIC_NAME=<TOPIC_NAME> # MQTT topic - required only if MQTT is enabled
-      #- MQTT_TOPIC_DBMS=<DATABASE> # logical database topic value - required only if MQTT is enabled
-      #- MQTT_TOPIC_TABLE=<TABLE> # table (in database) topic value - required only if MQTT is enabled
-      #- MQTT_COLUMN_TIMESTAMP=<TIMESTAMP_COLUMN>  # timestamp column topic value - required only if MQTT is enabled
-      #- MQTT_COLUMN_VALUE_TYPE=<COLUMN_VALUE_TYPE> # column value type topic value - required only if MQTT is enabled
-      #- MQTT_COLUMN_VALUE=<COLUMN_VALUE> # value column name topic value - required only if MQTT is enabled
-    volumes:
-      - al-anylog-node-anylog-volume:/app/AnyLog-Network/anylog
-      - al-anylog-node-blockchain-volume:/app/AnyLog-Network/blockchain
-      - al-anylog-node-data-volume:/app/AnyLog-Network/data
-      - al-anylog-node-local-scripts-volume:/app/AnyLog-Network/local_sripts
-    labels:
-      kompose.service.type: NodePort
-      kompose.service.nodeport.port: "30002"
-  # anylog-gui:
-  #   image: anylogco/anylog-gui:latest
-  #   container_name: anylog-gui
-  #   network_mode: host
-  #   stdin_open: true  # -i
-  #   tty: true         # -t
-  #   environment:
-  #     - CONFIG_FOLDER=views
-  #     - CONFIG_FILE=testnet.json # default file when deploying AnyLog GUI
-  #   volumes:
-  #     - al-anylog-gui-volume:/app/AnyLog-GUI/views
+      - NODE_TYPE=rest
+      - ANYLOG_SERVER_PORT=13480
+      - ANYLOG_REST_PORT=13481
+      - ANYLOG_BROKER_PORT=13482
+networks:
+  frontend:
+    driver: bridge
+    external: true
 volumes:
   pgdata:
     external: false
   grafana-data:
     external: false
-  grafana-log:
+  remote-cli:
     external: false
-  grafana-config:
-    external: false
-  al-anylog-node-anylog-volume:
-    external: false
-  al-anylog-node-blockchain-volume:
-    external: false
-  al-anylog-node-data-volume:
-    external: false
-  al-anylog-node-local-scripts-volume:
-    external: false
-  # al-anylog-node-anylog-volume:
-  #   external: false
-  # al-anylog-node-blockchain-volume:
-  #   external: false
-  # al-anylog-node-data-volume:
-  #   external: false
-  # al-anylog-node-local-scripts-volume:
-  #   external: false
-  # al-anylog-gui-volume:
-  #   external: false
-  # grafana-data:
-  #   external: false
-  # grafana-log:
-  #   external: false
-  # grafana-config:
-  #   external: false
+
+#    external: false
+#  anylog-gui-volume:
+#    external: false
+
