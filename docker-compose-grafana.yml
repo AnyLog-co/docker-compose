@@ -61,18 +61,18 @@ services:
     container_name: anylog-node
     ports:
       - protocol: TCP
-        target: 19180
+        target: 13480
       - protocol: TCP
-        target: 19181
+        target: 13481
       - protocol: TCP
-        target: 19182
+        target: 13482
     networks:
       frontend:
     environment:
       - NODE_TYPE=rest
-      - ANYLOG_SERVER_PORT=19180
-      - ANYLOG_REST_PORT=19181
-      - ANYLOG_BROKER_PORT=19182
+      - ANYLOG_SERVER_PORT=13480
+      - ANYLOG_REST_PORT=13481
+      - ANYLOG_BROKER_PORT=13482
 networks:
   frontend:
     driver: bridge
