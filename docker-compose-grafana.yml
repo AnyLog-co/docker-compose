@@ -6,19 +6,21 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - "5432:5432"
+      - protocol: tcp
+        target: 5432
     networks:
       - frontend
     environment:
       - POSTGRES_USER=anylog
       - POSTGRES_PASSWORD=demo
-    volumes:
-      - /usr/local/postgres:/var/lib/postgresql/:rw
+#    volumes:
+#      - /usr/local/postgres:/var/lib/postgresql/:rw
   grafana:
     image: grafana/grafana:7.5.7
     container_name: grafana
     ports:
-      - "3000:3000"
+      - protocol: TCP
+        target: 3000
     networks:
       - frontend
     environment:
@@ -26,13 +28,14 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_ALLOW_EMBEDDING=true
       - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel
-    volumes:
-      - /usr/local/grafana:/var/lib/grafana:rw
+#    volumes:
+#      - /usr/local/grafana:/var/lib/grafana:rw
   remote-cli:
     image: anylogco/remote-cli:latest
     container_name: remote-cli
     ports:
-      - "8000:8000"
+      - protocol: TCP
+        target: 8000
     networks:
       - frontend
     environment:
@@ -44,7 +47,8 @@ services:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
     ports:
-      - "5000:5000"
+      - protocol: TCP
+        target: 5000
     networks:
       frontend:
     environment:
@@ -57,16 +61,18 @@ services:
     container_name: anylog-node
     ports:
       - protocol: TCP
-        target: 3480
+        target: 19180
       - protocol: TCP
-        target: 3481
+        target: 19181
       - protocol: TCP
-        target: 3482
+        target: 19182
     networks:
       frontend:
     environment:
       - NODE_TYPE=rest
-      - ANYLOG_REST_PORT=3481
+      - ANYLOG_SERVER_PORT=19180
+      - ANYLOG_REST_PORT=19181
+      - ANYLOG_BROKER_PORT=19182
 networks:
   frontend:
     driver: bridge
