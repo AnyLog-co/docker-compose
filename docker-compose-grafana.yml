@@ -13,7 +13,7 @@ services:
       - POSTGRES_USER=anylog
       - POSTGRES_PASSWORD=demo
     volumes:
-      - pgdata:/var/lib/postgresql/
+      - /usr/local/postgres:/var/lib/postgresql/:rw
   grafana:
     image: grafana/grafana:7.5.7
     container_name: grafana
@@ -27,7 +27,7 @@ services:
       - GF_ALLOW_EMBEDDING=true
       - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel
     volumes:
-      - grafana-data:/var/lib/grafana
+      - /usr/local/grafana:/var/lib/grafana:rw
   remote-cli:
     image: anylogco/remote-cli:latest
     container_name: remote-cli
@@ -60,6 +60,7 @@ services:
         target: 3480
       - protocol: TCP
         target: 3481
+        host_ip: 10.0.0.91
       - protocol: TCP
         target: 3482
     networks:
@@ -70,12 +71,15 @@ services:
 networks:
   frontend:
     driver: bridge
+    external: true
 volumes:
   pgdata:
     external: false
   grafana-data:
     external: false
-#  remote-cli:
+  remote-cli:
+    external: false
+
 #    external: false
 #  anylog-gui-volume:
 #    external: false
