@@ -11,10 +11,10 @@ services:
     networks:
       - frontend
     environment:
-      - POSTGRES_USER=anylog
-      - POSTGRES_PASSWORD=demo
-#    volumes:
-#      - /usr/local/postgres:/var/lib/postgresql/:rw
+      - POSTGRES_USER=${ADMIN_USER:-admin}
+      - POSTGRES_PASSWORD=${ADMIN_PASSWORD:-passwd}
+    volumes:
+      - pgdata:/var/lib/postgresql/
   grafana:
     image: grafana/grafana:7.5.7
     container_name: grafana
@@ -24,12 +24,14 @@ services:
     networks:
       - frontend
     environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-passwd}
       - GF_AUTH_DISABLE_LOGIN_FORM=false
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_ALLOW_EMBEDDING=true
-      - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel
-#    volumes:
-#      - /usr/local/grafana:/var/lib/grafana:rw
+      - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel,
+    volumes:
+      - grafana-data:/var/lib/grafana
   remote-cli:
     image: anylogco/remote-cli:latest
     container_name: remote-cli
@@ -41,8 +43,6 @@ services:
     environment:
       - CONN_IP=127.0.0.1 # IP address should be updated to be your physical IP
       - CONN_PORT=8000
-#    volumes:
-#      - /app/Remote-CLI/anylog_query/static/json/
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
@@ -55,7 +55,7 @@ services:
       - CONFIG_FOLDER=views
       - CONFIG_FILE=testnet.json
 #    volumes:
-#      - anylog-gui-volume:/app/AnyLog-GUI/
+#      - /usr/local/AnyLog/AnyLog-GUI/:/app/AnyLog-GUI/
   anylog-node:
     image: anylogco/anylog-network:test
     container_name: anylog-node
@@ -82,10 +82,4 @@ volumes:
     external: false
   grafana-data:
     external: false
-  remote-cli:
-    external: false
-
-#    external: false
-#  anylog-gui-volume:
-#    external: false
 
