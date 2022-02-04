@@ -11,8 +11,8 @@ services:
     networks:
       - frontend
     environment:
-      - POSTGRES_USER=${ADMIN_USER:-admin}
-      - POSTGRES_PASSWORD=${ADMIN_PASSWORD:-passwd}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/
   grafana:
@@ -24,8 +24,8 @@ services:
     networks:
       - frontend
     environment:
-      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-passwd}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
       - GF_AUTH_DISABLE_LOGIN_FORM=false
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_ALLOW_EMBEDDING=true
@@ -37,12 +37,12 @@ services:
     container_name: remote-cli
     ports:
       - protocol: TCP
-        target: 8000
+        target: ${CLI_PORT}
     networks:
       - frontend
     environment:
-      - CONN_IP=127.0.0.1 # IP address should be updated to be your physical IP
-      - CONN_PORT=8000
+      - CONN_IP=${CONN_IP}
+      - CONN_PORT=${CLI_PORT}
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
@@ -52,13 +52,15 @@ services:
     networks:
       frontend:
     environment:
+      - CONN_IP=${CONN_IP}
+      - CONN_PORT=${GUI_PORT}
       - CONFIG_FOLDER=views
-      - CONFIG_FILE=testnet.json
+      - CONFIG_FILE=${CONFIG_FILE}
 #    volumes:
 #      - /usr/local/AnyLog/AnyLog-GUI/:/app/AnyLog-GUI/
   anylog-node:
     image: anylogco/anylog-network:test
-    container_name: anylog-node
+    container_name: ${NODE_NAME}
     ports:
       - protocol: TCP
         target: 13480
@@ -69,10 +71,48 @@ services:
     networks:
       frontend:
     environment:
-      - NODE_TYPE=rest
-      - ANYLOG_SERVER_PORT=13480
-      - ANYLOG_REST_PORT=13481
-      - ANYLOG_BROKER_PORT=13482
+      - NODE_TYPE=${NODE_TYPE}
+      - NODE_NAME=${NODE_NAME}
+      - COMPANY_NAME=${COMPANY_NAME}
+      - ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT}
+      - ANYLOG_REST_PORT=${ANYLOG_REST_PORT}
+      - ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT}
+#      - NODE_TYPE=rest # Node types: none, master, operator, publisher, single-node, single-node-publisher, rest
+#      - NODE_NAME=anylog-node
+#      - COMPANY_NAME=AnyLog # Your company name, used as part of the policy(es) used on the blockchain
+#      #- EXTERNAL_IP=<EXTERNAL IP> # External IP to use instead of the default settings
+#      #- LOCAL_IP=<LOCAL IP> # Local IP to use instead of the default setting
+#      - ANYLOG_SERVER_PORT=3480
+#      - ANYLOG_REST_PORT=3481
+#      - ANYLOG_BROKER_PORT=3482 #  # Port used for internal MQTT Broker
+#      - MASTER_NODE=10.0.0.213:2049 # TCP Master Node credentials - not needed for none type nodes
+#      - SYNC_TIME="30 second" # frequency to sync blockchain from master
+#      - DB_TYPE=psql # physical database type. support psql (PostgreSQL) & sqlite
+#      - DB_USER=anylog@127.0.0.1:demo # database credentials
+#      - DB_PORT=5432 # physical database access port
+#      #- DEFAULT_DBMS=<DEFAULT DBMS> # logical database to store data in - required for nodes of type operator & single-node
+#      #- CLUTSER_NAME=<CLUSTER NAME> # cluster correlated with operator node
+#      - ENABLE_PARTITION=false   # Whether to enable data partitioning (true | false)
+#      #-PARTITION_COLUMN=PARTITION COLUMN> #  (timestamp) column to partition by - required when partition is enabled
+#      #- PARTITION_INTERVAL=<PARTITION_INTERVAL> # period of time to partition by - required when partition is enabled
+#      #- PARTITION_KEEP=<PARTITION_KEEP> # number of partitions to keep - required if drop partition is enabled
+#      - ENABLE_DATA_MONITOR=false #  whether to monitor data (true | false)
+#      #- TABLE_NAME=* #  table(s) to monitor (all tables: *) - required when data monitoring is enabled
+#      #- INTERVAL_VALUE=<INTERVAL_VALUE> #  number of times to keep monitored results - required when data monitoring is enabled
+#      #- DATA_MONITOR_INTERVAL=<DATA_MONITOR_INTERVAL> # frequency of data monitoring - required when data monitoring is enabled
+#      #- DATA_MONITOR_COLUMN=<DATA_MONITOR_COLUMN> # column to monitor by - required when data monitoring is enabled
+#      - MQTT_ENABLE=false # Whether enable MQTT (true | false)
+#      #- BROKER=<BROKER> # MQTT broker - required only if MQTT is enabled
+#      #- MQTT_PORT=<MQTT PORT> # MQTT port - required only if MQTT is enabled
+#      #- MQTT_USER=<MQTT USER> # MQTT user - required only if MQTT is enabled
+#      #- MQTT_PASSWORD=<MQTT_PASSWORD> # MQTT user password - required only if MQTT is enabled
+#      - MQTT_LOG=false # whether to enable MQTT logging - required only if MQTT is enabled (true | false)
+#      #- MQTT_TOPIC_NAME=<TOPIC_NAME> # MQTT topic - required only if MQTT is enabled
+#      #- MQTT_TOPIC_DBMS=<DATABASE> # logical database topic value - required only if MQTT is enabled
+#      #- MQTT_TOPIC_TABLE=<TABLE> # table (in database) topic value - required only if MQTT is enabled
+#      #- MQTT_COLUMN_TIMESTAMP=<TIMESTAMP_COLUMN>  # timestamp column topic value - required only if MQTT is enabled
+#      #- MQTT_COLUMN_VALUE_TYPE=<COLUMN_VALUE_TYPE> # column value type topic value - required only if MQTT is enabled
+#      #- MQTT_COLUMN_VALUE=<COLUMN_VALUE> # value column name topic value - required only if MQTT is enabled
 networks:
   frontend:
     driver: bridge
