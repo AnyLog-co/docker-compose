@@ -2,6 +2,8 @@ version: "3.4"
 services:
   database:
     image: postgres:14.0-alpine
+    env_file:
+      - common.env
     container_name: postgres
     stdin_open: true
     tty: true
@@ -10,8 +12,6 @@ services:
         target: 5432
     networks:
       - frontend
-    env_file:
-      - common.env
 #    environment:
 #      - POSTGRES_USER=${POSTGRES_USER}
 #      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -19,14 +19,14 @@ services:
       - pgdata:/var/lib/postgresql/
   grafana:
     image: grafana/grafana:7.5.7
+    env_file:
+      - common.env
     container_name: grafana
     ports:
       - protocol: TCP
         target: 3000
     networks:
       - frontend
-    env_file:
-      - common.env
 #    environment:
 #      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
 #      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
@@ -38,27 +38,27 @@ services:
       - grafana-data:/var/lib/grafana
   remote-cli:
     image: anylogco/remote-cli:latest
+    env_file:
+      - common.env
     container_name: remote-cli
     ports:
       - protocol: TCP
         target: ${CLI_PORT}
     networks:
       - frontend
-    env_file:
-      - common.env
 #    environment:
 #      - CONN_IP=${CONN_IP}
 #      - CONN_PORT=${CLI_PORT}
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
+    env_file:
+      - common.env
     ports:
       - protocol: TCP
         target: 5000
     networks:
       frontend:
-    env_file:
-      - common.env
 #    environment:
 #      - CONN_IP=${CONN_IP}
 #      - CONN_PORT=${GUI_PORT}
@@ -68,6 +68,8 @@ services:
 #      - /usr/local/AnyLog/AnyLog-GUI/:/app/AnyLog-GUI/
   anylog-node:
     image: anylogco/anylog-network:test
+    env_file:
+      - common.env
     container_name: ${NODE_NAME}
     ports:
       - protocol: TCP
@@ -78,8 +80,6 @@ services:
         target: 13482
     networks:
       frontend:
-    env_file:
-      - common.env
 #    environment:
 #      - NODE_TYPE=${NODE_TYPE}
 #      - NODE_NAME=${NODE_NAME}
