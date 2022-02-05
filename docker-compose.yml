@@ -124,7 +124,6 @@ networks:
 volumes:
   pgdata:
     external: true
-    path:
   grafana-data:
     external: false
 
