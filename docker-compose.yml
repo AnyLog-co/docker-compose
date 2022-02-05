@@ -3,7 +3,7 @@ services:
   database:
     image: postgres:14.0-alpine
     env_file:
-      - common.env
+      - envs/postgres.env
     container_name: postgres
     stdin_open: true
     tty: true
@@ -16,7 +16,7 @@ services:
   grafana:
     image: grafana/grafana:7.5.7
     env_file:
-      - common.env
+      - envs/grafana.env
     container_name: grafana
     stdin_open: true
     tty: true
@@ -31,12 +31,12 @@ services:
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
-      - common.env
+      - envs/remote_cli.env
     container_name: remote-cli
     stdin_open: true
     tty: true
     ports:
-      - "${CLI_PORT}:${CLI_PORT}"
+      - "8000:8000"
     networks:
       - frontend
     volumes:
@@ -45,7 +45,7 @@ services:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
     env_file:
-      - common.env
+      - envs/anylog_gui.env
     stdin_open: true
     tty: true
     ports:
@@ -57,7 +57,7 @@ services:
   anylog-node:
     image: anylogco/anylog-network:test
     env_file:
-      - common.env
+      - envs/anylog_node.env
     container_name: anylog-node
     stdin_open: true
     tty: true
@@ -75,11 +75,15 @@ services:
 networks:
   frontend:
     driver: bridge
-    external: true
+    external: false
 volumes:
   pgdata:
     external: false
   grafana-data:
+    external: false
+  grafana-logs:
+    external: false
+  grafana-config:
     external: false
   remote-cli:
     external: false
