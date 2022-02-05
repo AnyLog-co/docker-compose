@@ -68,12 +68,15 @@ services:
       - common.env
     container_name: anylog-node
     ports:
-      - protocol: TCP
-        target: 13480
-      - protocol: TCP
-        target: 13481
-      - protocol: TCP
-        target: 13482
+      - "13480:13480"
+      - "13481:13481"
+      - "13482:13482"
+#      - protocol: TCP
+#        target: 13480
+#      - protocol: TCP
+#        target: 13481
+#      - protocol: TCP
+#        target: 13482
     networks:
       frontend:
 #    environment:
