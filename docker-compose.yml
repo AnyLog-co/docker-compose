@@ -8,8 +8,7 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - protocol: tcp
-        target: 5432
+      - "5432:5432"
     networks:
       - frontend
 #    environment:
@@ -23,8 +22,7 @@ services:
       - common.env
     container_name: grafana
     ports:
-      - protocol: TCP
-        target: 3000
+      - "3000:3000"
     networks:
       - frontend
 #    environment:
@@ -42,8 +40,7 @@ services:
       - common.env
     container_name: remote-cli
     ports:
-      - protocol: TCP
-        target: 8000
+      - "8000:8000"
     networks:
       - frontend
 #    environment:
@@ -55,8 +52,7 @@ services:
     env_file:
       - common.env
     ports:
-      - protocol: TCP
-        target: 5000
+      - "5000:5000"
     networks:
       frontend:
 #    environment:
@@ -123,7 +119,7 @@ networks:
     external: true
 volumes:
   pgdata:
-    external: true
+    external: false
   grafana-data:
     external: false
 
