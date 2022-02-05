@@ -43,7 +43,7 @@ services:
     container_name: remote-cli
     ports:
       - protocol: TCP
-        target: ${CLI_PORT}
+        target: 8000
     networks:
       - frontend
 #    environment:
@@ -70,7 +70,7 @@ services:
     image: anylogco/anylog-network:test
     env_file:
       - common.env
-    container_name: ${NODE_NAME}
+    container_name: anylog-node
     ports:
       - protocol: TCP
         target: 13480
