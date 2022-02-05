@@ -10,9 +10,11 @@ services:
         target: 5432
     networks:
       - frontend
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    env_file:
+      - common.env
+#    environment:
+#      - POSTGRES_USER=${POSTGRES_USER}
+#      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/
   grafana:
@@ -23,13 +25,15 @@ services:
         target: 3000
     networks:
       - frontend
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-      - GF_AUTH_DISABLE_LOGIN_FORM=false
-      - GF_AUTH_ANONYMOUS_ENABLED=true
-      - GF_ALLOW_EMBEDDING=true
-      - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel,
+    env_file:
+      - common.env
+#    environment:
+#      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
+#      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+#      - GF_AUTH_DISABLE_LOGIN_FORM=false
+#      - GF_AUTH_ANONYMOUS_ENABLED=true
+#      - GF_ALLOW_EMBEDDING=true
+#      - GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel,
     volumes:
       - grafana-data:/var/lib/grafana
   remote-cli:
@@ -51,11 +55,13 @@ services:
         target: 5000
     networks:
       frontend:
-    environment:
-      - CONN_IP=${CONN_IP}
-      - CONN_PORT=${GUI_PORT}
-      - CONFIG_FOLDER=views
-      - CONFIG_FILE=${CONFIG_FILE}
+    env_file:
+      - common.env
+#    environment:
+#      - CONN_IP=${CONN_IP}
+#      - CONN_PORT=${GUI_PORT}
+#      - CONFIG_FOLDER=views
+#      - CONFIG_FILE=${CONFIG_FILE}
 #    volumes:
 #      - /usr/local/AnyLog/AnyLog-GUI/:/app/AnyLog-GUI/
   anylog-node:
@@ -70,43 +76,45 @@ services:
         target: 13482
     networks:
       frontend:
-    environment:
-      - NODE_TYPE=${NODE_TYPE}
-      - NODE_NAME=${NODE_NAME}
-      - COMPANY_NAME=${COMPANY_NAME}
-      #- EXTERNAL_IP=${EXTERNAL_IP}
-      #- LOCAL_IP=${LOCAL_IP}
-      - ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT}
-      - ANYLOG_REST_PORT=${ANYLOG_REST_PORT}
-      - ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT}
-      - MASTER_NODE=${MASTER_NODE}
-      - SYNC_TIME=${SYNC_TIME}
-      - DB_TYPE=${DB_TYPE}
-      - DB_USER=${DB_USER}
-      - DB_PORT=${DB_PORT}
-      - DEFAULT_DBMS=${DEFAULT_DBMS}
-      - CLUTSER_NAME=${CLUTSER_NAME}
-      - ENABLE_PARTITION=${ENABLE_PARTITION}
-      - PARTITION_COLUMN=${PARTITION_COLUMN}
-      - PARTITION_INTERVAL=${PARTITION_INTERVAL}
-      - PARTITION_KEEP=${PARTITION_KEEP}
-      - ENABLE_DATA_MONITOR=${ENABLE_DATA_MONITOR}
-      - TABLE_NAME=${TABLE_NAME}
-      - INTERVAL_VALUE=${INTERVAL_VALUE}
-      - DATA_MONITOR_INTERVAL=${DATA_MONITOR_INTERVAL}
-      - DATA_MONITOR_COLUMN=${DATA_MONITOR_COLUMN}
-      - MQTT_ENABLE=${MQTT_ENABLE}
-      - BROKER=${BROKER}
-      - MQTT_PORT=${MQTT_PORT}
-      - MQTT_USER=${MQTT_USER}
-      - MQTT_PASSWORD=${MQTT_PASSWORD}
-      - MQTT_LOG=${MQTT_LOG}
-      - MQTT_TOPIC_NAME=${MQTT_TOPIC_NAME}
-      - MQTT_TOPIC_DBMS=${MQTT_TOPIC_DBMS}
-      - MQTT_TOPIC_TABLE=${MQTT_TOPIC_TABLE}
-      - MQTT_COLUMN_TIMESTAMP=${MQTT_COLUMN_TIMESTAMP}
-      - MQTT_COLUMN_VALUE_TYPE=${MQTT_COLUMN_VALUE_TYPE}
-      - MQTT_COLUMN_VALUE=${MQTT_COLUMN_VALUE}
+    env_file:
+      - common.env
+#    environment:
+#      - NODE_TYPE=${NODE_TYPE}
+#      - NODE_NAME=${NODE_NAME}
+#      - COMPANY_NAME=${COMPANY_NAME}
+#      #- EXTERNAL_IP=${EXTERNAL_IP}
+#      #- LOCAL_IP=${LOCAL_IP}
+#      - ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT}
+#      - ANYLOG_REST_PORT=${ANYLOG_REST_PORT}
+#      - ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT}
+#      - MASTER_NODE=${MASTER_NODE}
+#      - SYNC_TIME=${SYNC_TIME}
+#      - DB_TYPE=${DB_TYPE}
+#      - DB_USER=${DB_USER}
+#      - DB_PORT=${DB_PORT}
+#      - DEFAULT_DBMS=${DEFAULT_DBMS}
+#      - CLUTSER_NAME=${CLUTSER_NAME}
+#      - ENABLE_PARTITION=${ENABLE_PARTITION}
+#      - PARTITION_COLUMN=${PARTITION_COLUMN}
+#      - PARTITION_INTERVAL=${PARTITION_INTERVAL}
+#      - PARTITION_KEEP=${PARTITION_KEEP}
+#      - ENABLE_DATA_MONITOR=${ENABLE_DATA_MONITOR}
+#      - TABLE_NAME=${TABLE_NAME}
+#      - INTERVAL_VALUE=${INTERVAL_VALUE}
+#      - DATA_MONITOR_INTERVAL=${DATA_MONITOR_INTERVAL}
+#      - DATA_MONITOR_COLUMN=${DATA_MONITOR_COLUMN}
+#      - MQTT_ENABLE=${MQTT_ENABLE}
+#      - BROKER=${BROKER}
+#      - MQTT_PORT=${MQTT_PORT}
+#      - MQTT_USER=${MQTT_USER}
+#      - MQTT_PASSWORD=${MQTT_PASSWORD}
+#      - MQTT_LOG=${MQTT_LOG}
+#      - MQTT_TOPIC_NAME=${MQTT_TOPIC_NAME}
+#      - MQTT_TOPIC_DBMS=${MQTT_TOPIC_DBMS}
+#      - MQTT_TOPIC_TABLE=${MQTT_TOPIC_TABLE}
+#      - MQTT_COLUMN_TIMESTAMP=${MQTT_COLUMN_TIMESTAMP}
+#      - MQTT_COLUMN_VALUE_TYPE=${MQTT_COLUMN_VALUE_TYPE}
+#      - MQTT_COLUMN_VALUE=${MQTT_COLUMN_VALUE}
 networks:
   frontend:
     driver: bridge
@@ -114,6 +122,7 @@ networks:
 volumes:
   pgdata:
     external: true
+    path:
   grafana-data:
     external: false
 
