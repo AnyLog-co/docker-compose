@@ -44,9 +44,11 @@ services:
         target: ${CLI_PORT}
     networks:
       - frontend
-    environment:
-      - CONN_IP=${CONN_IP}
-      - CONN_PORT=${CLI_PORT}
+    env_file:
+      - common.env
+#    environment:
+#      - CONN_IP=${CONN_IP}
+#      - CONN_PORT=${CLI_PORT}
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
