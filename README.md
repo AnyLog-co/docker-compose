@@ -13,29 +13,13 @@ cd $HOME
 git clone https://github.com/AnyLog-co/docker-compose
 cd $HOME/docker-compose 
 ```
-
-1. Update [.env](.env) with desired configuration. Specific params to look at: 
-   * Usernames & Passwords 
-   * NODE_TYPE
-   * COMPANY_NAME
-   * Networking (such as IPs, ports and master_node)
-   * DB_USER
-   * DEFAULT_DBMS
-   * MQTT params 
-
-
-2. Convert docker-compose 
-```commandline
-docker-compose config > docker-compose-resolved.yaml
-```
+1. Update environment variables in [envs](envs/) directory -- specifically [postgres](env/postgres.env) and [anylog-network](env/anylog_network.env) configs 
 
 ## Deploy AnyLog  
 Once done, the depoloyment can be done either via _docker-compose_, _kubernetes_ or _helm_
 
 **docker-compose**
 ```commandline
-cp docker-compose-resolved.yaml docker-compose.yaml 
-
 # start
 docker-compose up -d
 
@@ -48,14 +32,21 @@ docker down
 
 **kubernetes**
 ```commandline
+# convert docker with env to variables
+cd $HOME/docker-compose
+docker-compose config > docker-compose-resolved.yaml
+
 mkdir $HOME/kube  
 cd $HOME/kube 
 
 # convert for kubernetes 
-kubectl convert -f $HOME/docker-compose/docker-compose-resolved.yaml 
+kompose convert -f $HOME/docker-compose/docker-compose-resolved.yaml 
 
 # Deploy 
 kubectl apply -f $HOME/kube
+
+# Set remote access 
+
 
 # Attach
 kubectl exec -it ${POD_NAME} -- bash 
@@ -63,5 +54,6 @@ kubectl exec -it ${POD_NAME} -- bash
 # stop 
 kubectl delete -f $HOME/kube
 ```
+
 
 

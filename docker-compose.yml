@@ -26,8 +26,6 @@ services:
       - frontend
     volumes:
       - grafana-data:/var/lib/grafana
-      - grafana-logs:/var/log/grafana
-      - grafana-config:/etc/grafana/grafana.ini
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
@@ -80,10 +78,6 @@ volumes:
   pgdata:
     external: false
   grafana-data:
-    external: false
-  grafana-logs:
-    external: false
-  grafana-config:
     external: false
   remote-cli:
     external: false
