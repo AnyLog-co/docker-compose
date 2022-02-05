@@ -19,7 +19,6 @@ services:
       - common.env
     container_name: grafana
     stdin_open: true
-    stdin_open: true
     tty: true
     ports:
       - "3000:3000"
@@ -35,7 +34,7 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - "8000:8000"
+      - "${CLI_PORT}:${CLI_PORT}"
     networks:
       - frontend
     volumes:
