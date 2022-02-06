@@ -12,7 +12,7 @@ services:
     networks:
       - frontend
     volumes:
-      - pgdata:/var/lib/postgresql/
+      - /mnt/postgres:/var/lib/postgresql/:rw
   grafana:
     image: grafana/grafana:7.5.7
     env_file:
@@ -25,7 +25,7 @@ services:
     networks:
       - frontend
     volumes:
-      - grafana-data:/var/lib/grafana
+      - /mnt/grafana-data:/var/lib/grafana:rw
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
@@ -38,7 +38,7 @@ services:
     networks:
       - frontend
     volumes:
-      - remote-cli:/app/Remote-CLI/anylog_query/static/json:rw
+      - /mnt/remote-cli:/app/Remote-CLI/anylog_query/static/json:rw
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
@@ -51,7 +51,7 @@ services:
     networks:
       frontend:
     volumes:
-      - anylog-gui:/app/AnyLog-GUI/views:rw
+      - /mnt/anylog-gui:/app/AnyLog-GUI/views:rw
   anylog-node:
     image: anylogco/anylog-network:test
     env_file:
@@ -63,31 +63,16 @@ services:
       - "13480:13480"
       - "13481:13481"
       - "13482:13482"
-    networks:
-      frontend:
+      - mode: host
+#    networks:
+#      frontend:
     volumes:
-      - anylog-node-anylog:/app/AnyLog-Network/anylog
-      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-node-data:/app/AnyLog-Network/data
-      - anylog-node-local-scripts:/app/AnyLog-Network/local-scripts
+      - /mnt/anylog-node-anylog:/app/AnyLog-Network/anylog:rw
+      - /mnt/anylog-node-blockchain:/app/AnyLog-Network/blockchain:rw
+      - /mnt/anylog-node-data:/app/AnyLog-Network/data:rw
+      - /mnt/anylog-node-local-scripts:/app/AnyLog-Network/local-scripts:rw
 networks:
+  networ_mode: host
   frontend:
     driver: bridge
-    external: false
-volumes:
-  pgdata:
-    external: false
-  grafana-data:
-    external: false
-  remote-cli:
-    external: false
-  anylog-gui:
-    external: false
-  anylog-node-anylog:
-    external: false
-  anylog-node-blockchain:
-    external: false
-  anylog-node-data:
-    external: false
-  anylog-node-local-scripts:
     external: false

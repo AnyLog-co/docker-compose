@@ -7,53 +7,62 @@
 * [minikube](https://minikube.sigs.k8s.io/docs/start/) - local Kubernetes, focusing on making it easy to learn and develop for Kubernetes.
 
 ## Prepare Deployment 
-0. Clone & cd into docker-compose dir 
+1. Clone & cd into docker-compose dir 
 ```commandline
 cd $HOME
 git clone https://github.com/AnyLog-co/docker-compose
 cd $HOME/docker-compose 
 ```
-1. Update environment variables in [envs](envs/) directory -- specifically [postgres](env/postgres.env) and [anylog-network](env/anylog_network.env) configs 
+2. Update environment variables in [envs](envs/) directory -- specifically [postgres](envs/postgres.env) and [anylog-network](envs/anylog_node.env) configs 
 
-## Deploy AnyLog  
-Once done, the depoloyment can be done either via _docker-compose_, _kubernetes_ or _helm_
-
-**docker-compose**
+3. Create network frontend
 ```commandline
-# start
-docker-compose up -d
+# Get Gateway 
+GATEWAY_IP=`route -n | grep UH | awk -F " " '{print $1}'` 
 
-# attach 
-docker attach --detach-keys="ctrl-d" ${CONTAINER_NAME}  
+# Get Subnet 
+SUBNET=`ip route | grep  ${GATEWAY_IP} | grep "\/" | awk -F " " '{print $1}'`
 
-# stop 
-docker down  
+
+```
+## Docker Compose 
+* How to start docker-compose
+```commandline
+docker-compose up -d 
+```
+* How to attach to AnyLog
+```commandline
+docker attach --detach-keys="ctrl-d" anylog-node
+```
+* How to access Volume(s)
+
+* How to stop docker-compose - when adding `-v` the the end of the command, user will also delete the volume(s)
+```commandline
+docker-compose down
 ```
 
-**kubernetes**
+
+## kubernetes
+1. In docker-compose dir generate `docker-compose-updated.yml` which contains actual environment variables rather than names
 ```commandline
 # convert docker with env to variables
 cd $HOME/docker-compose
-docker-compose config > docker-compose-resolved.yaml
+docker-compose config > docker-compose-updated.yml
+```
 
+2. Convert docker-compose-updated
+```commandline
 mkdir $HOME/kube  
 cd $HOME/kube 
 
 # convert for kubernetes 
-kompose convert -f $HOME/docker-compose/docker-compose-resolved.yaml 
-
-# Deploy 
-kubectl apply -f $HOME/kube
-
-# Set remote access 
-
-
-# Attach
-kubectl exec -it ${POD_NAME} -- bash 
-
-# stop 
-kubectl delete -f $HOME/kube
+kompose convert -f $HOME/docker-compose/docker-compose-updated.yaml 
 ```
 
+3. Deploy kubernetes
+```commandline
+kubectl apply -f $HOME/kube
+```
 
+4. Open networking for access 
 
