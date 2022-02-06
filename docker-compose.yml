@@ -59,25 +59,18 @@ services:
     container_name: anylog-node
     stdin_open: true
     tty: true
-    network_mode: host
     ports:
       - "13480:13480"
       - "13481:13481"
       - "13482:13482"
-#    networks:
-#      frontend:
-    volumes:
-      - /mnt/anylog-node-anylog:/app/AnyLog-Network/anylog:rw
-      - /mnt/anylog-node-blockchain:/app/AnyLog-Network/blockchain:rw
-      - anylog-node-data:/app/AnyLog-Network/data:rw
-      - /mnt/anylog-node-local-scripts:/app/AnyLog-Network/local-scripts:rw
+    networks:
+      frontend:
+#    volumes:
+#      - /mnt/anylog-node-anylog:/app/AnyLog-Network/anylog:rw
+#      - /mnt/anylog-node-blockchain:/app/AnyLog-Network/blockchain:rw
+#      - /mnt/anylog-node-data:/app/AnyLog-Network/data:rw
+#      - /mnt/anylog-node-local-scripts:/app/AnyLog-Network/local-scripts:rw
 networks:
-  networ_mode: host
   frontend:
     driver: bridge
     external: false
-volumes:
-  - anylo-node-data:
-    type: volume
-    source: /app/AnyLog-Network/data
-    taget: anylog-node-data
