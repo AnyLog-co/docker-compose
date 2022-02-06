@@ -1,57 +1,57 @@
 version: "3.4"
 services:
-  database:
-    image: postgres:14.0-alpine
-    env_file:
-      - envs/postgres.env
-    container_name: postgres
-    stdin_open: true
-    tty: true
-    ports:
-      - "5432:5432"
-    networks:
-      - frontend
-    volumes:
-      - /mnt/postgres:/var/lib/postgresql/:rw
-  grafana:
-    image: grafana/grafana:7.5.7
-    env_file:
-      - envs/grafana.env
-    container_name: grafana
-    stdin_open: true
-    tty: true
-    ports:
-      - "3000:3000"
-    networks:
-      - frontend
-    volumes:
-      - /mnt/grafana-data:/var/lib/grafana:rw
-  remote-cli:
-    image: anylogco/remote-cli:latest
-    env_file:
-      - envs/remote_cli.env
-    container_name: remote-cli
-    stdin_open: true
-    tty: true
-    ports:
-      - "8000:8000"
-    networks:
-      - frontend
-    volumes:
-      - /mnt/remote-cli:/app/Remote-CLI/anylog_query/static/json:rw
-  anylog-gui:
-    image: anylogco/anylog-gui:latest
-    container_name: anylog-gui
-    env_file:
-      - envs/anylog_gui.env
-    stdin_open: true
-    tty: true
-    ports:
-      - "5000:5000"
-    networks:
-      frontend:
-    volumes:
-      - /mnt/anylog-gui:/app/AnyLog-GUI/views:rw
+#  database:
+#    image: postgres:14.0-alpine
+#    env_file:
+#      - envs/postgres.env
+#    container_name: postgres
+#    stdin_open: true
+#    tty: true
+#    ports:
+#      - "5432:5432"
+#    networks:
+#      - frontend
+#    volumes:
+#      - /mnt/postgres:/var/lib/postgresql/:rw
+#  grafana:
+#    image: grafana/grafana:7.5.7
+#    env_file:
+#      - envs/grafana.env
+#    container_name: grafana
+#    stdin_open: true
+#    tty: true
+#    ports:
+#      - "3000:3000"
+#    networks:
+#      - frontend
+#    volumes:
+#      - /mnt/grafana-data:/var/lib/grafana:rw
+#  remote-cli:
+#    image: anylogco/remote-cli:latest
+#    env_file:
+#      - envs/remote_cli.env
+#    container_name: remote-cli
+#    stdin_open: true
+#    tty: true
+#    ports:
+#      - "8000:8000"
+#    networks:
+#      - frontend
+#    volumes:
+#      - /mnt/remote-cli:/app/Remote-CLI/anylog_query/static/json:rw
+#  anylog-gui:
+#    image: anylogco/anylog-gui:latest
+#    container_name: anylog-gui
+#    env_file:
+#      - envs/anylog_gui.env
+#    stdin_open: true
+#    tty: true
+#    ports:
+#      - "5000:5000"
+#    networks:
+#      frontend:
+#    volumes:
+#      - /mnt/anylog-gui:/app/AnyLog-GUI/views:rw
   anylog-node:
     image: anylogco/anylog-network:test
     env_file:
@@ -59,11 +59,11 @@ services:
     container_name: anylog-node
     stdin_open: true
     tty: true
+    network_mode: host
     ports:
       - "13480:13480"
       - "13481:13481"
       - "13482:13482"
-      - mode: host
 #    networks:
 #      frontend:
     volumes:
