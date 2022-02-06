@@ -69,10 +69,14 @@ services:
     volumes:
       - /mnt/anylog-node-anylog:/app/AnyLog-Network/anylog:rw
       - /mnt/anylog-node-blockchain:/app/AnyLog-Network/blockchain:rw
-      - /mnt/anylog-node-data:/app/AnyLog-Network/data:rw
+      - anylog-node-data:/app/AnyLog-Network/data:rw
       - /mnt/anylog-node-local-scripts:/app/AnyLog-Network/local-scripts:rw
 networks:
   networ_mode: host
   frontend:
     driver: bridge
     external: false
+volumes:
+  - type: volume
+    source: /app/AnyLog-Network/data
+    taget: anylog-node-data
