@@ -11,6 +11,8 @@ services:
       - frontend
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   grafana:
     image: grafana/grafana:7.5.7
     env_file:
@@ -22,6 +24,8 @@ services:
       - frontend
     ports:
       - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
@@ -33,6 +37,8 @@ services:
       - frontend
     ports:
       - "8000:8000"
+    volumes:
+      - remote-cli:/app/Remote-CLI
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
@@ -61,4 +67,12 @@ networks:
   frontend:
     driver: bridge
     external: false
+volumes:
+  pgdata:
+  grafana-data:
+  remote-cli:
+    driver_opts:
+      type: none
+      o: bind
+      device: /mnt/remote-cli
 
