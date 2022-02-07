@@ -23,6 +23,7 @@ services:
     env_file:
       - envs/remote_cli.env
     container_name: remote-cli
+    network_mode: host
     stdin_open: true
     tty: true
     ports:
