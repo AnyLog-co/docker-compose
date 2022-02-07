@@ -9,8 +9,7 @@ services:
     tty: true
     ports:
       - "5432:5432"
-    networks:
-      - frontend
+    network_mode: 'host'
 #    volumes:
 #      - /mnt/postgres:/var/lib/postgresql/:rw
   grafana:
@@ -22,8 +21,7 @@ services:
     tty: true
     ports:
       - "3000:3000"
-    networks:
-      - frontend
+    network_mode: 'host'
 #    volumes:
 #      - /mnt/grafana-data:/var/lib/grafana:rw
   remote-cli:
