@@ -1,2 +1,11 @@
-IPADDR=10.0.0.91
-kubectl port-forward --address 10.0.0.91 service/remote-cli 8000:8000
+if [ $# -eq 1 ]
+then
+   IP_ADDRESS=${1}
+else
+   echo "Missing IP IP address"
+   exit 1
+fi
+
+
+kubectl port-forward --address ${IP_ADDRESS} service/database 5432:5432 &> /dev/null &
+kubectl port-forward --address ${IP_ADDRESS} service/grafana 3000:5000 &> /dev/null &
