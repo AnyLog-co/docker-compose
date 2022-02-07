@@ -71,9 +71,4 @@ volumes:
   pgdata:
   grafana-data:
   remote-cli:
-    driver_opts:
-      type: none
-      o: bind
-      device: /app/Remote-CLI
-      host: /mnt/remote-cli
 
