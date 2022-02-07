@@ -21,8 +21,8 @@ services:
     tty: true
     ports:
       - "3000:3000"
-    volumes:
-      - /mnt/grafana-data:/var/lib/grafana:rw
+#    volumes:
+#      - /mnt/grafana-data:/var/lib/grafana:rw
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
@@ -64,9 +64,9 @@ services:
 #      - /mnt/anylog-node-blockchain:/app/AnyLog-Network/blockchain:rw
 #      - /mnt/anylog-node-data:/app/AnyLog-Network/data:rw
 #      - /mnt/anylog-node-local-scripts:/app/AnyLog-Network/local-scripts:rw
-volumes:
-  - /mnt/grafana-data:
-      external: true
+#volumes:
+#  - /mnt/grafana-data:
+#      external: true
 #networks:
 #  frontend:
 #    driver: bridge
