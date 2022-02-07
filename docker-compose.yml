@@ -31,6 +31,7 @@ services:
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
+    network_mode: host
     env_file:
       - envs/anylog_gui.env
     stdin_open: true
