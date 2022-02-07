@@ -74,5 +74,6 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /mnt/remote-cli
+      device: /app/Remote-CLI
+      host: /mnt/remote-cli
 
