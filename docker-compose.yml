@@ -48,8 +48,7 @@ services:
     tty: true
     ports:
       - "5000:5000"
-    networks:
-      frontend:
+    network_mode: 'host'
 #    volumes:
 #      - /mnt/anylog-gui:/app/AnyLog-GUI/views:rw
   anylog-node:
@@ -70,7 +69,7 @@ services:
 #      - /mnt/anylog-node-blockchain:/app/AnyLog-Network/blockchain:rw
 #      - /mnt/anylog-node-data:/app/AnyLog-Network/data:rw
 #      - /mnt/anylog-node-local-scripts:/app/AnyLog-Network/local-scripts:rw
-networks:
-  frontend:
-    driver: bridge
-    external: false
+#networks:
+#  frontend:
+#    driver: bridge
+#    external: false
