@@ -51,7 +51,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - anylog-gui:/app/AnyLog-GUI/:/app/AnyLog-GUI/views
+      - anylog-gui:/app/AnyLog-GUI/views
   anylog-node:
     image: anylogco/anylog-network:test
     env_file:
