@@ -1,29 +1,29 @@
 version: "3.4"
 services:
-#  database:
-#    image: postgres:14.0-alpine
-#    env_file:
-#      - envs/postgres.env
-#    container_name: postgres
-#    stdin_open: true
-#    tty: true
-#    ports:
-#      - "5432:5432"
-#    networks:
-#      - frontend
+  database:
+    image: postgres:14.0-alpine
+    env_file:
+      - envs/postgres.env
+    container_name: postgres
+    stdin_open: true
+    tty: true
+    ports:
+      - "5432:5432"
+    networks:
+      - frontend
 #    volumes:
 #      - /mnt/postgres:/var/lib/postgresql/:rw
-#  grafana:
-#    image: grafana/grafana:7.5.7
-#    env_file:
-#      - envs/grafana.env
-#    container_name: grafana
-#    stdin_open: true
-#    tty: true
-#    ports:
-#      - "3000:3000"
-#    networks:
-#      - frontend
+  grafana:
+    image: grafana/grafana:7.5.7
+    env_file:
+      - envs/grafana.env
+    container_name: grafana
+    stdin_open: true
+    tty: true
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend
 #    volumes:
 #      - /mnt/grafana-data:/var/lib/grafana:rw
 #  remote-cli:
@@ -52,19 +52,19 @@ services:
 #      frontend:
 #    volumes:
 #      - /mnt/anylog-gui:/app/AnyLog-GUI/views:rw
-  anylog-node:
-    image: anylogco/anylog-network:test
-    env_file:
-      - envs/anylog_node.env
-    container_name: anylog-node
-    stdin_open: true
-    tty: true
-    ports:
-      - "13480:13480"
-      - "13481:13481"
-      - "13482:13482"
-    networks:
-      frontend:
+#  anylog-node:
+#    image: anylogco/anylog-network:test
+#    networks:
+#      frontend:
+#    env_file:
+#      - envs/anylog_node.env
+#    container_name: anylog-node
+#    stdin_open: true
+#    tty: true
+#    ports:
+#      - "13480:13480"
+#      - "13481:13481"
+#      - "13482:13482"
 #    volumes:
 #      - /mnt/anylog-node-anylog:/app/AnyLog-Network/anylog:rw
 #      - /mnt/anylog-node-blockchain:/app/AnyLog-Network/blockchain:rw
