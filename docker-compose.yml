@@ -37,8 +37,8 @@ services:
       - frontend
     ports:
       - "8000:8000"
-    volumes:
-      - remote-cli:/app/Remote-CLI/anylog_query/static/json
+#    volumes:
+#      - remote-cli:/app/Remote-CLI/anylog_query/static/json
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
@@ -50,8 +50,8 @@ services:
       - frontend
     ports:
       - "5000:5000"
-    volumes:
-      - anylog-gui:/app/AnyLog-GUI/views
+#    volumes:
+#      - anylog-gui:/app/AnyLog-GUI/views
   anylog-node:
     image: anylogco/anylog-network:test
     env_file:
@@ -77,8 +77,8 @@ networks:
 volumes:
   pgdata:
   grafana-data:
-  remote-cli:
-  anylog-gui:
+#  remote-cli:
+#  anylog-gui:
   anylog-node-anylog:
   anylog-node-blockchain:
   anylog-node-data:
