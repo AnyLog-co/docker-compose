@@ -79,5 +79,7 @@ volumes:
   grafana-data:
   remote-cli:
   anylog-gui:
-
-
+  anylog-node-anylog:
+  anylog-node-blockchain:
+  anylog-node-data:
+  anylog-node-local-scripts:
