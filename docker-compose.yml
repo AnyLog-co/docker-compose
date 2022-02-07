@@ -67,7 +67,7 @@ services:
 #volumes:
 #  - /mnt/grafana-data:
 #      external: true
-#networks:
-#  frontend:
-#    driver: bridge
-#    external: false
+networks:
+  frontend:
+    driver: bridge
+    external: false
