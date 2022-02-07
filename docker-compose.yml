@@ -7,6 +7,8 @@ services:
     container_name: postgres
     stdin_open: true
     tty: true
+    networks:
+      - frontend
     ports:
       - "5432:5432"
   grafana:
@@ -16,6 +18,8 @@ services:
     container_name: grafana
     stdin_open: true
     tty: true
+    networks:
+      - frontend
     ports:
       - "3000:3000"
   remote-cli:
@@ -23,30 +27,38 @@ services:
     env_file:
       - envs/remote_cli.env
     container_name: remote-cli
-    network_mode: host
     stdin_open: true
     tty: true
+    networks:
+      - frontend
     ports:
       - "8000:8000"
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
-    network_mode: host
     env_file:
       - envs/anylog_gui.env
     stdin_open: true
     tty: true
+    networks:
+      - frontend
     ports:
       - "5000:5000"
   anylog-node:
     image: anylogco/anylog-network:test
-    network_mode: 'host'
     env_file:
       - envs/anylog_node.env
     container_name: anylog-node
     stdin_open: true
     tty: true
+    networks:
+      - frontend
     ports:
       - "13480:13480"
       - "13481:13481"
       - "13482:13482"
+networks:
+  frontend:
+    driver: bridge
+    external: false
+
