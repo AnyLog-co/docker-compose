@@ -35,8 +35,7 @@ services:
     tty: true
     ports:
       - "8000:8000"
-    networks:
-      - frontend
+    network_mode: 'host'
 #    volumes:
 #      - /mnt/remote-cli:/app/Remote-CLI/anylog_query/static/json:rw
   anylog-gui:
@@ -53,8 +52,7 @@ services:
 #      - /mnt/anylog-gui:/app/AnyLog-GUI/views:rw
   anylog-node:
     image: anylogco/anylog-network:test
-    networks:
-      frontend:
+    network_mode: 'host'
     env_file:
       - envs/anylog_node.env
     container_name: anylog-node
