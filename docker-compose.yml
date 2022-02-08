@@ -84,10 +84,10 @@ services:
       - anylog-node-local-scripts:/app/AnyLog-Network/local_scritpts
 networks:
   frontend:
-    driver: bridge
-    external: false
+#    driver: bridge
+#    external: false
 volumes:
-  nginx:
+#  nginx:
   pgdata:
   grafana-data:
   grafana-log:
