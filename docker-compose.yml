@@ -37,8 +37,8 @@ services:
     tty: true
     networks:
       - frontend
-    expose:
-      - 8000
+    ports:
+      - "8000:8000"
     volumes:
       - remote-cli:/app/Remote-CLI/anylog_query/static/json
   anylog-gui:
