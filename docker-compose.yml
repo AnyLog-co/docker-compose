@@ -59,8 +59,7 @@ services:
     container_name: anylog-node
     stdin_open: true
     tty: true
-    networks:
-      - frontend
+    network_mode: host
     ports:
       - "13480:13480"
       - "13481:13481"
