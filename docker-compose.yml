@@ -34,7 +34,9 @@ services:
     expose:
       - 3000
     volumes:
-      - grafana-data:/var/lib/grafana
+      - grafana-data:/var/lib/grafana,
+      - grafana-log:/var/log/grafana,
+      - grafana-config:/etc/grafana
 #  remote-cli:
 #    image: anylogco/remote-cli:latest
 #    env_file:
@@ -85,6 +87,8 @@ volumes:
   nginx:
 #  pgdata:
   grafana-data:
+  grafana-log:
+  grafana-config:
 #  remote-cli:
 #  anylog-gui:
 #  anylog-node-anylog:
