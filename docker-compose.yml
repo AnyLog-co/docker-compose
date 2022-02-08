@@ -32,8 +32,8 @@ services:
     tty: true
     networks:
       - frontend
-    expose:
-      - 3000
+    ports:
+      - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana,
       - grafana-log:/var/log/grafana,
