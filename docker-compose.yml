@@ -48,8 +48,6 @@ services:
       - envs/anylog_gui.env
     stdin_open: true
     tty: true
-    networks:
-      - frontend
     ports:
       - "5000:5000"
     volumes:
@@ -72,20 +70,9 @@ services:
       - anylog-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-node-data:/app/AnyLog-Network/data
       - anylog-node-local-scripts:/app/AnyLog-Network/local_scritpts
-  proxy:
-    image: nginx:1.14-alpine
-    networks:
-      - frontend
-    ports:
-      - "80:80"
-    volumes:
-      - nginx:/etc/nginx/conf.d
-    depends_on:
-      - anylog-gui
 networks:
   frontend:
 volumes:
-  nginx:
   pgdata:
   grafana-data:
   grafana-log:
