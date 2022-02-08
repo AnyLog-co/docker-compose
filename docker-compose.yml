@@ -87,7 +87,7 @@ networks:
     driver: bridge
     external: true
 volumes:
-#  nginx:
+  nginx:
   pgdata:
   grafana-data:
   grafana-log:
