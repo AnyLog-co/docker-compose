@@ -82,7 +82,7 @@ services:
 networks:
   frontend:
 volumes:
-    nginx:
+  nginx:
 #  pgdata:
   grafana-data:
 #  remote-cli:
