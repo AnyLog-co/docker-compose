@@ -1,17 +1,5 @@
 version: "3.4"
 services:
-  proxy:
-    image: nginx:1.16.0-alpine
-    networks:
-      - backend
-    ports:
-      - 443:443 #nginx
-      - 8000:8000
-#    environment:
-#      - ENV=development
-#      - APPLICATION_URL=http://anylog-node
-    volumes:
-      - nginx:/etc/nginx/
   database:
     image: postgres:14.0-alpine
     env_file:
@@ -48,7 +36,7 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - backend
+      - frontend
     expose:
       - 8000
     volumes:
@@ -88,7 +76,6 @@ networks:
   frontend:
     driver: bridge
     external: false
-  backend:
 volumes:
   nginx:
   pgdata:
