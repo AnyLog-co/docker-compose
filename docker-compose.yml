@@ -1,27 +1,26 @@
 version: "3.4"
 services:
-  proxy:
-    image: nginx:1.16.0-alpine
-    networks:
-      - frontend
-    ports:
-      - 8080:80
-    volumes:
-      - nginx:/etc/nginx/
-
-#  database:
-#    image: postgres:14.0-alpine
-#    env_file:
-#      - envs/postgres.env
-#    container_name: postgres
-#    stdin_open: true
-#    tty: true
+#  proxy:
+#    image: nginx:1.16.0-alpine
 #    networks:
 #      - frontend
 #    ports:
-#      - "5432:5432"
+#      - 8080:80
 #    volumes:
-#      - pgdata:/var/lib/postgresql/data
+#      - nginx:/etc/nginx/
+  database:
+    image: postgres:14.0-alpine
+    env_file:
+      - envs/postgres.env
+    container_name: postgres
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   grafana:
     image: grafana/grafana:7.5.7
     env_file:
@@ -37,61 +36,61 @@ services:
       - grafana-data:/var/lib/grafana,
       - grafana-log:/var/log/grafana,
       - grafana-config:/etc/grafana
-#  remote-cli:
-#    image: anylogco/remote-cli:latest
-#    env_file:
-#      - envs/remote_cli.env
-#    container_name: remote-cli
-#    stdin_open: true
-#    tty: true
-#    networks:
-#      - frontend
-#    ports:
-#      - "8000:8000"
-#    volumes:
-#      - remote-cli:/app/Remote-CLI/anylog_query/static/json
-#  anylog-gui:
-#    image: anylogco/anylog-gui:latest
-#    container_name: anylog-gui
-#    env_file:
-#      - envs/anylog_gui.env
-#    stdin_open: true
-#    tty: true
-#    networks:
-#      - frontend
-#    ports:
-#      - "5000:5000"
-#    volumes:
-#      - anylog-gui:/app/AnyLog-GUI/views
-#  anylog-node:
-#    image: anylogco/anylog-network:test
-#    env_file:
-#      - envs/anylog_node.env
-#    container_name: anylog-node
-#    stdin_open: true
-#    tty: true
-#    networks:
-#      - frontend
-#    ports:
-#      - "13480:13480"
-#      - "13481:13481"
-#      - "13482:13482"
-#    volumes:
-#      - anylog-node-anylog:/app/AnyLog-Network/anylog
-#      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
-#      - anylog-node-data:/app/AnyLog-Network/data
-#      - anylog-node-local-scripts:/app/AnyLog-Network/local_scritpts
+  remote-cli:
+    image: anylogco/remote-cli:latest
+    env_file:
+      - envs/remote_cli.env
+    container_name: remote-cli
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend
+    ports:
+      - "8000:8000"
+    volumes:
+      - remote-cli:/app/Remote-CLI/anylog_query/static/json
+  anylog-gui:
+    image: anylogco/anylog-gui:latest
+    container_name: anylog-gui
+    env_file:
+      - envs/anylog_gui.env
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend
+    ports:
+      - "5000:5000"
+    volumes:
+      - anylog-gui:/app/AnyLog-GUI/views
+  anylog-node:
+    image: anylogco/anylog-network:test
+    env_file:
+      - envs/anylog_node.env
+    container_name: anylog-node
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend
+    ports:
+      - "13480:13480"
+      - "13481:13481"
+      - "13482:13482"
+    volumes:
+      - anylog-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-node-data:/app/AnyLog-Network/data
+      - anylog-node-local-scripts:/app/AnyLog-Network/local_scritpts
 networks:
   frontend:
 volumes:
-  nginx:
-#  pgdata:
+#  nginx:
+  pgdata:
   grafana-data:
   grafana-log:
   grafana-config:
-#  remote-cli:
-#  anylog-gui:
-#  anylog-node-anylog:
-#  anylog-node-blockchain:
-#  anylog-node-data:
-#  anylog-node-local-scripts:
+  remote-cli:
+  anylog-gui:
+  anylog-node-anylog:
+  anylog-node-blockchain:
+  anylog-node-data:
+  anylog-node-local-scripts:
