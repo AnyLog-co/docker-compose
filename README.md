@@ -130,29 +130,3 @@ hidden_node.al  local_script.al  master.al  mqtt.al  operator.al  publisher.al  
 ```commandline
 docker-compose down
 ```
-
-
-## kubernetes
-1. In docker-compose dir generate `docker-compose-updated.yml` which contains actual environment variables rather than names
-```commandline
-# convert docker with env to variables
-cd $HOME/docker-compose
-docker-compose config > docker-compose-updated.yml
-```
-
-2. Convert docker-compose-updated
-```commandline
-mkdir $HOME/kube  
-cd $HOME/kube 
-
-# convert for kubernetes 
-kompose convert -f $HOME/docker-compose/docker-compose-updated.yaml 
-```
-
-3. Deploy kubernetes
-```commandline
-kubectl apply -f $HOME/kube
-```
-
-4. Open networking for access 
-
