@@ -72,7 +72,7 @@ services:
     stdin_open: true
     tty: true
     networks:
-      - frontend
+      - host
     ports:
       - "13480:13480"
       - "13481:13481"
@@ -83,6 +83,7 @@ services:
       - anylog-node-data:/app/AnyLog-Network/data
       - anylog-node-local-scripts:/app/AnyLog-Network/local_scritpts
 networks:
+  host:
   frontend:
     driver: bridge
     external: false
