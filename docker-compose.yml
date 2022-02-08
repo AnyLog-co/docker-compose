@@ -72,6 +72,8 @@ services:
       - anylog-node-local-scripts:/app/AnyLog-Network/local_scripts
 networks:
   frontend:
+    driver: bridge
+    external: false
 volumes:
   pgdata:
   grafana-data:
