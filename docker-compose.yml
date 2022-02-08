@@ -1,13 +1,15 @@
 version: "3.4"
 services:
-#  proxy:
-#    image: nginx:1.16.0-alpine
-#    networks:
-#      - frontend
-#    ports:
-#      - 8080:80
-#    volumes:
-#      - nginx:/etc/nginx/
+  proxy:
+    image: nginx:1.16.0-alpine
+    networks:
+      - frontend
+    ports:
+      - 443:443 #nginx
+      - 5000:5000 # remote cli
+      - 8000:8000 #
+    volumes:
+      - nginx:/etc/nginx/
   database:
     image: postgres:14.0-alpine
     env_file:
@@ -82,6 +84,8 @@ services:
       - anylog-node-local-scripts:/app/AnyLog-Network/local_scritpts
 networks:
   frontend:
+    driver: bridge
+    external: true
 volumes:
 #  nginx:
   pgdata:
