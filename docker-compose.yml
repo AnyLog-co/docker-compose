@@ -7,9 +7,9 @@ services:
     ports:
       - 443:443 #nginx
       - 8000:8000
-    environment:
-      - ENV=development
-      - APPLICATION_URL=http://anylog-node
+#    environment:
+#      - ENV=development
+#      - APPLICATION_URL=http://anylog-node
     volumes:
       - nginx:/etc/nginx/
   database:
