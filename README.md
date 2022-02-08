@@ -15,16 +15,7 @@ cd $HOME/docker-compose
 ```
 2. Update environment variables in [envs](envs/) directory -- specifically [postgres](envs/postgres.env) and [anylog-network](envs/anylog_node.env) configs 
 
-3. Create network frontend
-```commandline
-# Get Gateway 
-GATEWAY_IP=`route -n | grep UH | awk -F " " '{print $1}'` 
 
-# Get Subnet 
-SUBNET=`ip route | grep  ${GATEWAY_IP} | grep "\/" | awk -F " " '{print $1}'`
-
-
-```
 ## Docker Compose 
 * How to start docker-compose
 ```commandline
