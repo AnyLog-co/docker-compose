@@ -5,8 +5,7 @@ services:
     networks:
       - frontend
     ports:
-      - 80:80
-      - 443:443
+      - 8080:80
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
 
@@ -23,19 +22,19 @@ services:
 #      - "5432:5432"
 #    volumes:
 #      - pgdata:/var/lib/postgresql/data
-#  grafana:
-#    image: grafana/grafana:7.5.7
-#    env_file:
-#      - envs/grafana.env
-#    container_name: grafana
-#    stdin_open: true
-#    tty: true
-#    networks:
-#      - frontend
-#    ports:
-#      - "3000:3000"
-#    volumes:
-#      - grafana-data:/var/lib/grafana
+  grafana:
+    image: grafana/grafana:7.5.7
+    env_file:
+      - envs/grafana.env
+    container_name: grafana
+    stdin_open: true
+    tty: true
+    networks:
+      - frontend
+    expose:
+      - 3000
+    volumes:
+      - grafana-data:/var/lib/grafana
 #  remote-cli:
 #    image: anylogco/remote-cli:latest
 #    env_file:
@@ -82,9 +81,9 @@ services:
 #      - anylog-node-local-scripts:/app/AnyLog-Network/local_scritpts
 networks:
   frontend:
-#volumes:
+volumes:
 #  pgdata:
-#  grafana-data:
+  grafana-data:
 #  remote-cli:
 #  anylog-gui:
 #  anylog-node-anylog:
