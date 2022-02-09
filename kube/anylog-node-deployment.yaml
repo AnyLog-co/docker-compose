@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: anylog-node
+  name: anylog-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: anylog-node
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/frontend: "true"
+        io.kompose.service: anylog-node
+    spec:
+      imagePullSecrets:
+        - name: myregistrykey
+      containers:
+        - env:
+            - name: ANYLOG_BROKER_PORT
+              value: "3482"
+            - name: ANYLOG_REST_PORT
+              value: "3481"
+            - name: ANYLOG_SERVER_PORT
+              value: "3480"
+            - name: BROKER
+              value: driver.cloudmqtt.com
+            - name: CLUTSER_NAME
+              value: new-cluster
+            - name: COMPANY_NAME
+              value: AnyLog
+            - name: DATA_MONITOR_COLUMN
+              value: value
+            - name: DATA_MONITOR_INTERVAL
+              value: '"1 minute"'
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_TYPE
+              value: psql
+            - name: DB_USER
+              value: '[POSTGRES_USER]@[IP_ADDRESS]:[POSTGRES_PASSWORD]'
+            - name: DEFAULT_DBMS
+              value: test
+            - name: ENABLE_DATA_MONITOR
+              value: "false"
+            - name: ENABLE_PARTITION
+              value: "true"
+            - name: INTERVAL_VALUE
+              value: "10"
+            - name: MASTER_NODE
+              value: 45.33.41.185:2048
+            - name: MQTT_COLUMN_TIMESTAMP
+              value: now
+            - name: MQTT_COLUMN_VALUE
+              value: '"bring [readings][][value]"'
+            - name: MQTT_COLUMN_VALUE_TYPE
+              value: float
+            - name: MQTT_ENABLE
+              value: "true"
+            - name: MQTT_LOG
+              value: "false"
+            - name: MQTT_PASSWORD
+              value: MSY4e009J7ts
+            - name: MQTT_PORT
+              value: "18785"
+            - name: MQTT_TOPIC_DBMS
+              value: test
+            - name: MQTT_TOPIC_NAME
+              value: anylogedgex
+            - name: MQTT_TOPIC_TABLE
+              value: '"bring [device]"'
+            - name: MQTT_USER
+              value: ibglowct
+            - name: NODE_NAME
+              value: anylog-node
+            - name: NODE_TYPE
+              value: rest
+            - name: PARTITION_COLUMN
+              value: timestamp
+            - name: PARTITION_INTERVAL
+              value: '"7 days"'
+            - name: PARTITION_KEEP
+              value: "42"
+            - name: SYNC_TIME
+              value: '"30 second"'
+            - name: TABLE_NAME
+              value: '*'
+          image: anylogco/anylog-network:test
+          name: anylog-node
+          ports:
+            - containerPort: 13480
+            - containerPort: 13481
+            - containerPort: 13482
+          resources: {}
+          stdin: true
+          tty: true
+      restartPolicy: Always
+status: {}

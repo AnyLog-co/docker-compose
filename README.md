@@ -19,8 +19,10 @@ cd $HOME/docker-compose
 ## Docker Compose 
 * How to start docker-compose
 ```bash
+cp docker-compose-base.yml docker-compose.yml 
 docker-compose up -d 
 ```
+
 * cURL request against AnyLog-Network -- `anylog-node` service uses the `network_mode: host` rather than the network created by the network. As such, AnyLog uses the same IP(s) as the machine it seats on. 
 ```bash
 curl -X GET 10.0.0.212:3481 -H "commnad: get status" -H "Usr-Agent: AnyLog/1.23"
@@ -62,26 +64,24 @@ docker-compose down
 
 
 ## kubernetes
-1. In docker-compose dir generate `docker-compose-updated.yml` which contains actual environment variables rather than names
-```commandline
-# convert docker with env to variables
-cd $HOME/docker-compose
-docker-compose config > docker-compose-updated.yml
+status volumes: 
+* All deployments work 
+* able to access everything but AnyLog 
+* missing volumes 
 ```
+cd $HOME/docker-compose 
 
-2. Convert docker-compose-updated
-```commandline
-mkdir $HOME/kube  
-cd $HOME/kube 
+cp docker-compose-k8s.yml docker-compose.yml 
 
-# convert for kubernetes 
-kompose convert -f $HOME/docker-compose/docker-compose-updated.yaml 
+docker-compose config > ~/docker-compose/docker-compose-update.yml 
+
+mkdir ~/kube
+
+cd ~/kube 
+
+kompose convert -f ~/docker-compose/docker-compose-update.yml
+
+kompose app -f . 
+
+bash ~/docker-compose/kube_port_access.sh 10.0.0.212
 ```
-
-3. Deploy kubernetes
-```commandline
-kubectl apply -f $HOME/kube
-```
-
-4. Open networking for access 
-
