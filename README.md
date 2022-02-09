@@ -64,10 +64,12 @@ docker-compose down
 
 
 ## kubernetes
-status volumes: 
+**Status**:
 * All deployments work 
 * able to access everything but AnyLog 
 * missing volumes 
+
+**Base Commands**: 
 ```
 cd $HOME/docker-compose 
 
