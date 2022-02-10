@@ -13,7 +13,7 @@ spec:
   selector:
     matchLabels:
       io.kompose.service: database
-  strategy: { }
+  strategy: {}
   template:
     metadata:
       annotations:
@@ -29,16 +29,18 @@ spec:
       path: /mnt/pgdata
   spec:
     containers:
-      image: postgres:14.0-alpine
-      name: postgres
-      ports:
-        containerPort: 5432
       envFrom:
         configMapRef:
           name: database-conn
       volumeMounts:
         path: /var/lib/postgresql/data
+      image: postgres:14.0-alpine
+      name: postgres
+      ports:
+        - containerPort: 5432
+      resources: {}
       stdin: true
       tty: true
     restartPolicy: Always
 status: {}
+
