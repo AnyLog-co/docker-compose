@@ -50,10 +50,10 @@ metadata:
 spec:
   replicas: 1
   selector:
-  template:
-    metadata:
-      labels:
-        app: postgres
+    template:
+      metadata:
+        labels:
+          app: postgres
   spec:
     volumes:
     - name: postgres-pv-storage
