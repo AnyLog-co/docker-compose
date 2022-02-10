@@ -1,33 +1,3 @@
-# Volume
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: psql-volume
-  labels:
-    type: local
-spec:
-  storageClassName: manual
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/postgres/data"
----
-# volume claim
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: psql-volume-claim
-spec:
-  storageClassName: manual
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 1Gi
-
----
 # Service
 apiVersion: v1
 kind: Service
@@ -48,7 +18,6 @@ spec:
     io.kompose.service: postgres
 status:
   loadBalancer: {}
-
 ---
 # deployment
 apiVersion: apps/v1
@@ -78,16 +47,17 @@ spec:
         io.kompose.service: database
     spec:
       volumes:
-        - name: psql-volume
-          persistentVolumeClaim:
-            claimName: psql-volume-claim
+        - name: pgdata
+          hostPath:
+            path: /mnt/postgres/data
       containers:
-        - env:
+        - image: postgres:14.0-alpine
+          imagePullPolicy: IfNotPresent
+          env:
             - name: POSTGRES_PASSWORD
               value: passwd
             - name: POSTGRES_USER
               value: admin
-          image: postgres:14.0-alpine
           name: postgres
           ports:
             - containerPort: 5432
@@ -95,7 +65,7 @@ spec:
           stdin: true
           tty: true
           volumeMounts:
-            - mountPath: /var/lib/postgresql/data
-              name: psql-volume
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
       restartPolicy: Always
 status: {}
