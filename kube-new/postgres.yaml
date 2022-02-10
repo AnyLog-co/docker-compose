@@ -64,7 +64,7 @@ spec:
           claimName: psql-volume-claim
       containers:
       - name: postgres
-        image: postgres:11
+        image: postgres:14.0-alpine
         imagePullPolicy: IfNotPresent
         env:
           - name: POSTGRES_USERNAME

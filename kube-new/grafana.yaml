@@ -44,4 +44,43 @@ spec:
 
 ---
 # deployment
-
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+sepc:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      volumes:
+      - name: grafana-volume
+        persistentVolumeClaim:
+          claimName: grafana-volume-claim
+      containers:
+        - name: grafana
+          image:grafana/grafana:7.5.7
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "true"
+            - name: GF_AUTH_DISABLE_LOGIN_FORM
+              value: "false"
+            - name: GF_INSTALL_PLUGINS
+              value: simpod-json-datasource,grafana-worldmap-panel
+            - name: GF_SECURITY_ALLOW_EMBEDDING
+              value: "true"
+            - name: GRAFANA_ADMIN_PASSWORD
+              value: passwd
+            - name: GRAFANA_ADMIN_USER
+              value: admin
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-volume
