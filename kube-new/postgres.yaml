@@ -70,7 +70,7 @@ spec:
           - containerPort: 5432
         env:
           - name: POSTGRES_USER
-            valueFrom:
+            envForm:
               configMapRef:
                 name: postgres-config
                 key: POSTGRES_USER
