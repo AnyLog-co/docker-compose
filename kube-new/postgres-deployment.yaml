@@ -25,11 +25,11 @@ spec:
         io.kompose.service: database
     spec:
       containers:
-#        - env:
-#            - name: POSTGRES_PASSWORD
-#              value: passwd
-#            - name: POSTGRES_USER
-#              value: admin
+        - env:
+            - name: POSTGRES_PASSWORD
+              value: passwd
+            - name: POSTGRES_USER
+              value: admin
           image: postgres:14.0-alpine
           name: postgres
           ports:
