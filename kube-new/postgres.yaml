@@ -13,3 +13,16 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/postgres/data"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: psql-volume-claim
+sepc:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  storage: 1Gi
+
+---
