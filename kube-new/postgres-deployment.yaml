@@ -25,12 +25,17 @@ spec:
         io.kompose.service: database
     spec:
       containers:
-        image: postgres:14.0-alpine
-        name: postgres
-        ports:
-          - containerPort: 5432
-        resources: {}
-        stdin: true
-        tty: true
+#        - env:
+#            - name: POSTGRES_PASSWORD
+#              value: passwd
+#            - name: POSTGRES_USER
+#              value: admin
+          image: postgres:14.0-alpine
+          name: postgres
+          ports:
+            - containerPort: 5432
+          resources: {}
+          stdin: true
+          tty: true
       restartPolicy: Always
 status: {}
