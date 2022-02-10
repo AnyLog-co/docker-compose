@@ -9,7 +9,7 @@ spec:
   storageClassName: manual
   capacity:
     storage: 5Gi
-  accessMode:
+  accessModes:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/grafana/data"
@@ -21,7 +21,7 @@ metadata:
   name: grafana-volume-claim
 spec:
   storageClassName: manual
-  accessMode:
+  accessModes:
     - ReadWriteOnce
   resource:
     requests:
