@@ -4,5 +4,5 @@ metadata:
   name: database-conn
   namespace: default
 data:
-  POSTGRES_USER=admin
-  POSTGRES_PASSWORD=passwd
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: passwd
