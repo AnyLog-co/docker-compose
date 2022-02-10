@@ -1,0 +1,47 @@
+# Volume
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: grafana-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessMode:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/grafana/data"
+---
+# Volume Clam
+apiVersion: v1
+kind: PresistentVolumeClaim
+metadata:
+  name: grafana-volume-claim
+spec:
+  storageClassName: manual
+  accessMode:
+    - ReadWriteOnce
+  resource:
+    requests:
+      storage 1Gi
+
+---
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3000
+  selector:
+    app: grafana
+
+---
+# deployment
+
