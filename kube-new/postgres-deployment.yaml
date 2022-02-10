@@ -27,7 +27,7 @@ spec:
       containers:
         - envForm:
             - configMapRef:
-                - name: postgres-config
+              - name: postgres-config
         image: postgres:14.0-alpine
         name: postgres
         ports:
