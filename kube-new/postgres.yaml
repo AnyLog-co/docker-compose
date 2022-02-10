@@ -1,0 +1,15 @@
+# Volume
+apiVersion: v1
+kind: PersistenVolume
+metadata:
+  name: psql-volume
+labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessMode:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/postgres/data"
