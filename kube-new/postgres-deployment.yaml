@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+spec:
+  replicas: 1
+  volumes:
+    name: pgdata
+    hostpath:
+      path: /mnt/pgdata
+  containers:
+    image: postgres:14.0-alpine
+    name: postgres
+    ports:
+      containerPort: 5432
+    envFrom:
+      configMapRef:
+        name: database-conn
+    volumeMounts:
+      path: /var/lib/postgresql/data
+    stdin: true
+    tty: true
+    restartPolicy: Always
+status: {}
+
+
+
+
+
