@@ -66,6 +66,13 @@ spec:
       - name: postgres
         image: postgres:11
         imagePullPolicy: IfNotPresent
+        env:
+          - POSTGRES_USERNAME: admin
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret-config
+                key: POSTGRES_PASSWORD
         ports:
           - containerPort: 5432
         volumeMounts:
