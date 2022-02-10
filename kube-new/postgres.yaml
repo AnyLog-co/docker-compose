@@ -19,7 +19,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: psql-volume-claim
-sepc:
+spec:
   storageClassName: manual
   accessModes:
     - ReadWriteOnce
