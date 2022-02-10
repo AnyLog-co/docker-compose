@@ -14,6 +14,7 @@ spec:
   hostPath:
     path: "/mnt/postgres/data"
 ---
+# volume claim
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -67,7 +68,15 @@ spec:
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 5432
+        env:
+          - name: POSTGRES_USER
+            valueFrom:
+              configMapRef:
+                name: postgres-config
+                key: POSTGRES_USER
         volumeMounts:
           - mountPath: /var/lib/postgresql/data
             name: psql-volume
+
+
 
