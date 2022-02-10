@@ -67,7 +67,8 @@ spec:
         image: postgres:11
         imagePullPolicy: IfNotPresent
         env:
-          - POSTGRES_USERNAME: admin
+          - name: POSTGRES_USERNAME
+            value: admin
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
