@@ -16,7 +16,7 @@ spec:
 ---
 # Volume Clam
 apiVersion: v1
-kind: PresistentVolumeClaim
+kind: PersistentVolumeClaim
 metadata:
   name: grafana-volume-claim
 spec:
