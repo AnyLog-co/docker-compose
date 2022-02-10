@@ -1,6 +1,6 @@
 # Volume
 apiVersion: v1
-kind: PersistenVolume
+kind: PersistentVolume
 metadata:
   name: psql-volume
 labels:
