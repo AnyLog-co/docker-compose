@@ -24,10 +24,10 @@ status:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-#  annotations:
-#    kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
-#    kompose.version: 1.26.1 (a9d05d509)
-#  creationTimestamp: null
+  annotations:
+    kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
   labels:
     io.kompose.service: database
   name: database
@@ -39,10 +39,10 @@ spec:
   strategy: {}
   template:
     metadata:
-#      annotations:
-#        kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
-#        kompose.version: 1.26.1 (a9d05d509)
-#      creationTimestamp: null
+      annotations:
+        kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
       labels:
         io.kompose.network/frontend: "true"
         io.kompose.service: database
@@ -52,13 +52,12 @@ spec:
           hostPath:
             path: /mnt/postgres/data
       containers:
-        - image: postgres:14.0-alpine
-          imagePullPolicy: IfNotPresent
-          env:
+        - env:
             - name: POSTGRES_PASSWORD
               value: passwd
             - name: POSTGRES_USER
               value: admin
+          image: postgres:14.0-alpine
           name: postgres
           ports:
             - containerPort: 5432
@@ -66,7 +65,7 @@ spec:
           stdin: true
           tty: true
           volumeMounts:
-            - name: pgdata
-              mountPath: /var/lib/postgresql/data
+            - mountPath: /var/lib/postgresql/data
+              name: pgdata
       restartPolicy: Always
 status: {}
