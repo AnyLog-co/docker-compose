@@ -25,13 +25,13 @@ spec:
         io.kompose.service: database
     spec:
       containers:
+        - envForm:
+          - configMapRef:
+            name: postgres-config
         image: postgres:14.0-alpine
         name: postgres
         ports:
           containerPort: 5432
-        envForm:
-        - configMapRef:
-          name: postgres-config
         resources: {}
         stdin: true
         tty: true
