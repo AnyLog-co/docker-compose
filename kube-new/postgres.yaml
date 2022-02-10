@@ -15,6 +15,7 @@ spec:
     path: "/mnt/postgres/data"
 
 ---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -26,3 +27,20 @@ spec:
   resources:
     requests:
       storage: 1Gi
+
+---
+# Service
+apiVersion: v1
+kind: service
+metadata:
+  name: postgres
+  lables:
+    app: postgres
+spec:
+  type: NodePort
+  ports:
+    - port: 5432
+  selector:
+    app: postgres
+
+
