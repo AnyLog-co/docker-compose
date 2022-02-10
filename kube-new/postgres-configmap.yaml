@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: database-conn
+  name: postgres-config
   namespace: default
 data:
   POSTGRES_USER: admin
