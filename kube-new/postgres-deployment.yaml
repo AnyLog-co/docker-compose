@@ -29,11 +29,9 @@ spec:
         name: postgres
         ports:
           - containerPort: 5432
-        env:
-          - name: POSTGRES_PASSWORD
-            value: passwd
-          - name: POSTGRES_USER
-            value: admin
+        envForm:
+          - configMapRef:
+              name: postgres-config
         resources: {}
         stdin: true
         tty: true
