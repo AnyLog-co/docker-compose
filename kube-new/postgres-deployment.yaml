@@ -27,11 +27,13 @@ spec:
       containers:
           image: postgres:14.0-alpine
           name: postgres
-          envForm:
-            - configMapRef:
-                name: postgres-config
           ports:
             - containerPort: 5432
+          env:
+            - name: POSTGRES_PASSWORD
+              value: passwd
+            - name: POSTGRES_USER
+              value: admin
           resources: {}
           stdin: true
           tty: true
