@@ -65,19 +65,19 @@ spec:
         persistentVolumeClaim:
           claimName: psql-volume-claim
       containers:
-      - name: postgres
-        image: postgres:14.0-alpine
-        imagePullPolicy: IfNotPresent
-        env:
-          - name: POSTGRES_USER
-            value: admin
-          - name: POSTGRES_PASSWORD
-            value: passwd
-        ports:
-          - containerPort: 5432
-        volumeMounts:
-          - mountPath: /var/lib/postgresql/data
-            name: psql-volume
+        - env:
+            - name: POSTGRES_PASSWORD
+              value: passwd
+            - name: POSTGRES_USER
+              value: admin
+          name: postgres
+          image: postgres:14.0-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: psql-volume
 
 
 
