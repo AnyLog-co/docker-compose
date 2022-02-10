@@ -30,8 +30,8 @@ spec:
         ports:
           containerPort: 5432
         envForm:
-          configMapRef:
-            name: postgres-config
+        - configMapRef:
+          name: postgres-config
         resources: {}
         stdin: true
         tty: true
