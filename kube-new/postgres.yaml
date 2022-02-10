@@ -9,7 +9,7 @@ spec:
   storageClassName: manual
   capacity:
     storage: 5Gi
-  accessMode:
+  accessModes:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/postgres/data"
