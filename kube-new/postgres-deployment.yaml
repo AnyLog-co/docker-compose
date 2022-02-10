@@ -28,7 +28,7 @@ spec:
         image: postgres:14.0-alpine
         name: postgres
         ports:
-          containerPort: 5432
+          - containerPort: 5432
         resources: {}
         stdin: true
         tty: true
