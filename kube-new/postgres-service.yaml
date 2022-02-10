@@ -3,10 +3,12 @@ kind: Service
 metdata:
   name: database
 spec:
+  selector:
   ports:
     name: "db-port"
-    port: 5432
+    port:
+      port: 5432
       targetPort: 5432
     selector:
-      io.kompose.service: database
+      app: postgres-db
 status: {}
