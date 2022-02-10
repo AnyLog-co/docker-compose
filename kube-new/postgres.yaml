@@ -31,7 +31,7 @@ spec:
 ---
 # Service
 apiVersion: v1
-kind: service
+kind: Service
 metadata:
   name: postgres
   lables:
