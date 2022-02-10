@@ -34,7 +34,7 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: database
+      io.kompose.service: postgres
   strategy: {}
   template:
     metadata:
