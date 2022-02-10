@@ -8,13 +8,17 @@
 
 ## Prepare Deployment 
 1. Clone & cd into docker-compose dir 
-```commandline
+```bash
 cd $HOME
 git clone https://github.com/AnyLog-co/docker-compose
 cd $HOME/docker-compose 
 ```
 2. Update environment variables in [envs](envs/) directory -- specifically [postgres](envs/postgres.env) and [anylog-network](envs/anylog_node.env) configs 
 
+3. Set Credentials
+```bash
+bash $HOME/docker-compose/credentials.sh ${DOCKER_PASSWORD}
+```
 
 ## Docker Compose 
 * How to start docker-compose

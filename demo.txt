@@ -1,0 +1,32 @@
+Status:
+* Able to deploy / Access all parts
+
+Issue:
+*  Volumes - grafana-data:/var/lib/grafana
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pv-recycler
+  namespace: default
+spec:
+  restartPolicy: Never
+  volumes:
+  - name: grafana-data
+    hostPath:
+      path: /mnt/grafana-data  # my machine
+  containers:
+  - name: pv-recycler
+    image: "k8s.gcr.io/busybox"
+    command: ["/bin/sh", "-c", "test -e /scrub && rm -rf /scrub/..?* /scrub/.[!.]* /scrub/*  && test -z \"$(ls -A /scrub)\" || exit 1"]
+    volumeMounts: # inside the container
+    - name: grafana-data
+      mountPath: /var/lib/grafana
+````
+
+*  We need to know the PSQL IP / credentials when deploying -- use service name
+
+
+* To connect to AnyLog CLI: `kubectl exec -it anylog-node-78fdbc44b-2pjqn -- python3.9 AnyLog-Network/source/cmd/user_cmd.pyc`
+
+* need to convert to helm --
