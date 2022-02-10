@@ -13,7 +13,6 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: "/mnt/postgres/data"
-
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -44,33 +43,33 @@ spec:
 
 ---
 # deployment
-apiVersion: apps/v1
-metadata:
-  name: postgres
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-  spec:
-    volumes:
-      - name: postgres-volume
-      persistentVolumeClaim:
-        claimName: postgres-volume
-    containers:
-      - name: postgres
-      image: postgres:14.0-alpine
-      imagePullPolicy: IfNotPresent
-      ports:
-        - containerPort: 5432
-      valueForm:
-        configMapRef:
-          name: postgres-config
-      volumeMounts:
-        mountPath: /var/lib/postgresql/data
-
-
+#apiVersion: apps/v1
+#metadata:
+#  name: postgres
+#spec:
+#  replicas: 1
+#  selector:
+#    matchLabels:
+#      app: postgres
+#  template:
+#    metadata:
+#      labels:
+#        app: postgres
+#  spec:
+#    volumes:
+#      - name: postgres-volume
+#      persistentVolumeClaim:
+#        claimName: postgres-volume
+#    containers:
+#      - name: postgres
+#      image: postgres:14.0-alpine
+#      imagePullPolicy: IfNotPresent
+#      ports:
+#        - containerPort: 5432
+#      valueForm:
+#        configMapRef:
+#          name: postgres-config
+#      volumeMounts:
+#        mountPath: /var/lib/postgresql/data
+#        name: postgres-volume
+#
