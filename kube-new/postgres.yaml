@@ -44,12 +44,27 @@ spec:
 ---
 # deployment
 apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: postgres
 spec:
   replicas: 1
+  selector:
+  matchLabels:
+    app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
   spec:
+    volumes:
+    - name: postgres-pv-storage
+      persistentVolumeClaim:
+        claimName: postgres-pv-claim
     containers:
-      name: postgres
-      image: postgres:14.0-alpine
+    - name: postgres
+      image: postgres:11
       imagePullPolicy: IfNotPresent
+      ports:
+        - containerPort: 5432
+
