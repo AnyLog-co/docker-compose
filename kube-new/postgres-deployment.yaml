@@ -10,6 +10,10 @@ metadata:
   name: database
 spec:
   replicas: 1
+  volumes:
+    - name: pgdata
+      hostPath:
+        path: /mnt/postgres/data  # my machine
   selector:
     matchLabels:
       io.kompose.service: database
@@ -34,6 +38,9 @@ spec:
           name: postgres
           ports:
             - containerPort: 5432
+          volumeMounts: # inside the container
+            - name: grafana-data
+              mountPath: /var/lib/grafana
           resources: {}
           stdin: true
           tty: true
