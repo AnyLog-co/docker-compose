@@ -24,6 +24,10 @@ spec:
         io.kompose.network/frontend: "true"
         io.kompose.service: database
     spec:
+      volumes:
+        - name: psql-volume
+          persistentVolumeClaim:
+            claimName: psql-volume-claim
       containers:
         - env:
             - name: POSTGRES_PASSWORD
@@ -37,5 +41,8 @@ spec:
           resources: {}
           stdin: true
           tty: true
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: psql-volume
       restartPolicy: Always
 status: {}

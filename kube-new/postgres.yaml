@@ -32,46 +32,50 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
-  labels:
-    app: postgres
-spec:
-  type: ClusterIP
-  ports:
-    - name: "psql-port"
-      port: 5432
-      targetPort: 5432
-  selector:
-    app: postgres
-
----
-# deployment
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-#  annotations:
-#    kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
-#    kompose.version: 1.26.1 (a9d05d509)
-#  creationTimestamp: null
+  annotations:
+    kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
   labels:
     io.kompose.service: postgres
   name: postgres
 spec:
+  ports:
+    - name: "5432"
+      port: 5432
+      targetPort: 5432
+  selector:
+    io.kompose.service: postgres
+status:
+  loadBalancer: {}
+
+---
+# deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: database
+  name: database
+spec:
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: postgres
+      io.kompose.service: database
   strategy: {}
   template:
     metadata:
-#      annotations:
-#        kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
-#        kompose.version: 1.26.1 (a9d05d509)
-#      creationTimestamp: null
+      annotations:
+        kompose.cmd: kompose convert -f /home/anylog/docker-compose/docker-compose-update.yml
+        kompose.version: 1.26.1 (a9d05d509)
+      creationTimestamp: null
       labels:
         io.kompose.network/frontend: "true"
-        io.kompose.service: postgres
+        io.kompose.service: database
     spec:
       volumes:
         - name: psql-volume
@@ -95,4 +99,3 @@ spec:
               name: psql-volume
       restartPolicy: Always
 status: {}
-
