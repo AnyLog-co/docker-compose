@@ -9,19 +9,19 @@ spec:
   type: NodePort
   ports:
     #30000-32767
-    #33481
+    #32041
     - name: "anylog-tcp"
-      port: 33480
-      targetPort: 33480
-      nodePort: 33480
+      port: 32040
+      targetPort: 32040
+      nodePort: 32040
     - name: "anylog-rest"
-      port: 33481
-      targetPort: 33481
-      nodePort: 33481
+      port: 32041
+      targetPort: 32041
+      nodePort: 32041
     - name: "anylog-broker"
-      port: 33482
-      targetPort: 33482
-      nodePort: 33482
+      port: 32042
+      targetPort: 32042
+      nodePort: 32042
   selector:
     io.kompose.service: anylog-node
 status:
@@ -71,13 +71,13 @@ spec:
 #            - name: LOCAL_IP
 #              value:
             - name: ANYLOG_SERVER_PORT
-              value: "33480"
+              value: "32040"
             - name: ANYLOG_REST_PORT
-              value: "33481"
+              value: "32041"
             - name: ANYLOG_BROKER_PORT
-              value: "33482"
+              value: "32042"
             - name: MASTER_NODE
-              value: "anylog-node:33481"
+              value: "anylog-node:32041"
             - name: SYNC_TIME
               value: "30 second"
             - name: DB_TYPE
@@ -145,9 +145,9 @@ spec:
           image: anylogco/anylog-network:test
           name: anylog-node
           ports:
-            - containerPort: 33480
-            - containerPort: 33481
-            - containerPort: 33482
+            - containerPort: 32040
+            - containerPort: 32041
+            - containerPort: 32042
           resources: {}
           stdin: true
           tty: true
