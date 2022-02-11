@@ -63,14 +63,14 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: postgres
   labels:
     app: postgres
 spec:
   ports:
-  - port: 5432
-    name: postgres
-  type: NodePort
+    - name: "psql"
+      port: 5432
+      targetPort: 5432
   selector:
     app: postgres
 ---
