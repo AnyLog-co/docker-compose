@@ -84,7 +84,9 @@ spec:
         - env:
             - name: POSTGRES_PASSWORD
               valueFrom:
-                key: psql_password
+                secretKeyRef:
+                  name: secret-configs
+                  key: psql_password
             - name: POSTGRES_USER
               value: admin
             - name: pgdata
