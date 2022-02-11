@@ -89,7 +89,7 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:14.0-alpine
+        image: postgres:12.0-alpine
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
