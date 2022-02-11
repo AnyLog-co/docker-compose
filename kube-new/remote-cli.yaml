@@ -34,10 +34,10 @@ spec:
         io.kompose.network/frontend: "true"
         io.kompose.service: remote-cli
     spec:
-      volumes:
-        - name: remote-cli
-          hostPath:
-            path: $HOME/remote-cli/anylog_query/static/json
+#      volumes:
+#        - name: remote-cli
+#          hostPath:
+#            path: $HOME/remote-cli/anylog_query/static/json
       containers:
         - env:
             - name: CONN_IP
@@ -49,10 +49,9 @@ spec:
           ports:
             - containerPort: 8000
           resources: {}
-          volumeMounts: # inside the container
-            - name: remote-cli
-              mountPath: /app/Remote-CLI/anylog_query/static/json
-
+#          volumeMounts: # inside the container
+#            - name: remote-cli
+#              mountPath: /app/Remote-CLI/anylog_query/static/json
           stdin: true
           tty: true
       restartPolicy: Always
