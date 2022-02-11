@@ -34,6 +34,10 @@ spec:
         io.kompose.network/frontend: "true"
         io.kompose.service: grafana
     spec:
+      volumes:
+        - name: grafana-data
+          hostPath:
+            path: /mnt/grafana-data  # my machine
       containers:
         - env:
             - name: GRAFANA_ADMIN_USER
@@ -56,8 +60,12 @@ spec:
           ports:
             - containerPort: 3000
           resources: {}
+          volumeMounts: # inside the container
+            - name: grafana-data
+              mountPath: /var/lib/grafana
           stdin: true
           tty: true
       restartPolicy: Always
+
 status: {}
 
