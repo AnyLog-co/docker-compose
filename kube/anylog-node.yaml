@@ -55,9 +55,9 @@ spec:
       containers:
         - env:
             - name: NODE_TYPE
-              value: single-node
+              value: "single-node"
             - name: NODE_NAME
-              value: anylog-node
+              value: "anylog-node"
             - name: COMPANY_NAME
               value: "New Company"
 #            - name: EXTERNAL_IP
@@ -71,34 +71,34 @@ spec:
             - name: ANYLOG_BROKER_PORT
               value: "13482"
             - name: MASTER_NODE
-              value: anylog-node:13481
+              value: "anylog-node:13481"
             - name: SYNC_TIME
               value: "30 second"
             - name: DB_TYPE
-              value: psql
+              value: "psql"
             - name: DB_IP
-              value: postgres
+              value: "postgres"
             - name: DB_PORT
               value: "5432"
             - name: DB_USER
-              value: admin
+              value: "admin"
             - name: DB_PASSWD
               valueFrom:
                 secretKeyRef:
                   name: secret-configs
                   key: POSTGRES_PASSWORD
             - name: DEFAULT_DBMS
-              value: edgex
+              value: "edgex"
             - name: CLUSTER_NAME
-              value: new-cluster
+              value: "new-cluster"
             - name: ENABLE_PARTITION
               value: "true"
             - name: PARTITION_COLUMN
-              value: timestamp
+              value: "timestamp"
             - name: PARTITION_INTERVAL
               value: "7 days"
             - name: PARTITION_KEEP
-              value: 42
+              value: "42"
             - name: ENABLE_DATA_MONITOR
               value: "false"
             - name: TABLE_NAME
@@ -108,15 +108,15 @@ spec:
             - name: DATA_MONITOR_INTERVAL
               value: "1 minute"
             - name: DATA_MONITOR_COLUMN
-              value: value
+              value: "value"
             - name: MQTT_ENABLE
               value: "true"
             - name: BROKER
-              value: driver.cloudmqtt.com
+              value: "driver.cloudmqtt.com"
             - name: MQTT_PORT
-              value: 18785
+              value: "18785"
             - name: MQTT_USER
-              value: ibglowct
+              value: "ibglowct"
             - name: MQTT_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -125,15 +125,15 @@ spec:
             - name: MQTT_LOG
               value: "false"
             - name: MQTT_TOPIC_NAME
-              value: anylogedgex
+              value: "anylogedgex"
             - name: MQTT_TOPIC_DBMS
-              value: edgex
+              value: "edgex"
             - name: MQTT_TOPIC_TABLE
               value: "bring [device]"
             - name: MQTT_COLUMN_TIMESTAMP
-              value: now
+              value: "now"
             - name: MQTT_COLUMN_VALUE_TYPE
-              value: float
+              value: "float"
             - name: MQTT_COLUMN_VALUE
               value: "bring [readings][][value]"
           image: anylogco/anylog-network:test
