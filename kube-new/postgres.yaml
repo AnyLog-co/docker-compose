@@ -101,5 +101,6 @@ spec:
           tty: true
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
+              name: pgdata
       restartPolicy: Always
 status: {}
