@@ -104,7 +104,7 @@ spec:
             - name: TABLE_NAME
               value: "*"
             - name: INTERVAL_VALUE
-              value: 10
+              value: "10"
             - name: DATA_MONITOR_INTERVAL
               value: "1 minute"
             - name: DATA_MONITOR_COLUMN
