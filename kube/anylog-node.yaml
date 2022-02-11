@@ -65,11 +65,11 @@ spec:
 #            - name: LOCAL_IP
 #              value:
             - name: ANYLOG_SERVER_PORT
-              value: 13480
+              value: "13480"
             - name: ANYLOG_REST_PORT
-              value: 13481
+              value: "13481"
             - name: ANYLOG_BROKER_PORT
-              value: 13482
+              value: "13482"
             - name: MASTER_NODE
               value: anylog-node:13481
             - name: SYNC_TIME
@@ -79,7 +79,7 @@ spec:
             - name: DB_IP
               value: postgres
             - name: DB_PORT
-              value: 5432
+              value: "5432"
             - name: DB_USER
               value: admin
             - name: DB_PASSWD
