@@ -36,8 +36,6 @@ spec:
     spec:
       volumes:
         - name: grafana-data
-          accessModes:
-            - ReadWriteOnce
           hostPath:
             path: /mnt/grafana-data  # my machine
       containers:
@@ -65,6 +63,8 @@ spec:
           volumeMounts: # inside the container
             - name: grafana-data
               mountPath: /var/lib/grafana
+              accessModes:
+                - ReadWriteOnce
           stdin: true
           tty: true
       restartPolicy: Always
