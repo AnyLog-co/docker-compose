@@ -30,6 +30,7 @@ spec:
   strategy: {}
   template:
       labels:
+        io.kompose.network/frontend: "true"
         io.kompose.service: anylog-gui
     spec:
 #      volumes:

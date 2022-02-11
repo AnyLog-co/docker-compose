@@ -13,14 +13,15 @@ cd $HOME
 git clone https://github.com/AnyLog-co/docker-compose
 cd $HOME/docker-compose 
 ```
-2. Update environment variables in [envs](envs/) directory -- specifically [postgres](envs/postgres.env) and [anylog-network](envs/anylog_node.env) configs 
-
-3. Set Credentials
-```bash
-bash $HOME/docker-compose/credentials.sh ${DOCKER_PASSWORD}
-```
 
 ## Docker Compose 
+* Where to update deployment configurations [envs](envs/)
+  * [AnyLog Network](envs/anylog_node.env) 
+  * [AnyLog GUI](envs/anylog_gui.env)
+  * [AnyLog REST Tool](envs/remote_cli.env) 
+  * [Postgres](envs/postgres.env)
+  * [Grafana](envs/grafana.env)
+  
 * How to start docker-compose
 ```bash
 cp docker-compose-base.yml docker-compose.yml 
@@ -29,13 +30,14 @@ docker-compose up -d
 
 * cURL request against AnyLog-Network -- `anylog-node` service uses the `network_mode: host` rather than the network created by the network. As such, AnyLog uses the same IP(s) as the machine it seats on. 
 ```bash
-curl -X GET 10.0.0.212:3481 -H "commnad: get status" -H "Usr-Agent: AnyLog/1.23"
+curl -X GET ${YOUR_IP}:3481 -H "commnad: get status" -H "Usr-Agent: AnyLog/1.23"
 ```
 
 * How to attach to AnyLog
 ```bash
 docker attach --detach-keys="ctrl-d" anylog-node
 ```
+
 * How to access Volume(s)
 ```bash
 # Locate the Mountpoint 
@@ -68,26 +70,9 @@ docker-compose down
 
 
 ## kubernetes
-**Status**:
-* All deployments work 
-* able to access everything but AnyLog 
-* missing volumes 
-
-**Base Commands**: 
+* Configure Credentials
+```bash
+bash $HOME/docker-compose/credentials.sh ${YOUR_IP}
 ```
-cd $HOME/docker-compose 
 
-cp docker-compose-k8s.yml docker-compose.yml 
-
-docker-compose config > ~/docker-compose/docker-compose-update.yml 
-
-mkdir ~/kube
-
-cd ~/kube 
-
-kompose convert -f ~/docker-compose/docker-compose-update.yml
-
-kompose app -f . 
-
-bash ~/docker-compose/kube_port_access.sh 10.0.0.212
-```
+* 
