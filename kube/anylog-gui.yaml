@@ -1,4 +1,4 @@
-# Service
+# service
 apiVersion: v1
 kind: Service
 metadata:
@@ -29,6 +29,7 @@ spec:
       io.kompose.service: anylog-gui
   strategy: {}
   template:
+    metadata:
       labels:
         io.kompose.network/frontend: "true"
         io.kompose.service: anylog-gui
@@ -36,26 +37,26 @@ spec:
 #      volumes:
 #        - name: anylog-gui
 #          hostPath:
-#            path: /mnt/AnyLog-GUI/views
+#            path: /mnt/anylog-gui/anylog_query/static/json
       containers:
         - env:
-            - name: CONFIG_FILE
-              value: testnet.json
-            - name: CONFIG_FOLDER
-              value: views
             - name: CONN_IP
               value: 0.0.0.0
             - name: GUI_PORT
               value: "5000"
+            - name: CONFIG_FOLDER
+              value: views
+            - name: CONFIG_FILE
+              value: testnet.json
           image: anylogco/anylog-gui:latest
           imagePullPolicy: IfNotPresent
           name: anylog-gui
           ports:
-            - containerPort: 5000
+            - containerPort: 8000
+          resources: {}
 #          volumeMounts: # inside the container
 #            - name: anylog-gui
-#              mountPath: /app/AnyLog-GUI/views
-          resources: {}
+#              mountPath: /app/anylog-gui/anylog_query/static/json
           stdin: true
           tty: true
       restartPolicy: Always
