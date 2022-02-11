@@ -34,10 +34,10 @@ spec:
         io.kompose.network/frontend: "true"
         io.kompose.service: grafana
     spec:
-#      volumes:
-#        - name: grafana-data
-#          hostPath:
-#            path: /mnt/grafana-data  # my machine
+      volumes:
+        - name: grafana-data
+          hostPath:
+            path: /mnt/grafana-data  # my machine
       containers:
         - env:
             - name: GRAFANA_ADMIN_USER
@@ -61,12 +61,23 @@ spec:
           ports:
             - containerPort: 3000
           resources: {}
-#          volumeMounts: # inside the container
-#            - name: grafana-data
-#              mountPath: /var/lib/grafana
+      initContainers:
+        - name: take-data-dir-ownership
+          image: alpine:3
+          # Give `grafana` user (id 472) permissions a mounted volume
+          # https://github.com/grafana/grafana-docker/blob/master/Dockerfile
+          command:
+            - chown
+            - -R
+            - 472:472
+            - /var/lib/grafana
+          volumeMounts:
+            - name: grafana-data
+              mountPath: /var/lib/grafana
           stdin: true
           tty: true
       restartPolicy: Always
+
 
 status: {}
 

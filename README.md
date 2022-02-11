@@ -72,7 +72,10 @@ docker-compose down
 ## kubernetes
 * Configure Credentials
 ```bash
-bash $HOME/docker-compose/credentials.sh ${YOUR_IP}
+bash $HOME/docker-compose/credentials.sh ${YOUR_PASSWD}
 ```
 
-* 
+* Deploy Kubernetes
+```bash
+
+```
