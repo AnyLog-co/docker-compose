@@ -60,6 +60,9 @@ spec:
           name: grafana
           ports:
             - containerPort: 3000
+          volumeMounts: # inside the container
+            - name: grafana-data
+              mountPath: /var/lib/grafana
           resources: {}
       initContainers:
         - name: take-data-dir-ownership
