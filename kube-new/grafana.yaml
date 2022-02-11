@@ -63,8 +63,6 @@ spec:
           volumeMounts: # inside the container
             - name: grafana-data
               mountPath: /var/lib/grafana
-              accessModes:
-                - ReadWriteOnce
           stdin: true
           tty: true
       restartPolicy: Always
