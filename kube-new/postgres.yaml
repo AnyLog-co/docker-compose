@@ -54,10 +54,7 @@ spec:
       containers:
         - env:
           - name: POSTGRES_USER
-            valueFrom:
-              secretKeyRef:
-                name: secret-configs
-                key: POSTGRES_USER
+            value: admin
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
