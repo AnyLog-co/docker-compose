@@ -1,4 +1,9 @@
-# https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
+# Based On: https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
+
+# A StorageClass provides a way for administrators to describe the "classes" of storage they offer. Different classes
+# might map to quality-of-service levels, or to backup policies, or to arbitrary policies determined by the cluster
+# administrators. Kubernetes itself is unopinionated about what classes represent. This concept is sometimes called
+# "profiles" in other storage systems.
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -7,3 +12,94 @@ metadata:
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: microk8s.io/hostpath
 ---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv
+  labels:
+    app: postgres
+    type: local
+spec:
+  storageClassName: microk8s-hostpath
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/var/data"
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pv-claim
+  labels:
+    app: postgres
+spec:
+  storageClassName: microk8s-hostpath
+  capacity:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configuration
+  labels:
+    app: postgres
+data:
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: passwd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+  labels:
+    app: postgres
+spec:
+  ports:
+  - port: 5432
+    name: postgres
+  type: NodePort
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-statefulset
+  labels:
+    app: postgres
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:12
+        envFrom:
+        - configMapRef:
+            name: postgres-configuration
+        ports:
+        - containerPort: 5432
+          name: postgresdb
+        volumeMounts:
+        - name: pv-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: pv-data
+        persistentVolumeClaim:
+          claimName: postgres-pv-claim
+
