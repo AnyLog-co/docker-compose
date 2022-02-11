@@ -11,15 +11,15 @@ spec:
     - name: "anylog-tcp"
       port: 13480
       targetPort: 13480
-#      nodePort: 13480
+      nodePort: 13480
     - name: "anylog-rest"
       port: 13481
       targetPort: 13481
-#      nodePort: 13481
+      nodePort: 13481
     - name: "anylog-broker"
       port: 13482
       targetPort: 13482
-#      nodePort: 13482
+      nodePort: 13482
   selector:
     io.kompose.service: anylog-node
 status:
