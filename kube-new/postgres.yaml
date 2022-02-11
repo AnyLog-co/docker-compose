@@ -82,12 +82,12 @@ spec:
             path: /mnt/postgres/data
       containers:
         - env:
-            - name: POSTGRES_USER
+          - name: POSTGRES_USER
             valueFrom:
               secretKeyRef:
                 name: secret-configs
                 key: POSTGRES_USER
-            - name: POSTGRES_PASSWORD
+          - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: secret-configs
