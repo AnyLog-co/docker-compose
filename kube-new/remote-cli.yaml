@@ -37,7 +37,7 @@ spec:
 #      volumes:
 #        - name: remote-cli
 #          hostPath:
-#            path: $HOME/remote-cli/anylog_query/static/json
+#            path: /mnt/remote-cli/anylog_query/static/json
       containers:
         - env:
             - name: CONN_IP
@@ -45,6 +45,7 @@ spec:
             - name: CONN_PORT
               value: "8000"
           image: anylogco/remote-cli:latest
+          imagePullPolicy: IfNotPresent
           name: remote-cli
           ports:
             - containerPort: 8000
