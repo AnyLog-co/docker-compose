@@ -82,15 +82,16 @@ spec:
             path: /mnt/postgres/data
       containers:
         - env:
+            - name: POSTGRES_USER
+              valueForm:
+                secretKeyRef:
+                  name: secret-configs
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: secret-configs
-                  key: psql_password
-            - name: POSTGRES_USER
-              value: postgres
-            - name: pgdata
-              value: /var/lib/postgresql/data/pgdata
+                  key: POSTGRES_PASSWORD
           image: postgres:14.0-alpine
           imagePullPolicy: IfNotPresent
           name: postgres
