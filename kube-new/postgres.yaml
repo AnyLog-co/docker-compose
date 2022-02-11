@@ -7,7 +7,7 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: microk8s-hostpath
+  name: pgdata
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: microk8s.io/hostpath
@@ -20,24 +20,23 @@ metadata:
     app: postgres
     type: local
 spec:
-  storageClassName: microk8s-hostpath
+  storageClassName: pgdata
   capacity:
     storage: 5Gi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/var/data"
+    path: "/mnt/pgdata"
 
 ---
-
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: postgres-pv-claim
+  name: pgdata
   labels:
     app: postgres
 spec:
-  storageClassName: microk8s-hostpath
+  storageClassName: pgdata
   capacity:
   accessModes:
     - ReadWriteOnce
@@ -53,7 +52,13 @@ metadata:
     app: postgres
 data:
   POSTGRES_USER: admin
-  POSTGRES_PASSWORD: passwd
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-configs
+data:
+  POSTGRES_PASSWORD: cGFzc3dkCg== # passwd
 ---
 apiVersion: v1
 kind: Service
@@ -92,14 +97,16 @@ spec:
         envFrom:
         - configMapRef:
             name: postgres-configuration
+        - secretKeyRef:
+            name: secret-configs
         ports:
         - containerPort: 5432
           name: postgresdb
         volumeMounts:
-        - name: pv-data
+        - name: pgdata
           mountPath: /var/lib/postgresql/data
       volumes:
-      - name: pv-data
+      - name: pgdata
         persistentVolumeClaim:
-          claimName: postgres-pv-claim
+          claimName: pgdata
 
