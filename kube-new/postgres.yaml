@@ -88,7 +88,7 @@ spec:
                   name: secret-configs
                   key: psql_password
             - name: POSTGRES_USER
-              value: admin
+              value: postgres
             - name: pgdata
               value: /var/lib/postgresql/data/pgdata
           image: postgres:14.0-alpine
