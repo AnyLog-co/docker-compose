@@ -83,15 +83,15 @@ spec:
       containers:
         - env:
             - name: POSTGRES_USER
-              valueForm:
-                secretKeyRef:
-                  name: secret-configs
-                  key: POSTGRES_USER
+            valueFrom:
+              secretKeyRef:
+                name: secret-configs
+                key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret-configs
-                  key: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret-configs
+                key: POSTGRES_PASSWORD
           image: postgres:14.0-alpine
           imagePullPolicy: IfNotPresent
           name: postgres
