@@ -37,6 +37,7 @@ spec:
       volumes:
         - name: grafana-data
           hostPath:
+            accessModes: ReadWriteOnce
             path: /mnt/grafana-data  # my machine
       containers:
         - env:
