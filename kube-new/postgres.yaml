@@ -1,57 +1,9 @@
-apiVersion: v1
-kind: Service
+# https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
 metadata:
-  name: postgres-headless-svc
-spec:
-  type: ClusterIP
-  clusterIP: None
-  ports:
-  - name: postgresql
-    port: 5432
-    targetPort: postgresql
-    protocol: TCP
-  selector:
-    app: postgres
+  name: microk8s-hostpath
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: microk8s.io/hostpath
 ---
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: postgres-sts
-spec:
-  serviceName: postgres-headless-svc
-  replicas: 3
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      securityContext:
-        fsGroup: 1001
-      containers:
-        - name: postgresql
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - /pre-stop.sh
-          image: postgres:14.0-alpine
-          imagePullPolicy: "IfNotPresent"
-          securityContext:
-            runAsUser: 1001
-          # Auxiliary vars to populate environment variables
-          env:
-            # PostgreSQL configuration
-            - name: POSTGRES_USER
-              value: admin
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret-configs
-                  key: POSTGRES_PASSWORD
-          ports:
-            - name: postgresql
-              containerPort: 5432
-              protocol: TCP
