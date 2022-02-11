@@ -93,12 +93,17 @@ spec:
     spec:
       containers:
       - name: postgres
-        image: postgres:12
+        image: postgres:14.0-alpine
+        imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
             name: postgres-configuration
-        - secretKeyRef:
-            name: secret-configs
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secret-configs
+                key: POSTGRES_PASSWORD
         ports:
         - containerPort: 5432
           name: postgresdb
