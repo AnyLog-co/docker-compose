@@ -76,10 +76,10 @@ spec:
         io.kompose.network/frontend: "true"
         io.kompose.service: postgres
     spec:
-#      volumes:
-#        - name: pgdata
-#          persistentVolumeClaim:
-#            claimName: pgdata-claim
+      volumes:
+        - name: pgdata
+          persistentVolumeClaim:
+            claimName: pgdata-claim
       containers:
         - env:
             - name: POSTGRES_PASSWORD
@@ -99,8 +99,8 @@ spec:
           resources: {}
           stdin: true
           tty: true
-#          volumeMounts:
-#            - mountPath: /var/lib/postgresql/data
-#              name: pgdata
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: pgdata
       restartPolicy: Always
 status: {}
