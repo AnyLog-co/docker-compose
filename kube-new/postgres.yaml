@@ -100,7 +100,7 @@ spec:
           stdin: true
           tty: true
           volumeMounts:
-            name: pgdata
-            mountPath: /var/lib/postgresql/data/pgdata
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data/pgdata
       restartPolicy: Always
 status: {}
