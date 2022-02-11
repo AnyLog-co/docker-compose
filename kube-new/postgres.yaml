@@ -87,6 +87,8 @@ spec:
                 key: psql_password
             - name: POSTGRES_USER
               value: admin
+            - name: pgdata
+              value: /var/lib/postgresql/data/pgdata
           image: postgres:14.0-alpine
           imagePullPolicy: IfNotPresent
           name: postgres
