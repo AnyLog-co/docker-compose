@@ -1,0 +1,159 @@
+# Service
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: anylog-node
+  name: anylog-node
+spec:
+  ports:
+    - name: "anylog-tcp"
+      port: 13480
+      targetPort: 13480
+    - name: "anylog-rest"
+      port: 13481
+      targetPort: 13481
+    - name: "anylog-broker"
+      port: 13482
+      targetPort: 13482
+  selector:
+    io.kompose.service: anylog-node
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anylog-node
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: anylog-node
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        io.kompose.network/frontend: "true"
+        io.kompose.service: anylog-node
+    spec:
+      imagePullSecrets:
+        - name: myregistrykey
+#      volumes:
+#        - name: anylog-anylog
+#          hostPath:
+#            path: /mnt/AnyLog-Network/anylog  # my machine
+#        - name: anylog-blockchain
+#          hostPath:
+#            path: /mnt/AnyLog-Network/blockchain  # my machine
+#        - name: anylog-data
+#          hostPath:
+#            path: /mnt/AnyLog-Network/data  # my machine
+#        - name: anylog-local-scripts
+#          hostPath:
+#            path: /mnt/AnyLog-Network/local_scripts  # my machine
+      containers:
+        - env:
+            - name: NODE_TYPE
+              value: single-node
+            - name: NODE_NAME
+              value: anylog-node
+            - name: COMPANY_NAME
+              value: "New Company"
+#            - name: EXTERNAL_IP
+#              value:
+#            - name: LOCAL_IP
+#              value:
+            - name: ANYLOG_SERVER_PORT
+              value: 13480
+            - name: ANYLOG_REST_PORT
+              value: 13481
+            - name: ANYLOG_BROKER_PORT
+              value: 13482
+            - name: MASTER_NODE
+              value: anylog-node:13481
+            - name: SYNC_TIME
+              value: "30 second"
+            - name: DB_TYPE
+              value: psql
+            - name: DB_IP
+              value: postgres
+            - name: DB_PORT
+              value: 5432
+            - name: DB_USER
+              value: admin
+            - name: DB_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-configs
+                  key: POSTGRES_PASSWORD
+            - name: DEFAULT_DBMS
+              value: edgex
+            - name: CLUSTER_NAME
+              value: new-cluster
+            - name: ENABLE_PARTITION
+              value: "true"
+            - name: PARTITION_COLUMN
+              value: timestamp
+            - name: PARTITION_INTERVAL
+              value: "7 days"
+            - name: PARTITION_KEEP
+              value: 42
+            - name: ENABLE_DATA_MONITOR
+              value: "false"
+            - name: TABLE_NAME
+              value: "*"
+            - name: INTERVAL_VALUE
+              value: 10
+            - name: DATA_MONITOR_INTERVAL
+              value: "1 minute"
+            - name: DATA_MONITOR_COLUMN
+              value: value
+            - name: MQTT_ENABLE
+              value: "true"
+            - name: BROKER
+              value: driver.cloudmqtt.com
+            - name: MQTT_PORT
+              value: 18785
+            - name: MQTT_USER
+              value: ibglowct
+            - name: MQTT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret-configs
+                  key: MQTT_PASSWORD
+            - name: MQTT_LOG
+              value: "false"
+            - name: MQTT_TOPIC_NAME
+              value: anylogedgex
+            - name: MQTT_TOPIC_DBMS
+              value: edgex
+            - name: MQTT_TOPIC_TABLE
+              value: "bring [device]"
+            - name: MQTT_COLUMN_TIMESTAMP
+              value: now
+            - name: MQTT_COLUMN_VALUE_TYPE
+              value: float
+            - name: MQTT_COLUMN_VALUE
+              value: "bring [readings][][value]"
+          image: anylogco/anylog-network:test
+          name: anylog-node
+          ports:
+            - containerPort: 13480
+            - containerPort: 13481
+            - containerPort: 13482
+          resources: {}
+          stdin: true
+          tty: true
+#          volumeMounts: # inside the container
+#            - name: anylog-anylog
+#              mountPath: /app/AnyLog-Network/anylog
+#            - name: anylog-blockchain
+#              mountPath: /app/AnyLog-Network/blockchain
+#            - name: anylog-data
+#              mountPath: /app/AnyLog-Network/data
+#            - name: anylog-local-scripts
+#              mountPath: /app/AnyLog-Network/local_scripts
+      restartPolicy: Always
+status: {}
+
