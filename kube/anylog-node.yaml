@@ -6,17 +6,16 @@ metadata:
     io.kompose.service: anylog-node
   name: anylog-node
 spec:
-  type: NodePort
   ports:
     - name: "anylog-tcp"
-      port: 13480
-      targetPort: 13480
+      port: 32048
+      targetPort: 32048
     - name: "anylog-rest"
-      port: 13481
-      targetPort: 13481
+      port: 32049
+      targetPort: 32049
     - name: "anylog-broker"
-      port: 13482
-      targetPort: 13482
+      port: 32050
+      targetPort: 32050
   selector:
     io.kompose.service: anylog-node
 status:
@@ -66,13 +65,13 @@ spec:
 #            - name: LOCAL_IP
 #              value:
             - name: ANYLOG_SERVER_PORT
-              value: "13480"
+              value: "32048"
             - name: ANYLOG_REST_PORT
-              value: "13481"
+              value: "32049"
             - name: ANYLOG_BROKER_PORT
-              value: "13482"
+              value: "32050"
             - name: MASTER_NODE
-              value: "anylog-node:13481"
+              value: "anylog-node:32048"
             - name: SYNC_TIME
               value: "30 second"
             - name: DB_TYPE
@@ -84,10 +83,7 @@ spec:
             - name: DB_USER
               value: "admin"
             - name: DB_PASSWD
-              valueFrom:
-                secretKeyRef:
-                  name: secret-configs
-                  key: POSTGRES_PASSWORD
+              value: "passwd"
             - name: DEFAULT_DBMS
               value: "edgex"
             - name: CLUSTER_NAME
@@ -119,10 +115,7 @@ spec:
             - name: MQTT_USER
               value: "ibglowct"
             - name: MQTT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: secret-configs
-                  key: MQTT_PASSWORD
+              value: "MSY4e009J7ts"
             - name: MQTT_LOG
               value: "false"
             - name: MQTT_TOPIC_NAME
@@ -140,9 +133,9 @@ spec:
           image: anylogco/anylog-network:test
           name: anylog-node
           ports:
-            - containerPort: 13480
-            - containerPort: 13481
-            - containerPort: 13482
+            - containerPort: 32048
+            - containerPort: 32049
+            - containerPort: 32050
           resources: {}
           stdin: true
           tty: true
