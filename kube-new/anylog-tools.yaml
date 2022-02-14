@@ -30,19 +30,19 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: anylog-tools
+  name: anylog-gui
   labels:
-    app: anylog-tools
+    app: anylog-gui
 spec:
   serviceName: "anylog-tools"
   replicas: 1
   selector:
     matchLabels:
-      app: anylog-tools
+      app: anylog-gui
   template:
     metadata:
       labels:
-        app: anylog-tools
+        app: anylog-gui
     spec:
       containers:
         - name: anylog-gui
@@ -54,6 +54,25 @@ spec:
           ports:
             - containerPort: 5000
               name: anylog-gui
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: remote-cli
+  labels:
+    app: remote-cli
+spec:
+  serviceName: "anylog-tools"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: remote-cli
+  template:
+    metadata:
+      labels:
+        app: remote-cli
+    spec:
+      containers:
         - name: remote-cli
           image: anylogco/remote-cli:latest
           imagePullPolicy: IfNotPresent
