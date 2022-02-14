@@ -27,19 +27,19 @@ spec:
         app: remote-cli
     spec:
       containers:
-        - name: remote-cli
-          image: anylogco/remote-cli:latest
-          imagePullPolicy: IfNotPresent
-          envFrom:
-            - configMapRef:
-                name: cli-configuration
-          ports:
-            - containerPort: 8000
-              name: remote-cli
-      volumeMounts:
+      - name: remote-cli
+        image: anylogco/remote-cli:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: cli-configuration
+        ports:
+          - containerPort: 8000
+            name: remote-cli
+        volumeMounts:
         - name: cli-pv-data
           mountPath: /app/Remote-CLI/anylog_query/static/json
-    volumes:
+      volumes:
       - name: cli-pv-data
         persistentVolumeClaim:
         claimName: cli-pv-claim
