@@ -60,7 +60,7 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: postgres
   labels:
     app: postgres
 spec:
