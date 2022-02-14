@@ -29,7 +29,7 @@ apiVersion: v1
 metadata:
   name: grafana-pv
   labels:
-    app: postgres
+    app: grafana
     type: local
 spec:
   storageClassName: microk8s-hostpath
