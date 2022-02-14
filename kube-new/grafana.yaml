@@ -52,7 +52,7 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: postgres:14.0-alpine
+        image: grafana/grafana:7.5.7
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
