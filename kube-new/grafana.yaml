@@ -8,9 +8,10 @@ metadata:
 data:
   GRAFANA_ADMIN_USER: admin
   GRAFANA_ADMIN_PASSWORD: admin
-  GF_AUTH_ANONYMOUS_ENABLED: "true"
   GF_AUTH_DISABLE_LOGIN_FORM: "false"
-  GF_INSTALL_PLUGINS: "simpod-json-datasource,grafana-worldmap-panel"
+  GF_AUTH_ANONYMOUS_ENABLED: "true"
+  GF_SECURITY_ALLOW_EMBEDDING: "true"
+  GF_INSTALL_PLUGINS: simpod-json-datasource,grafana-worldmap-panel
 ---
 apiVersion: v1
 kind: Service
@@ -44,7 +45,7 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: grafana/grafana:latest
+        image: grafana/grafana:7.5.7
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
@@ -52,10 +53,10 @@ spec:
         ports:
         - containerPort: 3000
           name: grafana
-        volumeMounts:
-        - name: grafana-pv-data
-          mountPath: /var/lib/grafana
-      volumes:
-      - name: grafana-pv-data
-        persistentVolumeClaim:
-          claimName: grafana-pv-claim
+#        volumeMounts:
+#        - name: postgres-pv-data
+#          mountPath: /var/lib/postgresql/data
+#      volumes:
+#      - name: postgres-pv-data
+#        persistentVolumeClaim:
+#          claimName: postgres-pv-claim
