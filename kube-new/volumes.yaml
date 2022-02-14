@@ -71,7 +71,7 @@ metadata:
     app: remote-cli
     type: local
 spec:
-  storageClassName: local-path
+  storageClassName: microk8s-hostpath
   capacity:
     storage: 5Gi
   accessModes:
@@ -86,7 +86,7 @@ metadata:
   labels:
     app: remote-cli
 spec:
-  storageClassName: local-path
+  storageClassName: microk8s-hostpath
   capacity:
   accessModes:
     - ReadWriteOnce
