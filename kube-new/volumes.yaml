@@ -1,12 +1,4 @@
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: microk8s-hostpath
-  annotations:
-    storageclass.kubernetes.io/is-default-class: "true"
-provisioner: microk8s.io/hostpath
----
-# PSQL
+# PostgresSQL volumes
 kind: PersistentVolume
 apiVersion: v1
 metadata:
@@ -23,29 +15,12 @@ spec:
   hostPath:
     path: "/mnt/postgres/data"
 ---
-# Grafana
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: grafana-pv
-  labels:
-    app: grafana
-    type: local
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/grafana/data"
----
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: grafana-pv-claim
+  name: postgres-pv-claim
   labels:
-    app: grafana
+    app: postgres
 spec:
   storageClassName: microk8s-hostpath
   capacity:
