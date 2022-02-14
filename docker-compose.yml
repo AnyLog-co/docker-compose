@@ -31,7 +31,7 @@ services:
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
-      - envs/remote_cli.env
+      - envs/anylog_tools.env
     container_name: remote-cli
     stdin_open: true
     tty: true
@@ -45,7 +45,7 @@ services:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
     env_file:
-      - envs/anylog_gui.env
+      - envs/anylog_tools.env
     stdin_open: true
     tty: true
     ports:

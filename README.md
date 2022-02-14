@@ -17,8 +17,7 @@ cd $HOME/docker-compose
 ## Docker Compose 
 * Where to update deployment configurations [envs](envs/)
   * [AnyLog Network](envs/anylog_node.env) 
-  * [AnyLog GUI](envs/anylog_gui.env)
-  * [AnyLog REST Tool](envs/remote_cli.env) 
+  * [AnyLog Tools](envs/anylog_tools.env) - Configuration for _AnyLog GUI_ and _Remote CLI_  
   * [Postgres](envs/postgres.env)
   * [Grafana](envs/grafana.env)
   
