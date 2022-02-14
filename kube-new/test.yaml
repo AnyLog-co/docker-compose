@@ -50,12 +50,12 @@ spec:
           - containerPort: 8000
             name: remote-cli
 # Back-off restarting failed container
-#        volumeMounts:
-#        - name: cli-pv-data
-#          mountPath: /app/Remote-CLI/anylog_query/static/json
-#      volumes:
-#      - name: cli-pv-data
-#        persistentVolumeClaim:
-#          claimName: cli-pv-claim
+        volumeMounts:
+        - name: cli-pv-data
+          mountPath: /app/Remote-CLI/anylog_query/static/json
+      volumes:
+      - name: cli-pv-data
+        persistentVolumeClaim:
+          claimName: cli-pv-claim
 
 
