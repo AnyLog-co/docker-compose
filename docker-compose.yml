@@ -11,8 +11,8 @@ services:
       - frontend
     ports:
       - "5432:5432"
-#    volumes:
-#      - pgdata:/var/lib/postgresql/data
+    volumes:
+      - pgdata:/var/lib/postgresql/data
   grafana:
     image: grafana/grafana:7.5.7
     env_file:
@@ -24,14 +24,14 @@ services:
       - frontend
     ports:
       - "3000:3000"
-#    volumes:
-#      - grafana-data:/var/lib/grafana
-#      - grafana-log:/var/log/grafana
-#      - grafana-config:/etc/grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - grafana-log:/var/log/grafana
+      - grafana-config:/etc/grafana
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
-      - envs/remote_cli.env
+      - envs/anylog_tools.env
     container_name: remote-cli
     stdin_open: true
     tty: true
@@ -39,19 +39,19 @@ services:
       - frontend
     ports:
       - "8000:8000"
-#    volumes:
-#      - remote-cli:/app/Remote-CLI/anylog_query/static/json
+    volumes:
+      - remote-cli:/app/Remote-CLI/anylog_query/static/json
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
     env_file:
-      - envs/anylog_gui.env
+      - envs/anylog_tools.env
     stdin_open: true
     tty: true
     ports:
       - "5000:5000"
-#    volumes:
-#      - anylog-gui:/app/AnyLog-GUI/views
+    volumes:
+      - anylog-gui:/app/AnyLog-GUI/views
   anylog-node:
     image: anylogco/anylog-network:test
     env_file:
@@ -59,17 +59,16 @@ services:
     container_name: anylog-node
     stdin_open: true
     tty: true
-    networks:
-      - frontend
+    network_mode: host
     ports:
       - "13480:13480"
       - "13481:13481"
       - "13482:13482"
-#    volumes:
-#      - anylog-node-anylog:/app/AnyLog-Network/anylog
-#      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
-#      - anylog-node-data:/app/AnyLog-Network/data
-#      - anylog-node-local-scripts:/app/AnyLog-Network/local_scripts
+    volumes:
+      - anylog-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-node-data:/app/AnyLog-Network/data
+      - anylog-node-local-scripts:/app/AnyLog-Network/local_scripts
 networks:
   frontend:
     driver: bridge
