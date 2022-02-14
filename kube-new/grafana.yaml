@@ -15,7 +15,7 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: grafana-service
+  name: grafana
   labels:
     app: grafana
 spec:
@@ -28,7 +28,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: grafana-statefulset
+  name: grafana
   labels:
     app: grafana
 spec:
