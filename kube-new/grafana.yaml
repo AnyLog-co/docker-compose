@@ -30,23 +30,21 @@ kind: StatefulSet
 metadata:
   name: grafana
   labels:
-    io.kompose.service: grafana
     app: grafana
 spec:
+  serviceName: "grafana"
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: grafana
-  strategy: {}
+      app: grafana
   template:
     metadata:
       labels:
-        io.kompose.network/frontend: "true"
-        io.kompose.service: grafana
+        app: grafana
     spec:
       containers:
       - name: grafana
-        image: grafana/grafana:7.5.7
+        image: grafana/grafana:latest
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
