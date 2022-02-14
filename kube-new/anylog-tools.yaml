@@ -29,9 +29,9 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: grafana
+  name: anylog-tools
   labels:
-    app: grafana
+    app: anylog-tools
 spec:
   serviceName: "anylog-tools"
   replicas: 1
