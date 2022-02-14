@@ -30,32 +30,34 @@ kind: Deployment
 metadata:
   name: grafana
   labels:
+    io.kompose.service: grafana
     app: grafana
 spec:
-  serviceName: "grafana"
   replicas: 1
   selector:
     matchLabels:
-      app: grafana
+      io.kompose.service: grafana
+  strategy: {}
   template:
     metadata:
       labels:
-        app: grafana
-    spec:
-      containers:
-      - name: grafana
-        image: grafana/grafana:7.5.7
-        imagePullPolicy: IfNotPresent
-        envFrom:
-        - configMapRef:
-            name: grafana-configuration
-        ports:
-        - containerPort: 3000
-          name: grafana
-        volumeMounts:
-        - name: grafana-pv-data
-          mountPath: /var/lib/grafana
-      volumes:
+        io.kompose.network/frontend: "true"
+        io.kompose.service: grafana
+  spec:
+    containers:
+    - name: grafana
+      image: grafana/grafana:7.5.7
+      imagePullPolicy: IfNotPresent
+      envFrom:
+      - configMapRef:
+          name: grafana-configuration
+      ports:
+      - containerPort: 3000
+        name: grafana
+      volumeMounts:
       - name: grafana-pv-data
-        persistentVolumeClaim:
-          claimName: grafana-pv-claim
+        mountPath: /var/lib/grafana
+    volumes:
+    - name: grafana-pv-data
+      persistentVolumeClaim:
+        claimName: grafana-pv-claim
