@@ -53,10 +53,10 @@ spec:
         ports:
         - containerPort: 3000
           name: grafana
-#        volumeMounts:
-#        - name: postgres-pv-data
-#          mountPath: /var/lib/postgresql/data
-#      volumes:
-#      - name: postgres-pv-data
-#        persistentVolumeClaim:
-#          claimName: postgres-pv-claim
+        volumeMounts:
+        - name: postgres-pv-data
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: postgres-pv-data
+        persistentVolumeClaim:
+          claimName: postgres-pv-claim
