@@ -57,6 +57,6 @@ spec:
         - name: grafana-pv-data
           mountPath: /var/lib/grafana
       volumes:
-      - name: postgres-pv-data
+      - name: grafana-pv-data
         persistentVolumeClaim:
           claimName: postgres-pv-claim
