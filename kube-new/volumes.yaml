@@ -39,7 +39,7 @@ metadata:
     app: grafana
     type: local
 spec:
-  storageClassName: local-path
+  storageClassName: microk8s-hostpath
   capacity:
     storage: 5Gi
   accessModes:
