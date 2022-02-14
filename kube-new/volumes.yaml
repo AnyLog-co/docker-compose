@@ -93,4 +93,37 @@ spec:
   resources:
     requests:
       storage: 5Gi
+---
+# AnyLog-GUI volume
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: gui-pv-data
+  labels:
+    app: anylog-gui
+    type: local
+spec:
+  storageClassName: microk8s-hostpath
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/AnyLog/AnyLog-GUI"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: gui-pv-claim
+  labels:
+    app: anylog-gui
+spec:
+  storageClassName: microk8s-hostpath
+  capacity:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
 

@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: cli-configuration
   labels:
-    app: anylog-tools
+    app: remote-cli
 data:
   CONN_IP: "0.0.0.0"
   CLI_PORT: "8000"
