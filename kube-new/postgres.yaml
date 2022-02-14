@@ -62,7 +62,7 @@ spec:
               key: POSTGRES_PASSWORD
         ports:
         - containerPort: 5432
-          name: postgresdb
+          name: postgres
         volumeMounts:
         - name: postgres-pv-data
           mountPath: /var/lib/postgresql/data
