@@ -54,14 +54,14 @@ spec:
           ports:
             - containerPort: 5000
               name: anylog-gui
-#        - name: remote-cli
-#          image: anylogco/remote-cli:latest
-#          imagePullPolicy: IfNotPresent
-#          envFrom:
-#            - configMapRef:
-#                name: tools-configuration
-#          ports:
-#            - containerPort: 8000
-#              name: remote-cli
+        - name: remote-cli
+          image: anylogco/remote-cli:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: tools-configuration
+          ports:
+            - containerPort: 8000
+              name: remote-cli
 
 
