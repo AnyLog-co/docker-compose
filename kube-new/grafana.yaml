@@ -1,0 +1,75 @@
+# Based On: https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-configuration
+  labels:
+    app: grafana
+data:
+  GRAFANA_ADMIN_USER: admin
+  GF_AUTH_ANONYMOUS_ENABLED: "true"
+  GF_AUTH_DISABLE_LOGIN_FORM: "false"
+  GF_INSTALL_PLUGINS: "simpod-json-datasource,grafana-worldmap-panel"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-configs
+  labels:
+    app: grafana
+data:
+  GRAFANA_ADMIN_PASSWORD: YWRtaW4K # admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana-service
+  labels:
+    app: grafana
+spec:
+  ports:
+  - port: 3000
+    name: grafana
+  selector:
+    app: grafana
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana-statefulset
+  labels:
+    app: grafana
+spec:
+  serviceName: "grafana"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:7.5.7
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: grafana-configuration
+        env:
+        - name: GRAFANA_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secret-configs
+              key: GRAFANA_ADMIN_PASSWORD
+        ports:
+        - containerPort: 3000
+          name: grafana
+        volumeMounts:
+        - name: grafana-pv-data
+          mountPath: /var/lib/grafana
+      volumes:
+      - name: grafana-pv-data
+        persistentVolumeClaim:
+          claimName: grafana-pv-claim
