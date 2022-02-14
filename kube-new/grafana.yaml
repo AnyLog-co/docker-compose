@@ -10,7 +10,7 @@ provisioner: microk8s.io/hostpath
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: postgres-pv-data
+  name: grafana-pv
   labels:
     app: postgres
     type: local
@@ -21,15 +21,14 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/mnt/postgres/data"
-
+    path: "/mnt/grafana/data"
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: postgres-pv-claim
+  name: grafana-pv-claim
   labels:
-    app: postgres
+    app: grafana
 spec:
   storageClassName: microk8s-hostpath
   capacity:
@@ -42,71 +41,75 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-configuration
+  name: grafana-configuration
   labels:
-    app: postgres
+    app: grafana
 data:
-  POSTGRES_USER: admin
+  GRAFANA_ADMIN_USER: admin
+  GF_AUTH_ANONYMOUS_ENABLED: "true"
+  GF_AUTH_DISABLE_LOGIN_FORM: "false"
+  GF_SECURITY_ALLOW_EMBEDDING: "true"
+  GF_INSTALL_PLUGINS: "simpod-json-datasource,grafana-worldmap-panel"
 ---
 apiVersion: v1
 kind: Secret
 metadata:
   name: secret-configs
   labels:
-    app: postgres
+    app: grafana
 data:
-  POSTGRES_PASSWORD: cGFzc3dkCg== # passwd
+  GRAFANA_PASSWORD: YWRtaW4K # admin
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: grafana-service
   labels:
-    app: postgres
+    app: grafana
 spec:
   ports:
-  - port: 5432
-    name: postgres
+  - port: 3000
+    name: grafana
   selector:
-    app: postgres
+    app: grafana
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-statefulset
+  name: grafana-statefulset
   labels:
-    app: postgres
+    app: grafana
 spec:
-  serviceName: "postgres"
+  serviceName: "grafana"
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: grafana
   template:
     metadata:
       labels:
-        app: postgres
+        app: grafana
     spec:
       containers:
-      - name: postgres
+      - name: grafana
         image: postgres:14.0-alpine
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: postgres-configuration
+            name: grafana-configuration
         env:
-        - name: POSTGRES_PASSWORD
+        - name: GRAFANA_PASSWORD
           valueFrom:
             secretKeyRef:
               name: secret-configs
-              key: POSTGRES_PASSWORD
+              key: GRAFANA_PASSWORD
         ports:
         - containerPort: 5432
-          name: postgresdb
+          name: grafana
         volumeMounts:
-        - name: postgres-pv-data
-          mountPath: /var/lib/postgresql/data
+        - name: grafana-pv-data
+          mountPath: /var/lib/grafana
       volumes:
-      - name: postgres-pv-data
+      - name: grafana-pv-data
         persistentVolumeClaim:
-          claimName: postgres-pv-claim
+          claimName: grafana-pv-claim
