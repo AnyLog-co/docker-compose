@@ -54,7 +54,7 @@ metadata:
   labels:
     app: grafana
 spec:
-  storageClassName: local-path
+  storageClassName: microk8s-hostpath
   capacity:
   accessModes:
     - ReadWriteOnce
