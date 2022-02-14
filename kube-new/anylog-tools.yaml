@@ -14,28 +14,26 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
+  name: anylog-tools
   labels:
-    io.kompose.service: anylog-gui
-  name: anylog-gui
+    app: anylog-tools
 spec:
   ports:
-    - name: anylog-gui
-      port: 5000
-    - name: remote-cli
-      port: 8000
+  - port: 5000
+    name: anylog-gui
+  - port: 8000
+    name: remote-cli
   selector:
-    io.kompose.service: anylog-tools
-status:
-  loadBalancer: {}
+    app: anylog-tools
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: anylog-gui-statefulset
+  name: grafana
   labels:
-    app: anylog-tools
+    app: grafana
 spec:
-  serviceName: anylog-tools
+  serviceName: "anylog-tools"
   replicas: 1
   selector:
     matchLabels:
@@ -46,33 +44,23 @@ spec:
         app: anylog-tools
     spec:
       containers:
-      - name: anylog-gui
-        image: anylogco/anylog-gui:latest
-        imagePullPolicy: IfNotPresent
-        envFrom:
-        - configMapRef:
-            name: tools-configuration
-        ports:
-        - containerPort: 5000
-          name: anylog-gui
-        volumeMounts:
-        - name: gui-pv-data
-          mountPath: /app/AnyLog-GUI/anylog_query/static/json
-      - name: remote-cli
-        image: anylogco/remote-cli:latest
-        imagePullPolicy: IfNotPresent
-        envFrom:
-        - configMapRef:
-            name: tools-configuration
-        ports:
-        - containerPort: 8000
-          name: remote-cli
-        volumeMounts:
-        - name: cli-pv-data
-          mountPath: /app/Remote-CLI/anylog_query/static/json
-      volumes:
-      - name: cli-pv-data
-        persistentVolumeClaim:
-          claimName: cli-pv-claim
+        - name: anylog-gui
+          image: anylogco/anylog-gui:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: tools-configuration
+          ports:
+            - containerPort: 5000
+              name: anylog-gui
+        - name: remote-cli
+          image: anylogco/remote-cli:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: tools-configuration
+          ports:
+            - containerPort: 8000
+              name: remote-cli
 
 
