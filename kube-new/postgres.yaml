@@ -33,7 +33,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-statefulset
+  name: postgres
   labels:
     app: postgres
 spec:
