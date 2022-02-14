@@ -6,9 +6,9 @@ metadata:
     app: anylog-tools
 data:
   CONN_IP: "0.0.0.0"
-  GUI_PORT: 5000
-  CLI_PORT: 8000
-  CONFIG_FOLDER: views
+  GUI_PORT: "5000"
+  CLI_PORT: "8000"
+  CONFIG_FOLDER: "views"
   CONFIG_FILE: "testnet.json"
 
 ---
