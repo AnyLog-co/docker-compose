@@ -24,7 +24,7 @@ spec:
     name: anylog-gui
   - port: 8000
     name: remote-cli
-  selector:
+  - selector:
     app: anylog-tools
 ---
 apiVersion: apps/v1
