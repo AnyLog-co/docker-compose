@@ -61,3 +61,36 @@ spec:
   resources:
     requests:
       storage: 5Gi
+---
+# Remote-CLI volume
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: cli-pv-data
+  labels:
+    app: remote-cli
+    type: local
+spec:
+  storageClassName: local-path
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/AnyLog/Remote-CLI"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: cli-pv-claim
+  labels:
+    app: remote-cli
+spec:
+  storageClassName: local-path
+  capacity:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+
