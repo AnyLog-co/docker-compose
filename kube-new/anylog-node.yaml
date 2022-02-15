@@ -85,7 +85,7 @@ spec:
         app: anylog-node
     spec:
       imagePullSecrets:
-        - name: myregistrykey
+      - name: myregistrykey
       containers:
       - name: anylog-node
         image: anylogco/anylog-node:test
