@@ -88,7 +88,7 @@ spec:
       - name: anylogregistrykey
       containers:
       - name: anylog-node
-        image: anylogco/anylog-node:test
+        image: anylogco/anylog-network:test
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
