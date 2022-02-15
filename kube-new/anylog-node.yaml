@@ -100,11 +100,11 @@ spec:
             name: rest
           - containerPort: 32050
             name: broker
-#        volumeMounts:
-#        - name: gui-pv-data
-#          mountPath: /app/AnyLog-GUI/anylog_query/static/json
-#      volumes:
-#      - name: gui-pv-data
-#        persistentVolumeClaim:
-#          claimName: gui-pv-claim
-#
+        volumeMounts:
+        - name: anylog-node-data-pv-data
+          mountPath: /app/AnyLog-Node/data
+      volumes:
+      - name: anylog-node-data-pv-data
+        persistentVolumeClaim:
+          claimName: anylog-node-data-pv-claim
+
