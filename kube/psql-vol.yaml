@@ -21,7 +21,7 @@ spec:
     storage: 5Gi
   accessModes:
     - ReadWriteOnce
-  loca:
+  local:
     path: "/mnt/postgres/data"
   nodeAffinity:
     required:
