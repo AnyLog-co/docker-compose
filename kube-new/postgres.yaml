@@ -20,7 +20,7 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-service
+  name: postgres
   labels:
     app: postgres
 spec:
@@ -33,7 +33,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-statefulset
+  name: postgres
   labels:
     app: postgres
 spec:
@@ -62,7 +62,7 @@ spec:
               key: POSTGRES_PASSWORD
         ports:
         - containerPort: 5432
-          name: postgresdb
+          name: postgres
         volumeMounts:
         - name: postgres-pv-data
           mountPath: /var/lib/postgresql/data
