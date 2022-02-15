@@ -26,10 +26,10 @@ bash $HOME/deployments/credentials.sh ${DOCKER_PASSWORD}
   
 * How to start docker-compose
 ```bash
-expose ANYLOG_SERVER_PORT=32048
-expose ANYLOG_REST_PORT=32049
-expose GUI_PORT=5000
-expose CLI_PORT=8000
+export ANYLOG_SERVER_PORT=32048
+export ANYLOG_REST_PORT=32049
+export GUI_PORT=5000
+export CLI_PORT=8000
 
 cd $HOME/deployments/ 
 docker-compose up -d 
