@@ -1,0 +1,35 @@
+# AnyLog Node local_scripts dir PersistentVolume
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: node-local-scripts-dir-pv
+  labels:
+    app: anylog-node
+    type: local
+spec:
+  storageClassName: microk8s-hostpath
+  claimRef:
+    name: node-local-scripts-dir-pv-claim
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/AnyLog/AnyLog-Network/local_scripts"
+---
+# AnyLog Node local_scripts dir PersistentVolumeClaim
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: node-local-scripts-dir-pv-claim
+  labels:
+    app: anylog-node
+spec:
+  storageClassName: microk8s-hostpath
+  volumeName: node-local-scripts-dir-pv
+  capacity:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
