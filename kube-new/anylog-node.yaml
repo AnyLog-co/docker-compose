@@ -102,7 +102,7 @@ spec:
             name: broker
         volumeMounts:
         - name: anylog-node-data-pv-data
-          mountPath: /app/AnyLog-Node/data
+          mountPath: /app/AnyLog-Network/data
       volumes:
       - name: anylog-node-data-pv-data
         persistentVolumeClaim:
