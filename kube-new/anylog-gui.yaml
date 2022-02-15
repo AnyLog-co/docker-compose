@@ -50,12 +50,12 @@ spec:
         ports:
           - containerPort: 5000
             name: anylog-gui
-        volumeMounts:
-        - name: gui-pv-data
-          mountPath: /app/AnyLog-GUI/anylog_query/static/json
-      volumes:
-      - name: gui-pv-data
-        persistentVolumeClaim:
-          claimName: gui-pv-claim
-
+#        volumeMounts:
+#        - name: gui-pv-data
+#          mountPath: /app/AnyLog-GUI/anylog_query/static/json
+#      volumes:
+#      - name: gui-pv-data
+#        persistentVolumeClaim:
+#          claimName: gui-pv-claim
+#
 
