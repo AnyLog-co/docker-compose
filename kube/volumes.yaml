@@ -10,7 +10,7 @@ spec:
   storageClassName: microk8s-hostpath
   claimRef:
     name: postgres-pv-claim
-    namespace: postgres
+#    namespace: postgres
   capacity:
     storage: 5Gi
   accessModes:
@@ -23,7 +23,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: postgres-pv-claim
-  namespace: postgres
+#  namespace: postgres
   labels:
     app: postgres
 spec:
@@ -47,7 +47,7 @@ spec:
   storageClassName: microk8s-hostpath
   claimRef:
     name: grafana-pv-claim
-    namespace: grafana
+#    namespace: grafana
   capacity:
     storage: 5Gi
   accessModes:
@@ -59,7 +59,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: grafana-pv-claim
-  namespace: grafana
+#  namespace: grafana
   labels:
     app: grafana
 spec:
