@@ -32,6 +32,8 @@ spec:
         - matchExpressions:
             - key: kubernetes.io/hostname
               operator: In
+              vlaues:
+                - postgres
 ---
 # Postgres PersistentVolumeClaim
 kind: PersistentVolumeClaim
