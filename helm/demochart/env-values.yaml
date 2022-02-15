@@ -1,5 +1,0 @@
-postgresenvs:
-  - name: "POSTGRES_USER"
-    value: "admin"
-  - name: "POSTGRES_PASSWORD"
-    value: "passwd"
