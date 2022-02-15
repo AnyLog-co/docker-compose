@@ -1,63 +1,61 @@
-# service
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gui-configuration
+  labels:
+    app: anylog-gui
+data:
+  CONN_IP: "0.0.0.0"
+  GUI_PORT: "5000"
+  CONFIG_FOLDER: "views"
+  CONFIG_FILE: "testnet.json"
+---
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    io.kompose.service: anylog-gui
   name: anylog-gui
+  labels:
+    app: anylog-gui
 spec:
   ports:
-    - name: "anylog-gui"
-      port: 5000
-      targetPort: 5000
+  - port: 5000
+    name: anylog-gui
   selector:
-    io.kompose.service: anylog-gui
-status:
-  loadBalancer: {}
+    app: anylog-gui
 ---
-# deployment
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  labels:
-    io.kompose.service: anylog-gui
   name: anylog-gui
+  labels:
+    app: anylog-gui
 spec:
+  serviceName: "anylog-gui"
   replicas: 1
   selector:
     matchLabels:
-      io.kompose.service: anylog-gui
-  strategy: {}
+      app: anylog-gui
   template:
     metadata:
       labels:
-        io.kompose.network/frontend: "true"
-        io.kompose.service: anylog-gui
+        app: anylog-gui
     spec:
-#      volumes:
-#        - name: anylog-gui
-#          hostPath:
-#            path: /mnt/anylog-gui/anylog_query/static/json
       containers:
-        - env:
-            - name: CONN_IP
-              value: 0.0.0.0
-            - name: GUI_PORT
-              value: "5000"
-            - name: CONFIG_FOLDER
-              value: views
-            - name: CONFIG_FILE
-              value: testnet.json
-          image: anylogco/anylog-gui:latest
-          imagePullPolicy: IfNotPresent
-          name: anylog-gui
-          ports:
-            - containerPort: 8000
-          resources: {}
-#          volumeMounts: # inside the container
-#            - name: anylog-gui
-#              mountPath: /app/anylog-gui/anylog_query/static/json
-          stdin: true
-          tty: true
-      restartPolicy: Always
-status: {}
+      - name: anylog-gui
+        image: anylogco/anylog-gui:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: cli-configuration
+        ports:
+          - containerPort: 5000
+            name: anylog-gui
+#        volumeMounts:
+#        - name: gui-pv-data
+#          mountPath: /app/AnyLog-GUI/anylog_query/static/json
+#      volumes:
+#      - name: gui-pv-data
+#        persistentVolumeClaim:
+#          claimName: gui-pv-claim
+#
+
