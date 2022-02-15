@@ -7,7 +7,7 @@ metadata:
     app: postgres
     type: local
 spec:
-  storageClassName: local-storage
+  storageClassName: microk8s-hostpath
   claimRef:
     name: postgres-pv-claim
   capacity:
@@ -25,7 +25,7 @@ metadata:
   labels:
     app: postgres
 spec:
-  storageClassName: local-storage
+  storageClassName: microk8s-hostpath
   volumeName: postgres-pv
   capacity:
   accessModes:
