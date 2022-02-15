@@ -31,25 +31,25 @@ services:
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
-      - envs/remote_cli.env
+      - envs/anylog_tools.env
     container_name: remote-cli
     stdin_open: true
     tty: true
     networks:
       - frontend
     ports:
-      - "8000:8000"
+      - ${CLI_PORT}:${CLI_PORT}
     volumes:
       - remote-cli:/app/Remote-CLI/anylog_query/static/json
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
     env_file:
-      - envs/anylog_gui.env
+      - envs/anylog_tools.env
     stdin_open: true
     tty: true
     ports:
-      - "5000:5000"
+      - {GUI_PORT}:${GUI_PORT}
     volumes:
       - anylog-gui:/app/AnyLog-GUI/views
   anylog-node:
@@ -59,12 +59,11 @@ services:
     container_name: anylog-node
     stdin_open: true
     tty: true
-    networks:
-      - frontend
+    network_mode: host
     ports:
-      - "13480:13480"
-      - "13481:13481"
-      - "13482:13482"
+      - ${ANYLOG_SERVR_PORT}:${ANYLOG_SERVR_PORT}
+      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+      - ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKR_PORT}
     volumes:
       - anylog-node-anylog:/app/AnyLog-Network/anylog
       - anylog-node-blockchain:/app/AnyLog-Network/blockchain
@@ -72,6 +71,8 @@ services:
       - anylog-node-local-scripts:/app/AnyLog-Network/local_scripts
 networks:
   frontend:
+    driver: bridge
+    external: false
 volumes:
   pgdata:
   grafana-data:
