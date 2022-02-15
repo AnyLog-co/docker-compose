@@ -38,7 +38,7 @@ spec:
         io.kompose.service: anylog-node
     spec:
       imagePullSecrets:
-        - name: myregistrykey
+        - name: anylogregistrykey
 #      volumes:
 #        - name: anylog-anylog
 #          hostPath:
