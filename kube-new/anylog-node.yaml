@@ -74,8 +74,6 @@ metadata:
   labels:
     app: anylog-node
 spec:
-  imagePullSecrets:
-    - name: myregistrykey
   serviceName: "anylog-node"
   replicas: 1
   selector:
@@ -86,6 +84,8 @@ spec:
       labels:
         app: anylog-node
     spec:
+      imagePullSecrets:
+        - name: myregistrykey
       containers:
       - name: anylog-node
         image: anylogco/anylog-node:test
