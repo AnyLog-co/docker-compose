@@ -6,7 +6,7 @@ metadata:
     app: anylog-gui
 data:
   CONN_IP: "0.0.0.0"
-  GUI_PORT: "5000"
+  GUI_PORT: "${GUI_PORT}"
   CONFIG_FOLDER: "views"
   CONFIG_FILE: "testnet.json"
 ---
@@ -18,7 +18,7 @@ metadata:
     app: anylog-gui
 spec:
   ports:
-  - port: 5000
+  - port: ${GUI_PORT}
     name: anylog-gui
   selector:
     app: anylog-gui
@@ -48,7 +48,7 @@ spec:
           - configMapRef:
               name: cli-configuration
         ports:
-          - containerPort: 5000
+          - containerPort: ${GUI_PORT}
             name: anylog-gui
 #        volumeMounts:
 #        - name: gui-pv-data

@@ -1,13 +1,16 @@
-# PostgresSQL volume
+# Postgres
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: postgres-pv-data
+  name: postgres-pv
   labels:
     app: postgres
     type: local
 spec:
   storageClassName: microk8s-hostpath
+  claimRef:
+    name: postgres-pv-claim
+    namespace: postgres
   capacity:
     storage: 5Gi
   accessModes:
@@ -15,14 +18,17 @@ spec:
   hostPath:
     path: "/mnt/postgres/data"
 ---
+# Grafana
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: postgres-pv-claim
+  namespace: postgres
   labels:
     app: postgres
 spec:
   storageClassName: microk8s-hostpath
+  volumeName: postgres-pv
   capacity:
   accessModes:
     - ReadWriteOnce
@@ -30,16 +36,18 @@ spec:
     requests:
       storage: 5Gi
 ---
-# Grafana volume
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: grafana-pv-data
+  name: grafana-pv
   labels:
     app: grafana
     type: local
 spec:
   storageClassName: microk8s-hostpath
+  claimRef:
+    name: grafana-pv-claim
+    namespace: grafana
   capacity:
     storage: 5Gi
   accessModes:
@@ -51,137 +59,12 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: grafana-pv-claim
+  namespace: grafana
   labels:
     app: grafana
 spec:
   storageClassName: microk8s-hostpath
-  capacity:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-# Remote-CLI volume
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: cli-pv-data
-  labels:
-    app: remote-cli
-    type: local
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/AnyLog/Remote-CLI"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: cli-pv-claim
-  labels:
-    app: remote-cli
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-# AnyLog-GUI volume
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: gui-pv-data
-  labels:
-    app: anylog-gui
-    type: local
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/AnyLog/AnyLog-GUI"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: gui-pv-claim
-  labels:
-    app: anylog-gui
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-# AnyLog Data Dir
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: anylog-node-data-pv-data
-  labels:
-    app: anylog-node
-    type: local
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/AnyLog/AnyLog-Network/data"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: anylog-node-data-pv-claim
-  labels:
-    app: anylog-node
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-# AnyLog Data Dir
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: anylog-node-data-pv-data
-  labels:
-    app: anylog-node
-    type: local
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/AnyLog/AnyLog-Network/data"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: anylog-node-data-pv-claim
-  labels:
-    app: anylog-node
-spec:
-  storageClassName: microk8s-hostpath
+  volumeName: grafana-pv
   capacity:
   accessModes:
     - ReadWriteOnce
