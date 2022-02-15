@@ -101,10 +101,25 @@ spec:
           - containerPort: 32050
             name: broker
         volumeMounts:
+        - name: anylog-node-anylog-pv-data
+          mountPath: /app/AnyLog-Network/anylog
+        - name: anylog-node-blockchaiin-pv-data
+          mountPath: /app/AnyLog-Network/blockchaiin
         - name: anylog-node-data-pv-data
           mountPath: /app/AnyLog-Network/data
+        - name: anylog-node-local-scripts-pv-data
+          mountPath: /app/AnyLog-Network/local-scripts
       volumes:
+      - name: anylog-node-anylog-pv-data
+        persistentVolumeClaim:
+          claimName: anylog-node-anylog-pv-claim
+      - name: anylog-node-blockchain-pv-data
+        persistentVolumeClaim:
+          claimName: anylog-node-blockchain-pv-claim
       - name: anylog-node-data-pv-data
         persistentVolumeClaim:
           claimName: anylog-node-data-pv-claim
+      - name: anylog-node-local-scripts-pv-data
+        persistentVolumeClaim:
+          claimName: anylog-node-local-scripts-pv-claim
 
