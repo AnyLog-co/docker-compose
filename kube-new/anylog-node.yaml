@@ -84,12 +84,12 @@ spec:
       labels:
         app: anylog-node
     spec:
+      imagePullSecrets:
+        - name: myregistrykey
       containers:
       - name: anylog-node
         image: anylogco/anylog-node:test
         imagePullPolicy: IfNotPresent
-        imagePullSecrets:
-          - name: myregistrykey
         envFrom:
           - configMapRef:
               name: node-configuration
