@@ -86,7 +86,7 @@ spec:
     spec:
       containers:
       - name: anylog-node
-        image: anylogco/anylog-node:predevelop
+        image: anylogco/anylog-node:test
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
