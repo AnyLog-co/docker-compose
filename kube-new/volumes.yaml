@@ -125,35 +125,3 @@ spec:
   resources:
     requests:
       storage: 5Gi
----
-# AnyLog Data Dir
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  name: anylog-node-data-pv-data
-  labels:
-    app: anylog-node
-    type: local
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-    storage: 5Gi
-  accessModes:
-    - ReadWriteOnce
-  hostPath:
-    path: "/mnt/AnyLog/AnyLog-Network/data"
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: anylog-node-data-pv-claim
-  labels:
-    app: anylog-node
-spec:
-  storageClassName: microk8s-hostpath
-  capacity:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi

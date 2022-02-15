@@ -36,7 +36,7 @@ data:
   DATA_MONITOR_INTERVAL: "1 minute"
   DATA_MONITOR_COLUMN: "value"
 
-  MQTT_ENABLE: "true"
+  MQTT_ENABLE: "false"
   BROKER: "driver.cloudmqtt.com"
   MQTT_PORT: "18785"
   MQTT_USER: "ibglowct"
@@ -101,6 +101,8 @@ spec:
           - containerPort: 32050
             name: broker
         volumeMounts:
+        - name: anylog-node-anylog-pv-data
+          mountPath: /app/AnyLog-Network/anylog
         - name: anylog-node-data-pv-data
           mountPath: /app/AnyLog-Network/data
       volumes:
