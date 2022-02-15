@@ -30,3 +30,34 @@ spec:
     requests:
       storage: 5Gi
 ---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: grafana-pv-data
+  labels:
+    app: grafana
+    type: local
+spec:
+  storageClassName: microk8s-hostpath
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/var/lib/grafana"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: grafana-pv-claim
+  labels:
+    app: grafana
+spec:
+  storageClassName: microk8s-hostpath
+  capacity:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
