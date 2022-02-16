@@ -1,4 +1,9 @@
 # Deploying AnyLog 
+The following provides information on how to deploy AnyLog using either as _docker-compose_ or _kubernetes_. 
+
+By default, both deployments deploy an AnyLog single-node with data coming in from a remote MQTT broker.
+
+Configuration can be found in the [env](docker-compose/envs) for docker-compose and in the actual YAML files for kubernetes and helm deployments. 
 
 ## Requirements 
 * [docker-compose](https://github.com/AnyLog-co/documentation/blob/master/Docker%20Compose%20&%20Kubernetes.md)
@@ -6,20 +11,12 @@
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) - Kubernetes command line tool
 * [minikube](https://minikube.sigs.k8s.io/docs/start/) - local Kubernetes, focusing on making it easy to learn and develop for Kubernetes.
 
-## Prepare Deployment 
-1. Expose Ports 
-```commandline
-export ANYLOG_SERVER_PORT=32048
-export ANYLOG_REST_PORT=32049
-export GUI_PORT=5000
-export CLI_PORT=8000
-```
-
-2. Clone & cd into docker-compose dir 
+## Prepare Deployment
+Clone the deployments directory  
 ```bash
 cd $HOME
-git clone https://github.com/AnyLog-co/docker-compose
-cd $HOME/docker-compose 
+git clone https://github.com/AnyLog-co/deployments
+cd $HOME/deployments 
 ```
 
 ## Docker Compose 
@@ -31,13 +28,13 @@ cd $HOME/docker-compose
   
 * How to start docker-compose
 ```bash
-cp docker-compose-base.yml docker-compose.yml 
+cd $HOME/deployments/docker-compose/ 
 docker-compose up -d 
 ```
 
 * cURL request against AnyLog-Network -- `anylog-node` service uses the `network_mode: host` rather than the network created by the network. As such, AnyLog uses the same IP(s) as the machine it seats on. 
 ```bash
-curl -X GET ${YOUR_IP}:3481 -H "commnad: get status" -H "Usr-Agent: AnyLog/1.23"
+curl -X GET ${YOUR_IP}:3481 -H "command: get status" -H "Usr-Agent: AnyLog/1.23"
 ```
 
 * How to attach to AnyLog
@@ -75,7 +72,6 @@ hidden_node.al  local_script.al  master.al  mqtt.al  operator.al  publisher.al  
 docker-compose down
 ```
 
-
 ## kubernetes / helm
 * Configure Credentials
 ```bash
@@ -88,7 +84,7 @@ bash $HOME/docker-compose/credentials.sh ${YOUR_PASSWDRD}
 kubectl apply -f $HOME/deployments/kube/
 
 # To deploy with helm 
-
+helm install --generate-name helm/anylogchart/
 ```
 
 * Configure remote access for _Postgres_, _Grafana_, _AnyLog GUI_ and _Remote CLI_
