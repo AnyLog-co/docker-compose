@@ -35,7 +35,7 @@ data:
   DATA_MONITOR_INTERVAL: "1 minute"
   DATA_MONITOR_COLUMN: "value"
 
-  MQTT_ENABLE: "false"
+  MQTT_ENABLE: "true"
   BROKER: "driver.cloudmqtt.com"
   MQTT_PORT: "18785"
   MQTT_USER: "ibglowct"
