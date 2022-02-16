@@ -7,7 +7,15 @@
 * [minikube](https://minikube.sigs.k8s.io/docs/start/) - local Kubernetes, focusing on making it easy to learn and develop for Kubernetes.
 
 ## Prepare Deployment 
-1. Clone & cd into docker-compose dir 
+1. Expose Ports 
+```commandline
+export ANYLOG_SERVER_PORT=32048
+export ANYLOG_REST_PORT=32049
+export GUI_PORT=5000
+export CLI_PORT=8000
+```
+
+2. Clone & cd into docker-compose dir 
 ```bash
 cd $HOME
 git clone https://github.com/AnyLog-co/docker-compose
@@ -68,13 +76,24 @@ docker-compose down
 ```
 
 
-## kubernetes
+## kubernetes / helm
 * Configure Credentials
 ```bash
-bash $HOME/docker-compose/credentials.sh ${YOUR_PASSWD}
+bash $HOME/docker-compose/credentials.sh ${YOUR_PASSWDRD}
 ```
 
-* Deploy Kubernetes
+* Deploy AnyLog
 ```bash
+# To deploy with kubernetes 
+kubectl -f $HOME/deployments/kube/
+
+# To deploy with helm 
 
 ```
+
+* Attach to bash 
+```bash
+kubectl exec -it pod/${POD_NAME} -- bash
+```
+
+* Grant Remote access to _Postgres_, _Grafana_, _AnyLog GUI_ and _Remote CLI_
