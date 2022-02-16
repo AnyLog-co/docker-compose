@@ -79,7 +79,7 @@ metadata:
     app: anylog-gui
 data:
   CONN_IP: "0.0.0.0"
-  GUI_PORT: "${GUI_PORT}"
+  GUI_PORT: "5000"
   CONFIG_FOLDER: "views"
   CONFIG_FILE: "testnet.json"
 ---
@@ -91,7 +91,7 @@ metadata:
     app: anylog-gui
 spec:
   ports:
-  - port: ${GUI_PORT}
+  - port: 5000
     name: anylog-gui
   selector:
     app: anylog-gui
@@ -121,7 +121,7 @@ spec:
           - configMapRef:
               name: cli-configuration
         ports:
-          - containerPort: ${GUI_PORT}
+          - containerPort: 5000
             name: anylog-gui
 #        volumeMounts:
 #        - name: gui-pv-data
@@ -141,7 +141,7 @@ metadata:
     app: remote-cli
 data:
   CONN_IP: "0.0.0.0"
-  CLI_PORT: "${CLI_PORT}"
+  CLI_PORT: "8000"
 
 ---
 apiVersion: v1
@@ -152,7 +152,7 @@ metadata:
     app: remote-cli
 spec:
   ports:
-  - port: ${CLI_PORT}
+  - port: 8000
     name: remote-cli
   selector:
     app: remote-cli
@@ -182,7 +182,7 @@ spec:
           - configMapRef:
               name: cli-configuration
         ports:
-          - containerPort: ${CLI_PORT}
+          - containerPort: 8000
             name: remote-cli
 #        volumeMounts:
 #        - name: cli-pv-data
@@ -270,25 +270,24 @@ data:
   COMPANY_NAME: "AnyLog"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
-  ANYLOG_SERVER_PORT: "${ANYLOG_SERVER_PORT}"
-  ANYLOG_REST_PORT: "${ANYLOG_REST_PORT}"
-  ANYLOG_BROKER_PORT: "${ANYLOG_BROKER_PORT}"
-  MASTER_NODE: "127.0.0.1:${ANYLOG_SERVER_PORT}"
+  ANYLOG_SERVER_PORT: "32048"
+  ANYLOG_REST_PORT: "32049"
+  ANYLOG_BROKER_PORT: "32050"
+  MASTER_NODE: "127.0.0.1:32048"
   SYNC_TIME: "30 second"
 
   # User should update DB_USER credentials
   DB_TYPE: "psql"
-  DB_IP: "127.0.0.1"
+  DB_IP: "postgres"
   DB_USER: "admin"
   DB_PASSWD: "passwd"
-  DB_IP: "postgres"
   DB_PORT: "5432"
   DEFAULT_DBMS: "test"
 
   CLUTSER_NAME: "new-cluster"
   ENABLE_PARTITION: "true"
   PARTITION_COLUMN: "timestamp"
-  PARTITION_INTERVAL: "7 days"
+  PARTITION_INTERVAL: "month"
   PARTITION_KEEP: "42"
   ENABLE_DATA_MONITOR: "false"
   TABLE_NAME: "*"
@@ -296,7 +295,7 @@ data:
   DATA_MONITOR_INTERVAL: "1 minute"
   DATA_MONITOR_COLUMN: "value"
 
-  MQTT_ENABLE: "false"
+  MQTT_ENABLE: "true"
   BROKER: "driver.cloudmqtt.com"
   MQTT_PORT: "18785"
   MQTT_USER: "ibglowct"
@@ -318,11 +317,11 @@ metadata:
     app: anylog-node
 spec:
   ports:
-  - port: ${ANYLOG_SERVER_PORT}
+  - port: 32048
     name: anylog-node-tcp
-  - port: ${ANYLOG_REST_PORT}
+  - port: 32049
     name: anylog-node-rest
-  - port: ${ANYLOG_BROKER_PORT}
+  - port: 32050
     name: anylog-node-broker
   selector:
     app: anylog-node
@@ -354,11 +353,11 @@ spec:
           - configMapRef:
               name: node-configuration
         ports:
-          - containerPort: ${ANYLOG_SERVER_PORT}
+          - containerPort: 32048
             name: tcp
-          - containerPort: ${ANYLOG_REST_PORT}
+          - containerPort: 32049
             name: rest
-          - containerPort: ${ANYLOG_BROKER_PORT}
+          - containerPort: 32050
             name: broker
 #        volumeMounts:
 #        - name: anylog-node-anylog-pv-data
@@ -383,3 +382,4 @@ spec:
 #        persistentVolumeClaim:
 #          claimName: anylog-node-local-scripts-pv-claim
 
+---
