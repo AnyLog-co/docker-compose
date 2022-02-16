@@ -6,7 +6,7 @@ metadata:
     app: remote-cli
 data:
   CONN_IP: "0.0.0.0"
-  CLI_PORT: "${CLI_PORT}"
+  CLI_PORT: "8000"
 
 ---
 apiVersion: v1
@@ -17,7 +17,7 @@ metadata:
     app: remote-cli
 spec:
   ports:
-  - port: ${CLI_PORT}
+  - port: 8000
     name: remote-cli
   selector:
     app: remote-cli
@@ -47,7 +47,7 @@ spec:
           - configMapRef:
               name: cli-configuration
         ports:
-          - containerPort: ${CLI_PORT}
+          - containerPort: 8000
             name: remote-cli
 #        volumeMounts:
 #        - name: cli-pv-data
