@@ -38,7 +38,7 @@ services:
     networks:
       - frontend
     ports:
-      - ${CLI_PORT}:${CLI_PORT}
+      - 8000:8000
     volumes:
       - remote-cli:/app/Remote-CLI/anylog_query/static/json
   anylog-gui:
@@ -49,11 +49,11 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - {GUI_PORT}:${GUI_PORT}
+      - 5000:5000
     volumes:
       - anylog-gui:/app/AnyLog-GUI/views
   anylog-node:
-    image: anylogco/anylog-network:test
+    image: anylogco/anylog-network:predevelop
     env_file:
       - envs/anylog_node.env
     container_name: anylog-node
@@ -61,9 +61,9 @@ services:
     tty: true
     network_mode: host
     ports:
-      - ${ANYLOG_SERVR_PORT}:${ANYLOG_SERVR_PORT}
-      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
-      - ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKR_PORT}
+      - 32048:32048
+      - 32049:32049
+#      - 32050:32050
     volumes:
       - anylog-node-anylog:/app/AnyLog-Network/anylog
       - anylog-node-blockchain:/app/AnyLog-Network/blockchain
