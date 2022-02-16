@@ -7,6 +7,11 @@ else
   exit 1
 fi
 
+DOCKER_REGISTRY_SERVER=docker.io
 DOCKER_USER=oshadmon
-
-docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+DOCKER_EMAIL=ori@anylog.co
+kubectl create secret docker-registry anylogregistrykey \
+  --docker-server=${DOCKER_REGISTRY_SERVER} \
+  --docker-username=${DOCKER_USER} \
+  --docker-password=${DOCKER_PASSWORD} \
+  --docker-email=${DOCKER_EMAIL}

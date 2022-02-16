@@ -1,0 +1,328 @@
+# Based On: https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-configuration
+  labels:
+    app: postgres
+data:
+  POSTGRES_USER: admin
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-configs
+  labels:
+    app: postgres
+data:
+  POSTGRES_PASSWORD: cGFzc3dkCg== # passwd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  ports:
+  - port: 5432
+    name: postgres
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  serviceName: "postgres"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:14.0-alpine
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: postgres-configuration
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secret-configs
+              key: POSTGRES_PASSWORD
+        ports:
+        - containerPort: 5432
+          name: postgres
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gui-configuration
+  labels:
+    app: anylog-gui
+data:
+  CONN_IP: "0.0.0.0"
+  GUI_PORT: "5000"
+  CONFIG_FOLDER: "views"
+  CONFIG_FILE: "testnet.json"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anylog-gui
+  labels:
+    app: anylog-gui
+spec:
+  ports:
+  - port: 5000
+    name: anylog-gui
+  selector:
+    app: anylog-gui
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: anylog-gui
+  labels:
+    app: anylog-gui
+spec:
+  serviceName: "anylog-gui"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anylog-gui
+  template:
+    metadata:
+      labels:
+        app: anylog-gui
+    spec:
+      containers:
+      - name: anylog-gui
+        image: anylogco/anylog-gui:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: cli-configuration
+        ports:
+          - containerPort: 5000
+            name: anylog-gui
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cli-configuration
+  labels:
+    app: remote-cli
+data:
+  CONN_IP: "0.0.0.0"
+  CLI_PORT: "8000"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: remote-cli
+  labels:
+    app: remote-cli
+spec:
+  ports:
+  - port: 8000
+    name: remote-cli
+  selector:
+    app: remote-cli
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: remote-cli
+  labels:
+    app: remote-cli
+spec:
+  serviceName: "remote-cli"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: remote-cli
+  template:
+    metadata:
+      labels:
+        app: remote-cli
+    spec:
+      containers:
+      - name: remote-cli
+        image: anylogco/remote-cli:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: cli-configuration
+        ports:
+          - containerPort: 8000
+            name: remote-cli
+---
+# Based On: https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-configuration
+  labels:
+    app: grafana
+data:
+  GRAFANA_ADMIN_USER: admin
+  GRAFANA_ADMIN_PASSWORD: admin
+  GF_AUTH_DISABLE_LOGIN_FORM: "false"
+  GF_AUTH_ANONYMOUS_ENABLED: "true"
+  GF_SECURITY_ALLOW_EMBEDDING: "true"
+  GF_INSTALL_PLUGINS: simpod-json-datasource,grafana-worldmap-panel
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  ports:
+  - port: 3000
+    name: grafana
+  selector:
+    app: grafana
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  serviceName: "grafana"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:7.5.7
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: grafana-configuration
+        ports:
+        - containerPort: 3000
+          name: grafana
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-configuration
+  labels:
+    app: anylog-node
+data:
+  NODE_TYPE: "single-node"
+  NODE_NAME: "anylog-node"
+  COMPANY_NAME: "AnyLog"
+  #EXTERNAL_IP: <EXTERNAL IP>
+  #LOCAL_IP: <LOCAL IP>
+  ANYLOG_SERVER_PORT: "32048"
+  ANYLOG_REST_PORT: "32049"
+  ANYLOG_BROKER_PORT: "32050"
+  MASTER_NODE: "127.0.0.1:32048"
+  SYNC_TIME: "30 second"
+
+  # User should update DB_USER credentials
+  DB_TYPE: "psql"
+  DB_IP: "postgres"
+  DB_USER: "admin"
+  DB_PASSWD: "passwd"
+  DB_PORT: "5432"
+  DEFAULT_DBMS: "test"
+
+  CLUTSER_NAME: "new-cluster"
+  ENABLE_PARTITION: "true"
+  PARTITION_COLUMN: "timestamp"
+  PARTITION_INTERVAL: "month"
+  PARTITION_KEEP: "42"
+  ENABLE_DATA_MONITOR: "false"
+  TABLE_NAME: "*"
+  INTERVAL_VALUE: "10"
+  DATA_MONITOR_INTERVAL: "1 minute"
+  DATA_MONITOR_COLUMN: "value"
+
+  MQTT_ENABLE: "true"
+  BROKER: "driver.cloudmqtt.com"
+  MQTT_PORT: "18785"
+  MQTT_USER: "ibglowct"
+  MQTT_PASSWORD: "MSY4e009J7ts"
+  MQTT_LOG: "false"
+  MQTT_TOPIC_NAME: "anylogedgex"
+  MQTT_TOPIC_DBMS: "test"
+  MQTT_TOPIC_TABLE: "bring [device]"
+  MQTT_COLUMN_TIMESTAMP: "now"
+  MQTT_COLUMN_VALUE_TYPE: "float"
+  MQTT_COLUMN_VALUE: "bring [readings][][value]"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anylog-node
+  labels:
+    app: anylog-node
+spec:
+  ports:
+  - port: 32048
+    name: anylog-node-tcp
+  - port: 32049
+    name: anylog-node-rest
+  - port: 32050
+    name: anylog-node-broker
+  selector:
+    app: anylog-node
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: anylog-node
+  labels:
+    app: anylog-node
+spec:
+  serviceName: "anylog-node"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anylog-node
+  template:
+    metadata:
+      labels:
+        app: anylog-node
+    spec:
+      imagePullSecrets:
+      - name: anylogregistrykey
+      containers:
+      - name: anylog-node
+        image: anylogco/anylog-network:test
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: node-configuration
+        ports:
+          - containerPort: 32048
+            name: tcp
+          - containerPort: 32049
+            name: rest
+          - containerPort: 32050
+            name: broker
