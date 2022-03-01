@@ -63,13 +63,6 @@ spec:
         ports:
         - containerPort: 5432
           name: postgres
-#        volumeMounts:
-#        - name: postgres-pv
-#          mountPath: "/var/lib/postgresql/data"
-#      volumes:
-#      - name: postgres-pv
-#        persistentVolumeClaim:
-#          claimName: postgres-pv-claim
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -123,15 +116,6 @@ spec:
         ports:
           - containerPort: 5000
             name: anylog-gui
-#        volumeMounts:
-#        - name: gui-pv-data
-#          mountPath: /app/AnyLog-GUI/anylog_query/static/json
-#      volumes:
-#      - name: gui-pv-data
-#        persistentVolumeClaim:
-#          claimName: gui-pv-claim
-#
-
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -184,15 +168,6 @@ spec:
         ports:
           - containerPort: 8000
             name: remote-cli
-#        volumeMounts:
-#        - name: cli-pv-data
-#          mountPath: /app/Remote-CLI/anylog_query/static/json
-#      volumes:
-#      - name: cli-pv-data
-#        persistentVolumeClaim:
-#          claimName: cli-pv-claim
-
-
 ---
 # Based On: https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
 apiVersion: v1
@@ -249,14 +224,6 @@ spec:
         ports:
         - containerPort: 3000
           name: grafana
-# volumes return error: Back-off restarting failed container
-#        volumeMounts:
-#        - name: grafana-pv-data
-#          mountPath: /var/lib/grafana
-#      volumes:
-#      - name: grafana-pv-data
-#        persistentVolumeClaim:
-#          claimName: postgres-pv-claim
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -325,6 +292,7 @@ spec:
     name: anylog-node-broker
   selector:
     app: anylog-node
+  type: NodePort
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -359,27 +327,3 @@ spec:
             name: rest
           - containerPort: 32050
             name: broker
-#        volumeMounts:
-#        - name: anylog-node-anylog-pv-data
-#          mountPath: /app/AnyLog-Network/anylog
-#        - name: anylog-node-blockchaiin-pv-data
-#          mountPath: /app/AnyLog-Network/blockchaiin
-#        - name: anylog-node-data-pv-data
-#          mountPath: /app/AnyLog-Network/data
-#        - name: anylog-node-local-scripts-pv-data
-#          mountPath: /app/AnyLog-Network/local-scripts
-#      volumes:
-#      - name: anylog-node-anylog-pv-data
-#        persistentVolumeClaim:
-#          claimName: anylog-node-anylog-pv-claim
-#      - name: anylog-node-blockchain-pv-data
-#        persistentVolumeClaim:
-#          claimName: anylog-node-blockchain-pv-claim
-#      - name: anylog-node-data-pv-data
-#        persistentVolumeClaim:
-#          claimName: anylog-node-data-pv-claim
-#      - name: anylog-node-local-scripts-pv-data
-#        persistentVolumeClaim:
-#          claimName: anylog-node-local-scripts-pv-claim
-
----
