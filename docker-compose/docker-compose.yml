@@ -63,7 +63,7 @@ services:
     ports:
       - 32048:32048
       - 32049:32049
-#      - 32050:32050
+      - 32050:32050
     volumes:
       - anylog-node-anylog:/app/AnyLog-Network/anylog
       - anylog-node-blockchain:/app/AnyLog-Network/blockchain
