@@ -1,4 +1,4 @@
-version: "3.4"
+version: "2.4"
 services:
   database:
     image: postgres:14.0-alpine
@@ -13,21 +13,28 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-  grafana:
-    image: grafana/grafana:7.5.7
-    env_file:
-      - envs/grafana.env
-    container_name: grafana
-    stdin_open: true
-    tty: true
-    networks:
-      - frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - grafana-data:/var/lib/grafana
-      - grafana-log:/var/log/grafana
-      - grafana-config:/etc/grafana
+    healthcheck: 
+      test: ["CMD-SHELL", "pg_isready"] 
+      interval: 10s
+      timeout: 5s
+      retries: 5
+#------- Run Outside ------ 
+#  grafana:
+#    image: grafana/grafana:7.5.7
+#    env_file:
+#      - envs/grafana.env
+#    container_name: grafana
+#    stdin_open: true
+#    tty: true
+#    networks:
+#      - frontend
+#    ports:
+#      - "3000:3000"
+#    volumes:
+#      - grafana-data:/var/lib/grafana
+#      - grafana-log:/var/log/grafana
+#      - grafana-config:/etc/grafana
+#------- Grafana ------ 
   remote-cli:
     image: anylogco/remote-cli:latest
     env_file:
@@ -35,8 +42,7 @@ services:
     container_name: remote-cli
     stdin_open: true
     tty: true
-    networks:
-      - frontend
+    network_mode: "host" 
     ports:
       - 8000:8000
     volumes:
@@ -44,6 +50,7 @@ services:
   anylog-gui:
     image: anylogco/anylog-gui:latest
     container_name: anylog-gui
+    network_mode: "host" 
     env_file:
       - envs/anylog_tools.env
     stdin_open: true
@@ -53,22 +60,25 @@ services:
     volumes:
       - anylog-gui:/app/AnyLog-GUI/views
   anylog-node:
-    image: anylogco/anylog-network:predevelop
+    image: anylogco/anylog-network:aarna
     env_file:
       - envs/anylog_node.env
     container_name: anylog-node
     stdin_open: true
     tty: true
-    network_mode: host
+    network_mode: "host" 
     ports:
       - 32048:32048
       - 32049:32049
-#      - 32050:32050
+      - 32050:32050
     volumes:
       - anylog-node-anylog:/app/AnyLog-Network/anylog
       - anylog-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-node-data:/app/AnyLog-Network/data
-      - anylog-node-local-scripts:/app/AnyLog-Network/local_scripts
+      - anylog-node-local-scripts:/app/AnyLog-Network/scripts
+    depends_on:
+      database:
+        condition: service_healthy
 networks:
   frontend:
     driver: bridge
