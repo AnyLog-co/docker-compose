@@ -60,7 +60,7 @@ services:
     volumes:
       - anylog-gui:/app/AnyLog-GUI/views
   anylog-node:
-    image: anylogco/anylog-network:aarna
+    image: anylogco/anylog-network:predevelop
     env_file:
       - envs/anylog_node.env
     container_name: anylog-node
