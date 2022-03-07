@@ -85,9 +85,6 @@ networks:
     external: false
 volumes:
   pgdata:
-  grafana-data:
-  grafana-log:
-  grafana-config:
   remote-cli:
   anylog-gui:
   anylog-node-anylog:
