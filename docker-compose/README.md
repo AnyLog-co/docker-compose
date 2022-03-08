@@ -5,7 +5,7 @@ The following provides details in regard to deploying AnyLog Node, and it's corr
 
 ## Requirement
 * [contact us](mailto:info@anylog.co) for access to AnyLog Docker Hub repository
-* [docker-compose](https://github.com/AnyLog-co/documentation/blob/master/Docker%20Compose%20&%20Kubernetes.md)
+* [docker-compose](docker_install.sh)
 ```commandline
 sudo apt-get -y install update
 sudo apt-get -y install curl apt-transport-https ca-certificates
@@ -35,3 +35,4 @@ can be changed in [tools env file](anylog-tools/envs/anylog_tools.env).
 cd $HOME/deployments/docker-compose/anylog-tools/
 docker-compose up -d 
 ```
+ 

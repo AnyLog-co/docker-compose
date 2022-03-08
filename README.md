@@ -13,7 +13,7 @@ The following provides information on how to deploy AnyLog using either as _dock
 **Shell Scripts**   
 * [install.sh](shell/install.sh) - code to install _docker_, _docker-compose_, _kompose_, _kubectl_ and _helm_
 * [credentials.sh](shell/credentials.sh) - configure credentials for Kubernetes in order to download AnyLog 
-* [grafana.sh](shell/grafana.sh) - shell script to [installing Grafana](https://grafana.com/docs/grafana/latest/installation/) 
+* [grafana.sh](docker-compose/grafana.sh) - shell script to [installing Grafana](https://grafana.com/docs/grafana/latest/installation/) 
 via docker
 
 **Docker Compose** 
