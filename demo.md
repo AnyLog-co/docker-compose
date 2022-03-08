@@ -86,7 +86,7 @@ minikube service --url remote-cli
 
 4. On the same machine, or a machine that's accessible by the ndoe, install [Grafana](https://grafana.com/docs/grafana/latest/installation/) 
 or other BI tool in order to [generate reports](https://github.com/AnyLog-co/documentation/tree/os-dev/northbound%20connectors) 
-of the data. Docker deployment of Grafana can be found [here](grafana.sh)
+of the data. Docker deployment of Grafana can be found [here](shell/grafana.sh)
 ```bash
 helm install --generate-name $HOME/deployments/helm/grafana
 ```
