@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: node-configuration
+  labels:
+    app: anylog-standalone-node
+data:
+  NODE_TYPE: "standalone"
+  NODE_NAME: "aarana-standalone-node"
+  COMPANY_NAME: "Aarna"
+  #EXTERNAL_IP: <EXTERNAL IP>
+  #LOCAL_IP: <LOCAL IP>
+  ANYLOG_SERVER_PORT: "32048"
+  ANYLOG_REST_PORT: "32049"
+  ANYLOG_BROKER_PORT: "32050"
+  MASTER_NODE: "127.0.0.1:32048"
+  SYNC_TIME: "30 second"
+
+  # User should update DB_USER credentials
+  DB_TYPE: "psql"
+  DB_IP: "postgres"
+  DB_USER: "aarna"
+  DB_PASSWD: "passwd"
+  DB_PORT: "5432"
+  DEFAULT_DBMS: "aarna_demo"
+
+  CLUTSER_NAME: "aarna-cluster1"
+  TABLE_NAME: "*"
+  ENABLE_PARTITION: "true"
+  PARTITION_COLUMN: "timestamp"
+  PARTITION_INTERVAL: "15 days"
+  PARTITION_KEEP: "6"
+  ENABLE_DATA_MONITOR: "false"
+
+  MQTT_ENABLE: "false"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: anylog-standalone-node
+  labels:
+    app: anylog-standalone-node
+spec:
+  ports:
+  - port: 32048
+    name: anylog-standalone-node-tcp
+  - port: 32049
+    name: anylog-standalone-node-rest
+  - port: 32050
+    name: anylog-standalone-node-broker
+  selector:
+    app: anylog-standalone-node
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: anylog-standalone-node
+  labels:
+    app: anylog-standalone-node
+spec:
+  serviceName: "anylog-standalone-node"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anylog-standalone-node
+  template:
+    metadata:
+      labels:
+        app: anylog-standalone-node
+    spec:
+      imagePullSecrets:
+      - name: anylogregistrykey
+      containers:
+      - name: anylog-standalone-node
+        image: anylogco/anylog-network:aarna
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: node-configuration
+        ports:
+          - containerPort: 32048
+            name: tcp
+          - containerPort: 32049
+            name: rest
+          - containerPort: 32050
+            name: broker
