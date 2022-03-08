@@ -33,6 +33,13 @@ sudo apt-get install -y kubectl
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 
+# install helm - https://helm.sh/docs/intro/install/
+curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+sudo apt-get install apt-transport-https --yes
+echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+
 # Update env
 for CMD in update upgrade update ;
 do
@@ -41,6 +48,7 @@ done
 
 cd $HOME
 rm -rf /tmp/*
+
 
 
 

@@ -1,9 +1,0 @@
-Status:
-* Able to deploy / Access all parts
-
-Issue:
-*  Volumes - grafana-data:/var/lib/grafana
-GF_PATHS_DATA='/var/lib/grafana' is not writable.
-You may have issues with file permissions, more information here: http://docs.grafana.org/installation/docker/#migrate-to-v51-or-later
-mkdir: can't create directory '/var/lib/grafana/plugins': Permission denied
-

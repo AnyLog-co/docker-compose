@@ -3,7 +3,7 @@ The following provides information on how to deploy AnyLog using either as _dock
 
 By default, both deployments deploy an AnyLog single-node with data coming in from a remote MQTT broker.
 
-Configuration can be found in the [env](docker-compose/envs) for docker-compose and in the actual YAML files for kubernetes and helm deployments. 
+Configuration can be found in the [env](docker-compose/anylog-tools/envs) for docker-compose and in the actual YAML files for kubernetes and helm deployments. 
 
 ## Requirements 
 * [docker-compose](https://github.com/AnyLog-co/documentation/blob/master/Docker%20Compose%20&%20Kubernetes.md)
@@ -20,11 +20,11 @@ cd $HOME/deployments
 ```
 
 ## Docker Compose 
-* Where to update deployment configurations [envs](docker-compose/envs/)
-  * [AnyLog Network](docker-compose/envs/anylog_node.env) 
-  * [AnyLog Tools](docker-compose/envs/anylog_tools.env) - Configuration for _AnyLog GUI_ and _Remote CLI_  
-  * [Postgres](docker-compose/envs/postgres.env)
-  * [Grafana](docker-compose/envs/grafana.env)
+* Where to update deployment configurations [envs](docker-compose/anylog-tools/envs/)
+  * [AnyLog Network](docker-compose/anylog-tools/envs/anylog_node.env) 
+  * [AnyLog Tools](docker-compose/anylog-tools/envs/anylog_tools.env) - Configuration for _AnyLog GUI_ and _Remote CLI_  
+  * [Postgres](docker-compose/anylog-tools/envs/postgres.env)
+  * [Grafana](docker-compose/anylog-tools/envs/grafana.env)
   
 * How to start docker-compose
 ```bash
