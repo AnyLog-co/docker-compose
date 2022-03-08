@@ -9,14 +9,6 @@ done
 sudo apt-get -y install curl apt-transport-https ca-certificates
 
 # Install / Download requirements
-## docker
-sudo apt-get -y install docker.io docker-compose
-
-## docker permissions
-USER=`whoami`
-sudo groupadd docker
-sudo usermod -aG docker ${USER}
-newgrp docker
 
 # kompose
 curl -L https://github.com/kubernetes/kompose/releases/download/v1.26.1/kompose-linux-amd64 -o kompose
