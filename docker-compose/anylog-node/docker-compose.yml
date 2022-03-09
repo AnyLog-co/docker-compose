@@ -1,0 +1,23 @@
+version: "2.4"
+services:
+  anylog-node:
+    image: anylogco/anylog-network:develop
+    env_file:
+      - envs/anylog_node.env
+    container_name: anylog-node
+    stdin_open: true
+    tty: true
+    network_mode: "host" 
+    volumes:
+      - anylog-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-node-data:/app/AnyLog-Network/data
+      - anylog-node-local-scripts:/app/AnyLog-Network/scripts
+    depends_on:
+      database:
+        condition: service_healthy
+volumes:
+  anylog-node-anylog:
+  anylog-node-blockchain:
+  anylog-node-data:
+  anylog-node-local-scripts:
