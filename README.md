@@ -11,9 +11,10 @@ The following provides information on how to deploy AnyLog using either as _dock
 
 ## Directory Structure
 **Docker Compose** 
-* [docker-compose](docker-compose/docker_install.sh) - installment of docker & docker-compose
+* [docker-compose](docker-compose/docker_install.sh) - installation of docker & docker-compose
 * [AnyLog Node](docker-compose/anylog-node) - docker-compose file to install AnyLog-Node & Postgres (v.14.0-alpine) instance 
 * [AnyLog Tools](docker-compose/anylog-tools) - docker-compose file to install AnyLog-GUI and our Remote-CLI
+* [Postgres](docker-compose/postgres.sh) - shell script to install [PostgreSQL](https://www.postgresql.org/)
 * [Grafana](docker-compose/grafana.sh) - shell script to [installing Grafana](https://grafana.com/docs/grafana/latest/installation/) 
 via docker
 

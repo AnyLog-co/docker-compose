@@ -1,25 +1,7 @@
 version: "2.4"
 services:
-  database:
-    image: postgres:14.0-alpine
-    env_file:
-      - envs/postgres.env
-    container_name: postgres
-    stdin_open: true
-    tty: true
-    networks:
-      - frontend
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck: 
-      test: ["CMD-SHELL", "pg_isready"] 
-      interval: 10s
-      timeout: 5s
-      retries: 5
   anylog-node:
-    image: anylogco/anylog-network:aarna
+    image: anylogco/anylog-network:develop
     env_file:
       - envs/anylog_node.env
     container_name: anylog-node
@@ -34,12 +16,7 @@ services:
     depends_on:
       database:
         condition: service_healthy
-networks:
-  frontend:
-    driver: bridge
-    external: false
 volumes:
-  pgdata:
   anylog-node-anylog:
   anylog-node-blockchain:
   anylog-node-data:
