@@ -13,9 +13,6 @@ services:
       - anylog-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-node-data:/app/AnyLog-Network/data
       - anylog-node-local-scripts:/app/AnyLog-Network/scripts
-    depends_on:
-      database:
-        condition: service_healthy
 volumes:
   anylog-node-anylog:
   anylog-node-blockchain:
