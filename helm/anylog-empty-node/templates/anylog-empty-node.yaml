@@ -89,7 +89,7 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
-              name: node-configuration
+              name: anylog-empty-node-configuration
         ports:
           - containerPort: 32048
             name: tcp
