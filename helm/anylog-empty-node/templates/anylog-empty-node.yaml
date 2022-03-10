@@ -5,7 +5,7 @@ metadata:
   labels:
     app: anylog-empty-node
 data:
-  NODE_TYPE: "standalone"
+  NODE_TYPE: "none"
   NODE_NAME: "anylog-empty-node"
   COMPANY_NAME: "AnyLog"
   #EXTERNAL_IP: <EXTERNAL IP>
