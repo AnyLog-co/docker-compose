@@ -94,7 +94,7 @@ spec:
       - name: anylog-registry-key
       containers:
       - name: anylog-empty-node
-        image: anylogco/anylog-network:AnyLog
+        image: anylogco/anylog-network:develop
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
