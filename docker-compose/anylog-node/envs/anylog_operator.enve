@@ -16,19 +16,17 @@ SYNC_TIME="30 second"
 
 # User should update DB_USER credentials
 DB_TYPE=psql
-DB_IP=127.0.0.1
-DB_USER=admin
-DB_PASSWD=passwd
+DB_CONN=admin@127.0.0.1:passwd
 DB_PORT=5432
 DEFAULT_DBMS=test
 
 # Operator specific parameters
 CLUTSER_NAME=new-cluster
 ENABLE_PARTITION=true
-PARTITION_COLUMN=timestamp
-PARTITION_INTERVAL=month
-PARTITION_KEEP=3
-TABLE_NAME=*
+#PARTITION_COLUMN=timestamp
+#PARTITION_INTERVAL=month
+#PARTITION_KEEP=3
+#TABLE_NAME=*
 
 # MQTT parameters - the default recieves data from a remote MQTT broker
 MQTT_ENABLE=false
@@ -39,7 +37,7 @@ MQTT_PASSWORD=MSY4e009J7ts
 MQTT_LOG=false
 MQTT_TOPIC_NAME=anylogedgex
 MQTT_TOPIC_DBMS=test
-MQTT_TOPIC_TABLE=rand_data
+MQTT_TOPIC_TABLE="bring [device]"
 MQTT_COLUMN_TIMESTAMP=now
 MQTT_COLUMN_VALUE_TYPE=float
 MQTT_COLUMN_VALUE="bring [readings][][value]"
