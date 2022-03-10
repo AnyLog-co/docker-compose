@@ -91,9 +91,9 @@ of the data. Docker deployment of Grafana can be found [here](docker-compose/gra
 helm install --generate-name $HOME/deployments/helm/grafana
 ```
 
-[Standalone Node](helm/anylog-standalone) deploy _master_ and _operator_ as a single AnyLog instance. For the official 
+[Standalone Node](helm/anylog-empty-node) deploy _master_ and _operator_ as a single AnyLog instance. For the official 
 deployment we wil not be using this option. However, it is available for testing and small scale projects.  
-1. Deploy [Standalone Helm Chart](helm/anylog-standalone)
+1. Deploy [Standalone Helm Chart](helm/anylog-empty-node)
 ```bash
 helm install --generate-name $HOME/deployments/helm/anylog-standalone/
 ```
