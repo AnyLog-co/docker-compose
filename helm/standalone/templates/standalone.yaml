@@ -1,19 +1,19 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: anylog-empty-node-configuration
+  name: node-configuration
   labels:
-    app: anylog-empty-node
+    app: anylog-standalone
 data:
-  NODE_TYPE: "none"
-  NODE_NAME: "anylog-empty-node"
-  COMPANY_NAME: "AnyLog"
+  NODE_TYPE: "standalone"
+  NODE_NAME: "aarana-standalone-node"
+  COMPANY_NAME: "Aarna"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
   ANYLOG_SERVER_PORT: "32048"
   ANYLOG_REST_PORT: "32049"
-#  ANYLOG_BROKER_PORT: 32050
-  MASTER_NODE: "127.0.0.1:32048"
+  ANYLOG_BROKER_PORT: "32050"
+  MASTER_NODE: "anylog-standalone:32048"
   SYNC_TIME: "30 second"
 
   # User should update DB_USER credentials
@@ -24,7 +24,8 @@ data:
   DB_PORT: "5432"
   DEFAULT_DBMS: "test"
 
-  NEW_CLUSTER: "cluster1"
+  # NEW_CLUSTER -- cluster name
+  NEW_CLUSTER: "demo-cluster1"
   TABLE_NAME: "*"
   ENABLE_PARTITION: "true"
   PARTITION_COLUMN: "timestamp"
@@ -32,64 +33,54 @@ data:
   PARTITION_KEEP: "6"
   ENABLE_DATA_MONITOR: "false"
 
-  MQTT_ENABLE: "true"
-  BROKER: "driver.cloudmqtt.com"
-  MQTT_PORT: "18785"
-  MQTT_USER: "ibglowct"
-  MQTT_PASSWORD: "MSY4e009J7ts"
-  MQTT_LOG: "false"
-  MQTT_TOPIC_NAME: "anylogedgex"
-  MQTT_TOPIC_DBMS: "test"
-  MQTT_TOPIC_TABLE: "rand_int"
-  MQTT_COLUMN_TIMESTAMP: "now"
-  MQTT_COLUMN_VALUE_TYPE: "float"
-  MQTT_COLUMN_VALUE: "bring [readings][][value]"
+  MQTT_ENABLE: "false"
+  DEPLOY_LOCAL_SCRIPT: "true"
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: anylog-empty-node
+  name: anylog-standalone
   labels:
-    app: anylog-empty-node
+    app: anylog-standalone
 spec:
   ports:
   - port: 32048
-    name: anylog-empty-node-tcp
+    name: anylog-standalone-tcp
   - port: 32049
-    name: anylog-empty-node-rest
+    name: anylog-standalone-rest
   - port: 32050
-    name: anylog-empty-node-broker
+    name: anylog-standalone-broker
   selector:
-    app: anylog-empty-node
+    app: anylog-standalone
   type: NodePort
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: anylog-empty-node
+  name: anylog-standalone
   labels:
-    app: anylog-empty-node
+    app: anylog-standalone
 spec:
-  serviceName: "anylog-empty-node"
+  serviceName: "anylog-standalone"
   replicas: 1
   selector:
     matchLabels:
-      app: anylog-empty-node
+      app: anylog-standalone
   template:
     metadata:
       labels:
-        app: anylog-empty-node
+        app: anylog-standalone
     spec:
       imagePullSecrets:
-      - name: anylog-registry-key
+      - name: anylogregistrykey
       containers:
-      - name: anylog-empty-node
-        image: anylogco/anylog-network:develop
+      - name: anylog-standalone
+        image: anylogco/anylog-network:aarna
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
-              name: anylog-empty-node-configuration
+              name: node-configuration
         ports:
           - containerPort: 32048
             name: tcp
