@@ -33,7 +33,16 @@ via docker
 **Kubernetes Deployment**
 * [install.sh](helm/install.sh) - script to install _kompose_, _kubectl_, _minikube_ and _helm_
 * [credentials.sh](helm/credentials.sh) - configure credentials for Kubernetes in order to download AnyLog 
-
+* [postgres](helm/postgres) - Helm deployment for postgres 
+* [grafana](helm/grafana) - Helm deployment for grafana 
+* [anylog-tools](helm/anylog-tools) - Helm deployment for Remote-CLI & AnyLog GUI
+* AnyLog instance deployments 
+  * [master](helm/anylog-master)
+  * [operator](helm/anylog-operator)
+  * [publisher](helm/anylog-publisher)
+  * [query](helm/anylog-query)
+  * [standalone](helm/anylog-standalone)
+  * [standalone-publisher](helm/anylog-standalone-publisher)
 
 ## Deployments
 * [Docker Compose](docker-compose/README.md)
