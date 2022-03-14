@@ -14,12 +14,12 @@ The following provides information on how to deploy AnyLog using either as _dock
 to query data. 
 
 
-## Requirements  
-* docker / docker-compose 
-* kompose
-* kubectl
-* minikube 
-* helm
+## Requirements   
+* [docker-compose](https://github.com/AnyLog-co/documentation/blob/master/Docker%20Compose%20&%20Kubernetes.md)
+* [kompose](https://kompose.io/installation/) - A conversion tool for Docker Compose to container orchestrators such as Kubernetes (or OpenShift).
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) - Kubernetes command line tool
+* [minikube](https://minikube.sigs.k8s.io/docs/start/) - local Kubernetes, focusing on making it easy to learn and develop for Kubernetes.
+* [helm-charts](https://helm.sh/docs/intro/quickstart/)
 
 ## Directory Structure
 **Docker Compose** 
