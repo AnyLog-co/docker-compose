@@ -1,20 +1,20 @@
 version: "2.4"
 services:
-  anylog-query-node:
-    image: anylogco/anylog-network:develop
+  anylog-node:
+    image: anylogco/anylog-network:predevelop
     env_file:
       - envs/anylog_node.env
-    container_name: anylog-query-node
+    container_name: anylog-node
     stdin_open: true
     tty: true
     network_mode: "host" 
     volumes:
-      - anylog-query-node-anylog:/app/AnyLog-Network/anylog
-      - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-query-node-data:/app/AnyLog-Network/data
-      - anylog-query-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-node-data:/app/AnyLog-Network/data
+      - anylog-node-local-scripts:/app/AnyLog-Network/scripts
 volumes:
-  anylog-query-node-anylog:
-  anylog-query-node-blockchain:
-  anylog-query-node-data:
-  anylog-query-node-local-scripts:
+  anylog-node-anylog:
+  anylog-node-blockchain:
+  anylog-node-data:
+  anylog-node-local-scripts:
