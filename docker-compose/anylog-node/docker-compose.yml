@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   anylog-node:
-    image: anylogco/anylog-network:develop
+    image: anylogco/anylog-network:predevelop
     env_file:
       - envs/anylog_node.env
     container_name: anylog-node
