@@ -34,14 +34,20 @@ metadata:
   labels:
     app: anylog-master
 spec:
-  ports:
-  - port: 32048
-    name: anylog-master-tcp
-  - port: 32049
-    name: anylog-master-rest
-  selector:
-    app: anylog-master
   type: NodePort
+  ports:
+  - name: anylog-rest-tcp
+    protocol: TCP
+    port: 32048
+    targetPort: 32048
+    nodePort: 32048
+  - name: anylog-rest-rest
+    protocol: TCP
+    port: 32049
+    targetPort: 32049
+    nodePort: 32049
+  selector:
+    app: anylog-rest
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -61,10 +67,10 @@ spec:
         app: anylog-master
     spec:
       imagePullSecrets:
-      - name: anylogregistrykey
+      - name: imagepullsecret
       containers:
-      - name: anylog-master
-        image: anylogco/anylog-network:develop
+      - name: anylog-rest
+        image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
