@@ -5,7 +5,7 @@ metadata:
   labels:
     app: anylog-rest
 data:
-  NODE_TYPE: "rests"
+  NODE_TYPE: "rest"
   NODE_NAME: "master-node"
   COMPANY_NAME: "AnyLog"
   #EXTERNAL_IP: <EXTERNAL IP>
