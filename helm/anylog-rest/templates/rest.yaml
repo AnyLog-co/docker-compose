@@ -67,7 +67,7 @@ spec:
         app: anylog-rest
     spec:
       containers:
-      - name: anylog-node
+      - name: anylog-rest
         image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
         imagePullPolicy: IfNotPresent
         envFrom:
