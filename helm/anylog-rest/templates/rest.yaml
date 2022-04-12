@@ -1,9 +1,4 @@
 apiVersion: v1
-kind: secret
-metadata:
-  name:
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: master-configuration
@@ -75,7 +70,7 @@ spec:
       - name: anylog-registry-key
       containers:
       - name: anylog-rest
-        image: anylogco/anylog-network:predevelop
+        image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
