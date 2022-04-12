@@ -66,6 +66,8 @@ spec:
       labels:
         app: anylog-rest
     spec:
+      imagePullSecrets:
+      - name: imagepullsecret
       containers:
       - name: anylog-rest
         image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
