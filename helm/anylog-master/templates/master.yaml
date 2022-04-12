@@ -68,7 +68,7 @@ spec:
       imagePullSecrets:
       - name: imagepullsecret
       containers:
-      - name: anylog-rest
+      - name: anylog-master
         image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
         imagePullPolicy: IfNotPresent
         envFrom:
