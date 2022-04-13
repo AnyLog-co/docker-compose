@@ -6,7 +6,7 @@ metadata:
     app: anylog-operator2
 data:
   NODE_TYPE: "operator"
-  NODE_NAME: "operator-node1"
+  NODE_NAME: "operator-node2"
   COMPANY_NAME: "AnyLog"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
