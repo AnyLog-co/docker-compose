@@ -20,9 +20,13 @@ metadata:
   labels:
     app: grafana
 spec:
+  type: NodePort
   ports:
-  - port: 3000
-    name: grafana
+  - name: grafana-tcp
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
+    nodePort: 3000
   selector:
     app: grafana
 ---
