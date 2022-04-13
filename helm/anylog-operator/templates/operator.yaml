@@ -24,12 +24,12 @@ data:
   DEFAULT_DBMS: "test"
 
   # NEW_CLUSTER -- cluster name
-  CLUSTER_NAME: "demo-cluster1"
+  CLUSTER_NAME: "demo-cluster2"
   TABLE_NAME: "*"
   ENABLE_PARTITION: "true"
   PARTITION_COLUMN: "timestamp"
-  PARTITION_INTERVAL: "14 days"
-  PARTITION_KEEP: "6"
+  PARTITION_INTERVAL: "7 days"
+  PARTITION_KEEP: "12"
   ENABLE_DATA_MONITOR: "false"
 
   MQTT_ENABLE: "true"
