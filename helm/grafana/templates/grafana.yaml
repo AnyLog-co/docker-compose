@@ -24,9 +24,9 @@ spec:
   ports:
   - name: grafana-tcp
     protocol: TCP
-    port: 3000
-    targetPort: 3000
-    nodePort: 3000
+    port: 30000
+    targetPort: 30000
+    nodePort: 30000
   selector:
     app: grafana
 ---
@@ -55,5 +55,5 @@ spec:
         - configMapRef:
             name: grafana-configuration
         ports:
-        - containerPort: 3000
+        - containerPort: 30000
           name: grafana
