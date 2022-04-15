@@ -12,6 +12,7 @@ data:
   GF_AUTH_ANONYMOUS_ENABLED: "true"
   GF_SECURITY_ALLOW_EMBEDDING: "true"
   GF_INSTALL_PLUGINS: simpod-json-datasource,grafana-worldmap-panel
+  GF_SERVER_HTTP_PORT: "31000"
 ---
 apiVersion: v1
 kind: Service
@@ -20,24 +21,25 @@ metadata:
   labels:
     app: grafana
 spec:
-  type: NodePort
+  #type: NodePort
   ports:
-  - name: grafana-tcp
+  - name: grafana-service
     protocol: TCP
-    port: 30000
-    targetPort: 30000
-    nodePort: 30000
+    port: 31000
+    targetPort: 31000 
+    #nodePort: 31000
+    name: grafana
   selector:
     app: grafana
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: grafana
   labels:
     app: grafana
 spec:
-  serviceName: "grafana"
+  #serviceName: "grafana"
   replicas: 1
   selector:
     matchLabels:
@@ -55,5 +57,5 @@ spec:
         - configMapRef:
             name: grafana-configuration
         ports:
-        - containerPort: 30000
+        - containerPort: 31000
           name: grafana
