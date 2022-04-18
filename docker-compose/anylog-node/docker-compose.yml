@@ -1,7 +1,7 @@
 version: "2.4"
 services:
   anylog-publisher-node:
-    image: anylogco/anylog-network:predevelop
+    image: anylogco/anylog-network:test
     env_file:
       - envs/anylog_node.env
     container_name: anylog-publisher-node
