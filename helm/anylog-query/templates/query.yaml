@@ -3,11 +3,11 @@ kind: ConfigMap
 metadata:
   name: query-node-configuration
   labels:
-    app: anylog-query
+    app: al-nvidia-query
 data:
   NODE_TYPE: "query"
-  NODE_NAME: "query-node"
-  COMPANY_NAME: "AnyLog"
+  NODE_NAME: "al-query-node"
+  COMPANY_NAME: "Nvida"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
   ANYLOG_SERVER_PORT: "32348"
@@ -30,48 +30,48 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: anylog-query
+  name: al-nvidia-query
   labels:
-    app: anylog-query
+    app: al-nvidia-query
 spec:
   type: NodePort
   ports:
-  - name: anylog-query-tcp
+  - name: al-nvidia-query-tcp
     protocol: TCP
     appProtocol: TCP 
     port: 32348
     targetPort: 32348
     nodePort: 32348
-  - name: anylog-query-rest
+  - name: al-nvidia-query-rest
     protocol: TCP
     appProtocol: TCP
     port: 32349
     targetPort: 32349
     nodePort: 32349
   selector:
-    app: anylog-query
+    app: al-nvidia-query
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: anylog-query
+  name: al-nvidia-query
   labels:
-    app: anylog-query
+    app: al-nvidia-query
 spec:
-  serviceName: "anylog-query"
+  serviceName: "al-nvidia-query"
   replicas: 1
   selector:
     matchLabels:
-      app: anylog-query
+      app: al-nvidia-query
   template:
     metadata:
       labels:
-        app: anylog-query
+        app: al-nvidia-query
     spec:
       imagePullSecrets:
       - name: imagepullsecret
       containers:
-      - name: anylog-query
+      - name: al-nvidia-query
         image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
         imagePullPolicy: IfNotPresent
         envFrom:
