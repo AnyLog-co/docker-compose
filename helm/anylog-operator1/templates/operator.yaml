@@ -1,0 +1,104 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: operator1-node-configuration
+  labels:
+    app: nvidia-operator1
+data:
+  NODE_TYPE: "operator"
+  NODE_NAME: "operator-node1"
+  COMPANY_NAME: "Nvidia"
+  #EXTERNAL_IP: <EXTERNAL IP>
+  #LOCAL_IP: <LOCAL IP>
+  ANYLOG_SERVER_PORT: "32148"
+  ANYLOG_REST_PORT: "32149"
+  MASTER_NODE: "100.115.6.120:32048"
+  SYNC_TIME: "30 second"
+
+  # User should update DB_USER credentials
+  DB_TYPE: "psql"
+  DB_IP: "postgres"
+  DB_USER: "admin"
+  DB_PASSWD: "demo"
+  DB_PORT: "5432"
+  DEFAULT_DBMS: "test"
+
+  # NEW_CLUSTER -- cluster name
+  CLUSTER_NAME: "demo-cluster1"
+  TABLE_NAME: "*"
+  ENABLE_PARTITION: "true"
+  PARTITION_COLUMN: "timestamp"
+  PARTITION_INTERVAL: "14 days"
+  PARTITION_KEEP: "2"
+  ENABLE_DATA_MONITOR: "false"
+
+  MQTT_ENABLE: "true"
+  BROKER: "driver.cloudmqtt.com"
+  MQTT_PORT: "18785"
+  MQTT_USER: "ibglowct"
+  MQTT_PASSWORD: "MSY4e009J7ts"
+  MQTT_LOG: "false"
+  MQTT_TOPIC_NAME: "nvidiaedgex"
+  MQTT_TOPIC_DBMS: "test"
+  # original value was "bring [device]" (Random-Integer-Generator01). howerver, due to a PSQL table name limit size is 65 chars, it's manually changeds to: rand_int
+  MQTT_TOPIC_TABLE: "rand_data"
+  MQTT_COLUMN_TIMESTAMP: "now"
+  MQTT_COLUMN_VALUE_TYPE: "float"
+  MQTT_COLUMN_VALUE: "bring [readings][][value]"
+
+  DEPLOY_LOCAL_SCRIPT: "false"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nvidia-operator1
+  labels:
+    app: nvidia-operator1
+spec:
+  type: NodePort
+  ports:
+  - name: nvidia-operator1-tcp
+    protocol: TCP
+    port: 32148
+    targetPort: 32148
+    nodePort: 32148
+  - name: nvidia-operator1-rest
+    protocol: TCP
+    port: 32149
+    targetPort: 32149
+    nodePort: 32149
+  selector:
+    app: nvidia-operator1
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nvidia-operator1
+  labels:
+    app: nvidia-operator1
+spec:
+  serviceName: "nvidia-operator1"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nvidia-operator1
+  template:
+    metadata:
+      labels:
+        app: nvidia-operator1
+    spec:
+      imagePullSecrets:
+      - name: imagepullsecret
+      containers:
+      - name: nvidia-operator1
+        image: nvcr.io/uazwwnrnci5h/nvidia/nvidia-network:demo
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: operator1-node-configuration
+        ports:
+          - containerPort: 32148
+            name: tcp
+          - containerPort: 32149
+            name: rest
