@@ -29,7 +29,7 @@ data:
   ENABLE_PARTITION: "true"
   PARTITION_COLUMN: "timestamp"
   PARTITION_INTERVAL: "7 days"
-  PARTITION_KEEP: "12"
+  PARTITION_KEEP: "4"
   ENABLE_DATA_MONITOR: "false"
 
   MQTT_ENABLE: "true"
