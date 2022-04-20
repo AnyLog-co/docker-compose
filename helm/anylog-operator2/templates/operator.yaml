@@ -38,7 +38,7 @@ data:
   MQTT_USER: "ibglowct"
   MQTT_PASSWORD: "MSY4e009J7ts"
   MQTT_LOG: "false"
-  MQTT_TOPIC_NAME: "nvidiaedgex"
+  MQTT_TOPIC_NAME: "anylogedgex"
   MQTT_TOPIC_DBMS: "test"
   # original value was "bring [device]" (Random-Integer-Generator01). howerver, due to a PSQL table name limit size is 65 chars, it's manually changeds to: rand_int
   MQTT_TOPIC_TABLE: "rand_data"
