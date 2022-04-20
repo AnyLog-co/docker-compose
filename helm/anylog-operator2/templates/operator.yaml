@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: operator1-node-configuration
+  name: operator2-node-configuration
   labels:
-    app: nvidia-operator1
+    app: nvidia-operator2
 data:
   NODE_TYPE: "operator"
-  NODE_NAME: "operator-node1"
+  NODE_NAME: "operator-node2"
   COMPANY_NAME: "Nvidia"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
-  ANYLOG_SERVER_PORT: "32148"
-  ANYLOG_REST_PORT: "32149"
+  ANYLOG_SERVER_PORT: "32158"
+  ANYLOG_REST_PORT: "32159"
   MASTER_NODE: "100.115.6.90:32048"
   SYNC_TIME: "30 second"
 
@@ -24,12 +24,12 @@ data:
   DEFAULT_DBMS: "test"
 
   # NEW_CLUSTER -- cluster name
-  CLUSTER_NAME: "demo-cluster1"
+  CLUSTER_NAME: "demo-cluster2"
   TABLE_NAME: "*"
   ENABLE_PARTITION: "true"
   PARTITION_COLUMN: "timestamp"
-  PARTITION_INTERVAL: "14 days"
-  PARTITION_KEEP: "2"
+  PARTITION_INTERVAL: "7 days"
+  PARTITION_KEEP: "4"
   ENABLE_DATA_MONITOR: "false"
 
   MQTT_ENABLE: "true"
@@ -52,53 +52,53 @@ data:
 apiVersion: v1
 kind: Service
 metadata:
-  name: nvidia-operator1
+  name: nvidia-operator2
   labels:
-    app: nvidia-operator1
+    app: nvidia-operator2
 spec:
   type: NodePort
   ports:
-  - name: nvidia-operator1-tcp
+  - name: nvidia-operator2-tcp
     protocol: TCP
-    port: 32148
-    targetPort: 32148
-    nodePort: 32148
-  - name: nvidia-operator1-rest
+    port: 32158
+    targetPort: 32158
+    nodePort: 32158
+  - name: nvidia-operator2-rest
     protocol: TCP
-    port: 32149
-    targetPort: 32149
-    nodePort: 32149
+    port: 32159
+    targetPort: 32159
+    nodePort: 32159
   selector:
-    app: nvidia-operator1
+    app: nvidia-operator2
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: nvidia-operator1
+  name: nvidia-operator2
   labels:
-    app: nvidia-operator1
+    app: nvidia-operator2
 spec:
-  serviceName: "nvidia-operator1"
+  serviceName: "nvidia-operator2"
   replicas: 1
   selector:
     matchLabels:
-      app: nvidia-operator1
+      app: nvidia-operator2
   template:
     metadata:
       labels:
-        app: nvidia-operator1
+        app: nvidia-operator2
     spec:
       imagePullSecrets:
       - name: imagepullsecret
       containers:
-      - name: nvidia-operator1
+      - name: nvidia-operator2
         image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
-              name: operator1-node-configuration
+              name: operator2-node-configuration
         ports:
-          - containerPort: 32148
+          - containerPort: 32158
             name: tcp
-          - containerPort: 32149
+          - containerPort: 32159
             name: rest
