@@ -12,7 +12,7 @@ data:
   #LOCAL_IP: <LOCAL IP>
   ANYLOG_SERVER_PORT: "32048"
   ANYLOG_REST_PORT: "32049"
-  MASTER_NODE: "nvidia-master.local:32048"
+  MASTER_NODE: "nvidia-master:32048"
   SYNC_TIME: "30 second"
 
   # User should update DB_USER credentials
