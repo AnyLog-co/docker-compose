@@ -47,7 +47,7 @@ spec:
     spec:
       containers:
       - name: grafana
-        image: grafana/grafana:7.5.7
+        image: grafana/grafana:latest
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
