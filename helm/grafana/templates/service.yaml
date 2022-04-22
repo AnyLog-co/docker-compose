@@ -9,7 +9,7 @@ metadata:
 spec:
   selector: 
     app: grafana
-  type: NodePort  
+  type: ClusterIP 
   ports:
     - name: grafana-service
       appProtocol: http
