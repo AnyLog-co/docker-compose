@@ -12,6 +12,7 @@ data:
   GF_AUTH_ANONYMOUS_ENABLED: "true"
   GF_SECURITY_ALLOW_EMBEDDING: "true"
   GF_INSTALL_PLUGINS: simpod-json-datasource,grafana-worldmap-panel
+  GF_SERVER_DOMAIN: 192.18.143.219 
   #GF_SERVER_HTTP_PORT: "31000"
 ---
 apiVersion: v1
