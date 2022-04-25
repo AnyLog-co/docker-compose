@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anylog-master
+  labels:
+    app: anylog-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anylog-master
+  template:
+    metadata:
+      labels:
+        app: anylog-master
+    spec:
+      imagePullSecrets:
+      - name: imagepullsecret
+      containers:
+      - name: anylog-master
+        image: anylogco/anylog-network:predevelop
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: master-configuration
+        ports:
+          - containerPort: 32048
+            name: tcp
+          - containerPort: 32049
+            name: rest
