@@ -1,3 +1,4 @@
+# code based on - https://github.com/m99coder/postgres-on-kubernetes
 apiVersion: v2
 name: postgres
 description: A Helm chart for Kubernetes

@@ -22,7 +22,13 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
-              name: master-configuration
+              name: master-configurations
+        env:
+          - name: DB_PASSWD
+            valueFrom:
+              secretKeyRef:
+                name: master-secret-configurations
+                key: DB_PASSWD
         ports:
           - containerPort: 32048
             name: tcp
