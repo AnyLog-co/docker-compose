@@ -23,12 +23,6 @@ spec:
         envFrom:
           - configMapRef:
               name: master-configurations
-        env:
-          - name: DB_PASSWD
-            valueFrom:
-              secretKeyRef:
-                name: master-secret-configurations
-                key: DB_PASSWD
         ports:
           - containerPort: 32048
             name: tcp

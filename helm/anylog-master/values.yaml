@@ -1,0 +1,4 @@
+CONFIGS:
+  NODE_TYPE: "rest"
+#  NODE_NAME: "operator-node"
+#  COMPANY_NAME: "New Company"
