@@ -29,7 +29,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: master-secret-configurations
+  name: psql-secret-configurations
   labels:
     app: anylog-master
 data:
