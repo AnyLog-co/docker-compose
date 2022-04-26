@@ -5,7 +5,7 @@ metadata:
   labels:
     app: anylog-operator
 data:
-  NODE_TYPE: {{ .Values.CONFIGS.NODE_TYPE }}
+  NODE_TYPE: "rest"
   NODE_NAME: "operator-node"
   COMPANY_NAME: "AnyLog"
   #EXTERNAL_IP: <EXTERNAL IP>
