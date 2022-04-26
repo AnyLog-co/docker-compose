@@ -5,9 +5,12 @@ metadata:
   labels:
     app: postgres
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
   - name: postgres-tcp
+    protocol: TCP
     port: 5432
+    targetPort: 5432
+    nodePort: 32543
   selector:
     app: postgres
