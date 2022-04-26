@@ -5,7 +5,7 @@ metadata:
   labels:
     app: anylog-master
 data:
-  NODE_TYPE: {{ ..Values.NODE_TYPE }}
+  NODE_TYPE: {{ .Values.NODE_TYPE }}
   NODE_NAME: "master-node"
   COMPANY_NAME: "AnyLog"
   #EXTERNAL_IP: <EXTERNAL IP>
