@@ -19,18 +19,9 @@ data:
   DB_TYPE: "psql"
   DB_IP: "postgres"
   DB_USER: "admin"
+  DB_PASSWD: "passwd"
   DB_PORT: "5432"
   DEFAULT_DBMS: "test"
 
   MQTT_ENABLE: "false"
   DEPLOY_LOCAL_SCRIPT: "false"
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: master-secret-configurations
-  labels:
-    app: al-nvidia-master
-data:
-   DB_PASSWD: "cGFzc3dkCg==" # passwd | base64
