@@ -38,7 +38,7 @@ via docker
 * [anylog-tools](helm/anylog-tools) - Helm deployment for Remote-CLI & AnyLog GUI
 * AnyLog instance deployments 
   * [master](helm/anylog-master)
-  * [operator](helm/anylog-operator)
+  * [operator](helm/anylog-operator1)
   * [publisher](helm/anylog-publisher)
   * [query](helm/anylog-query)
   * [standalone](helm/anylog-standalone)

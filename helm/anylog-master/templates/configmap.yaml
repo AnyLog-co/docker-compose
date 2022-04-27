@@ -33,4 +33,4 @@ metadata:
   labels:
     app: al-nvidia-master
 data:
-   cGFzc3dkCg== # passwd | base64
+   DB_PASSWD: cGFzc3dkCg== # passwd | base64
