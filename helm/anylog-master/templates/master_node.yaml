@@ -13,9 +13,6 @@ spec:
     metadata:
       labels:
         app: al-nvidia-master
-    spec:
-      imagePullSecrets:
-      - name: imagepullsecret
       containers:
       - name: al-nvidia-master
         image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
@@ -23,12 +20,6 @@ spec:
         envFrom:
           - configMapRef:
               name: master-configurations
-        env:
-          - name: DB_PASSWD
-            valueFrom:
-              secretKeyRef:
-                name: master-secret-configurations
-                key: DB_PASSWD
         ports:
           - containerPort: 32048
             name: tcp
