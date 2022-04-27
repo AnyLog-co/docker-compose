@@ -7,7 +7,7 @@ metadata:
 data:
   NODE_TYPE: "master"
   NODE_NAME: "master-node"
-  COMPANY_NAME: "AnyLog"
+  COMPANY_NAME: "Nvidia"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
   ANYLOG_SERVER_PORT: "32048"
