@@ -17,7 +17,7 @@ data:
 
   # User should update DB_USER credentials
   DB_TYPE: "psql"
-  DB_IP: "postgres"
+  DB_IP: "100.115.6.81"
   DB_USER: "admin"
   DB_PASSWD: "passwd"
   DB_PORT: "5432"
