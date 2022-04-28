@@ -3,11 +3,11 @@ kind: ConfigMap
 metadata:
   name: query-configurations
   labels:
-    app: al-nvidia-query
+    app: anylog-query
 data:
   NODE_TYPE: "query"
   NODE_NAME: "query-node"
-  COMPANY_NAME: "Nvidia"
+  COMPANY_NAME: "Company Name"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
   ANYLOG_SERVER_PORT: "32348"
