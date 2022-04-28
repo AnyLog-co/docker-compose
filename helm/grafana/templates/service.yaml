@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    app.kubernetes.io/name: grafana
-  name: grafana-external
+  name: grafana
+  #namespace: monitoring
+  annotations:
+      prometheus.io/scrape: 'true'
+      prometheus.io/port:   '3000'
 spec:
-  type: NodePort
-  ports: 
-  - name: grafana-service
-    appProtocol: http
-    port: 3000
-    targetPort: 3000
-    nodePort: 31000
-status:
-  loadBalancer: {}
+  selector: 
+    app: grafana
+  type: NodePort  
+  ports:
+    - port: 3000
+      targetPort: 3000
+      nodePort: 31000

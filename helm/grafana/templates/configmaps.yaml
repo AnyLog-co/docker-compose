@@ -11,3 +11,4 @@ data:
   GF_AUTH_ANONYMOUS_ENABLED: "true"
   GF_SECURITY_ALLOW_EMBEDDING: "true"
   GF_INSTALL_PLUGINS: simpod-json-datasource,grafana-worldmap-panel
+
