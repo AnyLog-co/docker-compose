@@ -8,12 +8,10 @@ spec:
   type: NodePort
   ports:
   - name: anylog-master-tcp
-    protocol: TCP
     port: 32048
     targetPort: 32048
     nodePort: 32048
   - name: anylog-master-rest
-    protocol: TCP
     port: 32049
     targetPort: 32049
     nodePort: 32049
