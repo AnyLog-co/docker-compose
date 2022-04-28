@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: anylog-query
+  labels:
+    app: anylog-query
+spec:
+  type: NodePort
+  ports:
+  - name: anylog-query-tcp
+    protocol: TCP
+    port: 32348
+    targetPort: 32348
+    nodePort: 32348
+  - name: anylog-query-rest
+    protocol: TCP
+    port: 32349
+    targetPort: 32349
+    nodePort: 32349
+  selector:
+    app: anylog-query

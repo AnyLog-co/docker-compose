@@ -10,7 +10,7 @@ fi
 DOCKER_REGISTRY_SERVER=docker.io
 DOCKER_USER=oshadmon
 DOCKER_EMAIL=ori@anylog.co
-kubectl create secret docker-registry anylog-registry-key \
+kubectl create secret docker-registry imagepullsecret \
   --docker-server=${DOCKER_REGISTRY_SERVER} \
   --docker-username=${DOCKER_USER} \
   --docker-password=${DOCKER_PASSWORD} \

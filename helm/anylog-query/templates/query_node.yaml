@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: anylog-query
+  labels:
+    app: anylog-query
+spec:
+  serviceName: "anylog-query"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anylog-query
+  template:
+    metadata:
+      labels:
+        app: anylog-query
+    spec:
+      imagePullSecrets:
+      - name: imagepullsecret
+      containers:
+      - name: anylog-query
+        image: anylogco/anylog-network:predevelop
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: query-configurations
+        ports:
+          - containerPort: 32348
+            name: tcp
+          - containerPort: 32349
+            name: rest
