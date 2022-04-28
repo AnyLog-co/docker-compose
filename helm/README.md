@@ -43,17 +43,16 @@ sudo rm -rf /etc/nginx/sites-enabled/default
 sudo rm -rf /etc/nginx/sites-available/default 
 ```
 
+3. Get IP of Kubernetes cluster   
+```bash 
+minikube ip
+```
 
-3. Create `/etc/nginx/sites-enabled/anylog.conf` file
+4. Create `/etc/nginx/sites-enabled/anylog.conf` file
 ```bash
 sudo vim /etc/nginx/sites-enabled/anylog.conf
 ```
 
-
-4. Get IP of Kubernetes cluster   
-```bash 
-minikube ip
-```
 
 5. Update `/etc/nginx/sites-enabled/anylog.conf` file to support REST communication
 ```editorconfig
@@ -127,4 +126,4 @@ sudo service nginx stop
 sudo service nginx starts 
 ```
 
-8. Once Nginx is configured you can utilize the public IP to communicate with the K8s cluster outside the physical machine  
+Once Nginx is configured the user can utilize the public IP to communicate with the K8s cluster outside the physical machine  
