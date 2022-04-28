@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: al-nvidia-operator1
+  name: anylog-operator1
   labels:
-    app: al-nvidia-operator1
+    app: anylog-operator1
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: al-nvidia-operator1
+      app: anylog-operator1
   template:
     metadata:
       labels:
-        app: al-nvidia-operator1
+        app: anylog-operator1
     spec:
       imagePullSecrets:
       - name: imagepullsecret
       containers:
-      - name: al-nvidia-operator1
+      - name: anylog-operator1
         image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
         imagePullPolicy: IfNotPresent
         envFrom:

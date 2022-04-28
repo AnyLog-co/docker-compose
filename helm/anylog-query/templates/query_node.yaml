@@ -1,24 +1,24 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: al-nvidia-query
+  name: anylog-query
   labels:
-    app: al-nvidia-query
+    app: anylog-query
 spec:
-  serviceName: "al-nvidia-query"
+  serviceName: "anylog-query"
   replicas: 1
   selector:
     matchLabels:
-      app: al-nvidia-query
+      app: anylog-query
   template:
     metadata:
       labels:
-        app: al-nvidia-query
+        app: anylog-query
     spec:
       imagePullSecrets:
       - name: imagepullsecret
       containers:
-      - name: al-nvidia-query
+      - name: anylog-query
         image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
         imagePullPolicy: Always
         envFrom:
