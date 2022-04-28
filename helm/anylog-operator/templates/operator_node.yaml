@@ -1,33 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: anylog-operator1
+  name: anylog-operator
   labels:
-    app: anylog-operator1
+    app: anylog-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: anylog-operator1
+      app: anylog-operator
   template:
     metadata:
       labels:
-        app: anylog-operator1
+        app: anylog-operator
     spec:
       imagePullSecrets:
       - name: imagepullsecret
       containers:
-      - name: anylog-operator1
+      - name: anylog-operator
         image: anylogco/anylog-network:predevelop
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
-              name: operator1-configurations
+              name: operator-configurations
         env:
           - name: DB_PASSWD
             valueFrom:
               secretKeyRef:
-                name: operator1-secret-configurations
+                name: operator-secret-configurations
                 key: DB_PASSWD
         ports:
           - containerPort: 32148
