@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cluster1-operator1-configurations
+  name: operator-configurations
   labels:
-    app: anylog-cluster1-operator1
+    app: anylog-operator
 data:
   NODE_TYPE: "operator"
-  NODE_NAME: "cluster1-operator1"
+  NODE_NAME: "operator-node"
   COMPANY_NAME: "Company Name"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
