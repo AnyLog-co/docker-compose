@@ -11,6 +11,7 @@ spec:
     app: grafana
   type: NodePort  
   ports:
-    - port: 3000
+    - name: grafana-port
+      port: 3000
       targetPort: 3000
       nodePort: 31000
