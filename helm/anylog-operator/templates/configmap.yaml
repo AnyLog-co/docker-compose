@@ -6,8 +6,8 @@ metadata:
     app: anylog-cluster1-operator1
 data:
   NODE_TYPE: "operator"
-  NODE_NAME: "nvidia-cluster1-operator1"
-  COMPANY_NAME: "Nvidia"
+  NODE_NAME: "cluster1-operator1"
+  COMPANY_NAME: "Company Name"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
   ANYLOG_SERVER_PORT: "32148"
@@ -29,10 +29,10 @@ data:
   DB_IP: "postgres"
   DB_USER: "admin"
   DB_PASSWD: "demo"
-  DEFAULT_DBMS: "nvidia"
+  DEFAULT_DBMS: "db_name"
 
   # NEW_CLUSTER -- cluster name
-  CLUSTER_NAME: "nvidia-cluster1"
+  CLUSTER_NAME: "cluster1"
   TABLE_NAME: "*"
   ENABLE_PARTITION: "true"
   PARTITION_COLUMN: "timestamp"
@@ -47,7 +47,7 @@ data:
   MQTT_PASSWORD: "MSY4e009J7ts"
   MQTT_LOG: "false"
   MQTT_TOPIC_NAME: "anylogedgex"
-  MQTT_TOPIC_DBMS: "nvidia"
+  MQTT_TOPIC_DBMS: "db_name"
   # original value was "bring [device]" (Random-Integer-Generator01). howerver, due to a PSQL table name limit size is 65 chars, it's manually changeds to: rand_int
   MQTT_TOPIC_TABLE: "rand_data"
   MQTT_COLUMN_TIMESTAMP: "now"

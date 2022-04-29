@@ -6,8 +6,8 @@ metadata:
     app: anylog-master
 data:
   NODE_TYPE: "master"
-  NODE_NAME: "nvidia-master-node"
-  COMPANY_NAME: "Nvidia"
+  NODE_NAME: "master-node"
+  COMPANY_NAME: "Company Name"
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
   ANYLOG_SERVER_PORT: "32048"
