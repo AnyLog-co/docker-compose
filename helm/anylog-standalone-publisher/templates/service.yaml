@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: anylog-standalone-publisher
+  labels:
+    app: anylog-standalone-publisher
+spec:
+  type: NodePort
+  ports:
+  - name: publisher-tcp
+    port: 32248
+    targetPort: 32248
+    nodePort: 32248
+  - name: publisher-rest
+    port: 32249
+    targetPort: 32249
+    nodePort: 32249
+  selector:
+    app: anylog-standalone-publisher
