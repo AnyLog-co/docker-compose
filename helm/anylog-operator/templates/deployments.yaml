@@ -18,7 +18,7 @@ spec:
       - name: imagepullsecret
       containers:
       - name: anylog-operator
-        image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:demo
+        image: anylogco/anylog-network:predevelop
         imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
