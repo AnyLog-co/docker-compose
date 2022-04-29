@@ -1,14 +1,13 @@
 # Deploy AnyLog using Kubernetes 
 
-The following provides details in regard to deploying AnyLog Node, and it's corresponding tools, via Kubernetes 
-(helm-charts).
+The following provides details in regard to deploying AnyLog Node via Kubernetes & Helm.  
 
 ## Requirement
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) - Kubernetes command line tool
 * [minikube](https://minikube.sigs.k8s.io/docs/start/) - local Kubernetes, focusing on making it easy to learn and develop for 
-  Kubernetes. Alternativly a user can use something else; such as: _kubeadm_, _MicroK8s_, _K3s_    
+  Kubernetes. Alternatively, a user can use something else. such as: _kubeadm_, _MicroK8s_, _K3s_    
 * [helm-charts](https://helm.sh/docs/intro/quickstart/) - Kubernetes package manager 
-* [nginx](https://nginx.org/en/) - web server used as a reverse proxy
+* [Nginx](https://nginx.org/en/) - web server used as a reverse proxy
 
 ## Deploying an AnyLog Instance 
 1. [Install Kubernetes](kube_install.sh)
