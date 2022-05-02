@@ -9,4 +9,4 @@ docker run -d -p 3000:3000 --name=grafana --rm \
   -v grafana-data:/var/lib/grafana \
   -v grafana-log:/var/log/grafana \
   -v grafana-config:/etc/grafana \
-  grafana/grafana:7.5.7
+  grafana/grafana:8.2.6
