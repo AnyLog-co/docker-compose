@@ -1,0 +1,16 @@
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configs.general.name }}
+  labels:
+    app: {{ .Values.deployments.general.app }}
+data:
+  NODE_TYPE: {{ .Values.configs.basic.node_type }}
+  NODE_NAME: {{ .Values.configs.basic.node_name }}
+  COMPANY_NAME: {{ .Values.configs.basic.company }}
+
+  #EXTERNAL_IP: <EXTERNAL IP>
+  #LOCAL_IP: <LOCAL IP>
+  ANYLOG_SERVER_PORT: {{ .Values.configs.networking.anylog_server_port }}
+  ANYLOG_REST_PORT: {{ .Values.configs.networking.anylog_rest_port }}
+  ANYLOG_BROKER_PORT: {{ .Values.configs.networking.anylog_broker_port }}
+  ENABLE_BROKER: {{ .Values.configs.networking.enable_broker }}

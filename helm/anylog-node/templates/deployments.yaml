@@ -24,9 +24,9 @@ spec:
           - configMapRef:
               name: {{ .Values.configs.general.name }}
         ports:
-          - containerPort: {{ .Values.configs.ports.anylog_server_port }}
+          - containerPort: {{ .Values.configs.networking.anylog_server_port }}
             name: {{ .Values.deployments.general.name }}-tcp
-          - containerPort: { { .Values.configs.ports.anylog_rest_port } }
+          - containerPort: { { .Values.configs.networking.anylog_rest_port } }
             name: { { .Values.deployments.general.name } }-rest
-          - containerPort: { { .Values.configs.ports.anylog_broker_port } }
+          - containerPort: { { .Values.networking.ports.anylog_broker_port } }
             name: { { .Values.deployments.general.name } }-rest

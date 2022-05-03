@@ -1,10 +1,21 @@
 configs:
   general:
     name: node-configurations
-  ports:
+  basic:
+    node_type: rest
+    node_name: anylog-node
+    company: new company
+
+  networking:
     anylog_server_port: 32048
     anylog_rest_port: 32049
     anylog_broker_port: 3250
+    enable_broker: true
+
+services:
+  general:
+    name: node-service
+    type: NodePort
 
 deployments:
   general:
