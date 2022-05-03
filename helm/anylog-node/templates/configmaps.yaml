@@ -21,12 +21,12 @@
 #  ENABLE_BROKER: {{ .Values.configs.networking.enable_broker }}
 #
 
-  apiVersion: v1
-  kind: ConfigMap
+apiVersion: v1
+kind: ConfigMap
   metadata:
     name: {{ .Values.deployments.general.name }}-configmap
-    labels:
-      app: {{ .Values.deployments.general.app }}
+  labels:
+    app: {{ .Values.deployments.general.app }}
   data:
     NODE_TYPE: {{ .Values.configs.basic.node_type }}
     NODE_NAME: {{ .Values.configs.basic.node_name }}
@@ -39,21 +39,3 @@
     MASTER_NODE: "127.0.0.1:32048"
     SYNC_TIME: "30 second"
 
-    # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
-    TCP_THREAD_POOL: "6"
-    # Amount of time (in seconds) until REST timesout
-    REST_TIMEOUT: "30"
-    # The number of concurrent threads supporting HTTP requests.
-    REST_THREADS: "5"
-    # Sets the number of threads supporting queries (the default is 3).
-    QUERY_POOL: "3"
-
-    # User should update DB_USER credentials
-    DB_TYPE: "psql"
-    DB_IP: "postgres"
-    DB_USER: "admin"
-    DB_PASSWD: "demo"
-    DB_PORT: "5432"
-
-    MQTT_ENABLE: "false"
-    DEPLOY_LOCAL_SCRIPT: "false"
