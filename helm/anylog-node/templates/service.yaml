@@ -8,16 +8,16 @@ spec:
   type: {{ .Values.configs.networking.service_type }}
   ports:
   - name: {{ .Values.deployments.general.name }}-tcp
-    port: {{ .Values.configs.networking.anylog_server_port }}
-    targetPort: {{ .Values.configs.networking.anylog_server_port }}
-    nodePort: {{ .Values.configs.networking.anylog_server_port }}
+    port: {{ .Values.services.anylog_server_port }}
+    targetPort: {{ .Values.services.anylog_server_port }}
+    nodePort: {{ .Values.services.anylog_server_port }}
   - name: {{ .Values.deployments.general.name }}-rest
-    port: {{ .Values.configs.networking.anylog_rest_port }}
-    targetPort: {{ .Values.configs.networking.anylog_rest_port }}
-    nodePort: {{ .Values.configs.networking.anylog_rest_port }}
+    port: {{ .Values.services.anylog_rest_port }}
+    targetPort: {{ .Values.services.anylog_rest_port }}
+    nodePort: {{ .Values.services.anylog_rest_port }}
   - name: {{ .Values.deployments.general.name }}-broker
-    port: {{ .Values.configs.networking.anylog_broker_port }}
-    targetPort: {{ .Values.configs.networking.anylog_broker_port }}
-    nodePort: {{ .Values.configs.networking.anylog_broker_port }}
+    port: {{ .Values.services.anylog_broker_port }}
+    targetPort: {{ .Values.services.anylog_broker_port }}
+    nodePort: {{ .Values.services.anylog_broker_port }}
   selector:
     app: {{ .Values.deployments.general.app }}
