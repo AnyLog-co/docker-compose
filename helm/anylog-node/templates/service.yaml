@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.services.general.name }}
+  name: {{ .Values.deployments.general.name }}-service
   labels:
     app: {{ .Values.deployments.general.app }}
 spec:
-  type: NodePort
+  type: {{ .Values.configs.networking.service_type }}
   ports:
   - name: {{ .Values.deployments.general.name }}-tcp
     port: {{ .Values.configs.networking.anylog_server_port }}

@@ -1,22 +1,3 @@
-configs:
-  general:
-    name: node-configurations
-  basic:
-    node_type: "rest"
-    node_name: "anylog-node"
-    company: "new company"
-
-  networking:
-    anylog_server_port: "32048"
-    anylog_rest_port: "32049"
-    anylog_broker_port: "3250"
-    enable_broker: "true"
-
-services:
-  general:
-    name: node-service
-    type: NodePort
-
 deployments:
   general:
     app: anylog-node
@@ -26,6 +7,18 @@ deployments:
     image: anylogco/anylog-network:predevelop
     pullPolicy: Always
 
+configs:
+  basic:
+    node_type: "rest"
+    node_name: "anylog-node"
+    company: "new company"
+
+  networking:
+    service_type: NodePort
+    anylog_server_port: "32048"
+    anylog_rest_port: "32049"
+    anylog_broker_port: "3250"
+    enable_broker: "true"
 
 
 
