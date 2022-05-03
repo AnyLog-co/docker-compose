@@ -22,7 +22,7 @@ spec:
         imagePullPolicy: {{ .Values.deployments.image.pullPolicy }}
         envFrom:
           - configMapRef:
-              name: {{ .Values.configs.general.name }}
+              name: {{ .Values.deployments.general.name }}-configmap
         ports:
           - containerPort: {{ .Values.configs.networking.anylog_server_port }}
             name: tcp
