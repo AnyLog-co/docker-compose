@@ -28,9 +28,10 @@
     labels:
       app: {{ .Values.deployments.general.app }}
   data:
-    NODE_TYPE: "master"
-    NODE_NAME: "master-node"
-    COMPANY_NAME: "Company Name"
+    NODE_TYPE: {{ .Values.configs.basic.node_type }}
+    NODE_NAME: {{ .Values.configs.basic.node_name }}
+    COMPANY_NAME: {{ .Values.configs.basic.company }}
+
     #EXTERNAL_IP: <EXTERNAL IP>
     #LOCAL_IP: <LOCAL IP>
     ANYLOG_SERVER_PORT: "32048"
