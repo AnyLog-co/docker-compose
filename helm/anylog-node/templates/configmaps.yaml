@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ default: anylog-node .Values.deployments.general.name }}-configmap
+  name: {{ default:=anylog-node .Values.deployments.general.name }}-configmap
   labels:
     app: {{ default: anylog-node .Values.deployments.general.app }}
 data:
