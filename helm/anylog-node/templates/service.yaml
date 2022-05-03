@@ -5,19 +5,19 @@ metadata:
   labels:
     app: {{ .Values.deployments.general.app }}
 spec:
-  type: {{ .Values.services.service_type }}
+  type: {{ .Values.configs.networking.services.service_type }}
   ports:
   - name: {{ .Values.deployments.general.name }}-tcp
-    port: {{ .Values.services.anylog_server_port }}
-    targetPort: {{ .Values.services.anylog_server_port }}
-    nodePort: {{ .Values.services.anylog_server_port }}
+    port: {{ .Values.configs.networking.services.anylog_server_port }}
+    targetPort: {{ .Values.configs.networking.services.anylog_server_port }}
+    nodePort: {{ .Values.configs.networking.services.anylog_server_port }}
   - name: {{ .Values.deployments.general.name }}-rest
-    port: {{ .Values.services.anylog_rest_port }}
-    targetPort: {{ .Values.services.anylog_rest_port }}
-    nodePort: {{ .Values.services.anylog_rest_port }}
+    port: {{ .Values.configs.networking.services.anylog_rest_port }}
+    targetPort: {{ .Values.configs.networking.services.anylog_rest_port }}
+    nodePort: {{ .Values.configs.networking.services.anylog_rest_port }}
   - name: {{ .Values.deployments.general.name }}-broker
-    port: {{ .Values.services.anylog_broker_port }}
-    targetPort: {{ .Values.services.anylog_broker_port }}
-    nodePort: {{ .Values.services.anylog_broker_port }}
+    port: {{ .Values.configs.networking.services.anylog_broker_port }}
+    targetPort: {{ .Values.configs.networking.services.anylog_broker_port }}
+    nodePort: {{ .Values.configs.networking.services.anylog_broker_port }}
   selector:
     app: {{ .Values.deployments.general.app }}
