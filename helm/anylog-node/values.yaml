@@ -19,7 +19,6 @@ configs:
     anylog_broker_port: "3250"
     enable_broker: "true"
 
-
 services:
   service_type: NodePort
   anylog_server_port: 32048

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ .Values.deployments.general.app }}
 spec:
-  type: {{ .Values.configs.networking.service_type }}
+  type: {{ .Values.services.service_type }}
   ports:
   - name: {{ .Values.deployments.general.name }}-tcp
     port: {{ .Values.services.anylog_server_port }}
