@@ -28,5 +28,5 @@ spec:
             name: tcp
           - containerPort: {{ .Values.configs.networking.anylog_rest_port }}
             name: rest
-          - containerPort: { .Values.configs.networking.anylog_broker_port }}
-              name: broker
+          - containerPort: {{ .Values.configs.networking.anylog_broker_port }}
+            name: broker
