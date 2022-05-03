@@ -1,3 +1,4 @@
+{{ define }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -8,21 +9,21 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.general.app }}
+      app: anylog-master
   template:
     metadata:
       labels:
-        app: {{ .Values.general.app }}
+        app: anylog-master
     spec:
       imagePullSecrets:
-      - name: {{ .Values.image.imagePullSecrets }}
+      - name: imagepullsecret
       containers:
-      - name: {{ .Values.general.name }}
-        image: {{ .Values.image.image }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-#        envFrom:
-#          - configMapRef:
-#              name: master-configurations
+      - name: anylog-master
+        image: anylogco/anylog-network:predevelop
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: master-configurations
         ports:
           - containerPort: 32048
             name: master-tcp
