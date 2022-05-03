@@ -25,8 +25,8 @@ spec:
               name: {{ .Values.configs.general.name }}
         ports:
           - containerPort: {{ .Values.configs.networking.anylog_server_port }}
-            name: {{ .Values.deployments.general.name }}-tcp
-          - containerPort: { { .Values.configs.networking.anylog_rest_port } }
-            name: { { .Values.deployments.general.name } }-rest
-          - containerPort: { { .Values.networking.ports.anylog_broker_port } }
-            name: { { .Values.deployments.general.name } }-rest
+            name: tcp
+          - containerPort: {{ .Values.configs.networking.anylog_rest_port }}
+            name: rest
+          - containerPort: { .Values.configs.networking.anylog_broker_port }}
+              name: broker
