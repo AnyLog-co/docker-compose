@@ -1,10 +1,9 @@
-{{ if .Values.deployments }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.general.name }}
+  name: {{ .Values.deployments.general.name }}
   labels:
-    app: {{ .Values.general.app }}
+    app: anylog-master
 spec:
   replicas: 1
   selector:
