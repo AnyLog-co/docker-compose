@@ -15,7 +15,7 @@ data:
   ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
 
   ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
-  ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker }}
+  ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
 
 
 
