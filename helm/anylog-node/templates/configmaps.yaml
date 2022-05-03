@@ -34,7 +34,7 @@ kind: ConfigMap
 
     #EXTERNAL_IP: <EXTERNAL IP>
     #LOCAL_IP: <LOCAL IP>
-    ANYLOG_SERVER_PORT: {{ .Values.configs.networking.anylog_server_port }}
+    ANYLOG_SERVER_PORT: {{ .Values.configs.networking.anylog_server_port | quote }}
     ANYLOG_REST_PORT: {{ .Values.configs.networking.anylog_rest_port }}
     MASTER_NODE: "127.0.0.1:32048"
     SYNC_TIME: "30 second"
