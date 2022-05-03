@@ -1,25 +1,21 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.deployments.general.name }}-configmap
+  name: {{ default: anylog-node .Values.deployments.general.name }}-configmap
   labels:
-    app: {{ .Values.deployments.general.app }}
+    app: {{ default: anylog-node .Values.deployments.general.app }}
 data:
-  NODE_TYPE: {{ .Values.configs.basic.node_type }}
-  NODE_NAME: {{ .Values.configs.basic.node_name }}
-  COMPANY_NAME: {{ .Values.configs.basic.company }}
+  NODE_TYPE: {{ default: rest .Values.configs.basic.node_type }}
+  NODE_NAME: {{ default: anylog-node .Values.configs.basic.node_name }}
+  COMPANY_NAME: {{ default: New Company .Values.configs.basic.company }}
 
   #EXTERNAL_IP: <EXTERNAL IP>
   #LOCAL_IP: <LOCAL IP>
-  ANYLOG_SERVER_PORT: {{ .Values.services.anylog_server_port | quote }}
-  #ANYLOG_SERVER_PORT: {{ .Values.configs.networking.anylog_server_port | quote }}
-  ANYLOG_REST_PORT: "32049"
-  ANYLOG_BROKER_PORT: "32050"
-  #ENABLE_BROKER: {{ .Values.configs.networking.enable_broker }}
+  ANYLOG_SERVER_PORT: {{ default: 32048 .Values.configs.networking.services.anylog_server_port | quote }}
+  ANYLOG_REST_PORT: {{ default: 32049 .Values.configs.networking.services.anylog_rest_port | quote }}
 
-  #ANYLOG_SERVER_PORT: {{ .Values.configs.networking.anylog_server_port }}
-  #ANYLOG_REST_PORT: {{ .Values.configs.networking.anylog_rest_port }}
-  #ANYLOG_BROKER_PORT: {{ .Values.configs.networking.anylog_broker_port }}
+  ANYLOG_BROKER_PORT: {{ default: 32050 .Values.configs.networking.services.anylog_broker_port | quote }}
+  ENABLE_BROKER: {{ default: false .Values.configs.networking.settings.enable_broker }}
 
 
 
