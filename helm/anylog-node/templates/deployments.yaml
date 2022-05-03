@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.general.name }}
+  labels:
+    app: {{ .Values.general.app }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.general.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.general.app }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.image.imagePullSecrets }}
+      containers:
+      - name: {{ .Values.general.name }}
+        image: {{ .Values.image.image }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+#        envFrom:
+#          - configMapRef:
+#              name: master-configurations
+        ports:
+          - containerPort: 32048
+            name: master-tcp
+          - containerPort: 32049
+            name: master-rest

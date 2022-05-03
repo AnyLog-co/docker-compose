@@ -1,0 +1,11 @@
+deployments:
+  general:
+    name: anylog-master
+    app: anylog-node
+  image:
+    imagePullSecrets: imagepullsecret
+    image: anylogco/anylog-network:predevelop
+    pullPolicy: Always
+
+
+
