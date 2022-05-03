@@ -1,11 +1,20 @@
+configs:
+  general:
+    name: node-configurations
+  ports:
+    anylog_server_port: 32048
+    anylog_rest_port: 32049
+    anylog_broker_port: 3250
+
 deployments:
   general:
-    name: anylog-master
     app: anylog-node
+    name: anylog-node
   image:
-#    imagePullSecrets: imagepullsecret
-#    image: anylogco/anylog-network:predevelop
-#    pullPolicy: Always
+    imagePullSecrets: imagepullsecret
+    image: anylogco/anylog-network:predevelop
+    pullPolicy: Always
+
 
 
 

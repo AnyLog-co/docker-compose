@@ -3,28 +3,30 @@ kind: Deployment
 metadata:
   name: {{ .Values.deployments.general.name }}
   labels:
-    app: anylog-master
+    app: {{ .Values.deployments.general.app }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: anylog-master
+      app: {{ .Values.deployments.general.app }}
   template:
     metadata:
       labels:
-        app: anylog-master
+        app: {{ .Values.deployments.general.app }}
     spec:
       imagePullSecrets:
-      - name: imagepullsecret
+      - name: {{ .Values.deployments.image.imagePullSecrets }}
       containers:
-      - name: anylog-master
-        image: anylogco/anylog-network:predevelop
-        imagePullPolicy: Always
+      - name: {{ .Values.deployments.general.name }}
+        image: {{ .Values.deployments.image.image }}
+        imagePullPolicy: {{ .Values.deployments.image.pullPolicy }}
         envFrom:
           - configMapRef:
-              name: master-configurations
+              name: {{ .Values.configs.general.name }}
         ports:
-          - containerPort: 32048
-            name: master-tcp
-          - containerPort: 32049
-            name: master-rest
+          - containerPort: {{ .Values.configs.ports.anylog_server_port }}
+            name: {{ .Values.deployments.general.name }}-tcp
+          - containerPort: { { .Values.configs.ports.anylog_rest_port } }
+            name: { { .Values.deployments.general.name } }-rest
+          - containerPort: { { .Values.configs.ports.anylog_broker_port } }
+            name: { { .Values.deployments.general.name } }-rest
