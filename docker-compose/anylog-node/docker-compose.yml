@@ -1,10 +1,10 @@
-version: "2.4"
+version: "2.2"
 services:
   anylog-node:
-    image: anylogco/anylog-network:develop
+    image: ${IMAGE}:${VERSION}
     env_file:
-      - envs/anylog_node.env
-    container_name: anylog-node
+      - ${ENV_FILE}
+    container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
     network_mode: "host" 

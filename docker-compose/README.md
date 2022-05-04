@@ -1,62 +1,96 @@
 # Deployment via Docker Compose 
 
-The following provides details in regard to deploying AnyLog Node, and it's corresponding tools, via _docker-compose_.
-
+The following provides details in regard to deploying AnyLog Node via Docker & docker-compose.
 
 ## Requirement
-* [contact us](mailto:info@anylog.co) for access to AnyLog Docker Hub repository
 * [docker-compose](docker_install.sh)
+
+## Steps to Deploy AnyLog 
+0. <a href="mailto:info@anylog.co?subject=docker login credentials">Contact us</a> for docker login credentials
+
+
+1. If you'd like to use the postgres image we provide please:
+    1. Update [Postgres configuration](postgres/postgres.env) if you'd like to utilize our Postgres instance
+    2. Deploy Postgres 
 ```commandline
-sudo apt-get -y install update
-sudo apt-get -y install curl apt-transport-https ca-certificates
-sudo apt-get -y install docker.io docker-compose
+cd postgres 
+docker-compose up -d 
+```
 
-USER=`whoami`
-sudo groupadd docker
-sudo usermod -aG docker ${USER}
-newgrp docker 
-``` 
-
-## Deployment
-**[AnyLog Node](anylog-node)** - Deploy an AnyLog container of type: [master](anylog-node/envs/anylog_master.env),
-[operator](anylog-node/envs/anylog_operator.env), [publisher](anylog-node/envs/anylog_publisher.env), 
-[query](anylog-node/envs/anylog_query.env), [standalone](anylog-node/envs/anylog_standalone.env), 
-[standalone-publisher](anylog-node/envs/anylog_standalone_publisher.env), [rest](anylog-node/envs/anylog_rest.env)
-or [empty](anylog-node/envs/anylog_none.env). 
-1. Copy the desired AnyLog node type into [anylog-node/envs/anylog_node.env](anylog-node/envs/anylog_node.env) 
-
-
-2. Update the configuration in [anylog_node.env](anylog-node/envs/anylog_node.env) as you see fit
-   * If you'd like to use Postgres on Docker, and updated the database credentials please also update the configuratiion
-   in [postgres.sh](postgres.sh)
-   * If you'd like to run multiple AnyLog containers on a single physical machine, make sure the AnyLog ports differ - 
-   _ANYLOG_SERVER_PORT_, _ANYLOG_REST_PORT_ and optionally _ANYLOG_BROKER_PORT_. 
-
+2. In [anylog-node/envs](anylog-node/envs) update the configuration in the desired deployment type. Specific things to look at: 
+    * `MASTER_NODE` credentials
+    * Database Information
+    * MQTT configuration - if desired 
    
-3. Deploy AnyLog - note the [docker-compose](anylog-node/docker-compose.yml) has a health check to validate Postgres is running. 
-Please make sure either Postgres is running via Docker or the section is commented out if you'd like to use a different 
-Postgres or SQLite
-```shell
-cd $HOME/deployments/docker-compose/anylog-node/
+
+3. Update [.env](anylog-node/.env) file based on the changes made in the previous version. Specific things to look at: 
+    * `CONTAINER_NAME`
+    * `VERSION`
+    * `ENV_FILE`
+
+
+4. Deploy the AnyLog instance
+```commandline
+cd anylog-node 
+docker-compose up -d
+```
+
+5. Validate node is running
+```commandline
+curl -X GET ${LOCAL_IP}:${ANYLOG_REST_PORT} -H "command: get status" -H "User-Agent: AnyLog/1.23" 
+```
+
+
+### Configuring `DEPLOY_LOCAL_SCRIPT`
+The `DEPLOY_LOCAL_SCRIPT` is an extension to the deployment process that the user can create and allow the system to 
+automatically run when ever the node is deployed. The script is automatically deployed only from the second deploymnet. 
+
+0. The AnyLog instance needs to be running 
+
+
+1. Find the file path for the volume location for `local-scripts`
+```commandline
+docker volume inspect anylog-node_anylog-node-local-scripts
+[
+    {
+        "CreatedAt": "2022-05-04T02:10:56Z",
+        "Driver": "local",
+        "Labels": {
+            "com.docker.compose.project": "anylog-node",
+            "com.docker.compose.version": "1.29.2",
+            "com.docker.compose.volume": "anylog-node-local-scripts"
+        },
+        "Mountpoint": "/var/lib/docker/volumes/anylog-node_anylog-node-local-scripts/_data", #<-- path 
+        "Name": "anylog-node_anylog-node-local-scripts",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+
+2. Update the local file: `/var/lib/docker/volumes/anylog-node_anylog-node-local-scripts/_data/local/local_script.al`
+
+
+3. Execute `local_scirpt.al` file using the REST POST command
+```bash
+curl -X POST ${LOCAL_IP}:${ANYLOG_REST_PORT} -H "command: process !local_scripts/local_script.al" -H "User-Agent: AnyLog/1.23"
+```
+
+## Deploy Grafana & Remote CLI
+The Remote CLI & Grafana are optional tools and can be deployed on the same machine of one of the nodes or on a different machine
+that's able to communicate with the network. 
+
+### Deploying Grafana
+```commandline
+cd grafana 
 docker-compose up -d 
 ```
 
-**[AnyLog Tools](anylog-tools)** - deploy [AnyLog GUI](https://github.com/AnyLog-co/AnyLog-GUI) and 
-[Remote CLI](https://github.com/AnyLog-co/Remote-CLI). The default ports being used for these are 5000 and 8000, these
-can be changed in [tools env file](anylog-tools/envs/anylog_tools.env).
-```shell
-cd $HOME/deployments/docker-compose/anylog-tools/
-docker-compose up -d 
-```
+### Deploy Remote CLI
+1. Update .env if you'd like to use a port other than `31800` or an IP other than `0.0.0.0`
 
-**[Postgres](postgres.sh)** - Postgres database for use to deploy using Docker. Alternatively, users can either opt to
-use their own _Postgres_ database or _SQLite_ (built-in). 
-```shell
-bash $HOME/deployments/docker-compose/postgres.sh
-```
-
-**[Grafana](grafana.sh)** - One of the more common BI tools used with AnyLog is Grafana, as such we provide a docker 
-deployment script, but highly recommend [physically installing it](https://grafana.com/docs/grafana/latest/installation/).
-```shell
-bash $HOME/deployments/docker-compose/grafana.sh
+2. Deploy Remote CLI 
+```commandline
+cd remote_cli 
+docker-compose up -d
 ```
