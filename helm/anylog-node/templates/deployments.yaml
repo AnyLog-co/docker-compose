@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployments.general.name }}
+  labels:
+    app: {{ .Values.deployments.general.app }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.deployments.general.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployments.general.app }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.deployments.image.imagePullSecrets }}
+      containers:
+      - name: {{ .Values.deployments.general.name }}
+        image: {{ .Values.deployments.image.image }}
+        imagePullPolicy: {{ .Values.deployments.image.pullPolicy }}
+        envFrom:
+          - configMapRef:
+              name: {{ .Values.deployments.general.name }}-configmap
+        ports:
+          - containerPort: {{ .Values.configs.networking.services.anylog_server_port }}
+            name: tcp
+          - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
+            name: rest
+          - containerPort: {{ .Values.configs.networking.services.anylog_broker_port }}
+            name: broker

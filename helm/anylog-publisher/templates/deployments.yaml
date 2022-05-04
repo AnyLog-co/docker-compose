@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anylog-publisher
+  labels:
+    app: anylog-publisher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anylog-publisher
+  template:
+    metadata:
+      labels:
+        app: anylog-publisher
+    spec:
+      imagePullSecrets:
+      - name: imagepullsecret
+      containers:
+      - name: anylog-publisher
+        image: anylogco/anylog-network:predevelop
+        imagePullPolicy: IfNotPresent
+        envFrom:
+          - configMapRef:
+              name: publisher-configurations
+        ports:
+          - containerPort: 32248
+            name: publisher-tcp
+          - containerPort: 32249
+            name: publisher-rest

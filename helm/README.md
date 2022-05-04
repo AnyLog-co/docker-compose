@@ -1,54 +1,128 @@
 # Deploy AnyLog using Kubernetes 
 
-The following provides details in regard to deploying AnyLog Node, and it's corresponding tools, via Kubernetes 
-(helm-charts).
+The following provides details in regard to deploying AnyLog Node via Kubernetes & Helm.  
 
 ## Requirement
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) - Kubernetes command line tool
-* [minikube](https://minikube.sigs.k8s.io/docs/start/) - local Kubernetes, focusing on making it easy to learn and develop for Kubernetes.
-* [helm-charts](https://helm.sh/docs/intro/quickstart/)
+* [minikube](https://minikube.sigs.k8s.io/docs/start/) - local Kubernetes, focusing on making it easy to learn and develop for 
+  Kubernetes. Alternatively, a user can use something else. such as: _kubeadm_, _MicroK8s_, _K3s_    
+* [helm-charts](https://helm.sh/docs/intro/quickstart/) - Kubernetes package manager 
+* [Nginx](https://nginx.org/en/) - web server used as a reverse proxy
 
+## Deploying an AnyLog Instance 
+1. [Install Kubernetes](kube_install.sh)
+   * _kubectl_
+   * _minikube_
+   * _helm-charts_ 
+   
 
-## Steps to Deploy AnyLog  
-0. [Contact Us](mailto:info@anylog.co) to request credentials for downloading AnyLog
-
-1. Configure credentials 
+2. Clone & configure helm packages 
 ```bash
-bash $HOME/deployments/helm/credentials.sh ${YOUR_ANYLOG_DOCKER_PASSWORD}
+git clone https://github.com/AnyLog-co/deployments 
 ```
 
-2. On all Kubernetes clusters that contain an AnyLog instance that uses Postgres deploy postgres -- alternatively you 
-can use your own Postgres instance 
+
+3. Package and deploy helm packages
 ```bash
-helm install --generate-name $HOME/deployments/helm/postgres
+# packages 
+helm package $HOME/deployments/helm/anylog-master/
+helm install anylog-master-1.0220301.tgz
 ```
 
-3. Update configuration for the AnyLog Node(s) to be deployed  
-    * Node Ports - no two nodes (within the same kubernetes cluster) should have the same port values
-      * `ANYLOG_SERVER_PORT`
-      * `ANYLOG_REST_PORT`
-      * `ANYLOG_BROKER_PORT` (optional)
-    * If two operators share a cluster name (`NEW_CLUSTER`), then they'll have the same data 
+## Configuring Nginx 
+1. Install Nginx
+```bash 
+sudo apt-get -y install nginx 
+```
+
+
+2. Remove _default_ files 
+```bash
+sudo rm -rf /etc/nginx/sites-enabled/default 
+sudo rm -rf /etc/nginx/sites-available/default 
+```
+
+3. Get IP of Kubernetes cluster   
+```bash 
+minikube ip
+```
+
+4. Create `/etc/nginx/sites-enabled/anylog.conf` file
+```bash
+sudo vim /etc/nginx/sites-enabled/anylog.conf
+```
+
+
+5. Update `/etc/nginx/sites-enabled/anylog.conf` file to support REST communication
+```editorconfig
+# nginx default webpage 
+server {
+  listen 80;
+  server_name _;
+}
+
+# Grafana
+server {
+  listen 3000;
+  server_name _;
+  location / {
+    proxy_set_header Host            $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_pass http://192.168.49.2:31000;
+  }
+}
+
+# AnyLog Master REST 
+server {
+  listen 32049;
+  server_name _;
+  location / {
+    proxy_set_header Host            $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_pass http://192.168.49.2:32049;
+  }
+}
+
+# AnyLog Query REST 
+server {
+  listen 32349;
+  server_name _;
+  location / {
+    proxy_set_header Host            $host;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_pass http://192.168.49.2:32349;
+  }
+}
+...
+```
+
+6. Update `/etc/nginx/nginx.conf` to support TCP communication with AnyLog nodes 
+```editorconfig
+stream {
+    # AnyLog Master TCP 
+    upstream anylog_master {
+        server 192.168.49.2:32048;
+    }
+    server {
+        listen 32048 so_keepalive=on;
+        proxy_pass anylog_master;
+    }
     
+    # AnyLog Query TCP 
+    upstream anylog_query {
+        server 192.168.49.2:32348;
+    }
+    server {
+        listen 32348 so_keepalive=on;
+        proxy_pass anylog_query;
+    }
+}
+```
 
-4. Deploy AnyLog Node(s) - example with node of type _Standalone_
+7. Restart _Nginx_ service 
 ```bash
-helm install --generate-name $HOME/deployments/helm/anylog-standalone
+sudo service nginx stop
+sudo service nginx starts 
 ```
 
-5. (**optional**) Deploy [Remote CLI](https://github.com/AnyLog-co/Remote-CLI) & [AnyLog GUI](https://github.com/AnyLog-co/AnyLog-GUI) - 
-These are accesed via browser on ports 5000 (AnyLog GUI) and 8000 (Remote CLI) respectively 
-```bash
-helm install --generate-name $HOME/deployments/helm/anylog-tools/
-```
-
-6. (**optional**) Deploy [Grafana](https://grafana.com/docs/grafana/latest/installation/)
-```bash
-helm install --generate-name $HOME/deployments/helm/grafana
-```
-
-**Notes**: 
-* For Kuberenetes instance(s) that are not configured to `NodePort`, users can gain access using the following command: 
-```commandline
-kubectl port-forward --address ${IP_ADDRESS} service/${SERVICE_NAME} 5432:5432 &> /dev/null &
-```
+Once Nginx is configured the user can utilize the public IP to communicate with the K8s cluster outside the physical machine  
