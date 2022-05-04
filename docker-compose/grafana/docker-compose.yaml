@@ -1,0 +1,19 @@
+version: "2.2"
+services:
+  grafana:
+    image: grafana/grafana:8.2.6
+    env_file:
+      - grafana.env
+    container_name: grafana
+    stdin_open: true
+    tty: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - grafana-log:/var/log/grafana
+      - grafana-config:/etc/grafana
+volumes:
+  grafana-data:
+  grafana-log:
+  grafana-config:
