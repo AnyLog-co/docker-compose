@@ -1,11 +1,11 @@
 general:
   name: postgres
   replicas: 2
-  image:
-    secretName: imagepullsecret
-    name: nvcr.io/uazwwnrnci5h/anylog/postgres
-    version: 14.0-alpine
-    pullPolicy: IfNotPresent
+image:
+  secretName: imagepullsecret
+  name: nvcr.io/uazwwnrnci5h/anylog/postgres
+  version: 14.0-alpine
+  pullPolicy: IfNotPresent
 credentials:
   POSTGRES_USER: admin
   POSTGRES_PASSWORD: ZGVtbwo= # demo | base64

@@ -15,11 +15,11 @@ spec:
         app: {{ .Values.general.name }}
     spec:
       imagePullSecrets:
-      - name: {{ .Values.general.image.secretName }}
+      - name: {{ .Values.image.secretName }}
       containers:
       - name: {{ .Values.general.name }}
-        image: {{ .Values.general.image.name }}:{{ .Values.general.image.version }}
-        imagePullPolicy: {{ .Values.general.image.pullPolicy }}
+        image: {{ .Values.image.name }}:{{ .Values.image.version }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - configMapRef:
             name: {{ .Values.general.name }}-configuration
