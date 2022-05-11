@@ -12,5 +12,3 @@ image:
 credentials:
   POSTGRES_USER: admin
   POSTGRES_PASSWORD: ZGVtbwo= # demo | base64
-networking:
-  port: 5432
