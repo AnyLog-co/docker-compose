@@ -1,34 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ default "postgres" default "postgres" .Values.general.name }}
+  name: {{ .Values.general.name }}
   labels:
-    app: {{ default "postgres" default "postgres" .Values.general.name }}
+    app: {{ .Values.general.name }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ default "postgres" default "postgres" .Values.general.name }}
+      app: {{ .Values.general.name }}
   template:
     metadata:
       labels:
-        app: {{ default "postgres" default "postgres" .Values.general.name }}
+        app: {{ .Values.general.name }}
     spec:
       imagePullSecrets:
       - name: {{ .Values.image.secret }}
       containers:
-      - name: {{ default "postgres" default "postgres" .Values.general.name }}
+      - name: {{ .Values.general.name }}
         image: {{ .Values.general.image.name }}:{{ .Values.general.image.version }}
         imagePullPolicy: {{ .Values.general.image.pullPolicy }}
         envFrom:
         - configMapRef:
-            name: {{ default "postgres" default "postgres" .Values.general.name }}-configuration
+            name: {{ .Values.general.name }}-configuration
         env:
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ default "postgres" default "postgres" .Values.general.name }}-secret-configs
+              name: {{ .Values.general.name }}-secret-configs
               key: POSTGRES_PASSWORD
         ports:
         - containerPort: {{ .Values.networking.port }}
-          name: {{ default "postgres" default "postgres" .Values.general.name }}-port
+          name: {{ .Values.general.name }}-port
