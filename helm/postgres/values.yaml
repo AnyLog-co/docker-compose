@@ -2,7 +2,7 @@ general:
   name: postgres
   replicas: 2
   image:
-    secret: imagepullsecret
+    secretName: imagepullsecret
     name: nvcr.io/uazwwnrnci5h/anylog/postgres
     version: 14.0-alpine
     pullPolicy: IfNotPresent
