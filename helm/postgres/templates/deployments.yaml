@@ -17,7 +17,7 @@ spec:
       containers:
       - name: {{ .Values.general.name }}
         image: {{ .Values.general.image.name }}:{{ .Values.general.image.version }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.general.image.pullPolicy }}
         envFrom:
         - configMapRef:
             name: {{ .Values.general.name }}-configuration
