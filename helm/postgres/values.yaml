@@ -1,9 +1,8 @@
 general:
   name: postgres
   image:
-    enable_secret: false
     secret: imagepullsecret
-    name: postgres/postgres
+    name: nvcr.io/uazwwnrnci5h/anylog/postgres
     version: 14.0-alpine
     pullPolicy: IfNotPresent
 credentials:
