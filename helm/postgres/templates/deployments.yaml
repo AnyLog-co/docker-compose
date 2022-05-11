@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: {{ .Values.general.namespace }}
   name: {{ .Values.general.name }}
   labels:
     app: {{ .Values.general.name }}
@@ -32,5 +33,5 @@ spec:
               name: {{ .Values.general.name }}-secret-configs
               key: POSTGRES_PASSWORD
         ports:
-        - containerPort: {{ .Values.networking.port }}
+        - containerPort: 5432
           name: {{ .Values.general.name }}-port

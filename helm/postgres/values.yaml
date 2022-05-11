@@ -1,15 +1,13 @@
 general:
+  namespace: anylog
   name: postgres
   replicas: 1
 image:
   set_secret: false
   secretName: imagepullsecret
-  #name: nvcr.io/uazwwnrnci5h/anylog/postgres
   name: postgres
   version: 14.0-alpine
   pullPolicy: IfNotPresent
 credentials:
   POSTGRES_USER: admin
   POSTGRES_PASSWORD: ZGVtbwo= # demo | base64
-networking:
-  port: 5432

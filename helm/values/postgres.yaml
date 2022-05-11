@@ -1,4 +1,5 @@
 general:
+  namespace: anylog
   name: postgres
   replicas: 1
 image:
