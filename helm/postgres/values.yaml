@@ -1,0 +1,13 @@
+general:
+  name: postgres
+  image:
+    enable_secret: false
+    secret: imagepullsecret
+    image: postgres/postgres
+    version: 14.0-alpine
+    pullPolicy: IfNotPresent
+credentials:
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: ZGVtbwo= # demo | base64
+networking:
+  port: 5432

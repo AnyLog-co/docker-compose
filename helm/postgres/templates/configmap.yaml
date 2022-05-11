@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-configuration
+  name: {{ .Values.general.name }}-configuration
   labels:
-    app: postgres
+    app: {{ .Values.general.name }}
 data:
-  POSTGRES_USER: admin
+  POSTGRES_USER: {{ .Values.credentials.POSTGRES_USER}}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: postgres-secret-configs
+  name: {{ .Values.general.name }}-secret-configs
   labels:
-    app: postgres
+    app: {{ .Values.general.name }}
 data:
-  POSTGRES_PASSWORD: ZGVtbwo= # demo | base64
+  POSTGRES_PASSWORD: {{ .Values.credentials.POSTGRES_PASSWORD }}
