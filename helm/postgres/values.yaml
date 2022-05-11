@@ -1,6 +1,6 @@
 general:
   name: postgres
-  replicas: 2
+  replicas: 1
 image:
   secretName: imagepullsecret
   name: nvcr.io/uazwwnrnci5h/anylog/postgres
