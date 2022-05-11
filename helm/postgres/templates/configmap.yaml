@@ -6,7 +6,7 @@ metadata:
     app: {{ .Values.general.name }}
 data:
   POSTGRES_USER: {{ .Values.credentials.POSTGRES_USER }}
-  PGPORT: {{ .Values.networking.port }}
+  PGPORT: {{ .Values.networking.port | quote }}
 ---
 apiVersion: v1
 kind: Secret
