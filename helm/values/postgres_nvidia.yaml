@@ -2,10 +2,8 @@ general:
   name: postgres
   replicas: 1
 image:
-  set_secret: false 
   secretName: imagepullsecret
-  #name: nvcr.io/uazwwnrnci5h/anylog/postgres
-  name: postgres
+  name: nvcr.io/uazwwnrnci5h/anylog/postgres
   version: 14.0-alpine
   pullPolicy: IfNotPresent
 credentials:
