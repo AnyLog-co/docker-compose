@@ -14,9 +14,12 @@ spec:
       labels:
         app: postgres
     spec:
+      imagePullSecrets:
+      - name: imagepullsecret
       containers:
       - name: postgres
-        image: postgres:14.0-alpine
+        image: nvcr.io/uazwwnrnci5h/anylog/postgres:14.0-alpine
+        #image: postgres:14.0-alpine
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
