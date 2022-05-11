@@ -14,8 +14,10 @@ spec:
       labels:
         app: {{ .Values.general.name }}
     spec:
+      {{ if (default .Values.image.set_secret true) }}
       imagePullSecrets:
       - name: {{ .Values.image.secretName }}
+      {{ end }}
       containers:
       - name: {{ .Values.general.name }}
         image: {{ .Values.image.name }}:{{ .Values.image.version }}
