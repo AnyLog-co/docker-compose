@@ -6,7 +6,7 @@ metadata:
     app: {{ .Values.general.name }}
 spec:
   type: {{ .Values.configs.services.service_type }}
-  {{ if ( default .Values.configs.networking.services.service_type NodePort ) }}
+  {{ if eq .Values.configs.networking.services.service_type "NodePort" ) }}
   ports:
   - name: {{ .Values.general.name }}-tcp
     port: {{ .Values.configs.networking.services.anylog_server_port }}
