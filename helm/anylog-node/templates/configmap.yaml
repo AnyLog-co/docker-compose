@@ -55,7 +55,7 @@ data:
   DB_PORT: {{ .Values.configs.dbms.db_port | quote }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.memeory }}
+  {{ if .Values.configs.dbms.memory }}
   MEMORY: {{ .Values.configs.dbms.memory | quote }}
   {{ end }}
 
