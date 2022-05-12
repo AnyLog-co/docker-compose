@@ -20,7 +20,7 @@ data:
   ANYLOG_SERVER_PORT: {{ default .Values.configs.networking.services.anylog_server_port "32048" | quote }}
   ANYLOG_REST_PORT: {{ default .Values.configs.networking.services.anylog_rest_port "32049" | quote }}
 
-  ENABLE_BROKER: {{ default .Values.configs.networking.settings.enable_broker "false" | quote }}
+  ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker }}
   {{ if .Values.configs.networking.settings.enable_broker }}
   ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_rest_port "32050" | quote }}
   {{ end }}
