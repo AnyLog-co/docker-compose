@@ -40,23 +40,23 @@ data:
   {{ end }}
 
   {{ if .Values.configs.dbms.db_ip }}
-  DB_IP: {{ Values.configs.dbms.db_ip }}
+  DB_IP: {{ .Values.configs.dbms.db_ip }}
   {{ end }}
 
   {{ if .Values.configs.dbms.db_user }}
-  DB_USER: {{ Values.configs.dbms.db_user }}
+  DB_USER: {{ .Values.configs.dbms.db_user }}
   {{ end }}
 
   {{ if .Values.configs.dbms.db_passwd }}
-  DB_PASSWD: {{ Values.configs.dbms.db_passwd }}
+  DB_PASSWD: {{ .Values.configs.dbms.db_passwd }}
   {{ end }}
 
   {{ if .Values.configs.dbms.db_port }}
-  DB_PORT: {{ Values.configs.dbms.db_port | quote }}
+  DB_PORT: {{ .Values.configs.dbms.db_port | quote }}
   {{ end }}
 
   {{ if .Values.configs.dbms.memeory }}
-  MEMORY: {{ Values.configs.dbms.memory | quote }}
+  MEMORY: {{ .Values.configs.dbms.memory | quote }}
   {{ end }}
 
   # Whether to extend local start up script
