@@ -16,7 +16,7 @@ image:
   set_secret: true
   secretName: imagepullsecret
   name: anylogco/anylog-network
-  version: develop
+  version: predevelop
   pullPolicy: IfNotPresent
 
 configs:
