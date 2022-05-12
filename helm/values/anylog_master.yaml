@@ -1,0 +1,64 @@
+#----------------------------------------------------------------------------------------------------------------------
+# The following are the general values used to deploy an AnyLog instance of type: Master | AnyLog version: develop
+# required configs:
+# - node_type
+# - anylog_server_port
+# - anylog_rest_port
+# - master_node TCP connection information (for master you could use 127.0.0.1:32048)
+#----------------------------------------------------------------------------------------------------------------------
+general:
+  name: master
+  replicas: 1
+
+image:
+  set_secret: true
+  secretName: imagepullsecret
+  name: anylogco/anylog-network
+  version: develop
+  pullPolicy: IfNotPresent
+
+configs:
+  basic:
+    node_type: "master"
+    node_name: "anylog-master"
+    company: "new company"
+  networking:
+    services:
+      anylog_server_port: 32048
+      anylog_rest_port: 32049
+      # OPTIONAL - MQTT message broker on AnyLog node
+      anylog_broker_port: ""
+    network_ips:
+      external_ip: ""
+      local_ip: ""
+    settings:
+      # OPTIONAL - whether to enable local MQTT message broker or not
+      enable_broker: "false"
+      # TCP connection information for master node (not needed for REST node)
+      master_node: "127.0.0.1:32048"
+      # How often a node syncs with the master node
+      sync_time: "30 second"
+  dbms:
+    db_type: "psql"
+    db_ip: "postgres"
+    db_user: "admin"
+    db_passwd: "passwd"
+    db_port: 5432
+    # when memory is set to true, then the system_query database will automatically run using SQLite in memory.
+    memory: "true"
+  other:
+    # whether to deploy a local script that extends the default startup script
+    deploy_local_script: "false"
+    # whether to enable an MQTT client on the node
+    mqtt_enable: "false"
+  settings:
+    # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
+    tcp_thread_pool: 6
+    # Amount of time (in seconds) until REST timeout
+    rest_timeout: 30
+    # The number of concurrent threads supporting HTTP requests.
+    rest_threads: 5
+    # Sets the number of threads supporting queries (the default is 3).
+    query_pool: 3
+
+

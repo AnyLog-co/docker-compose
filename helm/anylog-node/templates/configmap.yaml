@@ -5,10 +5,12 @@ metadata:
   labels:
     app: {{ .Values.general.name }}
 data:
-  NODE_TYPE: {{ default .Values.configs.basic.node_type "rest" }}
+  # General configs
+  NODE_TYPE: {{ .Values.configs.basic.node_type }}
   NODE_NAME: {{ default .Values.configs.basic.node_name "anylog-node" }}
   COMPANY_NAME: {{ default .Values.configs.basic.company  "new company" }}
 
+  # networking
   {{ if .Values.configs.networking.network_ips.external_ip  }}
   EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
   {{ end }}
@@ -17,10 +19,68 @@ data:
   LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
   {{ end }}
 
-  ANYLOG_SERVER_PORT: {{ default .Values.configs.networking.services.anylog_server_port | quote }}
+  ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
   ANYLOG_REST_PORT: {{ default .Values.configs.networking.services.anylog_rest_port | quote }}
 
   ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
-  {{ if .Values.configs.networking.settings.enable_broker }}
+  {{ if .Values.configs.networking.services.anylog_broker_port }}
   ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
+  {{ end }}
+
+  # master node information
+  MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+
+  {{ if .Values.configs.networking.settings.sync_time }}
+  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
+  {{ end }}
+
+  # database
+  {{ if .Values.configs.dbms.db_type }}
+  DB_TYPE: {{ .Values.configs.dbms.db_type }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.db_ip }}
+  DB_IP: {{ Values.configs.dbms.db_ip }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.db_user }}
+  DB_USER: {{ Values.configs.dbms.db_user }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.db_passwd }}
+  DB_PASSWD: {{ Values.configs.dbms.db_passwd }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.db_port }}
+  DB_PORT: {{ Values.configs.dbms.db_port | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.memeory }}
+  MEMORY: {{ Values.configs.dbms.memory | quote }}
+  {{ end }}
+
+  # Whether to extend local start up script
+  {{ if .Values.configs.other.deploy_local_script }}
+  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.other.mqtt_enable }}
+  MQTT_ENABLE: {{ .Values.configs.other.mqtt_enable | quote }}
+  {{ end }}
+
+  # Node settings
+  {{ if .Values.configs.settings.tcp_thread_pool }}
+  TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.rest_timeout }}
+  REST_TIMEOUT: {{ .Values.configs.settings.rest_timeout | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.rest_threads }}
+  REST_THREADS: {{ .Values.configs.settings.rest_threads | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.query_pool }}
+  QUERY_POOL: { { .Values.configs.settings.query_pool | quote } }
   {{ end }}

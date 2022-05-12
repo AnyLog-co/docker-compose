@@ -1,3 +1,6 @@
+#----------------------------------------------------------------------------------------------------------------------
+# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
+#----------------------------------------------------------------------------------------------------------------------
 general:
   name: anylog
   replicas: 1
@@ -14,15 +17,20 @@ configs:
     node_type: "rest"
     node_name: "anylog-node"
     company: "new company"
-
   networking:
     services:
       anylog_server_port: 32048
       anylog_rest_port: 32049
+      # OPTIONAL - MQTT message broker on AnyLog node
       anylog_broker_port: 32050
     network_ips:
       external_ip: ""
       local_ip: ""
     settings:
-      master_node: "127.0.0.1:2048"
-      enable_broker: "false"
+      # OPTIONAL - whether to enable local MQTT message broker or not
+      enable_broker: "true"
+      # TCP connection information for master node (not needed for REST node)
+      master_node: ""
+      # How often a node syncs with the master node
+      sync_time: ""
+
