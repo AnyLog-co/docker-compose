@@ -2,6 +2,8 @@
 # The following are the general values used to deploy an AnyLog instance of type: Master | AnyLog version: develop
 # required configs:
 # - node_type
+# - node_name
+# - company_name
 # - anylog_server_port
 # - anylog_rest_port
 # - master_node TCP connection information (for master you could use 127.0.0.1:32048)

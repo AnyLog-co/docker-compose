@@ -7,7 +7,7 @@ metadata:
 data:
   # General configs
   NODE_TYPE: {{ .Values.configs.basic.node_type }}
-  NODE_NAME: {{ default .Values.configs.basic.node_name "anylog-node" }}
+  NODE_NAME: {{ .Values.configs.basic.node_name }}
   COMPANY_NAME: {{ default .Values.configs.basic.company  "new company" }}
 
   # networking
@@ -81,6 +81,6 @@ data:
   REST_THREADS: {{ .Values.configs.settings.rest_threads | quote }}
   {{ end }}
 
-#  {{ if .Values.configs.settings.query_pool }}
-#  QUERY_POOL:  {{ .Values.configs.settings.query_pool | quote }}
-#  {{ end }}
+  {{ if .Values.configs.settings.query_pool }}
+  QUERY_POOL: {{ .Values.configs.settings.query_pool | quote }}
+  {{ end }}
