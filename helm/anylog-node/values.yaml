@@ -1,5 +1,4 @@
 general:
-  namespace: anylog
   name: anylog-node
   replicas: 1
 

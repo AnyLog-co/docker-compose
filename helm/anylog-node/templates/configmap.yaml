@@ -1,10 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  #namespace: {{ .Values.general.namespace }}
   name: {{ .Values.general.name }}-configurations
   labels:
-    app: anylog-master
+    app: {{ .Values.general.name }}
 data:
   NODE_TYPE: {{ default .Values.configs.basic.node_type "rest" }}
   NODE_NAME: {{ default .Values.configs.basic.node_name "anylog-node" }}
