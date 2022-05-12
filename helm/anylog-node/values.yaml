@@ -14,7 +14,7 @@ configs:
     node_type: "rest"
     node_name: "anylog-node"
     company: "new company"
-
+a
   networking:
     services:
       anylog_server_port: 32048
