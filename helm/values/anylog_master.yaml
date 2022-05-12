@@ -44,7 +44,7 @@ configs:
     db_type: "psql"
     db_ip: "postgres"
     db_user: "admin"
-    db_passwd: "passwd"
+    db_passwd: "demo"
     db_port: 5432
     # when memory is set to true, then the system_query database will automatically run using SQLite in memory.
     memory: "true"
