@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ .Values.general.name }}
 spec:
-  type: {{ .Values.configs.services.service_type }}
+  type: {{ .Values.configs.services.service_type | quote }}
   {{ if eq .Values.configs.networking.services.service_type "NodePort" }}
   ports:
   - name: {{ .Values.general.name }}-tcp
