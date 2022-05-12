@@ -28,5 +28,3 @@ configs:
     settings:
       master_node: "127.0.0.1:2048"
       enable_broker: "true"
-      change_external_ip: "false"
-      change_local_ip: "false"

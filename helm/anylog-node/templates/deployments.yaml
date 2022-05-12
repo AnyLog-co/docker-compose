@@ -22,7 +22,7 @@ spec:
         imagePullPolicy: Always
         envFrom:
           - configMapRef:
-              name: master-configurations
+              name: {{ .Values.general.name }}-configurations
         ports:
           - containerPort: 32048
             name: master-tcp

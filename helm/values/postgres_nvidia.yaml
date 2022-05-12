@@ -1,8 +1,8 @@
 general:
-  namespace: anylog
   name: postgres
   replicas: 1
 image:
+  set_secret: true
   secretName: imagepullsecret
   name: nvcr.io/uazwwnrnci5h/anylog/postgres
   version: 14.0-alpine
