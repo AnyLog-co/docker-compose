@@ -17,7 +17,6 @@ configs:
 
   networking:
     services:
-      service_type: NodePort
       anylog_server_port: 32048
       anylog_rest_port: 32049
       anylog_broker_port: 32050
