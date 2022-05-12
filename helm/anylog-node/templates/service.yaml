@@ -9,7 +9,7 @@ spec:
   ports:
   - name: {{ .Values.general.name }}-tcp
     port: {{ .Values.configs.networking.services.anylog_server_port }}
-    {{ if (default .Values.configs.networking.services.service_type NodePort) }}
+    {{ if default .Values.configs.networking.services.service_type NodePort }}
     targetPort: {{ .Values.configs.networking.services.anylog_server_port }}
     nodePort: {{ .Values.configs.networking.services.anylog_server_port }}
     {{ end }}
