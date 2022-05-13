@@ -2,6 +2,7 @@
 # The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
 #----------------------------------------------------------------------------------------------------------------------
 general:
+  namespace: anylog-network
   name: anylog
   replicas: 1
 

@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  namespace: {{ .Values.general.namespace }}
   name: {{ .Values.general.name }}-configurations
   labels:
     app: {{ .Values.general.name }}
@@ -58,6 +59,9 @@ data:
   {{ if .Values.configs.dbms.memory }}
   MEMORY: {{ .Values.configs.dbms.memory | quote }}
   {{ end }}
+
+  # Operator / Publisher settings
+
 
   # Whether to extend local start up script
   {{ if .Values.configs.other.deploy_local_script }}
