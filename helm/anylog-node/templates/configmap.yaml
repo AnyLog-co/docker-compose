@@ -23,7 +23,7 @@ data:
   ANYLOG_REST_PORT: {{ default .Values.configs.networking.services.anylog_rest_port | quote }}
 
   ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
-  {{- if eq .Values.configs.networking.settings.enable_broker "true" and eq .Values.configs.networking.services.anylog_broker_port }}
+  {{- if eq .Values.configs.networking.settings.enable_broker "true" }} and {{- if eq .Values.configs.networking.services.anylog_broker_port }}
 #  {{ if .Values.configs.networking.services.anylog_broker_port }}
   ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
 #  {{ end }}
