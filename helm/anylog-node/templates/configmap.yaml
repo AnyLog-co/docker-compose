@@ -29,8 +29,9 @@ data:
 
   # master node information
 #  {{- if ne .Values.configs.basic.node_type "rest" }}
-  MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
-#  {{ end }}
+  {{ if .Values.configs.networking.settings.master_node }}
+    MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+  {{ end }}
   
   {{ if .Values.configs.networking.settings.sync_time }}
     SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
