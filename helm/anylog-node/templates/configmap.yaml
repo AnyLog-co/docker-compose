@@ -27,7 +27,7 @@ data:
 #  {{ if .Values.configs.networking.services.anylog_broker_port }}
   ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
 #  {{ end }}
-  {{ end }}
+  {{ end }} {{ end }}
 
   # master node information
   {{- if ne .Values.configs.basic.node_type "rest" }}
