@@ -12,11 +12,11 @@ data:
 
   # networking
   {{ if .Values.configs.networking.network_ips.external_ip  }}
-  EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
+    EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
   {{ end }}
 
   {{ if .Values.configs.networking.network_ips.local_ip  }}
-  LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
+    LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
   {{ end }}
 
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
@@ -24,9 +24,9 @@ data:
 
   ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
   {{- if eq .Values.configs.networking.settings.enable_broker "true" }}
-  {{ if .Values.configs.networking.services.anylog_broker_port }}
-  ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
-  {{ end }}
+    {{ if .Values.configs.networking.services.anylog_broker_port }}
+      ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
+    {{ end }}
   {{ end }}
 
   # master node information
