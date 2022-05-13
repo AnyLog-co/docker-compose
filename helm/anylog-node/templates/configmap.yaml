@@ -8,7 +8,7 @@ data:
   # General configs
   NODE_TYPE: {{ .Values.configs.basic.node_type }}
   NODE_NAME: {{ .Values.configs.basic.node_name }}
-  COMPANY_NAME: {{ default .Values.configs.basic.company  "new company" }}
+  COMPANY_NAME: {{ .Values.configs.basic.company }}
 
   # networking
   {{ if .Values.configs.networking.network_ips.external_ip  }}
@@ -20,11 +20,11 @@ data:
   {{ end }}
 
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
-  ANYLOG_REST_PORT: {{ default .Values.configs.networking.services.anylog_rest_port | quote }}
+  ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
 
   ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
-  {{ if .Values.configs.networking.services.anylog_broker_port }}
-    ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
+  {{- if eq .Values.configs.networking.settings.enable_broker "true" }}
+    ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
   {{ end }}
 
   # master node information
