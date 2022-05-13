@@ -8,87 +8,82 @@ data:
   # General configs
   NODE_TYPE: {{ .Values.configs.basic.node_type }}
   NODE_NAME: {{ .Values.configs.basic.node_name }}
-  COMPANY_NAME: {{ .Values.configs.basic.company }}
+  COMPANY_NAME: {{ default .Values.configs.basic.company  "new company" }}
 
   # networking
   {{ if .Values.configs.networking.network_ips.external_ip  }}
-    EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
+  EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
   {{ end }}
 
   {{ if .Values.configs.networking.network_ips.local_ip  }}
-    LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
+  LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
   {{ end }}
 
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
-  ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
+  ANYLOG_REST_PORT: {{ default .Values.configs.networking.services.anylog_rest_port | quote }}
 
   ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
-  {{ if .Values.configs.networking.services.anylog_broker_port  }}
-    ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
+  {{ if .Values.configs.networking.services.anylog_broker_port }}
+  ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
   {{ end }}
 
   # master node information
-#  {{- if ne .Values.configs.basic.node_type "rest" }}
-  {{ if .Values.configs.networking.settings.master_node }}
-    MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
-  {{ end }}
-  
+  MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+
   {{ if .Values.configs.networking.settings.sync_time }}
-    SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
+  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
   {{ end }}
 
   # database
-  {{ if .Values.configs.dbms.type }}
-    DB_TYPE: {{ .Values.configs.dbms.type }}
+  {{ if .Values.configs.dbms.db_type }}
+  DB_TYPE: {{ .Values.configs.dbms.db_type }}
   {{ end }}
 
-#  {{- if ne .Values.configs.dbms.type "sqlite" }}
-  {{ if .Values.configs.dbms.ip }}
-    DB_IP: {{ .Values.configs.dbms.ip }}
+  {{ if .Values.configs.dbms.db_ip }}
+  DB_IP: {{ .Values.configs.dbms.db_ip }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.user }}
-    DB_USER: {{ .Values.configs.dbms.user }}
+  {{ if .Values.configs.dbms.db_user }}
+  DB_USER: {{ .Values.configs.dbms.db_user }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.password }}
-    DB_PASSWD: {{ .Values.configs.dbms.password }}
+  {{ if .Values.configs.dbms.db_passwd }}
+  DB_PASSWD: {{ .Values.configs.dbms.db_passwd }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.port }}
-    DB_PORT: {{ .Values.configs.dbms.port | quote }}
+  {{ if .Values.configs.dbms.db_port }}
+  DB_PORT: {{ .Values.configs.dbms.db_port | quote }}
   {{ end }}
 
   {{ if .Values.configs.dbms.memory }}
-    MEMORY: {{ .Values.configs.dbms.memory | quote }}
+  MEMORY: {{ .Values.configs.dbms.memory | quote }}
   {{ end }}
-#  {{ end }}
 
   # Operator / Publisher settings
 
 
   # Whether to extend local start up script
   {{ if .Values.configs.other.deploy_local_script }}
-    DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
+  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
   {{ end }}
 
   {{ if .Values.configs.other.mqtt_enable }}
-    MQTT_ENABLE: {{ .Values.configs.other.mqtt_enable | quote }}
+  MQTT_ENABLE: {{ .Values.configs.other.mqtt_enable | quote }}
   {{ end }}
 
   # Node settings
   {{ if .Values.configs.settings.tcp_thread_pool }}
-    TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
+  TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
   {{ end }}
 
   {{ if .Values.configs.settings.rest_timeout }}
-    REST_TIMEOUT: {{ .Values.configs.settings.rest_timeout | quote }}
+  REST_TIMEOUT: {{ .Values.configs.settings.rest_timeout | quote }}
   {{ end }}
 
   {{ if .Values.configs.settings.rest_threads }}
-    REST_THREADS: {{ .Values.configs.settings.rest_threads | quote }}
+  REST_THREADS: {{ .Values.configs.settings.rest_threads | quote }}
   {{ end }}
 
   {{ if .Values.configs.settings.query_pool }}
-    QUERY_POOL: {{ .Values.configs.settings.query_pool | quote }}
+  QUERY_POOL: {{ .Values.configs.settings.query_pool | quote }}
   {{ end }}
