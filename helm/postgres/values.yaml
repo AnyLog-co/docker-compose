@@ -1,5 +1,5 @@
 general:
-  namespace: anylog-network
+  #namespace: anylog-network
   name: postgres
   replicas: 1
 image:
