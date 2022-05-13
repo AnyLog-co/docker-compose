@@ -66,11 +66,11 @@ data:
 
   {{ end }}
 
-  {{- if eq .Values.configs.basic.node_type "publisher" }}
-  {{ end }}
-
-  {{- if .Values.configs.basic.node_type "operator" }}
-  {{ end }}
+#  {{- if eq .Values.configs.basic.node_type "publisher" }}
+#  {{ end }}
+#
+#  {{- if .Values.configs.basic.node_type "operator" }}
+#  {{ end }}
 
   # Whether to extend local start up script
   {{ if .Values.configs.other.deploy_local_script }}
