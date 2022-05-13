@@ -93,7 +93,7 @@ data:
   {{ end }}
 
   {{ if .Values.configs.settings.write_immediate }}
-  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate }}
+  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
   {{ end }}
   {{ end }}
 
