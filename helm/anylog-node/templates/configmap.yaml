@@ -23,10 +23,10 @@ data:
   ANYLOG_REST_PORT: {{ default .Values.configs.networking.services.anylog_rest_port | quote }}
 
   ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
-  {{- if eq .Values.configs.networking.settings.enable_broker "true" }}
-  {{ if .Values.configs.networking.services.anylog_broker_port }}
+  {{- if eq .Values.configs.networking.settings.enable_broker "true" and .Values.configs.networking.services.anylog_broker_port }}
+#  {{ if .Values.configs.networking.services.anylog_broker_port }}
   ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
-  {{ end }}
+#  {{ end }}
   {{ end }}
 
   # master node information
@@ -66,7 +66,11 @@ data:
 
   {{ end }}
 
-  # Operator / Publisher settings
+  {{- if .Values.configs.basic.node_type "publisher" }}
+  {{ end }}
+
+  {{- if .Values.configs.basic.node_type "operator" }}
+  {{ end }}
 
   # Whether to extend local start up script
   {{ if .Values.configs.other.deploy_local_script }}

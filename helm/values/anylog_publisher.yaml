@@ -41,13 +41,15 @@ configs:
       # How often a node syncs with the master node
       sync_time: "30 second"
   dbms:
-    db_type: "psql"
-    db_ip: "postgres"
-    db_user: "admin"
-    db_passwd: "demo"
-    db_port: 5432
+    type: "psql"
+    ip: "postgres"
+    user: "admin"
+    passwd: "demo"
+    port: 5432
     # when memory is set to true, then the system_query database will automatically run using SQLite in memory.
     memory: "true"
+  publisher:
+
   other:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"

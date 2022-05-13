@@ -41,7 +41,7 @@ configs:
       # How often a node syncs with the master node
       sync_time: "30 second"
   dbms:
-    db_type: "sqlite"
+    type: "sqlite"
     # when memory is set to true, then the system_query database will automatically run using SQLite in memory.
     memory: "true"
   other:
