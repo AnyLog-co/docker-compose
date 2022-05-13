@@ -23,9 +23,9 @@ data:
   ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
 
   ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
-#  {{- if eq .Values.configs.networking.settings.enable_broker "true" }}
-  ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
-#  {{ end }}
+  {{ if .Values.configs.networking.services.anylog_broker_port  }}
+    ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
+  {{ end }}
 
   # master node information
 #  {{- if ne .Values.configs.basic.node_type "rest" }}
