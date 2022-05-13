@@ -41,11 +41,11 @@ configs:
       # How often a node syncs with the master node
       sync_time: "30 second"
   dbms:
-    type: "psql"
-    ip: "postgres"
-    user: "admin"
-    password: "demo"
-    port: 5432
+    db_type: "psql"
+    db_ip: "postgres"
+    db_user: "admin"
+    db_passwd: "demo"
+    db_port: 5432
     # when memory is set to true, then the system_query database will automatically run using SQLite in memory.
     memory: "true"
   other:
