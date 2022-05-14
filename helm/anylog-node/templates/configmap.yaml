@@ -106,6 +106,10 @@ data:
   MQTT_ENABLE: {{ .Values.configs.other.mqtt_enable | quote }}
   {{ end }}
 
+  {{ if .Values.configs.other.mqtt.broker }}
+  BROKER: {{ .Values.configs.other.mqtt.broker }}
+  {{ end }}
+
   # Node settings
   {{ if .Values.configs.settings.tcp_thread_pool }}
   TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}

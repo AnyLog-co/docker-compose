@@ -26,8 +26,8 @@ configs:
     company: "new company"
   networking:
     services:
-      anylog_server_port: 32048
-      anylog_rest_port: 32049
+      anylog_server_port: 32248
+      anylog_rest_port: 32249
       # OPTIONAL - MQTT message broker on AnyLog node
       anylog_broker_port: ""
     network_ips:
