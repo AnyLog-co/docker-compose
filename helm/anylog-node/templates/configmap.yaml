@@ -102,12 +102,15 @@ data:
   DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
   {{ end }}
 
+
   {{ if .Values.configs.other.mqtt_enable }}
   MQTT_ENABLE: {{ .Values.configs.other.mqtt_enable | quote }}
   {{ end }}
 
+  {{- if .Values.configs.other.mqtt_enable "true" }} or {{- if eq .Values.configs.basic.node_type "publisher" }}
   {{ if .Values.configs.other.mqtt.broker }}
   BROKER: {{ .Values.configs.other.mqtt.broker }}
+  {{ end }}
   {{ end }}
 
   # Node settings
