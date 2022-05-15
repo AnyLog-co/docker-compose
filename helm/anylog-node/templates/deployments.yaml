@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: {{ .Values.general.namespace }}
   name: {{ .Values.general.name }}
   labels:
     app: {{ .Values.general.name }}
@@ -27,11 +28,11 @@ spec:
               name: {{ .Values.general.name }}-configurations
         ports:
           - containerPort: {{ .Values.configs.networking.services.anylog_server_port }}
-            name: tcp
+            name: {{ .Values.general.name }}-tcp
           - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-            name: rest
+            name: {{ .Values.general.name }}-rest
           {{ if .Values.configs.networking.settings.enable_broker }}
           - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-            name: broker
+            name: {{ .Values.general.name }}-broker
           {{ end }}
 
