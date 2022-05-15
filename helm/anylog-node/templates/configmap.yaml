@@ -108,7 +108,6 @@ data:
   MQTT_ENABLE: {{ .Values.configs.mqtt.enable | quote }}
   {{ end }}
 
-  {{- if eq .Values.configs.mqtt.enable "true" }}
   {{ if .Values.configs.mqtt.broker }}
   BROKER: {{ .Values.configs.mqtt.broker }}
   {{ end }}
