@@ -116,7 +116,6 @@ data:
   MQTT_PORT: {{ .Values.configs.mqtt.port | quote }}
   {{ end }}
 
-
   {{ if .Values.configs.mqtt.user }}
   MQTT_USER: {{ .Values.configs.mqtt.user }}
   {{ end }}
@@ -129,6 +128,7 @@ data:
   MQTT_LOG: {{ .Values.configs.mqtt.log | quote }}
   {{ end }}
 
+  {{- if eq .Values.configs.mqtt.enable "true" }} or {{- if eq .Values.configs.mqtt.set_topic "true" }}
   {{ if .Values.configs.mqtt.topic.name }}
   MQTT_TOPIC_NAME: {{ .Values.configs.topic.name }}
   {{ end }}
@@ -139,6 +139,7 @@ data:
 
   {{ if .Values.configs.mqtt.topic.table }}
   MQTT_TOPIC_TABLE: {{ .Values.configs.topic.table }}
+  {{ end }}
   {{ end }}
 
 
