@@ -95,7 +95,7 @@ data:
   # Local database is immediate (independent of the calls to flush)
 
   {{ if .Values.configs.settings.write_immediate }}
-  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | qoute }}
+  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
   {{ end }}
   {{ end }}{{ end }}
 
