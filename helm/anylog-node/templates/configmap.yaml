@@ -120,12 +120,13 @@ data:
   MQTT_USER: {{ .Values.configs.mqtt.user }}
   {{ end }}
 
+  {{- if eq .Values.configs.mqtt.enable "true" }}
   {{ if .Values.configs.mqtt.password }}
   MQTT_PASSWORD: {{ .Values.configs.mqtt.password }}
   {{ end }}
 
   {{ if .Values.configs.mqtt.topic.name }}
-  MQTT_TOPIC_NAME: {{ .Values.configs.mqtt.topic.name }}
+  MQTT_TOPIC_NAME: {{ .Values.configs.mqtt.topic.name | quote }}
   {{ end }}
 
   {{ if .Values.configs.mqtt.topic.db_name }}
@@ -147,6 +148,8 @@ data:
   {{ if .Values.configs.mqtt.topic.value_column }}
   MQTT_COLUMN_VALUE: { .Values.configs.mqtt.topic.value_column }}
   {{ end }}
+  {{ end }}
+
 
   # Node settings
   {{ if .Values.configs.settings.tcp_thread_pool }}
