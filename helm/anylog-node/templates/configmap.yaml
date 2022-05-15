@@ -122,6 +122,21 @@ data:
   MQTT_LOG: {{ .Values.configs.mqtt.log | quote }}
   {{ end }}
 
+  {{- if .Values.configs.mqtt.set_topic "true" }} or {{- if .Values.configs.mqtt.enable "true" }}
+  {{ if .Values.configs.mqtt.topic.name }}
+  MQTT_TOPIC_NAME: {{ .Values.configs.mqtt.topic.name }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.db_name }}
+  MQTT_TOPIC_DBMS: {{ .Values.configs.mqtt.topic.db_name }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.table }}
+  MQTT_TOPIC_TABLE: {{ .Values.configs.mqtt.topic.table }}
+  {{ end }}
+  {{ end }}{{ end }}
+
+
   # Other params
   {{ if .Values.configs.other.deploy_local_script }}
   DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
