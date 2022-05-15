@@ -1,6 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
+#  namespace: {{ .Values.general.namespace }}
   name: {{ .Values.general.name }}-service
   labels:
     app: {{ .Values.general.name }}
