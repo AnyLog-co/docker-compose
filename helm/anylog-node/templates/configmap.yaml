@@ -42,26 +42,25 @@ data:
   {{ end }}
 
   {{- if ne .Values.configs.dbms.type "sqlite" }}
-  {{ if .Values.configs.dbms.ip }}
-  DB_IP: {{ .Values.configs.dbms.ip }}
-  {{ end }}
+    {{ if .Values.configs.dbms.ip }}
+      DB_IP: {{ .Values.configs.dbms.ip }}
+    {{ end }}
 
-  {{ if .Values.configs.dbms.user }}
-  DB_USER: {{ .Values.configs.dbms.user }}
-  {{ end }}
+    {{ if .Values.configs.dbms.user }}
+      DB_USER: {{ .Values.configs.dbms.user }}
+    {{ end }}
 
-  {{ if .Values.configs.dbms.password }}
-  DB_PASSWD: {{ .Values.configs.dbms.password }}
-  {{ end }}
+    {{ if .Values.configs.dbms.password }}
+      DB_PASSWD: {{ .Values.configs.dbms.password }}
+    {{ end }}
 
-  {{ if .Values.configs.dbms.port }}
-  DB_PORT: {{ .Values.configs.dbms.port | quote }}
-  {{ end }}
+    {{ if .Values.configs.dbms.port }}
+      DB_PORT: {{ .Values.configs.dbms.port | quote }}
+    {{ end }}
 
-  {{ if .Values.configs.dbms.memory }}
-  MEMORY: {{ .Values.configs.dbms.memory | quote }}
-  {{ end }}
-
+    {{ if .Values.configs.dbms.memory }}
+      MEMORY: {{ .Values.configs.dbms.memory | quote }}
+    {{ end }}
   {{ end }}
 
   # publisher params
