@@ -8,16 +8,16 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - name: {{ .Values.general.name }}-tcp
+  - name: tcp
     port: {{ .Values.configs.networking.services.anylog_server_port }}
     targetPort: {{ .Values.configs.networking.services.anylog_server_port }}
     nodePort: {{ .Values.configs.networking.services.anylog_server_port }}
-  - name: {{ .Values.general.name }}-rest
+  - name: rest
     port: {{ .Values.configs.networking.services.anylog_rest_port }}
     targetPort: {{ .Values.configs.networking.services.anylog_rest_port }}
     nodePort: {{ .Values.configs.networking.services.anylog_rest_port }}
   {{ if default .Values.configs.networking.services.anylog_broker_port }}
-  - name: {{ .Values.general.name }}-broker
+  - name: broker
     port: {{ .Values.configs.networking.services.anylog_broker_port }}
     targetPort: {{ .Values.configs.networking.services.anylog_broker_port }}
     nodePort: {{ .Values.configs.networking.services.anylog_broker_port }}

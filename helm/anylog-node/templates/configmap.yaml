@@ -29,35 +29,37 @@ data:
   {{ end }}
 
   # master node information
-  MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
-
+  {{ if ne .Values.configs.basic.node_type "rest" }}
+    MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+  {{ end }}
+  
   {{ if .Values.configs.networking.settings.sync_time }}
-  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
+    SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
   {{ end }}
 
   # database
-  {{ if .Values.configs.dbms.db_type }}
-  DB_TYPE: {{ .Values.configs.dbms.db_type }}
+  {{ if .Values.configs.dbms.type }}
+    DB_TYPE: {{ .Values.configs.dbms.type }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.db_ip }}
-  DB_IP: {{ .Values.configs.dbms.db_ip }}
+  {{ if .Values.configs.dbms.ip }}
+    DB_IP: {{ .Values.configs.dbms.ip }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.db_user }}
-  DB_USER: {{ .Values.configs.dbms.db_user }}
+  {{ if .Values.configs.dbms.user }}
+    DB_USER: {{ .Values.configs.dbms.user }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.db_passwd }}
-  DB_PASSWD: {{ .Values.configs.dbms.db_passwd }}
+  {{ if .Values.configs.dbms.passwd }}
+    DB_PASSWD: {{ .Values.configs.dbms.passwd }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.db_port }}
-  DB_PORT: {{ .Values.configs.dbms.db_port | quote }}
+  {{ if .Values.configs.dbms.port }}
+    DB_PORT: {{ .Values.configs.dbms.port | quote }}
   {{ end }}
 
   {{ if .Values.configs.dbms.memory }}
-  MEMORY: {{ .Values.configs.dbms.memory | quote }}
+    MEMORY: {{ .Values.configs.dbms.memory | quote }}
   {{ end }}
 
   # Operator / Publisher settings
