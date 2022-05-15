@@ -143,7 +143,6 @@ data:
   {{ end }}
 
 
-
   # Node settings
   {{ if .Values.configs.settings.tcp_thread_pool }}
   TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
