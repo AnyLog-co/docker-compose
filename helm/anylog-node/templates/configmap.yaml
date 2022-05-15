@@ -119,7 +119,7 @@ data:
   {{ end }}
 
   {{ if .Values.configs.mqtt.log }}
-  MQTT_LOG: {{ .Valuees.configs.mqtt.log }}
+  MQTT_LOG: {{ .Valuees.configs.mqtt.log | quote }}
   {{ end }}
 
   # Other params
