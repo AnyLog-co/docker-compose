@@ -140,7 +140,7 @@ data:
   {{ if .Values.configs.mqtt.topic.table }}
   MQTT_TOPIC_TABLE: {{ .Values.configs.topic.table }}
   {{ end }}
-  {{ end }}
+  {{ end }} {{ end}}
 
 
   # Node settings
