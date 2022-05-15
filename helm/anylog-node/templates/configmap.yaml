@@ -129,6 +129,20 @@ data:
   MQTT_LOG: {{ .Values.configs.mqtt.log | quote }}
   {{ end }}
 
+  {{ if .Values.configs.mqtt.topic.name }}
+  MQTT_TOPIC_NAME: {{ .Values.configs.topic.name }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.db_name }}
+  MQTT_TOPIC_DBMS: {{ .Values.configs.topic.db_name }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.table }}
+  MQTT_TOPIC_TABLE: {{ .Values.configs.topic.table }}
+  {{ end }}
+
+
+
   # Node settings
   {{ if .Values.configs.settings.tcp_thread_pool }}
   TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
