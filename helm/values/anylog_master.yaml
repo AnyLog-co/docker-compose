@@ -52,7 +52,7 @@ configs:
     # whether to enable an MQTT client on the node
     enable: "false"
     # add topic params (must be false if not configured)
-    set_topic: "false"
+    enable_topic: "false"
   other:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"
