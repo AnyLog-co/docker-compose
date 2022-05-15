@@ -38,9 +38,9 @@ data:
   {{ end }}
 
   # database
-  {{ if .Values.configs.dbms.type }}
+#  {{ if .Values.configs.dbms.type }}
   DB_TYPE: {{ .Values.configs.dbms.type }}
-  {{ end }}
+#  {{ end }}
 
   {{ if ne .Values.configs.dbms.type "sqlite" }}
     {{ if .Values.configs.dbms.ip }}
