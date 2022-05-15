@@ -19,8 +19,12 @@ data:
   LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
   {{ end }}
 
+  {{ if .Values.configs.networking.services.anylog_server_port }}
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
+  {{ end }}
+  {{ if .Values.configs.networking.services.anylog_rest_port }}
   ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
+  {{ end }}
 
   {{ if .Values.configs.networking.settings.enable_broker }}
     ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
