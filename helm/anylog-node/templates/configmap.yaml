@@ -122,7 +122,7 @@ data:
   MQTT_LOG: {{ .Values.configs.mqtt.log | quote }}
   {{ end }}
 
-  {{- if .Values.configs.mqtt.enable "true" }}
+  {{- if eq .Values.configs.mqtt.enable_topic "true" }} or {{- if eq .Values.configs.mqtt.enable "true" }}
   {{ if .Values.configs.mqtt.topic.name }}
   MQTT_TOPIC_NAME: {{ .Values.configs.mqtt.topic.name }}
   {{ end }}
@@ -134,7 +134,7 @@ data:
   {{ if .Values.configs.mqtt.topic.table }}
   MQTT_TOPIC_TABLE: {{ .Values.configs.mqtt.topic.table }}
   {{ end }}
-  {{ end }}
+  {{ end }}{{ end }}
 
 
   # Other params
