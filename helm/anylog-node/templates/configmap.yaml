@@ -64,7 +64,7 @@ data:
   MEMORY: {{ .Values.configs.dbms.memory | quote }}
   {{ end }}
 
-  # Operator / Publisher settings
+  # Publisher specific settings
   {{- if eq .Values.configs.basic.node_type "publisher" }}
   {{ if .Values.configs.publisher.compress_json }}
   COMPRESS_JSON: {{ .Values.configs.publisher.compress_json | quote }}
@@ -97,7 +97,35 @@ data:
   {{ end }}
   {{ end }} {{ end }}
 
+  # MQTT
+  {{ if .Values.configs.mqtt.enable }}
+  MQTT_ENABLE: {{ .Values.configs.mqtt.enable | quote }}
+  {{ end }}
 
+  {{ if .Values.configs.mqtt.broker }}
+  BROKER: {{ .Values.configs.mqtt.broker }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.port }}
+  MQTT_PORT: {{ .Values.configs.mqtt.port | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.user }}
+  MQTT_USER: {{ .Values.configs.mqtt.user }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.password }}
+  MQTT_PASSWORD: {{ .Values.configs.mqtt.password }}
+  {{ end }}
+
+  {{ if .Valuees.configs.mqtt.log }}
+  MQTT_LOG: {{ .Valuees.configs.mqtt.log }}
+  {{ end }}
+
+  # Other params
+  {{ if .Values.configs.other.deploy_local_script }}
+  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script }}
+  {{ end }}
 
   # Node settings
   {{ if .Values.configs.settings.tcp_thread_pool }}

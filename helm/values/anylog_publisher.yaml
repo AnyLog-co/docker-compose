@@ -59,12 +59,12 @@ configs:
     # whether to enable an MQTT client on the node
     enable: "true"
     # add topic params (must be false if not configured)
-    set_topic: "false"
+    set_topic: "true"
     broker: "driver.cloudmqtt.com"
     port: 18785
+    log: "false"
     user: "ibglowct"
     password: "MSY4e009J7ts"
-    log: "false"
     topic:
       name: "anylogedgex"
       db_name: "test"
