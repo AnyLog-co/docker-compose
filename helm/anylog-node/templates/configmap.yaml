@@ -38,31 +38,32 @@ data:
   {{ end }}
 
   # database
-  {{ if .Values.configs.dbms.db_type }}
-  DB_TYPE: {{ .Values.configs.dbms.db_type }}
+  {{ if .Values.configs.dbms.type }}
+  DB_TYPE: {{ .Values.configs.dbms.type }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.db_ip }}
-  DB_IP: {{ .Values.configs.dbms.db_ip }}
+  {{ if ne .Values.configs.dbms.type "sqlite" }}
+    {{ if .Values.configs.dbms.ip }}
+    DB_IP: {{ .Values.configs.dbms.ip }}
+    {{ end }}
+
+    {{ if .Values.configs.dbms.user }}
+    DB_USER: {{ .Values.configs.dbms.user }}
+    {{ end }}
+
+    {{ if .Values.configs.dbms.passwd }}
+    DB_PASSWD: {{ .Values.configs.dbms.passwd }}
+    {{ end }}
+
+    {{ if .Values.configs.dbms.port }}
+    DB_PORT: {{ .Values.configs.dbms.port | quote }}
+    {{ end }}
+
+    {{ if .Values.configs.dbms.memory }}
+    MEMORY: {{ .Values.configs.dbms.memory | quote }}
+    {{ end }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.db_user }}
-  DB_USER: {{ .Values.configs.dbms.db_user }}
-  {{ end }}
-
-  {{ if .Values.configs.dbms.db_passwd }}
-  DB_PASSWD: {{ .Values.configs.dbms.db_passwd }}
-  {{ end }}
-
-  {{ if .Values.configs.dbms.db_port }}
-  DB_PORT: {{ .Values.configs.dbms.db_port | quote }}
-  {{ end }}
-
-  {{ if .Values.configs.dbms.memory }}
-  MEMORY: {{ .Values.configs.dbms.memory | quote }}
-  {{ end }}
-
-  # Operator / Publisher settings
 
 
   # Whether to extend local start up script
