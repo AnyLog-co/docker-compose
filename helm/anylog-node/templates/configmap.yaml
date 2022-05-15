@@ -34,7 +34,7 @@ data:
   {{ end }}
   
 #  {{ if .Values.configs.networking.settings.sync_time }}
-  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
+#  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
 #  {{ end }}
 
   # database
