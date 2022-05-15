@@ -33,9 +33,9 @@ data:
   MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
   {{ end }}
   
-  {{ if .Values.configs.networking.settings.sync_time }}
+#  {{ if .Values.configs.networking.settings.sync_time }}
   SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
-  {{ end }}
+#  {{ end }}
 
   # database
   {{ if .Values.configs.dbms.type }}
