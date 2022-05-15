@@ -108,47 +108,6 @@ data:
   MQTT_ENABLE: {{ .Values.configs.mqtt.enable | quote }}
   {{ end }}
 
-  {{ if .Values.configs.mqtt.broker }}
-  BROKER: {{ .Values.configs.mqtt.broker }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.port }}
-  MQTT_PORT: {{ .Values.configs.mqtt.port | quote }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.user }}
-  MQTT_USER: {{ .Values.configs.mqtt.user }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.password }}
-  MQTT_PASSWORD: {{ .Values.configs.mqtt.password }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.topic.name }}
-  MQTT_TOPIC_NAME: {{ .Values.configs.mqtt.topic.name | quote }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.topic.db_name }}
-  MQTT_TOPIC_DBMS: {{ .Values.configs.mqtt.topic.db_name }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.topic.table }}
-  MQTT_TOPIC_TABLE: {{ .Values.configs.mqtt.topic.table }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.topic.timestamp_column }}
-  MQTT_COLUMN_TIMESTAMP: { .Values.configs.mqtt.topic.timestamp_column }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.topic.value_column_type }}
-  MQTT_COLUMN_VALUE_TYPE: { .Values.configs.mqtt.topic.value_column_type }}
-  {{ end }}
-
-  {{ if .Values.configs.mqtt.topic.value_column }}
-  MQTT_COLUMN_VALUE: { .Values.configs.mqtt.topic.value_column }}
-  {{ end }}
-
-
   # Node settings
   {{ if .Values.configs.settings.tcp_thread_pool }}
   TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
