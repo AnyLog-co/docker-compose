@@ -124,7 +124,7 @@ data:
 
   # Other params
   {{ if .Values.configs.other.deploy_local_script }}
-  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script }}
+  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
   {{ end }}
 
   # Node settings
