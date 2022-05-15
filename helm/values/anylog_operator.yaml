@@ -59,7 +59,7 @@ configs:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"
     # whether to enable an MQTT client on the node
-    mqtt_enable: "true"
+    mqtt_enable: "false"
     mqtt:
       broker: "driver.cloudmqtt.com"
       port: 18785
