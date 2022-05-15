@@ -9,15 +9,15 @@ data:
   # General configs
   NODE_TYPE: {{ .Values.configs.basic.node_type }}
   NODE_NAME: {{ .Values.configs.basic.node_name }}
-  COMPANY_NAME: {{ default .Values.configs.basic.company  "new company" }}
+  COMPANY_NAME: {{ .Values.configs.basic.company }}
 
   # networking
   {{ if .Values.configs.networking.network_ips.external_ip  }}
-  EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
+    EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
   {{ end }}
 
   {{ if .Values.configs.networking.network_ips.local_ip  }}
-  LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
+    LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
   {{ end }}
 
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
@@ -25,14 +25,16 @@ data:
 
   ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
   {{ if .Values.configs.networking.services.anylog_broker_port }}
-  ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port | quote }}
+    ANYLOG_BROKER_PORT: {{  .Values.configs.networking.services.anylog_broker_port | quote }}
   {{ end }}
 
   # master node information
-  MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+  {{ if ne .Values.configs.basic.node_type "rest" }}
+    MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+  {{ end }}
 
   {{ if .Values.configs.networking.settings.sync_time }}
-  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
+    SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
   {{ end }}
 
   # database
