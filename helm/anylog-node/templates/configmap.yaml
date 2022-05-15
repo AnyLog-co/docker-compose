@@ -42,20 +42,22 @@ data:
   DB_TYPE: {{ .Values.configs.dbms.type }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.ip }}
-  DB_IP: {{ .Values.configs.dbms.ip }}
-  {{ end }}
+  {{- if ne {{ if .Values.configs.dbms.type "sqlite" }}
+    {{ if .Values.configs.dbms.ip }}
+    DB_IP: {{ .Values.configs.dbms.ip }}
+    {{ end }}
 
-  {{ if .Values.configs.dbms.user }}
-  DB_USER: {{ .Values.configs.dbms.user }}
-  {{ end }}
+    {{ if .Values.configs.dbms.user }}
+    DB_USER: {{ .Values.configs.dbms.user }}
+    {{ end }}
 
-  {{ if .Values.configs.dbms.passwd }}
-  DB_PASSWD: {{ .Values.configs.dbms.passwd }}
-  {{ end }}
+    {{ if .Values.configs.dbms.passwd }}
+    DB_PASSWD: {{ .Values.configs.dbms.passwd }}
+    {{ end }}
 
-  {{ if .Values.configs.dbms.port }}
-  DB_PORT: {{ .Values.configs.dbms.port | quote }}
+    {{ if .Values.configs.dbms.port }}
+    DB_PORT: {{ .Values.configs.dbms.port | quote }}
+    {{ end }}
   {{ end }}
 
   {{ if .Values.configs.dbms.memory }}
