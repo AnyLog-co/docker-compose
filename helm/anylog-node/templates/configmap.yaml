@@ -118,7 +118,7 @@ data:
   MQTT_PASSWORD: {{ .Values.configs.mqtt.password }}
   {{ end }}
 
-  {{ if .Valuees.configs.mqtt.log }}
+  {{ if .Values.configs.mqtt.log }}
   MQTT_LOG: {{ .Valuees.configs.mqtt.log }}
   {{ end }}
 
