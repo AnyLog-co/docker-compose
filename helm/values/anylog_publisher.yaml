@@ -55,25 +55,25 @@ configs:
     # sample file name: [db_name].[table_name].0.0.json
     dbms_file_location: "file_name[0]"
     table_file_location: "file_name[1]"
+  mqtt:
+    # whether to enable an MQTT client on the node
+    enable: "true"
+    broker: "driver.cloudmqtt.com"
+    port: 18785
+    user: "ibglowct"
+    password: "MSY4e009J7ts"
+    log: "false"
+    topic:
+      name: "anylogedgex"
+      db_name: "test"
+      # original value was "bring [device]" (Random-Integer-Generator01). howerver, due to a PSQL table name limit size is 65 chars, it's manually changeds to: rand_int
+      table: "rand_data"
+      timestamp_column: "now"
+      value_column_type: "float"
+      value_column: "bring [readings][][value]"
   other:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"
-    # whether to enable an MQTT client on the node
-    mqtt_enable: "true"
-    mqtt:
-      broker: "driver.cloudmqtt.com"
-      port: 18785
-      user: "ibglowct"
-      password: "MSY4e009J7ts"
-      log: "false"
-      topic:
-        name: "anylogedgex"
-        db_name: "test"
-        # original value was "bring [device]" (Random-Integer-Generator01). howerver, due to a PSQL table name limit size is 65 chars, it's manually changeds to: rand_int
-        table: "rand_data"
-        timestamp_column: "now"
-        value_column_type: "float"
-        value_column: "bring [readings][][value]"
   settings:
     # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
     tcp_thread_pool: 6

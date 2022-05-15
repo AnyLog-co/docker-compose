@@ -29,9 +29,9 @@ data:
   {{ end }}
 
   # master node information
-  {{- if ne .Values.configs.basic.node_type "rest" }} and {{ if .Values.configs.networking.settings.master_node }}
+  {{ if .Values.configs.networking.settings.master_node }}
   MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
-  {{ end }} {{ end }}
+  {{ end }}
 
   {{ if .Values.configs.networking.settings.sync_time }}
   SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
@@ -51,8 +51,8 @@ data:
   DB_USER: {{ .Values.configs.dbms.user }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.passwd }}
-  DB_PASSWD: {{ .Values.configs.dbms.passwd }}
+  {{ if .Values.configs.dbms.password }}
+  DB_PASSWD: {{ .Values.configs.dbms.password }}
   {{ end }}
 
   {{ if .Values.configs.dbms.port }}
@@ -104,8 +104,48 @@ data:
   DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
   {{ end }}
 
-  {{ if .Values.configs.other.mqtt_enable }}
-  MQTT_ENABLE: {{ .Values.configs.other.mqtt_enable | quote }}
+  {{ if .Values.configs.mqtt.enable }}
+  MQTT_ENABLE: {{ .Values.configs.mqtt.enable | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.broker }}
+  BROKER: {{ .Values.configs.mqtt.broker }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.port }}
+  MQTT_PORT: {{ .Values.configs.mqtt.port | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.user }}
+  MQTT_USER: {{ .Values.configs.mqtt.user }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.password }}
+  MQTT_PASSWORD: {{ .Values.configs.mqtt.password }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.name }}
+  MQTT_TOPIC_NAME: {{ .Values.configs.mqtt.topic.name }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.db_name }}
+  MQTT_TOPIC_DBMS: {{ .Values.configs.mqtt.topic.db_name }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.table }}
+  MQTT_TOPIC_TABLE: {{ .Values.configs.mqtt.topic.table }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.timestamp_column }}
+  MQTT_COLUMN_TIMESTAMP: { .Values.configs.mqtt.topic.timestamp_column }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.value_column_type }}
+  MQTT_COLUMN_VALUE_TYPE: { .Values.configs.mqtt.topic.value_column_type }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.value_column }}
+  MQTT_COLUMN_VALUE: { .Values.configs.mqtt.topic.value_column }}
   {{ end }}
 
   # Node settings

@@ -44,11 +44,12 @@ configs:
     type: "sqlite"
     # when memory is set to true, then the system_query database will automatically run using SQLite in memory.
     memory: "true"
+  mqtt:
+    # whether to enable an MQTT client on the node
+    enable: "false"
   other:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"
-    # whether to enable an MQTT client on the node
-    mqtt_enable: "false"
   settings:
     # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
     tcp_thread_pool: 6
