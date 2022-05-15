@@ -7,19 +7,19 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - name: {{ .Values.general.name }}-tcp
-    port: {{ .Values.configs.networking.services.anylog_server_port }}
+  - port: {{ .Values.configs.networking.services.anylog_server_port }}
     targetPort: {{ .Values.configs.networking.services.anylog_server_port }}
     nodePort: {{ .Values.configs.networking.services.anylog_server_port }}
-  - name: {{ .Values.general.name }}-rest
-    port: {{ .Values.configs.networking.services.anylog_rest_port }}
+#    name: {{ .Values.general.name }}-tcp
+  - port: {{ .Values.configs.networking.services.anylog_rest_port }}
     targetPort: {{ .Values.configs.networking.services.anylog_rest_port }}
     nodePort: {{ .Values.configs.networking.services.anylog_rest_port }}
+#    name: {{ .Values.general.name }}-rest
   {{- if eq .Values.configs.networking.settings.enable_broker "true" }}
-  - name: {{ .Values.general.name }}-broker
-    port: {{ .Values.configs.networking.services.anylog_broker_port }}
+  - port: {{ .Values.configs.networking.services.anylog_broker_port }}
     targetPort: {{ .Values.configs.networking.services.anylog_broker_port }}
     nodePort: {{ .Values.configs.networking.services.anylog_broker_port }}
+#    name: {{ .Values.general.name }}-broker
   {{ end }}
   selector:
     app: {{ .Values.general.name }}
