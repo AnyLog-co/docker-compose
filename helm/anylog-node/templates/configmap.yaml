@@ -92,8 +92,6 @@ data:
   THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
   {{ end }}
 
-  # Local database is immediate (independent of the calls to flush)
-
   {{ if .Values.configs.settings.write_immediate }}
   WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
   {{ end }}
