@@ -42,7 +42,7 @@ data:
   DB_TYPE: {{ .Values.configs.dbms.type }}
   {{ end }}
 
-
+  {{- if ne .Values.configs.dbms.type "sqlite }}
   {{ if .Values.configs.dbms.ip }}
   DB_IP: {{ .Values.configs.dbms.ip }}
   {{ end }}
@@ -58,7 +58,7 @@ data:
   {{ if .Values.configs.dbms.port }}
   DB_PORT: {{ .Values.configs.dbms.port | quote }}
   {{ end }}
-
+  {{ end }}
 
   {{ if .Values.configs.dbms.memory }}
   MEMORY: {{ .Values.configs.dbms.memory | quote }}
