@@ -65,7 +65,39 @@ data:
   {{ end }}
 
   # Operator / Publisher settings
+  {{- if eq .Values.configs.basic.node_type "publisher" }}
+  {{ if .Values.configs.publisher.compress_json }}
+  COMPRESS_JSON: {{ .Values.configs.publisher.compress_json | quote }}
+  {{ end }}
 
+  {{ if .Values.configs.publisher.move_json }}
+  MOVE_JSON: {{ .Values.configs.publisher.move_json | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.publisher.dbms_file_location }}
+  DBMS_FILE_LOCATION: {{ .Values.configs.publisher.dbms_file_location }}
+  {{ end }}
+
+  {{ if .Values.configs.publisher.table_file_location }}
+  TABLE_FILE_LOCATION: {{ .Values.configs.publisher.table_file_location }}
+  {{ end }}
+  {{ end }}
+
+  {{- if eq .Values.configs.basic.node_type "publisher" }} or {{- if eq .Values.configs.basic.node_type "operator" }}
+  {{ if .Values.configs.settings.threshold_time }}
+  THRESHOLD_TIME: {{ .Values.configs.settings.threshold_time }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.threshold_volume }}
+  THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
+  {{ end }}
+
+  # Local database is immediate (independent of the calls to flush)
+
+  {{ if .Values.configs.settings.write_immediate }}
+  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | qoute }}
+  {{ end }}
+  {{ end }}{{ end }}
 
   # Whether to extend local start up script
   {{ if .Values.configs.other.deploy_local_script }}
