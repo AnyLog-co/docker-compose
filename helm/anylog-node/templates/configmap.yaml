@@ -111,6 +111,7 @@ data:
   {{ if .Values.configs.other.mqtt.broker }}
   BROKER: {{ .Values.configs.other.mqtt.broker }}
   {{ end }}
+
   {{ end }} {{ end }}
 
   # Node settings
