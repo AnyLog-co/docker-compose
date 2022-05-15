@@ -91,5 +91,5 @@ configs:
     # The accumulated data volume that calls the data flush process
     threshold_volume: "10KB"
     # Local database is immediate (independent of the calls to flush)
-    write_immediate: true
+    write_immediate: "true"
 
