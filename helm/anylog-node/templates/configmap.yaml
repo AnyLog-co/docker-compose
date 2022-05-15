@@ -97,11 +97,6 @@ data:
   {{ end }}
   {{ end }}{{ end }}
 
-  # Whether to extend local start up script
-#  {{ if .Values.configs.other.deploy_local_script }}
-#  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
-#  {{ end }}
-
   {{ if .Values.configs.mqtt.enable }}
   MQTT_ENABLE: {{ .Values.configs.mqtt.enable | quote }}
   {{ end }}
