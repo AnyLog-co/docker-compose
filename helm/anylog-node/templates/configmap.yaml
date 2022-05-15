@@ -65,67 +65,106 @@ data:
 
   # publisher params
   {{- if eq .Values.configs.basic.node_type "publisher" }}
-  {{ if .Values.configs.publisher.compress_json }}
-  COMPRESS_JSON: {{ .Values.configs.publisher.compress_json | quote }}
-  {{ end }}
+    {{ if .Values.configs.publisher.compress_json }}
+      COMPRESS_JSON: {{ .Values.configs.publisher.compress_json | quote }}
+    {{ end }}
 
-  {{ if .Values.configs.publisher.move_json }}
-  MOVE_JSON: {{ .Values.configs.publisher.move_json | quote }}
-  {{ end }}
+    {{ if .Values.configs.publisher.move_json }}
+      MOVE_JSON: {{ .Values.configs.publisher.move_json | quote }}
+    {{ end }}
 
-  {{ if .Values.configs.publisher.dbms_file_location }}
-  DBMS_FILE_LOCATION: {{ .Values.configs.publisher.dbms_file_location }}
-  {{ end }}
+    {{ if .Values.configs.publisher.dbms_file_location }}
+      DBMS_FILE_LOCATION: {{ .Values.configs.publisher.dbms_file_location }}
+    {{ end }}
 
-  {{ if .Values.configs.publisher.table_file_location }}
-  TABLE_FILE_LOCATION: {{ .Values.configs.publisher.table_file_location }}
-  {{ end }}
+    {{ if .Values.configs.publisher.table_file_location }}
+      TABLE_FILE_LOCATION: {{ .Values.configs.publisher.table_file_location }}
+    {{ end }}
   {{ end }}
 
   {{- if eq .Values.configs.basic.node_type "publisher" }}
-  {{ if .Values.configs.settings.threshold_time }}
-  THRESHOLD_TIME: {{ .Values.configs.settings.threshold_time }}
-  {{ end }}
+    {{ if .Values.configs.settings.threshold_time }}
+      THRESHOLD_TIME: {{ .Values.configs.settings.threshold_time }}
+    {{ end }}
 
-  {{ if .Values.configs.settings.threshold_volume }}
-  THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
-  {{ end }}
+    {{ if .Values.configs.settings.threshold_volume }}
+      THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
+    {{ end }}
 
-  {{ if .Values.configs.settings.write_immediate }}
-  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
-  {{ end }}
+    {{ if .Values.configs.settings.write_immediate }}
+      WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
+    {{ end }}
   {{ end }}
 
   # Whether to extend local start up script
   {{ if .Values.configs.other.deploy_local_script }}
-  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
+    DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
   {{ end }}
 
 
   {{ if .Values.configs.other.mqtt_enable }}
-  MQTT_ENABLE: {{ .Values.configs.other.mqtt_enable | quote }}
+    MQTT_ENABLE: {{ .Values.configs.other.mqtt_enable | quote }}
   {{ end }}
 
   {{- if eq .Values.configs.other.mqtt_enable "true" }} or {{- if eq .Values.configs.basic.node_type "publisher" }}
-  {{ if .Values.configs.other.mqtt.broker }}
-  BROKER: {{ .Values.configs.other.mqtt.broker }}
-  {{ end }}
+    {{ if .Values.configs.other.mqtt.broker }}
+      BROKER: {{ .Values.configs.other.mqtt.broker }}
+    {{ end }}
+    {{ if .Values.configs.other.mqtt.port }}
+      MQTT_PORT: {{ .Values.configs.other.mqtt.port }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.user }}
+      MQTT_USER: {{ .Values.configs.other.mqtt.user }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.password }}
+      MQTT_PASSWORD: {{ .Values.configs.other.mqtt.password }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.log }}
+      MQTT_LOG: {{ .Values.configs.other.mqtt.log | quote }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.topic.name }}
+      MQTT_TOPIC_NAME: {{ .Values.configs.other.mqtt.topic.name }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.topic.db_name }}
+      MQTT_TOPIC_DBMS: {{ .Values.configs.other.mqtt.topic.db_name }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.topic.table }}
+      MQTT_TOPIC_TABLE: {{ .Values.configs.other.mqtt.topic.table }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.topic.timestamp_column }}
+      MQTT_COLUMN_TIMESTAMP: {{ .Values.configs.other.mqtt.topic.timestamp_column }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.topic.value_column_type }}
+      MQTT_COLUMN_VALUE_TYPE: {{ .Values.configs.other.mqtt.topic.value_column_type }}
+    {{ end }}
+
+    {{ if .Values.configs.other.mqtt.topic.value_column }}
+      MQTT_COLUMN_VALUE: {{ .Values.configs.other.mqtt.topic.value_column }}
+    {{ end }}
 
   {{ end }} {{ end }}
 
   # Node settings
   {{ if .Values.configs.settings.tcp_thread_pool }}
-  TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
+    TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
   {{ end }}
 
   {{ if .Values.configs.settings.rest_timeout }}
-  REST_TIMEOUT: {{ .Values.configs.settings.rest_timeout | quote }}
+    REST_TIMEOUT: {{ .Values.configs.settings.rest_timeout | quote }}
   {{ end }}
 
   {{ if .Values.configs.settings.rest_threads }}
-  REST_THREADS: {{ .Values.configs.settings.rest_threads | quote }}
+    REST_THREADS: {{ .Values.configs.settings.rest_threads | quote }}
   {{ end }}
 
   {{ if .Values.configs.settings.query_pool }}
-  QUERY_POOL: {{ .Values.configs.settings.query_pool | quote }}
+    QUERY_POOL: {{ .Values.configs.settings.query_pool | quote }}
   {{ end }}
