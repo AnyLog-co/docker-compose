@@ -29,20 +29,20 @@ data:
   {{ end }}
 
   # master node information
-  {{- if ne .Values.configs.basic.node_type "rest" }}
+  {{- if ne .Values.configs.basic.node_type "rest" }} and {{ if .Values.configs.networking.settings.master_node }}
   MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
   {{ end }}
-  
-#  {{ if .Values.configs.networking.settings.sync_time }}
-#  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
-#  {{ end }}
+
+  {{ if .Values.configs.networking.settings.sync_time }}
+  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
+  {{ end }}
 
   # database
   {{ if .Values.configs.dbms.type }}
   DB_TYPE: {{ .Values.configs.dbms.type }}
   {{ end }}
 
-  {{- if ne .Values.configs.dbms.type "sqlite" }}
+  {{- if .Values.configs.dbms.type "sqlite" }}
     {{ if .Values.configs.dbms.ip }}
     DB_IP: {{ .Values.configs.dbms.ip }}
     {{ end }}
