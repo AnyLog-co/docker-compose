@@ -87,9 +87,9 @@ data:
       THRESHOLD_TIME: {{ .Values.configs.settings.threshold_time }}
     {{ end }}
 
-    {{ if .Values.configs.settings.threshold_volume }}
-      THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
-    {{ end }}
+#    {{ if .Values.configs.settings.threshold_volume }}
+#      THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
+#    {{ end }}
 
     {{ if .Values.configs.settings.write_immediate }}
       WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
