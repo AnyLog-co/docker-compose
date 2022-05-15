@@ -27,11 +27,8 @@ spec:
               name: {{ .Values.general.name }}-configurations
         ports:
           - containerPort: {{ .Values.configs.networking.services.anylog_server_port }}
-            name: {{ .Values.general.name }}-tcp
           - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-            name: {{ .Values.general.name }}-rest
           {{ if .Values.configs.networking.settings.enable_broker }}
           - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-            name: {{ .Values.general.name }}-broker
           {{ end }}
 
