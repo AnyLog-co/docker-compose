@@ -13,11 +13,11 @@ data:
 
   # networking
   {{ if .Values.configs.networking.network_ips.external_ip  }}
-  EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
+    EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
   {{ end }}
 
   {{ if .Values.configs.networking.network_ips.local_ip  }}
-  LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
+    LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
   {{ end }}
 
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
