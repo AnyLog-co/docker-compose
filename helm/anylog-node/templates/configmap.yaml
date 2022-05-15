@@ -29,7 +29,7 @@ data:
   {{ end }}
 
   # master node information
-  {{ if ne .Values.configs.basic.node_type "rest" }}
+  {{- if ne .Values.configs.basic.node_type "rest" }}
     MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
   {{ end }}
   
