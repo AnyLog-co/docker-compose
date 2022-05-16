@@ -49,7 +49,7 @@ data:
   {{ end }}
 
   {{ if .Values.configs.dbms.port }}
-  DB_PORT: {{ .Values.configs.dbms.port }}
+  DB_PORT: {{ .Values.configs.dbms.port | quote }}
   {{ end }}
 
   {{ if .Values.configs.dbms.user }}
