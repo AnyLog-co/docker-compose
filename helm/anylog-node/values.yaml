@@ -28,10 +28,15 @@ configs:
       external_ip: ""
       local_ip: ""
     settings:
-      # OPTIONAL - whether to enable local MQTT message broker or not
-      enable_broker: "true"
-      # TCP connection information for master node (not needed for REST node)
-      master_node: ""
-      # How often a node syncs with the master node
-      sync_time: ""
+      # whether to deploy a local script that extends the default startup script
+      deploy_local_script: "false"
+      # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
+      tcp_thread_pool: 6
+      # Amount of time (in seconds) until REST timeout
+      rest_timeout: 30
+      # The number of concurrent threads supporting HTTP requests.
+      rest_threads: 5
+      # Sets the number of threads supporting queries (the default is 3).
+      query_pool: 3
+
 
