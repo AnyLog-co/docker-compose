@@ -1,0 +1,218 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+#  namespace: {{ .Values.general.namespace }}
+  name: {{ .Values.general.name }}-configurations
+  labels:
+    app: {{ .Values.general.name }}
+data:
+  # General configs
+  {{ if .Values.configs.basic}}
+  NODE_TYPE: {{ .Values.configs.basic.node_type }}
+  NODE_NAME: {{ .Values.configs.basic.node_name }}
+  COMPANY_NAME: {{ .Values.configs.basic.company }}
+
+  {{ if .Values.configs.basic.location }}
+  LOCATION: {{ .Values.configs.basic.location }}
+  {{ end }}
+  {{ end }}
+
+  {{ if .Values.configs.networking }}
+  # Networking
+  {{ if .Values.configs.networking.services }}
+  ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
+  ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
+
+  {{ if .Values.configs.networking.services.anylog_broker_port }}
+  ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
+  {{ end }}
+  {{ end }}
+
+  {{ if .Values.configs.networking.network_ips }}
+  {{ if .Values.configs.networking.network_ips.external_ip }}
+  EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
+  {{ end }}
+
+  {{ if .Values.configs.networking.network_ips.local_ip }}
+  LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
+  {{ end }}
+  {{ end }}
+
+  # For non REST type - master node is required & sync_time is required
+  {{ if .Values.configs.networking.settings }}
+  {{ if .Values.configs.networking.settings.master_node }}
+  MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+  {{ end }}
+
+  {{- if ne .Values.configs.basic.node_type "rest" }} or {{ if .Values.configs.networking.settings.sync_time }}
+  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
+  {{ end }} {{ end }}
+  {{ end }}
+  {{ end }}
+
+
+  # DBMS
+  {{ if .Values.configs.dbms }}
+  {{ if .Values.configs.dbms.type }}
+  DB_TYPE: {{ .Values.configs.dbms.type }}
+  {{ end }}
+
+  {{- if ne .Values.configs.dbms.type "sqlite" }}
+  {{ if .Values.configs.dbms.ip }}
+  DB_IP: {{ .Values.configs.dbms.ip }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.port }}
+  DB_PORT: {{ .Values.configs.dbms.port | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.user }}
+  DB_USER: {{ .Values.configs.dbms.user }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.password }}
+  DB_PASSWD: {{ .Values.configs.dbms.password }}
+  {{ end }}
+
+  {{- if eq .Values.configs.basic.node_type "operator" }} and {{ if .Values.configs.dbms.default_db_name }}
+  DEFAULT_DBMS: {{ .Values.configs.dbms.default_db_name }}
+  {{ end }} {{ end }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.memory }}
+  MEMORY: {{ .Values.configs.dbms.memory | quote }}
+  {{ end }}
+  {{ end }}
+
+  # Publisher specific settings
+  {{- if eq .Values.configs.basic.node_type "publisher" }} and {{ if .Values.configs.publisher }}
+  {{ if .Values.configs.publisher.compress_json }}
+  COMPRESS_JSON: {{ .Values.configs.publisher.compress_json | quote }}
+  {{ end }}
+  {{ if .Values.configs.publisher.move_json }}
+  MOVE_JSON: {{ .Values.configs.publisher.move_json | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.publisher.dbms_file_location }}
+  DBMS_FILE_LOCATION: {{ .Values.configs.publisher.dbms_file_location }}
+  {{ end }}
+
+  {{ if .Values.configs.publisher.table_file_location }}
+  TABLE_FILE_LOCATION: {{ .Values.configs.publisher.table_file_location }}
+  {{ end }}
+  {{ end }} {{ end }}
+
+  # Operator specific settings
+  {{- if eq .Values.configs.basic.node_type "operator" }} and {{ if .Values.configs.operator }}
+  {{ if .Values.configs.operator.cluster_name }}
+  CLUSTER_NAME: {{ .Values.configs.operator.cluster_name }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.enable_partition }}
+  ENABLE_PARTITION: {{ .Values.configs.operator.enable_partition | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.partition_column }}
+  PARTITION_COLUMN: {{ .Values.configs.operator.partition_column }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.partition_interval }}
+  PARTITION_INTERVAL: {{ .Values.configs.operator.partition_interval }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.partition_keep }}
+  PARTITION_KEEP: {{ .Values.configs.operator.partition_keep }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.table_name }}
+  TABLE_NAME: {{ .Values.configs.operator.table_name }}
+  {{ end }}
+  {{ end }} {{ end }}
+
+  # MQTT
+  {{ if .Values.configs.mqtt }}
+  {{ if .Values.configs.mqtt.enable }}
+  MQTT_ENABLE: {{ .Values.configs.mqtt.enable | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.broker }}
+  BROKER: {{ .Values.configs.mqtt.broker }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.port }}
+  MQTT_PORT: {{ .Values.configs.mqtt.port | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.log }}
+  MQTT_LOG: {{ .Values.configs.mqtt.log | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.user }}
+  MQTT_USER: {{ .Values.configs.mqtt.user }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.password }}
+  MQTT_PASSWORD: {{ .Values.configs.mqtt.password }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic }}
+  {{ if .Values.configs.mqtt.topic.name }}
+  MQTT_TOPIC_NAME: {{ .Values.configs.mqtt.topic.name }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.db_name}}
+  MQTT_TOPIC_DBMS: {{ .Values.configs.mqtt.topic.db_name }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.topic.table }}
+  MQTT_TOPIC_TABLE: {{ .Values.configs.mqtt.topic.table }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.timestamp_column}}
+  MQTT_COLUMN_TIMESTAMP: {{ .Values.configs.mqtt.timestamp_column }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.value_column_type }}
+  MQTT_COLUMN_VALUE_TYPE: {{ .Values.configs.mqtt.value_column_type }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.value_column }}
+  MQTT_COLUMN_VALUE: {{ .Values.configs.mqtt.value_column }}
+  {{ end }}
+  {{ end }}
+  {{ end }}
+
+  # Other settings
+  {{ if .Values.configs.settings }}
+  {{ if .Values.configs.settings.deploy_local_script }}
+  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.settings.deploy_local_script | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.tcp_thread_pool }}
+  TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.rest_timeout }}
+  REST_TIMEOUT: {{ .Values.configs.settings.rest_timeout | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.rest_threads }}
+  REST_THREAD: {{ .Values.configs.settings.rest_threads | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.query_pool }}
+  QUERY_POOL: {{ .Values.configs.settings.query_pool | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.threshold_time }}
+  THRESHOLD_TIME: {{ .Values.configs.settings.threshold_time }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.threshold_volume }}
+  THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.write_immediate }}
+  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
+  {{ end }}
+  {{ end }}
