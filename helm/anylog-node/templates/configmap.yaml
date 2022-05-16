@@ -30,9 +30,9 @@ data:
   {{ end }}
 
   # For non REST type - master node is required & sync_time is required
-  {{- if ne .Values.configs.basic.node_type "rest" }} or {{ if .Values.configs.networking.settings.master_node }}
+  {{ if .Values.configs.networking.settings.master_node }}
   MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
-  {{ end }} {{ end }}
+  {{ end }}
 
   {{- if ne .Values.configs.basic.node_type "rest" }} or {{ if .Values.configs.networking.settings.sync_time }}
   SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
