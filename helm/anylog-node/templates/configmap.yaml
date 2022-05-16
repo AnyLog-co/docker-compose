@@ -19,20 +19,27 @@ data:
 
   {{ if .Values.configs.networking }}
   # Networking
+  {{ if .Values.configs.networking.services }} 
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
   ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
+
   {{ if .Values.configs.networking.services.anylog_broker_port }}
   ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
   {{ end }}
+  {{ end }} 
 
+  {{ if .Values.configs.networking.network_ips }} 
   {{ if .Values.configs.networking.network_ips.external_ip }}
   EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
   {{ end }}
+
   {{ if .Values.configs.networking.network_ips.local_ip }}
   LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
   {{ end }}
+  {{ end }} 
 
   # For non REST type - master node is required & sync_time is required
+  {{ if .Values.configs.networking.settings }}
   {{ if .Values.configs.networking.settings.master_node }}
   MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
   {{ end }}
@@ -41,6 +48,8 @@ data:
   SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
   {{ end }} {{ end }}
   {{ end }}
+  {{ end }} 
+
 
   # DBMS
   {{ if .Values.configs.dbms }}

@@ -38,7 +38,7 @@ configs:
       # OPTIONAL - whether to enable local MQTT message broker or not
       enable_broker: "false"
       # TCP connection information for master node (not needed for REST node)
-      master_node: "127.0.0.1:32048"
+      master_node: ""
       # How often a node syncs with the master node
       sync_time: "30 second"
   dbms:
