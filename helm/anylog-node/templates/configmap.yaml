@@ -11,8 +11,8 @@ data:
   NODE_NAME: {{ .Values.configs.basic.node_name }}
   COMPANY_NAME: {{ .Values.configs.basic.company }}
 
-  {{ if .Values.configs.general.location }}
-  LOCATION: {{ .Values.configs.general.location }}
+  {{ if .Values.configs.basic.location }}
+  LOCATION: {{ .Values.configs.basic.location }}
   {{ end }}
 
   # Networking
