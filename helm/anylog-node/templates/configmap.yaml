@@ -170,6 +170,7 @@ data:
   {{ end }}
 
   # Other settings
+  {{ if .Values.configs.settings }}
   {{ if .Values.configs.settings.deploy_local_script }}
   DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.settings.deploy_local_script | quote }}
   {{ end }}
@@ -200,4 +201,5 @@ data:
 
   {{ if .Values.configs.settings.write_immediate }}
   WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
+  {{ end }}
   {{ end }}
