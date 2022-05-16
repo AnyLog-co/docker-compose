@@ -98,7 +98,7 @@ data:
   {{ end }}
 
   {{ if .Values.configs.mqtt.port }}
-  MQTT_PORT: {{ .Values.configs.mqtt.port }}
+  MQTT_PORT: {{ .Values.configs.mqtt.port | quote }}
   {{ end }}
 
   {{ if .Values.configs.mqtt.log }}
