@@ -117,6 +117,7 @@ data:
   {{ end }} {{ end }}
 
   # MQTT
+  {{ if .Values.configs.mqtt }}
   {{ if .Values.configs.mqtt.enable }}
   MQTT_ENABLE: {{ .Values.configs.mqtt.enable | quote }}
   {{ end }}
@@ -164,6 +165,7 @@ data:
 
   {{ if .Values.configs.mqtt.value_column }}
   MQTT_COLUMN_VALUE: {{ .Values.configs.mqtt.value_column }}
+  {{ end }}
   {{ end }}
   {{ end }}
 
