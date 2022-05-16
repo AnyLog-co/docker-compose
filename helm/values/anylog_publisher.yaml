@@ -36,7 +36,7 @@ configs:
       local_ip: ""
     settings:
       # TCP connection information for master node (not needed for REST node)
-      master_node: "127.0.0.1:32048"
+      master_node: "master-service.default.svc.cluster.local:32048"
       # How often a node syncs with the master node
       sync_time: "30 second"
   dbms:
