@@ -11,33 +11,34 @@ data:
   NODE_NAME: {{ .Values.configs.basic.node_name }}
   COMPANY_NAME: {{ .Values.configs.basic.company }}
 
-  # networking
-  {{ if .Values.configs.networking.network_ips.external_ip  }}
-  EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
+  {{ if .Values.configs.general.location }}
+  LOCATION: {{ .Values.configs.general.location }}
   {{ end }}
 
-  {{ if .Values.configs.networking.network_ips.local_ip  }}
-  LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
-  {{ end }}
-
+  # Networking
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
   ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
-
-  ENABLE_BROKER: {{ .Values.configs.networking.settings.enable_broker | quote }}
   {{ if .Values.configs.networking.services.anylog_broker_port }}
   ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
   {{ end }}
 
-  # master node information
-  {{ if .Values.configs.networking.settings.master_node }}
+  {{ if .Values.configs.networking.network_ips.external_ip }}
+  EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
+  {{ end }}
+  {{ if .Values.configs.networking.network_ips.local_ip }}
+  LOCAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
+  {{ end }}
+
+  # For non REST type - master node is required & sync_time is required
+  {{- if ne .Values.configs.basic.node_type "rest" }} or {{ if .Values.configs.networking.settings.master_node }}
   MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
-  {{ end }}
+  {{ end }} {{ end }}
 
-  {{ if .Values.configs.networking.settings.sync_time }}
-  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
-  {{ end }}
+  {{- if ne .Values.configs.basic.node_type "rest" }} or {{ if .Values.configs.networking.settings.sync_time }}
+  SYNC_TIME: {{ .Values.configs.networking.settings.SYNC_TIME }}
+  {{ end }} {{ end }}
 
-  # database
+  # DBMS
   {{ if .Values.configs.dbms.type }}
   DB_TYPE: {{ .Values.configs.dbms.type }}
   {{ end }}
@@ -45,6 +46,10 @@ data:
   {{- if ne .Values.configs.dbms.type "sqlite" }}
   {{ if .Values.configs.dbms.ip }}
   DB_IP: {{ .Values.configs.dbms.ip }}
+  {{ end }}
+
+  {{ if .Values.configs.dbms.port }}
+  DB_PORT: {{ .Values.configs.dbms.port }}
   {{ end }}
 
   {{ if .Values.configs.dbms.user }}
@@ -55,21 +60,20 @@ data:
   DB_PASSWD: {{ .Values.configs.dbms.password }}
   {{ end }}
 
-  {{ if .Values.configs.dbms.port }}
-  DB_PORT: {{ .Values.configs.dbms.port | quote }}
-  {{ end }}
+  {{- if .Values.configs.basic.node_type "operator" }} and {{ if .Values.configs.dbms.default_db_name }}
+  DEFAULT_DBMS: {{ .Values.configs.dbms.default_db_name }}
+  {{ end }} {{ end }}
   {{ end }}
 
   {{ if .Values.configs.dbms.memory }}
-  MEMORY: {{ .Values.configs.dbms.memory | quote }}
+  MEMORY: {{ .Values.configs.dbms.memory }}
   {{ end }}
 
   # Publisher specific settings
-  {{- if eq .Values.configs.basic.node_type "publisher" }}
+  {{- if eq .Values.configs.basic.node_type "publisher" }} and {{ if .Values.configs.publisher }}
   {{ if .Values.configs.publisher.compress_json }}
   COMPRESS_JSON: {{ .Values.configs.publisher.compress_json | quote }}
   {{ end }}
-
   {{ if .Values.configs.publisher.move_json }}
   MOVE_JSON: {{ .Values.configs.publisher.move_json | quote }}
   {{ end }}
@@ -81,21 +85,8 @@ data:
   {{ if .Values.configs.publisher.table_file_location }}
   TABLE_FILE_LOCATION: {{ .Values.configs.publisher.table_file_location }}
   {{ end }}
-  {{ end }}
-
-  {{- if eq .Values.configs.basic.node_type "publisher" }} or {{- if eq .Values.configs.basic.node_type "operator" }}
-  {{ if .Values.configs.settings.threshold_time }}
-  THRESHOLD_TIME: {{ .Values.configs.settings.threshold_time }}
-  {{ end }}
-
-  {{ if .Values.configs.settings.threshold_volume }}
-  THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
-  {{ end }}
-
-  {{ if .Values.configs.settings.write_immediate }}
-  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
-  {{ end }}
   {{ end }} {{ end }}
+
 
   # MQTT
   {{ if .Values.configs.mqtt.enable }}
@@ -107,7 +98,11 @@ data:
   {{ end }}
 
   {{ if .Values.configs.mqtt.port }}
-  MQTT_PORT: {{ .Values.configs.mqtt.port | quote }}
+  MQTT_PORT: {{ .Values.configs.mqtt.port }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.log }}
+  MQTT_LOG: {{ .Values.configs.mqtt.log | quote }}
   {{ end }}
 
   {{ if .Values.configs.mqtt.user }}
@@ -118,31 +113,37 @@ data:
   MQTT_PASSWORD: {{ .Values.configs.mqtt.password }}
   {{ end }}
 
-  {{ if .Values.configs.mqtt.log }}
-  MQTT_LOG: {{ .Values.configs.mqtt.log | quote }}
-  {{ end }}
-
-  {{- if eq .Values.configs.mqtt.enable_topic "true" }} or {{- if eq .Values.configs.mqtt.enable "true" }}
+  {{ if .Values.configs.mqtt.topic }}
   {{ if .Values.configs.mqtt.topic.name }}
   MQTT_TOPIC_NAME: {{ .Values.configs.mqtt.topic.name }}
   {{ end }}
 
-  {{ if .Values.configs.mqtt.topic.db_name }}
+  {{ if .Values.configs.mqtt.topic.db_name}}
   MQTT_TOPIC_DBMS: {{ .Values.configs.mqtt.topic.db_name }}
   {{ end }}
 
   {{ if .Values.configs.mqtt.topic.table }}
   MQTT_TOPIC_TABLE: {{ .Values.configs.mqtt.topic.table }}
   {{ end }}
-  {{ end }}{{ end }}
 
-
-  # Other params
-  {{ if .Values.configs.other.deploy_local_script }}
-  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.other.deploy_local_script | quote }}
+  {{ if .Values.configs.mqtt.timestamp_column}}
+  MQTT_COLUMN_TIMESTAMP: {{ .Values.configs.mqtt.timestamp_column }}
   {{ end }}
 
-  # Node settings
+  {{ if .Values.configs.mqtt.value_column_type }}
+  MQTT_COLUMN_VALUE_TYPE: {{ .Values.configs.mqtt.value_column_type }}
+  {{ end }}
+
+  {{ if .Values.configs.mqtt.value_column }}
+  MQTT_COLUMN_VALUE: {{ .Values.configs.mqtt.value_column }}
+  {{ end }}
+  {{ end }}
+
+  # Other settings
+  {{ if .Values.configs.settings.deploy_local_script }}
+  DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.settings.deploy_local_script | quote }}
+  {{ end }}
+
   {{ if .Values.configs.settings.tcp_thread_pool }}
   TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
   {{ end }}
@@ -152,9 +153,21 @@ data:
   {{ end }}
 
   {{ if .Values.configs.settings.rest_threads }}
-  REST_THREADS: {{ .Values.configs.settings.rest_threads | quote }}
+  REST_THREAD: {{ .Values.configs.settings.rest_threads | quote }}
   {{ end }}
 
   {{ if .Values.configs.settings.query_pool }}
   QUERY_POOL: {{ .Values.configs.settings.query_pool | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.threshold_time }}
+  THRESHOLD_TIME: {{ .Values.configs.settings.threshold_time }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.threshold_volume }}
+  THRESHOLD_VOLUME: {{ .Values.configs.settings.threshold_volume }}
+  {{ end }}
+
+  {{ if .Values.configs.settings.write_immediate }}
+  WRITE_IMMEDIATE: {{ .Values.configs.settings.write_immediate | quote }}
   {{ end }}

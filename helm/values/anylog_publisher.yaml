@@ -24,6 +24,7 @@ configs:
     node_type: "publisher"
     node_name: "anylog-publisher"
     company: "new company"
+    location: ""
   networking:
     services:
       anylog_server_port: 32248
@@ -34,8 +35,6 @@ configs:
       external_ip: ""
       local_ip: ""
     settings:
-      # OPTIONAL - whether to enable local MQTT message broker or not
-      enable_broker: "false"
       # TCP connection information for master node (not needed for REST node)
       master_node: "127.0.0.1:32048"
       # How often a node syncs with the master node
@@ -58,8 +57,6 @@ configs:
   mqtt:
     # whether to enable an MQTT client on the node
     enable: "true"
-    # add topic params (must be false if not configured)
-    enable_topic: "true"
     broker: "driver.cloudmqtt.com"
     port: 18785
     log: "false"
@@ -73,10 +70,9 @@ configs:
       timestamp_column: "now"
       value_column_type: "float"
       value_column: "bring [readings][][value]"
-  other:
+  settings:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"
-  settings:
     # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
     tcp_thread_pool: 6
     # Amount of time (in seconds) until REST timeout
