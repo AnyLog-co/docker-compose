@@ -51,12 +51,9 @@ configs:
   mqtt:
     # whether to enable an MQTT client on the node
     enable: "false"
-    # add topic params (must be false if not configured)
-    enable_topic: "false"
-  other:
+  settings:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"
-  settings:
     # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
     tcp_thread_pool: 6
     # Amount of time (in seconds) until REST timeout
