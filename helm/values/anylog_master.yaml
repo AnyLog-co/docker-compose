@@ -24,6 +24,7 @@ configs:
     node_type: "master"
     node_name: "anylog-master"
     company: "new company"
+    location: ""
   networking:
     services:
       anylog_server_port: 32048

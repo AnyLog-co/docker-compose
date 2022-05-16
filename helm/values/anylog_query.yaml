@@ -24,6 +24,7 @@ configs:
     node_type: "query"
     node_name: "anylog-query"
     company: "new company"
+    location: ""
   networking:
     services:
       anylog_server_port: 32348
