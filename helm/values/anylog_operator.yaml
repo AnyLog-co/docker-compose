@@ -37,24 +37,25 @@ configs:
       # OPTIONAL - whether to enable local MQTT message broker or not
       enable_broker: "false"
       # TCP connection information for master node (not needed for REST node)
-      master_node: "127.0.0.1:32048"
+      master_node: "master-service.default.svc.cluster.local:32048:32048"
       # How often a node syncs with the master node
       sync_time: "30 second"
   dbms:
-    type: "psql"
+    type: "psql"”
     ip: "postgres"
     user: "admin"
     passwd: "demo"
     port: 5432
+    default_db_name: "test"
     # when memory is set to true, then the system_query database will automatically run using SQLite in memory.
     memory: "true"
-  publisher:
-    # run publisher where compress_json=!compress_json and move_json=!move_json and master_node=!master_node and dbms_name=!dbms_file_location and table_name=!table_file_location
-    compress_json: "true"
-    move_json: "true"
-    # sample file name: [db_name].[table_name].0.0.json
-    dbms_file_location: "file_name[0]"
-    table_file_location: "file_name[1]"
+  operator:
+    cluster_name: "new-cluster"
+    enable_partition: "true"
+    partition_column: "timestamp"
+    partition_interval: "day"
+    partition_keep: 7
+    table_name: *
   other:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"

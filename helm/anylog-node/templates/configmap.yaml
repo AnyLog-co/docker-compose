@@ -87,6 +87,32 @@ data:
   {{ end }}
   {{ end }} {{ end }}
 
+  # Operator specific settings
+  {{- if eq .Values.configs.basic.node_type "operator" }} and {{ if .Values.configs.operator }}
+  {{ if .Values.configs.operator.cluster_name }}
+  CLUSTER_NAME: {{ .Values.configs.operator.cluster_name }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.enable_partition }}
+  ENABLE_PARTITION: {{ .Values.configs.operator.enable_partition | quote }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.partition_column }}
+  PARTITION_COLUMN: {{ .Values.configs.operator.partition_column }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.partition_interval }}
+  PARTITION_INTERVAL: {{ .Values.configs.operator.partition_interval }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.partition_keep }}
+  PARTITION_KEEP: {{ .Values.configs.operator.partition_keep }}
+  {{ end }}
+
+  {{ if .Values.configs.operator.table_name }}
+  TABLE_NAME: {{ .Values.configs.operator.table_name }}
+  {{ end }}
+  {{ end }} {{ end }}
 
   # MQTT
   {{ if .Values.configs.mqtt.enable }}
