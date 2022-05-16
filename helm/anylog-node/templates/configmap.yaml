@@ -65,10 +65,10 @@ data:
   DEFAULT_DBMS: {{ .Values.configs.dbms.default_db_name }}
   {{ end }} {{ end }}
   {{ end }}
-  {{ end }}
 
   {{ if .Values.configs.dbms.memory }}
   MEMORY: {{ .Values.configs.dbms.memory | quote }}
+  {{ end }}
   {{ end }}
 
   # Publisher specific settings
