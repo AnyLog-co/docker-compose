@@ -60,7 +60,7 @@ data:
   DB_PASSWD: {{ .Values.configs.dbms.password }}
   {{ end }}
 
-  {{- if .Values.configs.basic.node_type "operator" }} and {{ if .Values.configs.dbms.default_db_name }}
+  {{- if eq .Values.configs.basic.node_type "operator" }} and {{ if .Values.configs.dbms.default_db_name }}
   DEFAULT_DBMS: {{ .Values.configs.dbms.default_db_name }}
   {{ end }} {{ end }}
   {{ end }}
