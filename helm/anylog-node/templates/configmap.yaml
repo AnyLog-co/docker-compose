@@ -39,6 +39,7 @@ data:
   {{ end }} {{ end }}
 
   # DBMS
+  {{ if .Values.configs.dbms }}
   {{ if .Values.configs.dbms.type }}
   DB_TYPE: {{ .Values.configs.dbms.type }}
   {{ end }}
@@ -63,6 +64,7 @@ data:
   {{- if eq .Values.configs.basic.node_type "operator" }} and {{ if .Values.configs.dbms.default_db_name }}
   DEFAULT_DBMS: {{ .Values.configs.dbms.default_db_name }}
   {{ end }} {{ end }}
+  {{ end }}
   {{ end }}
 
   {{ if .Values.configs.dbms.memory }}
