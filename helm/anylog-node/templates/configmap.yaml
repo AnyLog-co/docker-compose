@@ -35,7 +35,7 @@ data:
   {{ end }} {{ end }}
 
   {{- if ne .Values.configs.basic.node_type "rest" }} or {{ if .Values.configs.networking.settings.sync_time }}
-  SYNC_TIME: {{ .Values.configs.networking.settings.SYNC_TIME }}
+  SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
   {{ end }} {{ end }}
 
   # DBMS
