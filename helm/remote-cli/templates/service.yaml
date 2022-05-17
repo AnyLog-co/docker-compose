@@ -1,31 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  {{ if .Values.general }} and {{ if .Values.general.name }}
-    name: {{ .Values.general.name }}-service
+    name: remote-cli-service
     labels:
-      app: {{ .Values.general.name }}
-  {{ else }}
-    name: remote_cli-service
-    labels:
-      app: remote_cli
-  {{ end }} {{ end }}
+      app: remote-cli
 spec:
   type: NodePort
   ports:
-    - name: grafana-port
-      {{ if .Values.configs }} and {{ if .Values.configs.port }}
-        port: {{ .Values.configs.port }}
-        targetPort: {{ .Values.configs.port }}
-        nodePort: {{ .Values.configs.port }}
-      {{ else }}
-        port: 31800
-        targetPort: 31800
-        nodePort: 31800
-      {{ end }} {{ end }}
+    - name: remote-cli
+      port: 31800
+      targetPort: 31800
+      nodePort: 31800
+
   selector:
-    {{ if .Values.general }} and {{ if .Values.general.name }}
-      app: {{ .Values.general.name }}-service
-    {{ else }}
-      app: remote_cli-service
-    {{ end }} {{ end }}
+    app: remote-cli-service
+

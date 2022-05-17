@@ -1,23 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  {{ if .Values.general }} and {{ if .Values.general.name }}
-    name: {{ .Values.general.name }}-configuration
-    labels:
-      app: {{ .Values.general.name }}
-  {{ else }}
-    name: remote_cli-configuration
-    labels:
-      app: remote_cli
-  {{ end }}
+  name: remote-cli-configuration
+  labels:
+    app: remote-cli
 data:
-  {{ if .Values.configs }} and {{ if .Values.configs.ip }}
-    CONN_IP: {{ .Values.configs.ip }}
-  {{ else }}
-    CONN_IP: "0.0.0.0"
-  {{ end }}
-  {{ if .Values.configs }} and {{ if .Values.configs.port }}
-    CLI_PORT: {{ .Values.configs.port | quote }}
-  {{ else }}
-    CLI_PORT: "31800"
-  {{ end }}
+  CONN_IP: "0.0.0.0"
+  CLI_PORT: "31800"
