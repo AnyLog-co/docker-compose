@@ -20,7 +20,7 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: remote_cli-configuration
+            name: remot-cli-configuration
         ports:
         - containerPort: 31800
-          name: remote_cli-port
+          name: remote-cli
