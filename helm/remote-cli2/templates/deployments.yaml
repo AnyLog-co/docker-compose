@@ -1,78 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  {{ if .Values.general }} and {{ if .Values.general.name }}
-    name: {{ .Values.general.name }}
-    labels:
-      app: {{ if .Values.general.name }}
-  {{ else }}
-    name: remote-cli
-      labels:
-        app: remote-cli
-  {{ end }} {{ end }}
+  name: {{ .Values.general.name }}
+  labels:
+    app: {{ .Values.general.name }}
 spec:
-  {{ if .Values.general }} and {{ if .Values.general.replicas }}
-    replicas: {{ .Values.general.replicas }}
-  {{ else }}
-    replicas: 1
-  {{ end }} {{ end }}
+  replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      {{ if .Values.general }} and {{ if .Values.general.name }}
-        app: {{ .Values.general.name }}
-      {{ else }}
-        app: remote-cli
-      {{ end }} {{ else }}
+      app: {{ .Values.general.name }}
   template:
     metadata:
       labels:
-        {{ if .Values.general }} and {{ if .Values.general.name }}
-          app: {{ .Values.general.name }}
-        {{ else }}
-          app: remote-cli
-        {{ end }} {{ else }}
+        app: {{ .Values.general.name }}
     spec:
-      {{ if .Values.image }} and {{ if .Values.image.set_secret }}
-        imagePullSecrets:
-        - name: {{ .Values.image.secretName }}
-      {{ end }} {{ end }}
+      {{ if  .Values.image.secretName }}
+      imagePullSecrets:
+        - name: { { .Values.image.secretName } }
+      {{ end }}
       containers:
-        {{ if .Values.general }} and {{ if .Values.general.name }}
-          - name: {{ .Values.general.name }}
-        {{ else }}
-          - name: remote-cli
-        {{ end }} {{ else }}
-        {{ if .Values.image }}
-          {{ if .Values.image.name }} and {{ if .Values.image.version }}
-            image: {{ .Values.image.name }}:{{ .Values.image.version }}
-          {{ else }}
-            image: anylogco/remote-cli:latest
-          {{ end }} {{ end }}
-          {{ if .Values.image.pullPolicy }}
-            imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{ else }}
-            imagePullPolicy: IfNotPresent
-          {{ end }}
-        {{ else }}
-          image: anylogco/remote-cli:latest
-          imagePullPolicy: IfNotPresent
-        {{ end }}
+      - name: {{ .Values.general.name }}
+        image: {{ .Values.image.name }}:{{ .Values.image.version }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - configMapRef:
-            {{ if .Values.general }} and {{ if .Values.general.name }}
-              name: {{ .Values.general.name }}-configuration
-            {{ else }}
-              name: remote-cli-configuration
-            {{ end }} {{ end }}
+            name: {{ .Values.general.name }}-configuration
         ports:
-          {{ if .Values.configs }} and {{ if .Values.configs.port }}
-            - containerPort: {{ .Values.configs.port }}
-          {{ else }}
-            - containerPort: 31800
-          {{ end }} {{ end }}
-
-          {{ if .Values.general }} and {{ if .Values.general.name }}
-            name: {{ .Values.general.name }}
-          {{ else }}
-            name: remote-cli
-          {{ end }} {{ end }}
+        - containerPort: {{ .Values.configs.port }}
+          name: {{ .Values.general.name }}
