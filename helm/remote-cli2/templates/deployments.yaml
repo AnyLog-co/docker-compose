@@ -62,9 +62,13 @@ spec:
               name: remote-cli-configuration
             {{ end }} {{ end }}
         ports:
-        {{ if .Values.configs }} and {{ if .Values.configs.port }}
-          - containerPort: {{ .Values.configs.port }}
-        {{ else }}
-          - containerPort: 31800
-        {{ end }} {{ end }}
-          name: remote-cli
+          {{ if .Values.configs }} and {{ if .Values.configs.port }}
+            - containerPort: {{ .Values.configs.port }}
+          {{ else }}
+            - containerPort: 31800
+          {{ end }} {{ end }}
+          {{ if .Values.general }} and {{ if .Values.general.name }}
+            name: {{ .Values.general.name }}
+          {{ else }}
+            name: remote-cli
+          {{ end }} {{ end }}
