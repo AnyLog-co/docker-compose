@@ -17,7 +17,7 @@ data:
     CONN_IP: "0.0.0.0"
   {{ end }}
   {{ if .Values.configs }} and {{ if .Values.configs.port }}
-    CLI_PORT: {{ .Values.configs.port }}
+    CLI_PORT: {{ .Values.configs.port | quote }}
   {{ else }}
-    CLI_PORT: 31800
+    CLI_PORT: "31800"
   {{ end }}
