@@ -49,7 +49,7 @@ spec:
             image: anylogco/remote-cli:latest
           {{ end }} {{ end }}
           {{ if .Values.image.pullPolicy }}
-            imagePullPolicy: {{ Values.image.pullPolicy }}
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{ else }}
             imagePullPolicy: IfNotPresent
           {{ end }}
