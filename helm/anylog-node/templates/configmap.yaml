@@ -32,6 +32,8 @@ data:
       {{ end }}
       {{ if .Values.configs.basic.location }}
         LOCATION: {{ .Values.configs.basic.location }}
+      {{ else }}
+        LOCATION: ""
       {{ end }}
     {{ else }}
         NODE_TYPE: "rest"
