@@ -30,16 +30,16 @@ data:
       {{ else }}
         COMPANY_NAME: "new company"
       {{ end }}
-      {{ if .Values.configs.basic.location }}
-        LOCATION: {{ .Values.configs.basic.location }}
-      {{ else }}
-        LOCATION: ""
-      {{ end }}
+#      {{ if .Values.configs.basic.location }}
+#        LOCATION: {{ .Values.configs.basic.location }}
+#      {{ else }}
+#        LOCATION: ""
+#      {{ end }}
     {{ else }}
         NODE_TYPE: "rest"
         NODE_NAME: "anylog-node"
         COMPANY: "new company"
-        LOCATION: ""
+#        LOCATION: ""
     {{ end }}
 #----------------------------------------------------------------------------------------------------------------------#
 # Network Configurations
