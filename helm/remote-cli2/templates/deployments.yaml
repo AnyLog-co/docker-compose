@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: remote_cli
+  name: remote-cli
   labels:
-    app: remote_cli
+    app: remote-cli
 spec:
   replicas: 1
   selector:
