@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  {{ if .Values.general }} and {{ if .Values.general.name }}
+    name: {{ .Values.general.name }}-configuration
+    labels:
+      app: {{ .Values.general.name }}
+  {{ else }}
+    name: remote_cli-configuration
+    labels:
+      app: remote_cli
+  {{ end }}
+spec:
+  {{ if .Values.general }} and {{ if .Values.general.replicas }}
+    replicas: {{ .Values.general.replicas }}
+  {{ else }}
+    replicas: 1
+  {{ end }
+  selector:
+    matchLabels:
+      {{ if .Values.general }} and {{ if .Values.general.name }}
+        app: {{ .Values.general.name }}
+      {{ else }}
+        app: remote-cli
+      {{ end }}
+  template:
+    metadata:
+      labels:
+        {{ if .Values.general }} and {{ if .Values.general.name }}
+          app: {{ .Values.general.name }}
+        {{ else }}
+          app: remote-cli
+        {{ end }}
+    spec:
+      containers:
+        {{ if .Values.general }} and {{ if .Values.general.name }}
+          - name: {{ if .Values.general.name }}
+        {{ else }}
+          - name: remote-cli
+        {{ end }}}
+        {{ if .Values.image }}
+          {{ if .Values.image.name }} and {{ if .Values.image.version }}
+            image: {{ .Values.image.name }}:{{ .Values.image.version }}
+          {{ else }}
+            image: anylogco/remote-cli:latest
+          {{ end }} {{ end }}
+          {{ if .Values.image.pullPolicy }}
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{ else }}
+            imagePullPolicy: IfNotPresent
+          {{ end }}
+        {{ else }}
+          image: anylogco/remote-cli:latest
+          imagePullPolicy: IfNotPresent
+        {{ end }}
+        {{ if .Values.general }} and {{ if .Values.general.name }}
+          envFrom:
+          - configMapRef:
+              name: {{ .Values.general.name }}-configuration
+        {{ else }}
+          envFrom:
+          - configMapRef:
+              name: remote_cli-configuration
+        ports:
+          {{ if .Values.configs }} and {{ if .Values.configs.port }}
+            - containerPort: {{ .Values.configs.port }}
+              name: remote_cli-port
+          {{ else }}
+            - containerPort: 31800
+              name: remote_cli-port
+          {{ end }}
