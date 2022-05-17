@@ -60,11 +60,11 @@ spec:
               name: {{ .Values.general.name }}-configuration
             {{ else }}
               name: remote-cli-configuration
-              {{ end }} {{ end }}
+            {{ end }} {{ end }}
         ports:
         {{ if .Values.configs }} and {{ if .Values.configs.port }}
-        - containerPort: {{ .Values.configs.port }}
+          - containerPort: {{ .Values.configs.port }}
         {{ else }}
-        - containerPort: 31800
+          - containerPort: 31800
         {{ end }} {{ end }}
           name: remote-cli
