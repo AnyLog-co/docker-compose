@@ -38,19 +38,7 @@ data:
         NODE_NAME: "anylog-node"
         COMPANY: "new company"
     {{ end }}
-#----------------------------------------------------------------------------------------------------------------------#
-# Network Configurations
-#   Network Port Services
-#     - TCP
-#     - REST
-#     - Broker (optional)
-#   Network IP addresses
-#     - external IP
-#     - local IP
-#   Network Settings
-#     - Master Node IP:TCP_Port
-#     - Blockchain sync time
-#----------------------------------------------------------------------------------------------------------------------#
+
     {{ if .Values.configs.networking }}
       {{ if .Values.configs.networking.services }}
         {{ if .Values.configs.networking.services.anylog_server_port }}
