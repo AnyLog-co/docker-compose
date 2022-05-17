@@ -1,6 +1,6 @@
 general:
 #  namespace: anylog-network
-  name: remote-cli
+  name: rmt-cli
   replicas: 1
 
 image:
