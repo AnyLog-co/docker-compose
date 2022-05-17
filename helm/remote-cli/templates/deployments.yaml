@@ -38,6 +38,7 @@ spec:
         {{ else }}
           - name: remote-cli
         {{ end }}} {{ end }}
+
         {{ if .Values.image }}
           {{ if .Values.image.name }} and {{ if .Values.image.version }}
             image: {{ .Values.image.name }}:{{ .Values.image.version }}
@@ -53,6 +54,7 @@ spec:
           image: anylogco/remote-cli:latest
           imagePullPolicy: IfNotPresent
         {{ end }}
+
         {{ if .Values.general }} and {{ if .Values.general.name }}
           envFrom:
           - configMapRef:
@@ -62,6 +64,7 @@ spec:
           - configMapRef:
               name: remote_cli-configuration
         {{ end }} {{ end }}
+
         ports:
           {{ if .Values.configs }} and {{ if .Values.configs.port }}
             - containerPort: {{ .Values.configs.port }}
