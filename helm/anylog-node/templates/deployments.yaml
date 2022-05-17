@@ -27,10 +27,20 @@ spec:
           - configMapRef:
               name: {{ .Values.general.name }}-configurations
         ports:
+          {{ if .Values.configs.networking.services.anylog_server_port }}
           - containerPort: {{ .Values.configs.networking.services.anylog_server_port }}
             name: tcp
+          {{ else }}
+          - containerPort: 32048
+            name: tcp
+          {{ end }}
+          {{ if .Values.configs.networking.services.anylog_rest_port }}
           - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
             name: rest
+          {{ else }}
+          - containerPort: 32049
+          name: rest
+          {{ end }}
           {{ if .Values.configs.networking.settings.enable_broker }}
           - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
             name: broker
