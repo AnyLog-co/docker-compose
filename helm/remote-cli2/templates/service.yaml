@@ -1,17 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: remote_cli-service
+    name: remote-cli-service
     labels:
-      app: remote_cli
+      app: remote-cli
 spec:
   type: NodePort
   ports:
-    - name: grafana-port
+    - name: remote-cli
       port: 31800
       targetPort: 31800
       nodePort: 31800
 
   selector:
-    app: remote_cli-service
+    app: remote-cli-service
 
