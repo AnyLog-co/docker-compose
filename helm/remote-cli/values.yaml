@@ -1,0 +1,14 @@
+general:
+#  namespace: anylog-network
+  name: remote-cli
+  replicas: 1
+
+image:
+  secretName: imagepullsecret
+  name: anylogco/remote-cli
+  version: latest
+  pullPolicy: IfNotPresent
+
+configs:
+  ip: "0.0.0.0"
+  port: 31800

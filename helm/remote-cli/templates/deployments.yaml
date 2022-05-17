@@ -2,11 +2,11 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   {{ if .Values.general }} and {{ if .Values.general.name }}
-    name: {{ .Values.general.name }}-configuration
+    name: {{ .Values.general.name }}
     labels:
       app: {{ .Values.general.name }}
   {{ else }}
-    name: remote_cli-configuration
+    name: remote_cli
     labels:
       app: remote_cli
   {{ end }}
