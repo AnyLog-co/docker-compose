@@ -68,4 +68,4 @@ spec:
           {{ else }}
             - containerPort: 31800
               name: remote_cli-port
-          {{ end }}
+          {{ end }} {{ end }}
