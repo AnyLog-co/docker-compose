@@ -61,6 +61,7 @@ spec:
           envFrom:
           - configMapRef:
               name: remote_cli-configuration
+          {{ end }} {{ end }}
         ports:
           {{ if .Values.configs }} and {{ if .Values.configs.port }}
             - containerPort: {{ .Values.configs.port }}
