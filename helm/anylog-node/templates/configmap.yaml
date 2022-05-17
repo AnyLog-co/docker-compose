@@ -39,6 +39,7 @@ data:
         NODE_TYPE: "rest"
         NODE_NAME: "anylog-node"
         COMPANY: "new company"
+        LOCATION: ""
     {{ end }}
 #----------------------------------------------------------------------------------------------------------------------#
 # Network Configurations
