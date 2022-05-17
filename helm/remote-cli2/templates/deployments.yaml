@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: remote_cli
+  labels:
+    app: remote_cli
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: remote-cli
+  template:
+    metadata:
+      labels:
+        app: remote-cli
+    spec:
+      containers:
+      - name: remote-cli
+        image: anylogco/remote-cli:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: remote_cli-configuration
+        ports:
+        - containerPort: 31800
+          name: remote_cli-port
