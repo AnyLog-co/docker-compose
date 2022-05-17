@@ -15,14 +15,14 @@ spec:
     replicas: {{ .Values.general.replicas }}
   {{ else }}
     replicas: 1
-  {{ end }}
+  {{ end }} {{ end }
   selector:
     matchLabels:
       {{ if .Values.general }} and {{ if .Values.general.name }}
         app: {{ .Values.general.name }}
       {{ else }}
         app: remote-cli
-      {{ end }}
+      {{ end }} {{ end }}
   template:
     metadata:
       labels:
@@ -30,14 +30,14 @@ spec:
           app: {{ .Values.general.name }}
         {{ else }}
           app: remote-cli
-        {{ end }}
+        {{ end }} {{ end }}
     spec:
       containers:
         {{ if .Values.general }} and {{ if .Values.general.name }}
           - name: {{ if .Values.general.name }}
         {{ else }}
           - name: remote-cli
-        {{ end }}}
+        {{ end }}} {{ end }}
         {{ if .Values.image }}
           {{ if .Values.image.name }} and {{ if .Values.image.version }}
             image: {{ .Values.image.name }}:{{ .Values.image.version }}
@@ -61,7 +61,7 @@ spec:
           envFrom:
           - configMapRef:
               name: remote_cli-configuration
-          {{ end }} {{ end }}
+        {{ end }} {{ end }}
         ports:
           {{ if .Values.configs }} and {{ if .Values.configs.port }}
             - containerPort: {{ .Values.configs.port }}
