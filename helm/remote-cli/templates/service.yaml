@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: {{ .Values.general.name }}
+    name: {{ .Values.general.name }}-service
     labels:
       app: {{ .Values.general.name }}
 spec:
@@ -12,5 +12,5 @@ spec:
       targetPort: {{ .Values.configs.port }}
       nodePort: {{ .Values.configs.port }}
   selector:
-    app: {{ .Values.general.name }}-service
+    app: {{ .Values.general.name }}
 
