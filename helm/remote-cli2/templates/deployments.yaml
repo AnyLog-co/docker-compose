@@ -53,6 +53,9 @@ spec:
           {{ else }}
             imagePullPolicy: IfNotPresent
           {{ end }}
+        {{ else }}
+          image: anylogco/remote-cli:latest
+          imagePullPolicy: IfNotPresent
         {{ end }}
         envFrom:
         - configMapRef:
@@ -67,6 +70,7 @@ spec:
           {{ else }}
             - containerPort: 31800
           {{ end }} {{ end }}
+
           {{ if .Values.general }} and {{ if .Values.general.name }}
             name: {{ .Values.general.name }}
           {{ else }}
