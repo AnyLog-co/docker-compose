@@ -1,10 +1,10 @@
 general:
 #  namespace: anylog-network
-  name: rmt-cli
+  name: remote-cli
   replicas: 1
 
 image:
-  secretName: imagepullsecret
+  secretName: ""
   name: anylogco/remote-cli
   version: latest
   pullPolicy: IfNotPresent

@@ -1,17 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: remote-cli-service
+    name: {{ .Values.general.name }}
     labels:
-      app: remote-cli
+      app: {{ .Values.general.name }}
 spec:
   type: NodePort
   ports:
-    - name: remote-cli
-      port: 31800
-      targetPort: 31800
-      nodePort: 31800
-
+    - name: {{ .Values.general.name }}
+      port: {{ .Values.configs.port }}
+      targetPort: {{ .Values.configs.port }}
+      nodePort: {{ .Values.configs.port }}
   selector:
-    app: remote-cli-service
+    app: {{ .Values.general.name }}-service
 

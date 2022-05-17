@@ -4,9 +4,9 @@ general:
   replicas: 1
 
 image:
-  secretName: ""
-  name: anylogco/remote-cli
-  version: latest
+  secretName: imagepullsecret
+  name: uazwwnrnci5h/anylog/remote-cli
+  version: 1.0.0
   pullPolicy: IfNotPresent
 
 configs:

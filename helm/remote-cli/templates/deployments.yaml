@@ -1,26 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: remote-cli
+  name: {{ .Values.general.name }}
   labels:
-    app: remote-cli
+    app: {{ .Values.general.name }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: remote-cli
+      app: {{ .Values.general.name }}
   template:
     metadata:
       labels:
-        app: remote-cli
+        app: {{ .Values.general.name }}
     spec:
+      {{ if .Values.image.secretName }}
+      imagePullSecrets:
+        - name: { { .Values.image.secretName } }
+      {{ end }}
       containers:
-      - name: remote-cli
-        image: anylogco/remote-cli:latest
-        imagePullPolicy: IfNotPresent
+      - name: {{ .Values.general.name }}
+        image: {{ .Values.image.name }}:{{ .Values.image.version }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - configMapRef:
-            name: remote-cli-configuration
+            name: {{ .Values.general.name }}-configuration
         ports:
-        - containerPort: 31800
-          name: remote-cli
+        - containerPort: {{ .Values.configs.port }}
+          name: {{ .Values.general.name }}

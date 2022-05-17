@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: remote-cli-configuration
+  name: {{ .Values.general.name }}-configuration
   labels:
-    app: remote-cli
+    app: {{ .Values.general.name }}
 data:
-  CONN_IP: "0.0.0.0"
-  CLI_PORT: "31800"
+  CONN_IP: {{ .Values.configs.ip }}
+  CLI_PORT: {{ .Values.configs.port | quote }}
