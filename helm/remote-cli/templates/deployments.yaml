@@ -15,7 +15,7 @@ spec:
     replicas: {{ .Values.general.replicas }}
   {{ else }}
     replicas: 1
-  {{ end }
+  {{ end }}
   selector:
     matchLabels:
       {{ if .Values.general }} and {{ if .Values.general.name }}
