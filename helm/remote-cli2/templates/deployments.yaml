@@ -14,7 +14,7 @@ spec:
       labels:
         app: {{ .Values.general.name }}
     spec:
-      {{ if  .Values.image.secretName }}
+      {{ if .Values.image.secretName }}
       imagePullSecrets:
         - name: { { .Values.image.secretName } }
       {{ end }}

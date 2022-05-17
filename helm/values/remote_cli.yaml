@@ -4,7 +4,7 @@ general:
   replicas: 1
 
 image:
-#  secretName: imagepullsecret
+  secretName: ""
   name: anylogco/remote-cli
   version: latest
   pullPolicy: IfNotPresent
