@@ -1,8 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-#  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.name }}
+  name: {{ .Values.general.name }}-deployment
   labels:
     app: {{ .Values.general.name }}
 spec:
@@ -15,34 +14,24 @@ spec:
       labels:
         app: {{ .Values.general.name }}
     spec:
-      {{ if .Values.image.set_secret }}
+      {{- if ne .Values.image.secretName "" }}
       imagePullSecrets:
-      - name: {{ .Values.image.secretName }}
+        - name: {{ .Values.image.secretName }}
       {{ end }}
       containers:
-      - name: {{ .Values.general.name }}
+      - name: {{ .Values.general.basic.node_name }}
         image: {{ .Values.image.name }}:{{ .Values.image.version }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
-          - configMapRef:
-              name: {{ .Values.general.name }}-configurations
+        - configMapRef:
+            name: {{ .Values.general.name }}-configuration
         ports:
-          {{ if .Values.configs.networking.services.anylog_server_port }}
-          - containerPort: {{ .Values.configs.networking.services.anylog_server_port }}
-            name: tcp
-          {{ else }}
-          - containerPort: 32048
-            name: tcp
-          {{ end }}
-          {{ if .Values.configs.networking.services.anylog_rest_port }}
-          - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-            name: rest
-          {{ else }}
-          - containerPort: 32049
+        - containerPort: {{ .Values.configs.networking.services.anylog_server_port }}
+          name: tcp
+        - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
           name: rest
-          {{ end }}
-          {{ if .Values.configs.networking.settings.enable_broker }}
-          - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-            name: broker
-          {{ end }}
+        {{- if ne .Values.configs.networking.services.anylog_broker_port }}
+        - containerPort: { { .Values.configs.networking.services.anylog_rest_port } }
+          name: broker
+        {{ end }}
 

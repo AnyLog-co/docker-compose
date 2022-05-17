@@ -1,40 +1,26 @@
 apiVersion: v1
 kind: Service
 metadata:
-#  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.name }}-service
-  labels:
-    app: {{ .Values.general.name }}
+    name: {{ .Values.general.name }}-service
+    labels:
+      app: {{ .Values.general.name }}
 spec:
   type: NodePort
   ports:
-  {{ if .Values.configs.networking.services.anylog_server_port }}
-  - name: tcp
-    port: {{ .Values.configs.networking.services.anylog_server_port }}
-    targetPort: {{ .Values.configs.networking.services.anylog_server_port }}
-    nodePort: {{ .Values.configs.networking.services.anylog_server_port }}
-  {{ else }}
-  - name: tcp
-    port: 32048
-    targetPort: 32048
-    nodePort: 32048
-  {{ end }}
-  {{ if .Values.configs.networking.services.anylog_rest_port }}
-  - name: rest
-    port: {{ .Values.configs.networking.services.anylog_rest_port }}
-    targetPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-    nodePort: {{ .Values.configs.networking.services.anylog_rest_port }}
-  {{ else }}
-  - name: rest
-    port: 32049
-    targetPort: 32049
-    nodePort: 32049
-  {{ end }}
-  {{ if default .Values.configs.networking.services.anylog_broker_port }}
-  - name: broker
-    port: {{ .Values.configs.networking.services.anylog_broker_port }}
-    targetPort: {{ .Values.configs.networking.services.anylog_broker_port }}
-    nodePort: {{ .Values.configs.networking.services.anylog_broker_port }}
-  {{ end }}
+    - name: tcp
+      port: {{ .Values.configs.networking.services.anylog_server_port }}
+      targetPort: {{ .Values.configs.networking.services.anylog_server_port }}
+      nodePort: {{ .Values.configs.networking.services.anylog_server_port }}
+    - name: rest
+      port: {{ .Values.configs.networking.services.anylog_rest_port }}
+      targetPort: {{ .Values.configs.networking.services.anylog_rest_port }}
+      nodePort: {{ .Values.configs.networking.services.anylog_rest_port }}
+    {{- if ne .Values.configs.networking.services.anylog_broker_port "" }}
+    - name: broker
+      port: {{ .Values.configs.networking.services.anylog_broker_port }}
+      targetPort: {{ .Values.configs.networking.services.anylog_broker_port }}
+      nodePort: {{ .Values.configs.networking.services.anylog_broker_port }}
+    {{ end }}
   selector:
     app: {{ .Values.general.name }}
+
