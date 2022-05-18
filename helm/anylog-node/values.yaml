@@ -27,16 +27,18 @@ configs:
     network_ips:
       external_ip: ""
       local_ip: ""
-    settings:
-      # whether to deploy a local script that extends the default startup script
-      deploy_local_script: "false"
-      # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
-      tcp_thread_pool: 6
-      # Amount of time (in seconds) until REST timeout
-      rest_timeout: 30
-      # The number of concurrent threads supporting HTTP requests.
-      rest_threads: 5
-      # Sets the number of threads supporting queries (the default is 3).
-      query_pool: 3
+  mqtt:
+    enable: "false"
+  settings:
+    # whether to deploy a local script that extends the default startup script
+    deploy_local_script: "false"
+    # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
+    tcp_thread_pool: 6
+    # Amount of time (in seconds) until REST timeout
+    rest_timeout: 30
+    # The number of concurrent threads supporting HTTP requests.
+    rest_threads: 5
+    # Sets the number of threads supporting queries (the default is 3).
+    query_pool: 3
 
 
