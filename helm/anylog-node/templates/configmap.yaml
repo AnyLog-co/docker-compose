@@ -6,7 +6,7 @@ metadata:
     app: {{ .Values.general.name }}
 data:
   # General information
-  NODE_TYPE: {{ default .Values.confings.basic.node_type "rest"}}
+  NODE_TYPE: {{ default .Values.configs.basic.node_type "rest"}}
   NODE_NAME: {{ default .Values.configs.basic.node_name "anylog-node" }}
   COMPANY_NAME: {{ default  .Values.configs.basic.node_name "new company" }}
   {{ if .Values.configs.basic.location }} and {{- if ne .Values.configs.basic.location "" }}
