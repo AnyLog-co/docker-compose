@@ -20,15 +20,16 @@ data:
   LOCAL_IP: {{ default .Values.configs.networking.settings.local_ip "" }}
 
   # DBMS
-  DB_TYPE: {{ default .Values.configs.dbms.type "sqlite" }}
-  {{- if ne .Values.configs.dbms.type "sqlite" }}
-    DB_IP: {{ default .Values.configs.dbms.ip "postgres" }}
-    DB_USER: {{ default .Values.configs.dbms.ip "admin" }}
-    DB_PASSWD: {{ default .Values.configs.dbms.password "demo" }}
-    DB_PORT: {{ default .Values.configs.dbms.port 5432 | quote }}
+  {{ if .Values.configs.dbms }}
+    DB_TYPE: {{ default .Values.configs.dbms.type "sqlite" }}
+    {{- if ne .Values.configs.dbms.type "sqlite" }}
+      DB_IP: {{ default .Values.configs.dbms.ip "postgres" }}
+      DB_USER: {{ default .Values.configs.dbms.ip "admin" }}
+      DB_PASSWD: {{ default .Values.configs.dbms.password "demo" }}
+      DB_PORT: {{ default .Values.configs.dbms.port 5432 | quote }}
+    {{ end }}
+    MEMORY: {{ default .Values.configs.dbms.memory "true" | quote }}
   {{ end }}
-  MEMORY: {{ default .Values.configs.dbms.memory "true" | quote }}
-
 
   # MQTT
   MQTT_ENABLE: {{ default .Values.configs.mqtt.enable "false" | quote }}
