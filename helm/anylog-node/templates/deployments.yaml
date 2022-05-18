@@ -30,8 +30,8 @@ spec:
           name: tcp
         - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
           name: rest
-        {{- if ne .Values.configs.networking.services.anylog_broker_port }}
-        - containerPort: { { .Values.configs.networking.services.anylog_rest_port } }
+        {{ if .Values.configs.networking.services.anylog_broker_port }}
+        - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
           name: broker
         {{ end }}
 
