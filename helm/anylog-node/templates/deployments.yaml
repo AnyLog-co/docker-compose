@@ -19,7 +19,7 @@ spec:
         - name: {{ .Values.image.secretName }}
       {{ end }}
       containers:
-      - name: {{ .Values.general.basic.node_name }}
+      - name: {{ .Values.configs.basic.node_name }}
         image: {{ .Values.image.name }}:{{ .Values.image.version }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
