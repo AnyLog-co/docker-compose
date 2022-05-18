@@ -27,6 +27,8 @@ configs:
     network_ips:
       external_ip: ""
       local_ip: ""
+    other:
+      master_node: ""
   mqtt:
     enable: "false"
   settings:
