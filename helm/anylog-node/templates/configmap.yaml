@@ -15,10 +15,10 @@ data:
 
   # networking
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
-  ANYLOG_REST_PORT: {{ .Values.config.networking.services.anylog_rest_port | quote }}
+  ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
 
   {{ if .Values.configs.networking.services.anylog_broker_port }}
-    ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port }}
+    ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
   {{ end }}
 
   {{- if ne .Values.conifgs.basic.node_type "rest" }}
