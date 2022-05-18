@@ -10,11 +10,11 @@ data:
   NODE_NAME: {{ default .Values.configs.basic.node_name "anylog-node" }}
   COMPANY_NAME: {{ default .Values.configs.basic.node_name "" }}
   LOCATION: {{ default .Values.configs.basic.location "" }}
+
   # networking
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
   ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
   ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port "" | quote }}
-
   MASTER_NODE: {{ default .Values.configs.networking.other.master_node "" }}
   EXTERNAL_IP: {{ default .Values.configs.networking.network_ips.external_ip "" }}
   LOCAL_IP: {{ default .Values.configs.networking.network_ips.local_ip "" }}
