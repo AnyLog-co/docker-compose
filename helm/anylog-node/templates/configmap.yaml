@@ -1,29 +1,46 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.general.name }}configmap
+  name: {{ .Values.general.name }}-configmap
   labels:
     app: {{ .Values.general.name }}
 data:
   # General information
   NODE_TYPE: {{ default .Values.configs.basic.node_type "rest"}}
   NODE_NAME: {{ default .Values.configs.basic.node_name "anylog-node" }}
-  COMPANY_NAME: {{ default  .Values.configs.basic.node_name "new company" }}
-  {{ if .Values.configs.basic.location }} and {{- if ne .Values.configs.basic.location "" }}
-    LOCATION: {{ .Values.configs.basic.location }}
-  {{ end }} {{ end }}
-
+  COMPANY_NAME: {{ default .Values.configs.basic.node_name "" }}
+  LOCATION: {{ default .Values.configs.basic.location "" }}
   # networking
   ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
   ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
+  ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port "" | quote }}
 
-  {{ if .Values.configs.networking.services.anylog_broker_port}}
-    ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
-  {{ end }}
+  MASTER_NODE: {{ default .Values.configs.networking.settings.master_node "" }}
+  EXTERNAL_IP: {{ default .Values.configs.networking.settings.external_ip "" }}
+  LOCAL_IP: {{ default .Values.configs.networking.settings.local_ip "" }}
 
-  {{- if ne .Values.configs.basic.node_type "rest" }}
-    MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+  # DBMS
+  DB_TYPE: {{ default .Values.configs.dbms.type "sqlite" }}
+  {{- if ne .Values.configs.dbms.type "sqlite" }}
+    DB_IP: {{ default .Values.configs.dbms.ip "postgres" }}
+    DB_USER: {{ default .Values.configs.dbms.ip "admin" }}
+    DB_PASSWD: {{ default .Values.configs.dbms.password "demo" }}
+    DB_PORT: {{ default .Values.configs.dbms.port 5432 | quote }}
   {{ end }}
+  MEMORY: {{ default .Values.configs.dbms.memory "true" | quote }}
+
+
+  # MQTT
+  MQTT_ENABLE: {{ default .Values.configs.mqtt.enable "false" | quote }}
+
+  # General Settings
+  DEPLOY_LOCAL_SCRIPT: {{ default .Values.configs.settings.deploy_local_script "false" | quote }}
+  TCP_THREAD_POOL: {{ default .Values.configs.settings.tcp_thread_pool 6 | quote }}
+  REST_TIMEOUT: {{ default .Values.configs.settings.rest_timeout 30 | quote }}
+  REST_THREADS: {{ default .Values.configs.settings.rest_threads 5 | quote }}
+  QUERY_POOL: {{ default .Values.configs.settings.query_pool 3 | quote }}
+
+
 
 
 
