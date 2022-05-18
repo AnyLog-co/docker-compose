@@ -1,138 +1,29 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-#  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.name }}-configurations
+  name: {{ .Values.general.name }}configmap
   labels:
     app: {{ .Values.general.name }}
 data:
-#----------------------------------------------------------------------------------------------------------------------#
-# Basic Node configurations:
-#   - Node Type
-#   - Node Name
-#   - Company Name
-#   - Location
-#----------------------------------------------------------------------------------------------------------------------#
-  {{ if .Values.configs }}
-    {{ if .Values.configs.basic }}
-      {{ if .Values.configs.basic.node_type }}
-        NODE_TYPE: {{ .Values.configs.basic.node_type }}
-      {{ else }}
-        NODE_TYPE: "rest"
-      {{ end }}
-      {{ if .Values.configs.basic.node_name }}
-        NODE_NAME: {{ .Values.configs.basic.node_name }}
-      {{ else }}
-        NODE_NAME: "anylog-node"
-      {{ end }}
-      {{ if .Values.configs.basic.company }}
-        COMPANY_NAME: {{ .Values.configs.basic.company }}
-      {{ else }}
-        COMPANY_NAME: "new company"
-      {{ end }}
-#      {{ if .Values.configs.basic.location }}
-#        LOCATION: {{ .Values.configs.basic.location }}
-#      {{ else }}
-#        LOCATION: ""
-#      {{ end }}
-    {{ else }}
-        NODE_TYPE: "rest"
-        NODE_NAME: "anylog-node"
-        COMPANY: "new company"
-#        LOCATION: ""
-    {{ end }}
-#----------------------------------------------------------------------------------------------------------------------#
-# Network Configurations
-#   Network Port Services
-#     - TCP
-#     - REST
-#     - Broker (optional)
-#   Network IP addresses
-#     - external IP
-#     - local IP
-#   Network Settings
-#     - Master Node IP:TCP_Port
-#     - Blockchain sync time
-#----------------------------------------------------------------------------------------------------------------------#
-    {{ if .Values.configs.networking }}
-      {{ if .Values.configs.networking.services }}
-        {{ if .Values.configs.networking.services.anylog_server_port }}
-          ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
-        {{ else }}
-          ANYLOG_SERVER_PORT: "32048"
-        {{ end }}
-        {{ if .Values.configs.networking.services.anylog_rest_port }}
-          ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
-        {{ else }}
-          ANYLOG_REST_PORT: "32049"
-        {{ end }}
-        {{ if .Values.configs.networking.services.anylog_broker_port }}
-          ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_broker_port | quote }}
-        {{ end }}
-      {{ end }}
-      {{ if .Values.configs.networking.network_ips }}
-        {{ if .Values.configs.networking.network_ips.external_ip }}
-          EXTERNAL_IP: {{ .Values.configs.networking.network_ips.external_ip }}
-        {{ end }}
-        {{ if .Values.configs.networking.network_ips.local_ip }}
-          EXTERNAL_IP: {{ .Values.configs.networking.network_ips.local_ip }}
-        {{ end }}
-      {{ end }}
-      {{ if .Values.configs.networking.settings }}
-        {{ if .Values.configs.networking.settings.master_node }}
-          MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
-        {{ else }}
-          MASTER_NODE: ""
-        {{ end }}
-        {{ if .Values.configs.networking.settings.sync_time }}
-          SYNC_TIME: {{ .Values.configs.networking.settings.sync_time }}
-      {{ else }}
-        SYNC_TIME: ""
-      {{ end }}
-    {{ else }}
-        MASTER_NODE: ""
-        SYNC_TIME: ""
-      {{ end }}
-    {{ end }}
-#----------------------------------------------------------------------------------------------------------------------#
-# General Settings
-#   - deploy_local_script: whether to deploy a local script that extends the default startup script
-#   - tcp_thread_pool: An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
-#   - rest_timeout: Amount of time (in seconds) until REST timeout
-#   - rest_threads: The number of concurrent threads supporting HTTP requests.
-#   - query_pool: Sets the number of threads supporting queries (the default is 3).
-#----------------------------------------------------------------------------------------------------------------------#
-    {{ if .Values.configs.settings }}
-      {{ if .Values.configs.settings.deploy_local_script }}
-        DEPLOY_LOCAL_SCRIPT: {{ .Values.configs.settings.deploy_local_script | quote }}
-      {{ else }}
-        DEPLOY_LOCAL_SCRIPT: "false"
-      {{ end }}
-      {{ if .Values.configs.settings.tcp_thread_pool }}
-        TCP_THREAD_POOL: {{ .Values.configs.settings.tcp_thread_pool | quote }}
-      {{ else }}
-        TCP_THREAD_POOL: "6"
-      {{ end }}
-      {{ if .Values.configs.settings.rest_timeout }}
-        REST_TIMEOUT: {{ .Values.configs.settings.rest_timeout | quote }}
-      {{ else }}
-        REST_TIMEOUT: "30"
-      {{ end }}
-      {{ if .Values.configs.settings.rest_threads }}
-        REST_THREADS: {{ .Values.configs.settings.rest_threads | quote }}
-      {{ else }}
-        REST_THREADS: "5"
-      {{ end }}
-      {{ if .Values.configs.settings.query_pool }}
-        QUERY_POOL: {{ .Values.configs.settings.query_pool | quote }}
-      {{ else }}
-        QUERY_POOL: "3"
-      {{ end }}
-    {{ else }}
-        DEPLOY_LOCAL_SCRIPT: "false"
-        REST_THREADS: "5"
-        REST_TIMEOUT: "30"
-        TCP_THREAD_POOL: "6"
-        QUERY_POOL: "3"
-    {{ end }}
+  # General information
+  NODE_TYPE: {{ default .Values.confings.basic.node_type "rest"}}
+  NODE_NAME: {{ default .Values.configs.basic.node_name "anylog-node" }}
+  COMPANY_NAME: {{ default  .Values.configs.basic.node_name "new company" }}
+  {{ if .Values.configs.basic.location }} and {{- if ne .Values.configs.basic.location "" }}
+    LOCATION: {{ .Values.configs.basic.location }}
+  {{ end }} {{ end }}
+
+  # networking
+  ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
+  ANYLOG_REST_PORT: {{ .Values.config.networking.services.anylog_rest_port | quote }}
+
+  {{ if .Values.configs.networking.services.anylog_broker_port }}
+    ANYLOG_BROKER_PORT: {{ .Values.configs.networking.services.anylog_broker_port }}
   {{ end }}
+
+  {{- if ne .Values.conifgs.basic.node_type "rest" }}
+    MASTER_NODE: {{ .Values.configs.networking.settings.master_node }}
+  {{ end }}
+
+
+
