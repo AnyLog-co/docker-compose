@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namesapce: {{ default .Values.general.namespace "default" }}
   name: {{ default .Values.general.name "remote-cli" }}
   labels:
     app: {{ default .Values.general.application "remote-cli" }}
