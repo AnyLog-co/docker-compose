@@ -26,5 +26,5 @@ spec:
         - configMapRef:
             name: {{ .Values.general.name }}-configuration
         ports:
-        - containerPort: {{ .Values.configs.port |quote }}
+        - containerPort: {{ .Values.configs.port }}
           name: rmt-cli-conn

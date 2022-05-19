@@ -10,6 +10,6 @@ spec:
     - name: rmt-cli-conn
       protocol: TCP
       appProtocol: http
-      port: {{ .Values.configs.port |quote }}
-      targetPort: {{ .Values.configs.port |quote }}
-      nodePort: {{ .Values.configs.port |quote }}
+      port: {{ .Values.configs.port  }}
+      targetPort: {{ .Values.configs.port }}
+      nodePort: {{ .Values.configs.port  }}
