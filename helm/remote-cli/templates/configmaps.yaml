@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.general.name }}-configuration
+  name: {{ .Values.general.configmap_name }}
   labels:
-    app: {{ .Values.general.name }}
+    app: {{ .Values.general.app_name }}
 data:
-  CONN_IP: {{ .Values.configs.ip }}
-  CLI_PORT: "8000"
+  CONN_IP: {{ .Values.networking.ip }}
+  CLI_PORT: {{ .Values.networking.port | quote }}

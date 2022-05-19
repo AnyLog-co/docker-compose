@@ -1,6 +1,13 @@
+#-----------------------------------------------------------------------------------------------------------------------
+# The following YAML file sets the configurations for AnyLog's Remote CLI
+# GitHub Repo: https://github.com/AnyLog-co/remote-cli
+#-----------------------------------------------------------------------------------------------------------------------
 general:
-#  namespace: anylog-network
-  name: remote-cli
+  namespace: default
+  app_name: remote-cli
+  deployment_name: remote-cli-app
+  service_name: remote-cli-svs
+  configmap_name: remote-cli-configs
   replicas: 1
 
 image:
@@ -9,6 +16,11 @@ image:
   version: latest
   pullPolicy: IfNotPresent
 
-configs:
+networking:
   ip: "0.0.0.0"
+  # the port value should be 30000 - 32767 as the service is configured to NodePort port used for:
+  # - port
+  # - nodePort
+  # - targetPort
+  port_name: rmt-cli-port
   port: 31800
