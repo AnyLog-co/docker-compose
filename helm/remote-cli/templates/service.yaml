@@ -8,7 +8,7 @@ spec:
     app: {{ .Values.general.name }}
   type: NodePort
   ports:
-    - name: grafana-port
+    - name: remote-cli
       protocol: TCP
       port: 8000
       targetPort: 8000
