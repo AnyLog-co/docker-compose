@@ -1,15 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ default .Values.general.name "remote-cli" }}-service
+  name: {{ .Values.general.name }}-service
 spec:
   selector:
-    app: {{ default .Values.general.application "remote-cli" }}
+    app: remote-cli
   type: NodePort
   ports:
-    - name: remote-cli
+    - name: rmt-cli-conn
       protocol: TCP
       appProtocol: http
-      port: {{ default .Values.configs.port 31800 }}
-      targetPort: {{ default .Values.configs.port 31800 }}
-      nodePort: {{ default .Values.configs.port 31800 }}
+      port: {{ .Values.configs.port  }}
+      targetPort: {{ .Values.configs.port }}
+      nodePort: {{ .Values.configs.port  }}
