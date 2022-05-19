@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ default .Values.general.name "remote-cli" }}
+  name: {{ .Values.general.name }}
   labels:
-    app: {{ default .Values.general.application "remote-cli" }}
+    app: remote-cli
 spec:
-  replicas: {{ default .Values.general.replicas 1 }}
+  replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: {{ default .Values.general.application "remote-cli" }}
+      app: remote-cli
   template:
     metadata:
       labels:
-        app: {{ default .Values.general.application "remote-cli" }}
+        app: remote-cli
     spec:
-      {{- if ne .Values.image.secretName "" }} 
+      {{ if .Values.image.secretName }}
       imagePullSecrets:
         - name: {{ .Values.image.secretName }}
       {{ end }} 
       containers:
-      - name: {{ default .Values.general.name "remote-cli" }}
-        image: {{ default .Values.image.name "anylogco/remote-cli" }}:{{ default .Values.image.version "latest" }}
-        imagePullPolicy: {{ default .Values.image.pullPolicy "IfNotPresent" }}
+      - name: {{ .Values.general.name }}
+        image: {{ .Values.image.name }}:{{ .Values.image.version }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - configMapRef:
-            name: {{ default .Values.general.name "remote-cli" }}-configuration
+            name: {{ .Values.general.name }}-configuration
         ports:
-        - containerPort: {{ default .Values.configs.port 31800 }}
-          name: {{ default .Values.general.name "remote-cli" }}
+        - containerPort: {{ .Values.configs.port }}
+          name: rmt-cli-conn
