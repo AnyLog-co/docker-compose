@@ -8,6 +8,7 @@ spec:
   type: NodePort
   ports:
     - name: {{ .Values.general.name }}
+      protocol: TCP
       port: {{ .Values.configs.port }}
       targetPort: {{ .Values.configs.port }}
       nodePort: {{ .Values.configs.port }}
