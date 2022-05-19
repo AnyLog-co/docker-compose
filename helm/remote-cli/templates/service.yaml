@@ -10,6 +10,7 @@ spec:
   ports:
     - name: remote-cli
       protocol: TCP
+      appProtocol: http
       port: 8000
       targetPort: 8000
       nodePort: 31800
