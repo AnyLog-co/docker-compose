@@ -2,15 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.general.name }}-service
-  #namespace: monitoring
 spec:
   selector:
-    app: {{ .Values.general.name }}
+    app: remote-cli
   type: NodePort
   ports:
-    - name: remote-cli
+    - name: rmt-cli-conn
       protocol: TCP
       appProtocol: http
-      port: 8000
-      targetPort: 8000
-      nodePort: 31800
+      port: {{ .Values.configs.port |quote }}
+      targetPort: {{ .Values.configs.port |quote }}
+      nodePort: {{ .Values.configs.port |quote }}

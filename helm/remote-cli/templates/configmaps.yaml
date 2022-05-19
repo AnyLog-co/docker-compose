@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ .Values.general.name }}-configuration
   labels:
-    app: {{ .Values.general.name }}
+    app: remote-cli
 data:
   CONN_IP: {{ .Values.configs.ip }}
-  CLI_PORT: "8000"
+  CLI_PORT: {{ .Values.configs.port |quote }}

@@ -3,18 +3,18 @@ kind: Deployment
 metadata:
   name: {{ .Values.general.name }}
   labels:
-    app: {{ .Values.general.name }}
+    app: remote-cli
 spec:
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.general.name }}
+      app: remote-cli
   template:
     metadata:
       labels:
-        app: {{ .Values.general.name }}
+        app: remote-cli
     spec:
-      {{- if ne .Values.image.secretName "" }} 
+      {{ if .Values.image.secretName }}
       imagePullSecrets:
         - name: {{ .Values.image.secretName }}
       {{ end }} 
@@ -26,5 +26,5 @@ spec:
         - configMapRef:
             name: {{ .Values.general.name }}-configuration
         ports:
-        - containerPort: 8000
-          name: {{ .Values.general.name }}
+        - containerPort: {{ .Values.configs.port |quote }}
+          name: rmt-cli-conn
