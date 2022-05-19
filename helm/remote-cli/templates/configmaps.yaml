@@ -1,9 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.general.name }}-configuration
+  namesapce: {{ default .Values.general.namespace "default" }}
+  name: {{ default .Values.general.name "remote-cli" }}-configuration
   labels:
-    app: {{ .Values.general.name }}
+    app: {{ default .Values.general.application "remote-cli" }}
 data:
   CONN_IP: {{ .Values.configs.ip }}
-  CLI_PORT: "8000"
+  CLI_PORT: {{ default .Values.configs.port "31800" | quote }}

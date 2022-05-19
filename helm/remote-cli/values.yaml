@@ -1,6 +1,7 @@
 general:
-#  namespace: anylog-network
+  namespace: default
   name: remote-cli
+  application: remote-cli
   replicas: 1
 
 image:
