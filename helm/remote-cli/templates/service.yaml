@@ -1,17 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-    name: {{ .Values.general.name }}-service
-    labels:
-      app: {{ .Values.general.name }}
+  name: {{ .Values.general.name }}-service
+  #namespace: monitoring
 spec:
-  type: NodePort
-  ports:
-    - name: {{ .Values.general.name }}
-      protocol: TCP
-      port: {{ .Values.configs.port }}
-      targetPort: {{ .Values.configs.port }}
-      nodePort: {{ .Values.configs.port }}
   selector:
     app: {{ .Values.general.name }}
-
+  type: NodePort
+  ports:
+    - name: grafana-port
+      protocol: TCP
+      port: 8000
+      targetPort: 8000
+      nodePort: 31800

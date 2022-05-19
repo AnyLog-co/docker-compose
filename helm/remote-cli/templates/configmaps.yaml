@@ -6,4 +6,4 @@ metadata:
     app: {{ .Values.general.name }}
 data:
   CONN_IP: {{ .Values.configs.ip }}
-  CLI_PORT: {{ .Values.configs.port | quote }}
+  CLI_PORT: "8000"
