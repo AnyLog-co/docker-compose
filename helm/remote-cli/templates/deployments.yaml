@@ -24,8 +24,6 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
-        env:
-        - name: CONN_IP
-          value: '{{ .Values.networking.ip }}'
-        - name: CLI_PORT
-          value: '{{ .Values.networking.port }}'
+        envForm:
+        - configMapRef:
+            name: '{{ .Values.general.configmap_name }}'
