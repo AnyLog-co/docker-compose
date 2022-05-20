@@ -2,8 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
-  labels:
-    app: grafana
+#  namespace: monitoring
 spec:
   replicas: 1
   selector:
@@ -11,17 +10,33 @@ spec:
       app: grafana
   template:
     metadata:
+      name: grafana
       labels:
         app: grafana
     spec:
       containers:
       - name: grafana
-        image: grafana/grafana:8.2.6
-        imagePullPolicy: IfNotPresent
-        envFrom:
-        - configMapRef:
-            name: grafana-configuration
+        image: grafana/grafana:latest
         ports:
-        - containerPort: 3000
-          name: grafana-port
-
+        - name: grafana
+          containerPort: 3000
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+          requests: 
+            memory: 500M
+            cpu: "500m"
+        volumeMounts:
+          - mountPath: /var/lib/grafana
+            name: grafana-storage
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: grafana-datasources
+            readOnly: false
+      volumes:
+        - name: grafana-storage
+          emptyDir: {}
+        - name: grafana-datasources
+          configMap:
+              defaultMode: 420
+              name: grafana-datasources
