@@ -5,32 +5,32 @@ metadata:
   name: '{{ .Values.general.deployment_name }}'
   labels:
     app: '{{ .Values.general.app_name }}'
-  spec:
-    replicas: {{ .Values.general.replicas }}
-    selector:
-      matchLabels:
+spec:
+  replicas: {{ .Values.general.replicas }}
+  selector:
+    matchLabels:
+      app: '{{ .Values.general.app_name }}'
+  template:
+    metadata:
+      labels:
         app: '{{ .Values.general.app_name }}'
-    template:
-      metadata:
-        labels:
-          app: '{{ .Values.general.app_name }}'
-        spec:
-          {{ if .Values.image.secretName }} and {{- if ne .Values.image.secretName "" }}
-          imagePullSecrets:
-          - name: {{ .Values.image.secretName }}
-          {{ end }} {{ end }}
-          containers:
-          - name: '{{ .Values.general.deployment_name }}'
-            image: '{{ .Values.image.repository }}:{{ .Values.image.version }}'
-            imagePullPolicy: {{ .Values.image.pullPolicy }}
-            ports:
-            - name: '{{ .Values.networking.port_name }}'
-              containerPort: {{ .Values.networking.port }}
-            env:
-            - name: CONN_IP
-              value: '{{ .Values.networking.ip }}'
-            - name: CLI_PORT
-              value: '{{ .Values.networking.port }}'
+      spec:
+        {{ if .Values.image.secretName }} and {{- if ne .Values.image.secretName "" }}
+        imagePullSecrets:
+        - name: {{ .Values.image.secretName }}
+        {{ end }} {{ end }}
+        containers:
+        - name: '{{ .Values.general.deployment_name }}'
+          image: '{{ .Values.image.repository }}:{{ .Values.image.version }}'
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+          - name: '{{ .Values.networking.port_name }}'
+            containerPort: {{ .Values.networking.port }}
+          env:
+          - name: CONN_IP
+            value: '{{ .Values.networking.ip }}'
+          - name: CLI_PORT
+            value: '{{ .Values.networking.port }}'
 
 
 
