@@ -1,13 +1,20 @@
 general:
-  #namespace: anylog-network
-  name: postgres
+  namespace: default
+  app_name: postgres
+  deployment_name: postgres-app
+  service_name: postgres-svs
+  configmap_name: postgres-configs
   replicas: 1
+  
 image:
-  set_secret: false
-  secretName: imagepullsecret
   name: postgres
   version: 14.0-alpine
   pullPolicy: IfNotPresent
+
+networking:
+  port_name: psql-port
+  port: 5432
+  
 credentials:
-  POSTGRES_USER: admin
-  POSTGRES_PASSWORD: ZGVtbwo= # demo | base64
+  username: admin
+  password: demo

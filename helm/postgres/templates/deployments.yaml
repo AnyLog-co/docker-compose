@@ -1,36 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.general.name }}
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.deployment_name }}'
   labels:
-    app: {{ .Values.general.name }}
+    app: '{{ .Values.general.app_name }}'
 spec:
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.general.name }}
+      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
       labels:
-        app: {{ .Values.general.name }}
+        app: {{ .Values.general.app_name }}
     spec:
-      {{ if (default .Values.image.set_secret true) }}
-      imagePullSecrets:
-      - name: {{ .Values.image.secretName }}
-      {{ end }}
       containers:
-      - name: {{ .Values.general.name }}
-        image: {{ .Values.image.name }}:{{ .Values.image.version }}
+      - name: '{{ .Values.general.deployment_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - configMapRef:
-            name: {{ .Values.general.name }}-configuration
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.general.name }}-secret-configs
-              key: POSTGRES_PASSWORD
+            name: '{{ .Values.general.configmap_name }}'
         ports:
-        - containerPort: 5432
-          name: {{ .Values.general.name }}-port
+        - name: '{{ .Values.networking.port_name }}'
+          containerPort: {{ .Values.networking.port }}
