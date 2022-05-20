@@ -9,7 +9,7 @@ spec:
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: '{{ .Values.general.app_name }}'
+      app: {{ .Values.general.app_name }}
       version: '{{ .Values.image.tag }}'
   template:
     metadata:
