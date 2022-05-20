@@ -11,9 +11,8 @@ metadata:
 spec:
   type: NodePort
   ports:
-  - name: '{{ .Values.networking.port_name }}'
-    port: 3000
-    targetPort: 3000
-    nodePort: {{ .Values.networking.node_port }}
+    - port: 3000
+      targetPort: 3000
+      nodePort: {{ .Values.networking.node_port }}
   selector:
     app: '{{ .Values.general.app_name }}'

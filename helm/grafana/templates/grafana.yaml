@@ -1,0 +1,55 @@
+# Based On: https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-configuration
+  labels:
+    app: grafana
+data:
+  GRAFANA_ADMIN_USER: admin
+  GRAFANA_ADMIN_PASSWORD: admin
+  GF_AUTH_DISABLE_LOGIN_FORM: "false"
+  GF_AUTH_ANONYMOUS_ENABLED: "true"
+  GF_SECURITY_ALLOW_EMBEDDING: "true"
+  GF_INSTALL_PLUGINS: simpod-json-datasource,grafana-worldmap-panel
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  ports:
+  - port: 3000
+    name: grafana
+  selector:
+    app: grafana
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+  labels:
+    app: grafana
+spec:
+  serviceName: "grafana"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana:7.5.7
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: grafana-configuration
+        ports:
+        - containerPort: 3000
+          name: grafana
