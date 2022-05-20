@@ -27,4 +27,4 @@ configs:
 networking:
   port_name: grfna-port
   # Grafana is configured to port 3000 but allowing the user to configure the node port
-  node_port: 31000
+  node_port: 31300
