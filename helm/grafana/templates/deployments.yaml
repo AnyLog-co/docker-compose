@@ -1,42 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grafana
-#  namespace: monitoring
+  namespace: '{{ .Values.general.namespace }}'
+  name:
+  labels:
+    app: '{{ .Values.general.app_name }}'
 spec:
-  replicas: 1
+  replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: grafana
+      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
-      name: grafana
+      name: '{{ .Values.general.deployment_name }}'
       labels:
-        app: grafana
+        app: {{ .Values.general.app_name }}
     spec:
       containers:
-      - name: grafana
-        image: grafana/grafana:latest
+      - name: '{{ .Values.general.deployment_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+        envFrom:
+          - configMapRef:
+              name: '{{ .Values.general.configmap_name }}'
         ports:
-        - name: grafana
+        - name: '{{ .Values.networking.port_name }}'
           containerPort: 3000
-        resources:
-          limits:
-            memory: "1Gi"
-            cpu: "1000m"
-          requests: 
-            memory: 500M
-            cpu: "500m"
-        volumeMounts:
-          - mountPath: /var/lib/grafana
-            name: grafana-storage
-          - mountPath: /etc/grafana/provisioning/datasources
-            name: grafana-datasources
-            readOnly: false
-      volumes:
-        - name: grafana-storage
-          emptyDir: {}
-        - name: grafana-datasources
-          configMap:
-              defaultMode: 420
-              name: grafana-datasources
