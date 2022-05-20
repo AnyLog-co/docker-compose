@@ -23,14 +23,14 @@ spec:
     - name: '{{ .Values.general.deployment_name }}'
       image: '{{ .Values.image.repository }}:{{ .Values.image.version }}'
       imagePullPolicy: {{ .Values.image.pullPolicy }}
-      ports:
-      - name: '{{ .Values.networking.port_name }}'
-        containerPort: {{ .Values.networking.port }}
-      env:
-      - name: CONN_IP
-        value: '{{ .Values.networking.ip }}'
-      - name: CLI_PORT
-        value: '{{ .Values.networking.port }}'
+    ports:
+    - name: '{{ .Values.networking.port_name }}'
+      containerPort: {{ .Values.networking.port }}
+    env:
+    - name: CONN_IP
+      value: '{{ .Values.networking.ip }}'
+    - name: CLI_PORT
+      value: '{{ .Values.networking.port }}'
 
 
 
