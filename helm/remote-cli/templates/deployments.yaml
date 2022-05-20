@@ -9,8 +9,6 @@ spec:
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      annotations:
-        checksum/config-env: { { include (print $.Template.BasePath "/values.yaml") . | sha256sum } }
       app: '{{ .Values.general.app_name }}'
   template:
     metadata:
