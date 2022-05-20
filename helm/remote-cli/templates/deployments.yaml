@@ -7,6 +7,9 @@ metadata:
     app: '{{ .Values.general.app_name }}'
 spec:
   replicas: {{ .Values.general.replicas }}
+  selector:
+    matchLabels:
+      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
       labels:
