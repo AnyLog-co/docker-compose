@@ -15,3 +15,8 @@ spec:
     metadata:
       labels:
         app: '{{ .Values.general.app_name }}'
+    spec:
+      containers:
+      - name: '{{ .Values.general.deployment_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
