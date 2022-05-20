@@ -1,12 +1,15 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.general.name }}
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.service_name }}'
   labels:
-    app: {{ .Values.general.name }}
+    app: '{{ .Values.general.app_name }}'
 spec:
+  type: ClusterIP
   ports:
-  - port: 5432
-    name: {{ .Values.general.name }}-port
+  - name: '{{ .Values.networking.port_name }}'
+    protocol: TCP
+    port: {{ .Values.networking.port }}
   selector:
-    app: {{ .Values.general.name }}
+    app: '{{ .Values.general.app_name }}'
