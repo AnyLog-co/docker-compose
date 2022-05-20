@@ -1,32 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.deployment_name }}'
   labels:
-    app: postgres
+    app: '{{ .Values.general.app_name }}'
 spec:
-  replicas: 1
+  replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: postgres
+      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
       labels:
-        app: postgres
+        app: {{ .Values.general.app_name }}
     spec:
       containers:
-      - name: postgres
-        image: postgres:14.0-alpine
-        imagePullPolicy: IfNotPresent
+      - name: '{{ .Values.general.deployment_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - configMapRef:
-            name: postgres-configuration
-        env:
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: postgres-secret-configs
-              key: POSTGRES_PASSWORD
+            name: '{{ .Values.general.configmap_name }}'
         ports:
-        - containerPort: 5432
-          name: postgres
+        - name: '{{ .Values.networking.port_name }}'
+          containerPort: {{ .Values.networking.port }}
