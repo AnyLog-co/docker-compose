@@ -1,31 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ default .Values.general.namespace "default" }}
-  name: {{ default .Values.general.deployment_name "remote-cli-app" }}
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.deployment_name }}'
   labels:
-    app: {{ default .Values.general.app_name "remote-cli"}}
+    app: '{{ .Values.general.app_name }}'
 spec:
-  replicas: {{ default .Values.general.replicas 1 }}
+  replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: {{ default .Values.general.app_name "remote-cli"}}
+      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
       labels:
-        app: {{ default .Values.general.app_name "remote-cli"}}
+        app: {{ .Values.general.app_name }}
     spec:
-      {{ if .Values.image.secretName }} and {{- if ne .Values.image.secretName "" }}
-      imagePullSecrets:
-        - name: {{ .Values.image.secretName }}
-      {{ end }} {{ end }}
       containers:
-      - name: {{ default .Values.general.deployment_name "remote-cli-app" }}
-        image: {{ default .Values.image.name "anylogco/remote-cli"}}:{{ default .Values.image.version "latest" }}
-        imagePullPolicy: {{ default .Values.image.pullPolicy "IfNotPresent" }}
+      - name: '{{ .Values.general.deployment_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - configMapRef:
-            name: {{ default .Values.general.configmap_name "remote-cli-configs" }}
+            name: '{{ .Values.general.configmap_name }}'
         ports:
-        - containerPort: {{ default .Values.networking.port 31800 }}
-          name: {{ default .Values.networking.port_name  "rmt-cli-port" }}
+        - name: '{{ .Values.networking.port_name }}'
+          containerPort: {{ .Values.networking.port }}
