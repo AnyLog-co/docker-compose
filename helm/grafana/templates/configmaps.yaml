@@ -11,4 +11,5 @@ data:
   GF_AUTH_DISABLE_LOGIN_FORM: '{{ .Values.configs.disable_login_form }}'
   GF_AUTH_ANONYMOUS_ENABLED: '{{ .Values.configs.anonymous_enabled }}'
   GF_SECURITY_ALLOW_EMBEDDING: '{{ .Values.configs.embedding }}'
-  GF_INSTALL_PLUGINS: '{{ .Values.configs.plugins }}'
+  GF_INSTALL_PLUGINS: {{ .Values.configs.plugins }}
+

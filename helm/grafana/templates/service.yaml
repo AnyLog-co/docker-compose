@@ -3,17 +3,19 @@ kind: Service
 metadata:
   namespace: '{{ .Values.general.namespace }}'
   name: '{{ .Values.general.service_name }}'
+  labels:
+    app: '{{ .Values.general.app_name }}'
   annotations:
       prometheus.io/scrape: 'true'
       prometheus.io/port:   '3000'
 spec:
-  selector: 
-    app: '{{ .Values.general.app_name }}'
-  type: NodePort  
+  type: NodePort
   ports:
-    - name: '{{ .Values.networking.port_name }}'
-      protocol: TCP
-      appProtocol: http
-      port: 3000
-      targetPort: 3000
-      nodePort: '{{ .Values.networking.node_port }}'
+  - name: '{{ .Values.networking.port_name }}'
+    protocol: TCP
+    appProtocol: http
+    port: 3000
+    targetPort: 3000
+    nodePort: 31000
+  selector:
+    app: '{{ .Values.general.app_name }}'
