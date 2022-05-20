@@ -16,7 +16,7 @@ spec:
       labels:
         app: {{ .Values.general.app_name }}
     spec:
-      imagePullSecret:
+      imagePullSecrets:
       - name: {{ .Values.image.secretName }}
       containers:
       - name: '{{ .Values.general.deployment_name }}'
