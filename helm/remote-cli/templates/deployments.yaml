@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.deployment_name }}'
+  labels:
+    app: '{{ .Values.general.app_name }}'
+spec:
+  replicas: {{ .Values.general.replicas }}
+  selector:
+    matchLabels:
+      app: '{{ .Values.general.app_name }}'
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.general.app_name }}
+    spec:
+      containers:
+      - name: '{{ .Values.general.deployment_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+        - configMapRef:
+            name: '{{ .Values.general.configmap_name }}'
+        ports:
+        - name: '{{ .Values.networking.port_name }}'
+          containerPort: {{ .Values.networking.port }}
