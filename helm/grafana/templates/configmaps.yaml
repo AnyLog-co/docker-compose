@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: grafana-configuration
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.configmap_name }}'
   labels:
-    app: grafana
+    app: '{{ .Values.general.app_name }}'
 data:
-  GRAFANA_ADMIN_USER: admin
-  GRAFANA_ADMIN_PASSWORD: admin
-  GF_AUTH_DISABLE_LOGIN_FORM: "false"
-  GF_AUTH_ANONYMOUS_ENABLED: "true"
-  GF_SECURITY_ALLOW_EMBEDDING: "true"
-  GF_INSTALL_PLUGINS: simpod-json-datasource,grafana-worldmap-panel
-
+  GRAFANA_ADMIN_USER: '{{ .Values.configs.username }}'
+  GRAFANA_ADMIN_PASSWORD: '{{ .Values.configs.password }}'
+  GF_AUTH_DISABLE_LOGIN_FORM: '{{ .Values.configs.disable_login_form }}'
+  GF_AUTH_ANONYMOUS_ENABLED: '{{ .Values.configs.enable_anonymous }}'
+  GF_SECURITY_ALLOW_EMBEDDING: '{{ .Values.configs.enable_embedding }}'
+  GF_INSTALL_PLUGINS: {{ .Values.configs.plugins }}

@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grafana
+  namespace: '{{ .Values.general.namespace }}'
+  name:
   labels:
-    app: grafana
+    app: '{{ .Values.general.app_name }}'
 spec:
-  replicas: 1
+  replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: grafana
+      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
+      name: '{{ .Values.general.deployment_name }}'
       labels:
-        app: grafana
+        app: {{ .Values.general.app_name }}
     spec:
       containers:
-      - name: grafana
-        image: grafana/grafana:8.2.6
-        imagePullPolicy: IfNotPresent
+      - name: '{{ .Values.general.deployment_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         envFrom:
-        - configMapRef:
-            name: grafana-configuration
+          - configMapRef:
+              name: '{{ .Values.general.configmap_name }}'
         ports:
-        - containerPort: 3000
-          name: grafana-port
-
+        - name: '{{ .Values.networking.port_name }}'
+          containerPort: 3000
