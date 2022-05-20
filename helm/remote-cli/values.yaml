@@ -12,15 +12,15 @@ general:
 
 image:
   secretName: ""
-  name: anylogco/remote-cli
-  version: latest
+  repository: anylogco/remote-cli
+  tag: latest
   pullPolicy: IfNotPresent
 
 networking:
-  ip: "0.0.0.0"
+  ip: 0.0.0.0
+  port_name: rmt-cli-port
   # the port value should be 30000 - 32767 as the service is configured to NodePort port used for:
   # - port
   # - nodePort
   # - targetPort
-  port_name: rmt-cli-port
   port: 31800

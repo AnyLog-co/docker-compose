@@ -1,31 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.deployment_name }}
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.deployment_name }}'
   labels:
-    app: {{ .Values.general.app_name }}
-spec:
-  replicas: {{ .Values.general.replicas }}
-  selector:
-    matchLabels:
-      app: {{ .Values.general.app_name }}
-  template:
-    metadata:
-      labels:
-        app: {{ .Values.general.app_name }}
-    spec:
-      {{ if .Values.image.secretName}} and {{- if ne .Values.image.secretName "" }}
-      imagePullSecrets:
-        - name: {{ .Values.image.secretName }}
-      {{ end }} {{ end }}
-      containers:
-      - name: {{ .Values.general.deployment_name }}
-        image: {{ .Values.image.name }}:{{ .Values.image.version }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        envFrom:
-        - configMapRef:
-            name: {{ .Values.general.configmap_name }}
-        ports:
-        - containerPort: {{ .Values.networking.port }}
-          name: {{ .Values.networking.port_name }}
+    app: '{{ .Values.general.app_name }}'
+  spec:
+    replicas: {{ .Values.general.replicas }}
+    selector:
+      matchLabels:
+        app: '{{ .Values.general.app_name }}'
+    template:
+      metadata:
+        labels:
+          app: '{{ .Values.general.app_name }}'
+        spec:
+          {{ if .Values.image.secretName }} and {{- if ne .Values.image.secretName "" }}
+          imagePullSecrets:
+          - name: {{ .Values.image.secretName }}
+          {{ end }} {{ end }}
+          containers:
+          - name: '{{ .Values.general.deployment_name }}'
+            image: '{{ .Values.image.repository }}:{{ .Values.image.version }}'
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            ports:
+            - name: '{{ .Values.networking.port_name }}'
+              containerPort: {{ .Values.networking.port }}
+            env:
+            - name: CONN_IP
+              value: '{{ .Values.networking.ip }}'
+            - name: CLI_PORT
+              value: '{{ .Values.networking.port }}'
+
+
+
+
