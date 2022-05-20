@@ -13,6 +13,6 @@ spec:
     - name: '{{ .Values.networking.port_name }}'
       protocol: TCP
       appProtocol: http
-      port: {{ .Values.networking.port }}
-      targetPort: {{ .Values.networking.port }}
-      nodePort: {{ .Values.networking.port }}
+      port: 3000
+      targetPort: 3000
+      nodePort: {{ .Values.networking.node_port }}
