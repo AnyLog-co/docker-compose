@@ -1,0 +1,33 @@
+#-----------------------------------------------------------------------------------------------------------------------
+# The following YAML file sets the configurations for Grafana
+# GitHub Repo: https://github.com/AnyLog-co/remote-cli
+#-----------------------------------------------------------------------------------------------------------------------
+general:
+  namespace: default
+  app_name: grafana
+  deployment_name: grafana-app
+  service_name: grafana-svs
+  configmap_name: grafana-configs
+  replicas: 1
+
+image:
+  secretName: ""
+  repository: grafana/grafana
+  tag: 7.5.7
+  pullPolicy: IfNotPresent
+
+configs:
+  user: admin
+  password: admin
+  plugins: simpod-json-datasource,grafana-worldmap-panel
+  embedding: true
+  anonymous_enabled: true
+  disable_login_form: false
+
+networking:
+  port_name: grfna-port
+  # the port value should be 30000 - 32767 as the service is configured to NodePort port used for:
+  # - port
+  # - nodePort
+  # - targetPort
+  port: 31000

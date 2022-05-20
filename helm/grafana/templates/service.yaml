@@ -1,18 +1,18 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: grafana
-  #namespace: monitoring
-  annotations:
-      prometheus.io/scrape: 'true'
-      prometheus.io/port:   '3000'
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.service_name }}'
+  labels:
+    app: '{{ .Values.general.app_name }}'
 spec:
   selector: 
-    app: grafana
+    app: '{{ .Values.general.app_name }}'
   type: NodePort  
   ports:
-    - name: grafana-port
+    - name: '{{ .Values.networking.port_name }}'
       protocol: TCP
-      port: 3000
-      targetPort: 3000
-      nodePort: 31000
+      appProtocol: http
+      port: {{ .Values.networking.port }}
+      targetPort: {{ .Values.networking.port }}
+      nodePort: {{ .Values.networking.port }}
