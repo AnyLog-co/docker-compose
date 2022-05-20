@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: '{{ .Values.general.namespace }}'
-  name: '{{ .Values.general.deployment_name }}'
+  name: '{{ .Values.general.service_name }}'
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
