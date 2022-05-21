@@ -19,7 +19,7 @@ spec:
     port: {{ .Values.configs.networking.rest }}
     targetPort: {{ .Values.configs.networking.rest }}
     nodePort: {{ .Values.configs.networking.rest }}
-  {{- if .Values.configs.networking.broker "" }}
+  {{- if ne .Values.configs.networking.broker "" }}
   - name: broker
     port: {{ .Values.configs.networking.broker }}
     targetPort: {{ .Values.configs.networking.broker }}
