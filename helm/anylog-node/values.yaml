@@ -11,8 +11,8 @@ general:
   
 image:
   secretName: imagepullsecret
-  name: anylogco/anylog-network
-  version: develop
+  repository: anylogco/anylog-network
+  tag: test
   pullPolicy: IfNotPresent
 
 configs:
