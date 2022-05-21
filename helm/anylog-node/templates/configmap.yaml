@@ -42,11 +42,12 @@ data:
   # operator params
   MEMBER: '{{ .Values.configs.operator.memory }}'
   CLUSTER_NAME: '{{ .Values.configs.operator.cluster_name }}'
-  # missing run operator params
+  # run operator params
   CREATE_TABLE: '{{ .Values.configs.operator.create_table }}'
   UPDATE_TSD_INFO: '{{ .Values.configs.operator.update_tsd }}'
   ARCHIVE: '{{ .Values.configs.operator.archive }}'
   DEFAULT_DBMS:  '{{ .Values.configs.operator.db_name }}'
+  # partitioning
   ENABLE_PARTITION: '{{ .Values.configs.operator.partition.enable }}'
   TABLE_NAME: '{{ .Values.configs.operator.partition.table }}'
   PARTITION_COLUMN: '{{ .Values.configs.operator.partition.column }}'
