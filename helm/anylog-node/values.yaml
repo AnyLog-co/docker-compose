@@ -60,7 +60,7 @@ configs:
     db_name: tests
     partition:
         enable: false
-        table: *
+        table: "*"
         column: timestamp
         interval: 14 days
         keep: 6
