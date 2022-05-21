@@ -43,7 +43,7 @@ configs:
     destination: file
   database:
     type: psql
-    ip: postgres
+    ip: postgres-sv
     port: 5432
     user: admin
     password: demo
