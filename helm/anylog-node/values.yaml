@@ -58,12 +58,13 @@ configs:
     archive: true
     distributor: true
     db_name: tests
-    partition_enable: false
-    partition_table: *
-    partition_column: timestamp
-    partition_interval: 14 days
-    partition_keep: 6
-    partition_sync: 1 day
+    partition:
+        enable: false
+        table: *
+        column: timestamp
+        interval: 14 days
+        keep: 6
+        sync: 1 day
   publisher:
     compress: true
     move: true
