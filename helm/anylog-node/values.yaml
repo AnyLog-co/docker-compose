@@ -80,7 +80,7 @@ configs:
     topic:
       name: anylogedgex
       db_name: test
-      table: rand_data
+      table: plc_device
       timestamp: now
       value_type: float
       value: bring [readings][][value]
