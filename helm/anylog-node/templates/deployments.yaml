@@ -1,37 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.general.name }}-deployment
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.deployment_name }}'
   labels:
-    app: {{ .Values.general.name }}
+    app: '{{ .Values.general.app_name }}'
 spec:
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.general.name }}
+      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
       labels:
-        app: {{ .Values.general.name }}
+        app: {{ .Values.general.app_name }}
     spec:
-      {{- if ne .Values.image.secretName "" }}
+      {{ - if ne .Values.image.secretName "" }}
       imagePullSecrets:
         - name: {{ .Values.image.secretName }}
       {{ end }}
       containers:
-      - name: {{ .Values.configs.basic.node_name }}
-        image: {{ .Values.image.name }}:{{ .Values.image.version }}
+      - name: '{{ .Values.general.deployment_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
         - configMapRef:
-            name: {{ .Values.general.name }}-configuration
+            name: '{{ .Values.general.configmap_name }}'
         ports:
-        - containerPort: {{ .Values.configs.networking.services.anylog_server_port }}
-          name: tcp
-        - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-          name: rest
-        {{ if .Values.configs.networking.services.anylog_broker_port }}
-        - containerPort: {{ .Values.configs.networking.services.anylog_rest_port }}
-          name: broker
+        - name: server
+          containerPort: {{ .Values.configs.networking.server }}
+        - name: rest
+          containerPort: {{ .Values.configs.networking.rest }}
+        {{- if .Values.configs.networking.broker "" }}
+        - name: broker
+          containerPort: {{ .Values.configs.networking.broker }}
         {{ end }}
 
