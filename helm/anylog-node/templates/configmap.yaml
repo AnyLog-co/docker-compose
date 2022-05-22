@@ -1,47 +1,86 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.general.name }}-configmap
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.configmap_name }}'
   labels:
-    app: {{ .Values.general.name }}
+    app: '{{ .Values.general.app_name }}'
 data:
-  # General information
-  NODE_TYPE: {{ default .Values.configs.basic.node_type "rest"}}
-  NODE_NAME: {{ default .Values.configs.basic.node_name "anylog-node" }}
-  COMPANY_NAME: {{ default .Values.configs.basic.node_name "" }}
-  LOCATION: {{ default .Values.configs.basic.location "" }}
+  # general information
+  NODE_TYPE: '{{ .Values.configs.basic.node_type }}'
+  NODE_NAME: '{{ .Values.configs.basic.node_name }}'
+  COMPANY_NAME: '{{ .Values.configs.basic.company_name }}'
+  LOCATION: '{{ .Values.configs.basic.location }}'
 
   # networking
-  ANYLOG_SERVER_PORT: {{ .Values.configs.networking.services.anylog_server_port | quote }}
-  ANYLOG_REST_PORT: {{ .Values.configs.networking.services.anylog_rest_port | quote }}
-  ANYLOG_BROKER_PORT: {{ default .Values.configs.networking.services.anylog_broker_port "" | quote }}
-  MASTER_NODE: {{ default .Values.configs.networking.other.master_node "" }}
-  EXTERNAL_IP: {{ default .Values.configs.networking.network_ips.external_ip "" }}
-  LOCAL_IP: {{ default .Values.configs.networking.network_ips.local_ip "" }}
+  ANYLOG_SERVER_PORT: '{{ .Values.configs.networking.server }}'
+  ANYLOG_REST_PORT: '{{ .Values.configs.networking.rest }}'
+  ANYLOG_BROKER_PORT: '{{ .Values.configs.networking.broker }}'
+  EXTERNAL_IP: '{{ .Values.configs.networking.external_ip }}'
+  LOCAL_IP: '{{ .Values.configs.networking.local_ip }}'
 
-  # DBMS
-  {{ if .Values.configs.dbms }}
-    DB_TYPE: {{ default .Values.configs.dbms.type "sqlite" }}
-    {{- if ne .Values.configs.dbms.type "sqlite" }}
-      DB_IP: {{ default .Values.configs.dbms.ip "postgres" }}
-      DB_USER: {{ default .Values.configs.dbms.ip "admin" }}
-      DB_PASSWD: {{ default .Values.configs.dbms.password "demo" }}
-      DB_PORT: {{ default .Values.configs.dbms.port 5432 | quote }}
-    {{ end }}
-    MEMORY: {{ default .Values.configs.dbms.memory "true" | quote }}
-  {{ end }}
+  # authentication
+  AUTHENTICATION: '{{ .Values.configs.authentication.enable }}'
+  AUTH_TYPE: '{{ .Values.configs.authentication.type }}'
+  USERNAME: '{{ .Values.configs.authentication.user }}'
+  PASSWORD: '{{ .Values.configs.authentication.password }}'
 
-  # MQTT
-  MQTT_ENABLE: {{ default .Values.configs.mqtt.enable "false" | quote }}
+  # blockchain
+  MASTER_NODE: '{{ .Values.configs.blockchain.master_node }}'
+  SYNC_TIME: '{{ .Values.configs.blockchain.sync_time }}'
+  SOURCE: '{{ .Values.configs.blockchain.source }}'
+  DESTINATION: '{{ .Values.configs.blockchain.destination }}'
 
-  # General Settings
-  DEPLOY_LOCAL_SCRIPT: {{ default .Values.configs.settings.deploy_local_script "false" | quote }}
-  TCP_THREAD_POOL: {{ default .Values.configs.settings.tcp_thread_pool 6 | quote }}
-  REST_TIMEOUT: {{ default .Values.configs.settings.rest_timeout 30 | quote }}
-  REST_THREADS: {{ default .Values.configs.settings.rest_threads 5 | quote }}
-  QUERY_POOL: {{ default .Values.configs.settings.query_pool 3 | quote }}
+  # database
+  DB_TYPE: '{{ .Values.configs.database.type }}'
+  DB_IP: '{{ .Values.configs.database.ip }}'
+  DB_PORT: '{{ .Values.configs.database.port }}'
+  DB_USER: '{{ .Values.configs.database.user }}'
+  DB_PASSWORD: '{{ .Values.configs.database.password }}'
+  MEMORY: '{{ .Values.configs.database.memory }}'
 
+  # operator params
+  MEMBER: '{{ .Values.configs.operator.memory }}'
+  CLUSTER_NAME: '{{ .Values.configs.operator.cluster_name }}'
+  # run operator params
+  CREATE_TABLE: '{{ .Values.configs.operator.create_table }}'
+  UPDATE_TSD_INFO: '{{ .Values.configs.operator.update_tsd }}'
+  ARCHIVE: '{{ .Values.configs.operator.archive }}'
+  DEFAULT_DBMS:  '{{ .Values.configs.operator.db_name }}'
+  # partitioning
+  ENABLE_PARTITION: '{{ .Values.configs.operator.partition.enable }}'
+  TABLE_NAME: '{{ .Values.configs.operator.partition.table }}'
+  partition.COLUMN: '{{ .Values.configs.operator.partition.column }}'
+  partition.INTERVAL: '{{ .Values.configs.operator.partition.interval }}'
+  partition.KEEP: '{{ .Values.configs.operator.partition.keep }}'
 
+  # publisher params
+  COMPRESS_JSON: '{{ .Values.configs.publisher.compress }}'
+  MOVE_JSON: '{{ .Values.configs.publisher.move }}'
+  DBMS_FILE_LOCATION: '{{ .Values.configs.publisher.db_location }}'
+  TABLE_FILE_LOCATION: '{{ .Values.configs.publisher.file_location }}'
 
+  # mqtt
+  MQTT_ENABLE: '{{ .Values.configs.mqtt.enable }}'
+  BROKER: '{{ .Values.configs.mqtt.broker }}'
+  MQTT_PORT: '{{ .Values.configs.mqtt.port }}'
+  MQTT_USER: '{{ .Values.configs.mqtt.user }}'
+  MQTT_PASSWORD: '{{ .Values.configs.mqtt.password }}'
+  MQTT_LOG: '{{ .Values.configs.mqtt.log }}'
+  MQTT_TOPIC_NAME: '{{ .Values.configs.mqtt.topic.name }}'
+  MQTT_TOPIC_DBMS: '{{ .Values.configs.mqtt.topic.db_name }}'
+  MQTT_TOPIC_TABLE: '{{ .Values.configs.mqtt.topic.table }}'
+  MQTT_COLUMN_TIMESTAMP: '{{ .Values.configs.mqtt.topic.timestamp }}'
+  MQTT_COLUMN_VALUE_TYPE: '{{ .Values.configs.mqtt.topic.value_type }}'
+  MQTT_COLUMN_VALUE: '{{ .Values.configs.mqtt.topic.value }}'
 
+  # settings
+  DEPLOY_LOCAL_SCRIPT: '{{ .Values.configs.settings.deploy_local_script }}'
+  TCP_THREAD_POOL: '{{ .Values.configs.settings.tcp_thread_pool }}'
+  REST_TIMEOUT: '{{ .Values.configs.settings.rest_timeout }}'
+  REST_THREADS: '{{ .Values.configs.settings.rest_threads }}'
+  QUERY_POOL: '{{ .Values.configs.settings.query_pool }}'
+  WRITE_IMMEDIATE: '{{ .Values.configs.settings.write_immediate }}'
+  THRESHOLD_TIME: '{{ .Values.configs.settings.threshold_time }}'
+  THRESHOLD_VOLUME: '{{ .Values.configs.settings.threshold_volume }}'
 
