@@ -12,7 +12,7 @@ general:
 image:
   secretName: imagepullsecret
   repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: test
+  tag: predevelop
   pullPolicy: IfNotPresent
 
 configs:
