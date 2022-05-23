@@ -5,8 +5,8 @@ general:
   namespace: default
   app_name: anylog
   deployment_name: anylog-app
-  service_name: anylog-svs
-  configmap_name: anylog-configs
+  service_name: anylog-rest-svs
+  configmap_name: anylog-rest-configs
   replicas: 1
 
 image:
@@ -23,8 +23,8 @@ configs:
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
   networking:
-    server: 32048
-    rest: 32049
+    server: 32648
+    rest: 32649
     # Optional broker port
     broker: ""
     # master node is not needed for REST node
@@ -37,7 +37,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    master_node: anylog-svs.default.svc.cluster.local:32048
+    master_node: anylog-master-svs.default.svc.cluster.local:32048
     sync_time: 30 seconds
     source: master
     destination: file
@@ -48,7 +48,7 @@ configs:
     user: admin
     password: demo
     # whether to have system_query database to run against memory directly
-    memory: false
+    memory: true
   operator:
     # set member ID for operator - should only be used when readding operator to blockchain but keep (file) configs consistent
     member: ""
