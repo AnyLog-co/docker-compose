@@ -46,7 +46,7 @@ configs:
     destination: file
   database:
     type: psql
-    ip: postgres-svs
+    ip: postgres-svs.default.svc.cluster.local
     port: 5432
     user: admin
     password: demo
