@@ -48,7 +48,7 @@ configs:
     user: admin
     password: demo
     # whether to have system_query database to run against memory directly
-    memory: false
+    memory: true
   operator:
     # set member ID for operator - should only be used when readding operator to blockchain but keep (file) configs consistent
     member: ""
