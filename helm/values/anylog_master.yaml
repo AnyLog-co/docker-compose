@@ -11,7 +11,7 @@ general:
   
 image:
   secretName: imagepullsecret
-  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
+  repository: anylogco/anylog-network
   tag: test
   pullPolicy: IfNotPresent
 
