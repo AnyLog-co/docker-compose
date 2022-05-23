@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
+# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: predevelop
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
@@ -11,14 +11,14 @@ general:
   
 image:
   secretName: imagepullsecret
-  repository: anylogco/anylog-network
-  tag: test
+  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
+  tag: predevelop
   pullPolicy: IfNotPresent
 
 configs:
   basic:
-    node_type: master
-    node_name: anylog-master-node
+    node_type: rest
+    node_name: anylog-node
     company_name: new company
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
