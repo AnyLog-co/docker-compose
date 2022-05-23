@@ -11,8 +11,10 @@ general:
   
 image:
   secretName: imagepullsecret
-  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: predevelop
+  repository: anylogco/anylog-network
+  tag: test
+#  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
+#  tag: predevelop
   pullPolicy: Always
 
 configs:
