@@ -4,9 +4,9 @@
 general:
   namespace: default
   app_name: anylog
-  deployment_name: anylog-app
-  service_name: anylog-svs
-  configmap_name: anylog-configs
+  deployment_name: anylog-master-app
+  service_name: anylog-master-svs
+  configmap_name: anylog-master-configs
   replicas: 1
   
 image:
@@ -37,7 +37,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    master_node: anylog-svs.default.svc.cluster.local:32048
+    master_node: anylog-master-svs.default.svc.cluster.local:32048
     sync_time: 30 seconds
     source: master
     destination: file
