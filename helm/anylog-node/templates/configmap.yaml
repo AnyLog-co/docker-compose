@@ -50,9 +50,9 @@ data:
   # partitioning
   ENABLE_PARTITION: '{{ .Values.configs.operator.partition.enable }}'
   TABLE_NAME: '{{ .Values.configs.operator.partition.table }}'
-  partition.COLUMN: '{{ .Values.configs.operator.partition.column }}'
-  partition.INTERVAL: '{{ .Values.configs.operator.partition.interval }}'
-  partition.KEEP: '{{ .Values.configs.operator.partition.keep }}'
+  PARTITION_COLUMN: '{{ .Values.configs.operator.partition.column }}'
+  PARTITION_INTERVAL: '{{ .Values.configs.operator.partition.interval }}'
+  PARTITION_KEEP: '{{ .Values.configs.operator.partition.keep }}'
 
   # publisher params
   COMPRESS_JSON: '{{ .Values.configs.publisher.compress }}'
