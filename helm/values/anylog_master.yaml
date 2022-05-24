@@ -39,14 +39,13 @@ configs:
     user: ""
     password: ""
   blockchain:
-#    master_node: anylog-master-svs.default.svc.cluster.local:32048
     master_node: 127.0.0.1:32048
     sync_time: 30 seconds
     source: master
     destination: file
   database:
     type: psql
-    ip: postgres-svs.default.svc.cluster.local
+    ip: postgres-svs
     port: 5432
     user: admin
     password: demo
