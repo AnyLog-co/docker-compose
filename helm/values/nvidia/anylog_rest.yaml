@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: predevelop
+# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
@@ -11,8 +11,8 @@ general:
   
 image:
   secretName: imagepullsecret
-  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: predevelop
+  repository: anylogco/anylog-network
+  tag: test
   pullPolicy: IfNotPresent
 
 configs:
