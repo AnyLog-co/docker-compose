@@ -4,32 +4,34 @@
 general:
   namespace: default
   app_name: anylog
-  deployment_name: anylog-master-app
-  service_name: anylog-master-svs
-  configmap_name: anylog-master-configs
+  deployment_name: anylog-operator-app
+  service_name: anylog-operator-svs
+  configmap_name: anylog-operator-configs
   replicas: 1
   
 image:
   secretName: imagepullsecret
-  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: predevelop
+  repository: anylogco/anylog-network
+  tag: test
+#  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
+#  tag: predevelop
   pullPolicy: Always
 
 configs:
   basic:
-    node_type: master
-    node_name: anylog-master-node
+    node_type: operator
+    node_name: anylog-operator-node
     company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
   networking:
-    server: 32048
-    rest: 32049
+    server: 32148
+    rest: 32149
     # Optional broker port
     broker: ""
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
-    external_ip: anylog-master-svs.default.svc.cluster.local
+    external_ip: anylog-operator-svs.default.svc.cluster.local
     local_ip: ""
   authentication:
     enable: false
@@ -37,7 +39,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    master_node: 127.0.0.1:32048
+    master_node: anylog-master-svs.default.svc.cluster.local:32048
     sync_time: 30 seconds
     source: master
     destination: file
@@ -57,9 +59,9 @@ configs:
     update_tsd: true
     archive: true
     distributor: true
-    db_name: nvidia
+    db_name: test
     partition:
-        enable: false
+        enable: true
         table: "*"
         column: timestamp
         interval: 14 days
@@ -71,7 +73,7 @@ configs:
     db_location: file_name[0]
     table_location: file_name[1]
   mqtt:
-    enable: false
+    enable: true
     broker: driver.cloudmqtt.com
     port: 18785
     user: ibglowct
@@ -79,14 +81,14 @@ configs:
     log: false
     topic:
       name: anylogedgex
-      db_name: nvidia
+      db_name: test
       table: plc_device
       timestamp: now
       value_type: float
       value: bring [readings][][value]
   settings:
     # whether to deploy a local script that extends the default startup script
-    deploy_local_script: "false"
+    deploy_local_script: false
     # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
     tcp_thread_pool: 6
     # Amount of time (in seconds) until REST timeout
@@ -94,7 +96,7 @@ configs:
     # The number of concurrent threads supporting HTTP requests.
     rest_threads: 5
     # Sets the number of threads supporting queries (the default is 3).
-    query_pool: 3
+    operator_pool: 3
     write_immediate: true
     threshold_time : 60 seconds
     threshold_volume: 10KB
