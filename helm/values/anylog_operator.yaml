@@ -99,7 +99,7 @@ configs:
     operator_pool: 3
     write_immediate: true
     threshold_time : 60 seconds
-    threshold_volume: 10kb
+    threshold_volume: 10KB
 
 
 

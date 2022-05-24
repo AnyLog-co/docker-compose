@@ -4,9 +4,9 @@
 general:
   namespace: default
   app_name: anylog
-  deployment_name: anylog-master-app
-  service_name: anylog-master-svs
-  configmap_name: anylog-master-configs
+  deployment_name: anylog-query-app
+  service_name: anylog-query-svs
+  configmap_name: anylog-query-configs
   replicas: 1
   
 image:
@@ -19,19 +19,19 @@ image:
 
 configs:
   basic:
-    node_type: master
-    node_name: anylog-master-node
+    node_type: query
+    node_name: anylog-query-node
     company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
   networking:
-    server: 32048
-    rest: 32049
+    server: 32348
+    rest: 32349
     # Optional broker port
     broker: ""
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
-    external_ip: anylog-master-svs.default.svc.cluster.local
+    external_ip: anylog-query-svs.default.svc.cluster.local
     local_ip: ""
   authentication:
     enable: false
@@ -39,16 +39,16 @@ configs:
     user: ""
     password: ""
   blockchain:
-    master_node: 127.0.0.1:32048
+    master_node: anylog-master-svs.default.svc.cluster.local:32048
     sync_time: 30 seconds
     source: master
     destination: file
   database:
-    type: psql
-    ip: postgres-svs
-    port: 5432
-    user: admin
-    password: demo
+    type: sqlite
+    #ip: postgres-svs
+    #port: 5432
+    #user: admin
+    #password: demo
     # whether to have system_query database to run against memory directly
     memory: true
   operator:
@@ -99,7 +99,7 @@ configs:
     query_pool: 3
     write_immediate: true
     threshold_time : 60 seconds
-    threshold_volume: 10kb
+    threshold_volume: 10KB
 
 
 
