@@ -4,12 +4,12 @@ metadata:
   namespace: '{{ .Values.general.namespace }}'
   name: '{{ .Values.general.deployment_name }}'
   labels:
-    app: '{{ .Values.general.app_name }}'
+    app: '{{ .Values.general.deployment_name }}'
 spec:
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: '{{ .Values.general.app_name }}'
+      app: '{{ .Values.general.deployment_name }}'
   template:
     metadata:
       labels:
