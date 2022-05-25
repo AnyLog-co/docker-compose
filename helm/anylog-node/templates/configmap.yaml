@@ -4,7 +4,7 @@ metadata:
   namespace: '{{ .Values.general.namespace }}'
   name: '{{ .Values.general.configmap_name }}'
   labels:
-    app: '{{ .Values.general.app_name }}'
+    app: '{{ .Values.general.deployment_name }}'
 data:
   # general information
   NODE_TYPE: '{{ .Values.configs.basic.node_type }}'
