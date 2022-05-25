@@ -13,7 +13,7 @@ spec:
   template:
     metadata:
       labels:
-        app: {{ .Values.general.app_name }}
+        app: '{{ .Values.general.deployment_name }}'
     spec:
       {{- if ne .Values.image.secretName "" }}
       imagePullSecrets:

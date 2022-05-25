@@ -27,4 +27,4 @@ spec:
     nodePort: {{ .Values.configs.networking.broker }}
   {{ end }}
   selector:
-    app: '{{ .Values.general.app_name }}'
+    app: '{{ .Values.general.deployment_name }}'
