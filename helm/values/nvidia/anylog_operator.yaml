@@ -4,11 +4,11 @@
 general:
   namespace: default
   app_name: anylog
-  deployment_name: anylog-operator-app
-  service_name: anylog-operator-svs
-  configmap_name: anylog-operator-configs
+  deployment_name: anylog-operator-app1
+  service_name: anylog-operator-svs1
+  configmap_name: anylog-operator-configs1
   replicas: 1
-  
+
 image:
   secretName: imagepullsecret
   repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
@@ -18,7 +18,7 @@ image:
 configs:
   basic:
     node_type: operator
-    node_name: anylog-operator-nodeA
+    node_name: anylog-operator-node1
     company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
@@ -29,7 +29,7 @@ configs:
     broker: ""
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
-    external_ip: anylog-operator-svs.default.svc.cluster.local
+    external_ip: anylog-operator-svs1.default.svc.cluster.local
     local_ip: ""
   authentication:
     enable: false
