@@ -26,8 +26,8 @@ spec:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
         volumeMounts:
-        - name: /var/lib/postgresql/data
-          mountPath: postgres-pv-claim
+        - name: postgres-pv-claim
+          mountPath: /var/lib/postgresql/data
       volumes:
       - name: '{{ .Values.volume.name }}'
         persistentVolumeClaim:
