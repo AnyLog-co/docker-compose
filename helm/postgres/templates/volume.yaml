@@ -1,13 +1,29 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv
+  labels:
+    app: '{{ .Values.general.app_name }}'
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 100M
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/anylog/postgres"
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
-  name: '{{ .Values.general.volume_name }}'
+  name: postgres-pv-claim
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
+  storageClassName: manual
   accessModes:
-    - {{ .Values.volume.accessMode }}
+  - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.volume.storage }}
+      storage: 100M
