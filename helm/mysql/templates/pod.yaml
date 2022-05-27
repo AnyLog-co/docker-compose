@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: wordpress-mysql-pod
+  labels:
+    app: wordpress
+spec:
+  containers:
+    - image: mysql:5.6
+      name: mysql
+      volumeMounts:
+      - name: mysql-persistent-storage
+        mountPath: /var/lib/mysql
+    volumes:
+    - name: mysql-persistent-storage
+      path: /data
+      type: DirectoryOrCreate
+
