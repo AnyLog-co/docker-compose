@@ -29,6 +29,6 @@ spec:
         - name: postgres-pv-claim
           mountPath: /var/lib/postgresql/data
       volumes:
-      - name: '{{ .Values.volume.name }}'
+      - name: postgres-pv-claim
         persistentVolumeClaim:
           claimName: postgres-pv-claim
