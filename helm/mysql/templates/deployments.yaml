@@ -33,3 +33,7 @@ spec:
       - name: mysql-persistent-storage
         persistentVolumeClaim:
           claimName: mysql-pv-claim
+      hostPath:
+        path: /var/lib/mysql
+        type: Directory
+
