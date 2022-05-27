@@ -1,6 +1,7 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
+  namespace: '{{ .Values.general.namespace }}'
   name: postgres-pv
   labels:
     app: '{{ .Values.general.app_name }}'
@@ -17,6 +18,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  namespace: '{{ .Values.general.namespace }}'
   name: postgres-pv-claim
   labels:
     app: '{{ .Values.general.app_name }}'
