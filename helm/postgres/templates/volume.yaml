@@ -1,9 +1,9 @@
-kind: StorageClass
-apiVersion: storage.k8s.io/v1
-metadata:
-  name: my-local-storage
-provisioner: kubernetes.io/no-provisioner
-volumeBindingMode: Immediate
+#kind: StorageClass
+#apiVersion: storage.k8s.io/v1
+#metadata:
+#  name: my-local-storage
+#provisioner: kubernetes.io/no-provisioner
+#volumeBindingMode: Immediate
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -13,7 +13,7 @@ metadata:
   labels:
     type: local
 spec:
-  storageClassName: my-local-storage
+  storageClassName: manual
   capacity:
     storage: 100M
   accessModes:
