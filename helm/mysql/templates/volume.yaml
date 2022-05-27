@@ -1,3 +1,18 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: store-persistent-volume
+  labels:
+    app: wordpress
+spec:
+  storageClassName: hostpath
+  capacity:
+    storage: 20Gi
+  accessModes:
+  - ReadWriteOnce
+  hostPath:
+    path: "/Volumes/Data/data"
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
