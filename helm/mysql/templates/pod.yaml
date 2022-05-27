@@ -13,6 +13,7 @@ spec:
       mountPath: /var/lib/mysql
   volumes:
   - name: mysql-persistent-storage
-    hostPath: /data
-    type: DirectoryOrCreate
+    hostPath:
+      - path: /data
+      type: DirectoryOrCreate
 
