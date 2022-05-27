@@ -14,6 +14,6 @@ spec:
   volumes:
   - name: mysql-persistent-storage
     hostPath:
-      - path: /data
+      path: /data
       type: DirectoryOrCreate
 
