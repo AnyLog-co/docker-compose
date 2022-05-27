@@ -4,7 +4,6 @@ metadata:
   namespace: '{{ .Values.general.namespace }}'
   name: postgres-pv
   labels:
-    app: '{{ .Values.general.app_name }}'
     type: local
 spec:
   storageClassName: manual
