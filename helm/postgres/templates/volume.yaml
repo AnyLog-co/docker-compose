@@ -2,7 +2,7 @@ kind: PersistentVolume
 apiVersion: v1
 metadata:
   namespace: '{{ .Values.general.namespace }}'
-  name: '{{ .Valus.general.volume_name }}'
+  name: '{{ .Values.general.volume_name }}'
   labels:
     app: '{{ .Values.general.app_name }}'
     type: '{{ .Values.volume.type }}'
@@ -25,7 +25,7 @@ metadata:
 spec:
   storageClassName: '{{ .Values.volume.storageClass }}'
   accessModes:
-  - '{{ .Values.volume.accessMode ]}}'
+  - '{{ .Values.volume.accessMode }}'
   resources:
     requests:
       storage: '{{ .Values.volume.storage }}'
