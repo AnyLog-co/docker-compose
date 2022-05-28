@@ -28,4 +28,4 @@ spec:
   - '{{ .Values.volume.accessMode ]}}'
   resources:
     requests:
-      storage: '{{ .Values.volume.storage ]}}'
+      storage: '{{ .Values.volume.storage }}'
