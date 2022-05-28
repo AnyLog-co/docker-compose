@@ -5,6 +5,7 @@ general:
   service_name: postgres-svs
   configmap_name: postgres-configs
   volume_name: postgres-volume
+  volume_claim_name: postgres-volume-claim
   replicas: 1
   
 image:
