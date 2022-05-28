@@ -23,7 +23,7 @@ metadata:
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
-  storageClassName: '{{ .Values.volume.storageClass ]}}'
+  storageClassName: {{ .Values.volume.storageClass ]}}
   accessModes:
   - '{{ .Values.volume.accessMode ]}}'
   resources:
