@@ -29,6 +29,6 @@ spec:
         - name: '{{ .Values.volume.volume_name }}-claim'
           mountPath: '{{ .Values.volume.mountPath }}'
       volumes:
-      - name: '{{ .Values.volume.volume_name }}-claim'
+      - name: {{ .Values.volume.volume_name }}-claim
         persistentVolumeClaim:
-          claimName: '{{ .Values.volume.volume_name }}-claim'
+          claimName: {{ .Values.volume.volume_name }}-claim
