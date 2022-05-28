@@ -16,9 +16,9 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  labels:
-    app: postgres
   name: postgres-volume-claim
+  labels:
+    app: '{{ .Values.general.app_name }}'
 spec:
   storageClassName: manual
   accessModes:
