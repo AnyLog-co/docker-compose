@@ -1,5 +1,5 @@
 general:
-  namespace: default
+  namespace: test
   app_name: postgres
   deployment_name: postgres-app
   service_name: postgres-svs
