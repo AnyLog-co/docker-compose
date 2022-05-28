@@ -1,37 +1,31 @@
-#kind: StorageClass
-#apiVersion: storage.k8s.io/v1
-#metadata:
-#  name: my-local-storage
-#provisioner: kubernetes.io/no-provisioner
-#volumeBindingMode: Immediate
----
 kind: PersistentVolume
 apiVersion: v1
 metadata:
   namespace: '{{ .Values.general.namespace }}'
-  name: postgres-pv
+  name: '{{ .Valus.general.volume_name }}'
   labels:
-    type: local
+    app: '{{ .Values.general.app_name }}'
+    type: '{{ .Values.volume.type }}'
 spec:
-  storageClassName: manual
+  storageClassName: '{{ .Values.volume.storageClass }}'
   capacity:
-    storage: 100M
+    storage: '{{ .Values.volume.capacity }}'
   accessModes:
-    - ReadWriteOnce
+    - '{{ .Values.volume.accessMode }}'
   hostPath:
-    path: "/mnt/postgres/data"
+    path: '{{ .Values.volume.hostPath}}'
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: '{{ .Values.general.namespace }}'
-  name: postgres-pv-claim
+  name: '{{ .Values.volume.volume_name }}-claim'
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
-  storageClassName: manual
+  storageClassName: '{{ .Values.volume.storageClass ]}}'
   accessModes:
-  - ReadWriteOnce
+  - '{{ .Values.volume.accessMode ]}}'
   resources:
     requests:
-      storage: 100M
+      storage: '{{ .Values.volume.storage ]}}'

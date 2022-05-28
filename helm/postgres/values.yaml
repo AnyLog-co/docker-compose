@@ -14,7 +14,11 @@ image:
 
 volume:
   name: postgres-volume
-  path: /var/lib/postgres
+  type: local
+  capacity: 100M
+  storageClass: manual
+  mountPath: /var/lib/postgres
+  hostPath: /mnt/postgres/data
   accessMode: ReadWriteOnce
   storage: 20Gi
 
