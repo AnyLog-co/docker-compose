@@ -1,7 +1,6 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
   name: '{{ .Values.general.volume_name }}'
   labels:
     app: '{{ .Values.general.app_name }}'
@@ -18,7 +17,6 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
   name: '{{ .Values.volume.volume_claim_name }}'
   labels:
     app: '{{ .Values.general.app_name }}'
