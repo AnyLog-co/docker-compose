@@ -1,30 +1,28 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: '{{ .Values.general.volume_name }}'
+  name: postgres-volume
   labels:
-    app: '{{ .Values.general.app_name }}'
-    type: '{{ .Values.volume.type }}'
+    type: local
 spec:
-  storageClassName: '{{ .Values.volume.storageClass }}'
+  storageClassName: manual
   capacity:
-    storage: '{{ .Values.volume.capacity }}'
+    storage: 100M
   accessModes:
-    - '{{ .Values.volume.accessMode }}'
+    - ReadWriteOnce
   hostPath:
-    path: '{{ .Values.volume.hostPath}}'
+    path: "/mnt/data"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
-  name: '{{ .Values.volume.volume_claim_name }}'
   labels:
-    app: '{{ .Values.general.app_name }}'
+    app: postgres
+  name: postgres-volume-claim
 spec:
-  storageClassName: '{{ .Values.volume.storageClass }}'
+  storageClassName: manual
   accessModes:
-  - '{{ .Values.volume.accessMode }}'
+  - ReadWriteOnce
   resources:
     requests:
-      storage: '{{ .Values.volume.storage }}'
+      storage: 100M
