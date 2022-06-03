@@ -4,29 +4,17 @@ general:
   deployment_name: postgres-app
   service_name: postgres-svs
   configmap_name: postgres-configs
-  volume_name: postgres-volume
-  volume_claim_name: postgres-volume-claim
   replicas: 1
-
+  
 image:
   repository: postgres
   tag: 14.0-alpine
   pullPolicy: IfNotPresent
 
-volume:
-  name: postgres-volume
-  type: local
-  capacity: 100M
-  storageClass: manual
-  mountPath: /var/lib/postgres
-  hostPath: /mnt/postgres/data
-  accessMode: ReadWriteOnce
-  storage: 20Gi
-
 networking:
-  name: psql-port
+  port_name: psql-port
   port: 5432
-
+  
 credentials:
   username: admin
   password: demo
