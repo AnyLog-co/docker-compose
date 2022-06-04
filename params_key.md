@@ -470,6 +470,7 @@ The following table provides insight into the different (ENV) configuration opti
         <td>How often to push data forward</td>
         <td>
             <ul>
+                <li>seconds</li>
                 <li>minute</li>
                 <li>hour</li>
                 <li>day</li>
