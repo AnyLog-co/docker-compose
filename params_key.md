@@ -1,4 +1,4 @@
-The following table provides insight into the different (ENV) configuration options used by [start_node.al](start_node.al). 
+The following table provides insight into the different (ENV) configuration options used by [start_node.al](https://github.com/AnyLog-co/AnyLog-Network/tree/develop/scripts/start_node.al). 
  
 <table>
     <tr>
@@ -185,7 +185,7 @@ The following table provides insight into the different (ENV) configuration opti
     <tr>
         <td></td>
         <td>LOCAL_IP</td>
-        <td>local_ip</td>
+        <td>ip</td>
         <td>Local IP address</td>
         <td></td>
         <td>System configured IP address</td>
@@ -491,6 +491,38 @@ The following table provides insight into the different (ENV) configuration opti
         </td>
         <td>10 KB</td>
     </tr>
+    <tr>
+        <td></td>
+        <td>TCP_THREAD_POOL</td>
+        <td>tcp_thread_pool</td>
+        <td>Number of workers threads that process requests which are send to the provided IP and Port.</td>
+        <td></td>
+        <td>6</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>REST_TIMEOUT</td>
+        <td>rest_timeout</td>
+        <td>Amount of time (in seconds) until REST timesout</td>
+        <td></td>
+        <td>30</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>REST_THREADS</td>
+        <td>rest_threads</td>
+        <td>number of concurrent threads supporting HTTP requests</td>
+        <td></td>
+        <td>5</td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>QUERY_POOL</td>
+        <td>query_pool</td>
+        <td>number of threads supporting queries</td>
+        <td></td>
+        <td>3</td>
+    </tr>
 </table>
 
-*Disclaimer - the term `ledger` in [start_node.al](start_node.al) scripts correlate to `master` in the source code 
+*Disclaimer - the term `ledger` in [start_node.al](https://github.com/AnyLog-co/AnyLog-Network/tree/develop/scripts/start_node.al) scripts correlate to `master` in the source code 
