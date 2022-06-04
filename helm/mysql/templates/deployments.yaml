@@ -34,3 +34,4 @@ spec:
         persistentVolumeClaim:
           claimName: mysql-pv-claim
 
+

@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
+# The following are the general values used to deploy an AnyLog instance of type: Operator | AnyLog version: predevelop
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
@@ -57,7 +57,7 @@ configs:
     update_tsd: true
     archive: true
     distributor: true
-    db_name: test
+    db_name: fleet_command
     partition:
         enable: true
         table: "*"
@@ -79,7 +79,7 @@ configs:
     log: false
     topic:
       name: anylogedgex
-      db_name: test
+      db_name: fleet_command
       table: plc_device
       timestamp: now
       value_type: float

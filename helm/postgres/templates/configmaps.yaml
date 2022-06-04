@@ -8,4 +8,5 @@ metadata:
 data:
   POSTGRES_USER: '{{ .Values.credentials.username }}'
   POSTGRES_PASSWORD: '{{ .Values.credentials.password }}'
+  PGDATA: '{{ .Values.volume.mountPath }}'
   PGPORT: '{{ .Values.networking.port }}'

@@ -4,7 +4,6 @@ general:
   deployment_name: postgres-app
   service_name: postgres-svs
   configmap_name: postgres-configs
-  volume_name: postgres-volume
   replicas: 1
   
 image:
@@ -12,16 +11,10 @@ image:
   tag: 14.0-alpine
   pullPolicy: IfNotPresent
 
-volume:
-  name: postgres-volume
-  path: /var/lib/postgres
-  accessMode: ReadWriteOnce
-  storage: 20Gi
-
 networking:
-  name: psql-port
+  port_name: psql-port
   port: 5432
-
+  
 credentials:
   username: admin
   password: demo
