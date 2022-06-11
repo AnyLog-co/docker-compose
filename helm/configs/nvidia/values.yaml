@@ -4,9 +4,9 @@
 general:
   namespace: default
   app_name: anylog
-  deployment_name: anylog-master-app
-  service_name: anylog-master-svs
-  configmap_name: anylog-master-configs
+  deployment_name: anylog-query-app
+  service_name: anylog-query-svs
+  configmap_name: anylog-query-configs
   replicas: 1
   
 image:
@@ -17,23 +17,23 @@ image:
 
 configs:
   basic:
-    node_type: ledger
-    node_name: anylog-master-node
+    node_type: query
+    node_name: anylog-query-node
     company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
-    location: "38.571856, -121.498613"
+    location: "37.370037, -121.965899"
     country: US 
     state: California 
-    city: Sacramento
+    city: "Santa Clara" 
 
   networking:
-    server: 32048
-    rest: 32049
+    server: 32348
+    rest: 32349
     # Optional broker port
     broker: ""
-    # master node is not needed for REST node
+    # query node is not needed for REST node
     # Optional external & local IP instead of the default values
-    external_ip: anylog-master-svs.default.svc.cluster.local
+    external_ip: anylog-query-svs.default.svc.cluster.local
     local_ip: ""
   authentication:
     enable: false
@@ -41,16 +41,12 @@ configs:
     user: ""
     password: ""
   blockchain:
-    ledger_conn: 127.0.0.1:32048
+    ledger_conn: anylog-master-svs.default.svc.cluster.local:32348
     sync_time: 30 seconds
     source: master
     destination: file
   database:
-    type: psql
-    ip: postgres-svs
-    port: 5432
-    user: admin
-    password: demo
+    type: sqlite
     # whether to have system_query database to run against memory directly
     memory: true
   operator:

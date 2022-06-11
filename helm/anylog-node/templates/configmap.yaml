@@ -11,6 +11,9 @@ data:
   NODE_NAME: '{{ .Values.configs.basic.node_name }}'
   COMPANY_NAME: '{{ .Values.configs.basic.company_name }}'
   LOCATION: '{{ .Values.configs.basic.location }}'
+  COUNTRY: '{{ .Values.configs.basic.country }}'
+  STATE: '{{ .Values.configs.basic.state }}'
+  CITY: '{{ .Values.configs.basic.city }}'
 
   # networking
   ANYLOG_SERVER_PORT: '{{ .Values.configs.networking.server }}'
@@ -26,7 +29,7 @@ data:
   PASSWORD: '{{ .Values.configs.authentication.password }}'
 
   # blockchain
-  LEDGER_CONN: '{{ .Values.configs.blockchain.master_node }}'
+  LEDGER_CONN: '{{ .Values.configs.blockchain.ledger_conn }}'
   SYNC_TIME: '{{ .Values.configs.blockchain.sync_time }}'
   SOURCE: '{{ .Values.configs.blockchain.source }}'
   DESTINATION: '{{ .Values.configs.blockchain.destination }}'

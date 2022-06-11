@@ -6,12 +6,9 @@ metadata:
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
   - name: '{{ .Values.networking.port_name }}'
-    protocol: TCP
     port: {{ .Values.networking.port }}
-    targetPort: {{ .Values.networking.port }}
-    nodePort: {{ .Values.networking.port }}
   selector:
     app: '{{ .Values.general.app_name }}'

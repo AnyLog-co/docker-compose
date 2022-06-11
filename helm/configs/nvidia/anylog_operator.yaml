@@ -21,7 +21,10 @@ configs:
     node_name: anylog-operator-node1
     company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
-    location: ""
+    location: "37.767880, -122.405473"
+    country: US 
+    state: California 
+    city: "San Francisco"
   networking:
     server: 32148
     rest: 32149

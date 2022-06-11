@@ -21,7 +21,10 @@ configs:
     node_name: anylog-operator-node2
     company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
-    location: ""
+    location: "37.373653, -121.927853"
+    country: US 
+    state: California 
+    city: "San Jose"
   networking:
     server: 32158
     rest: 32159
@@ -58,8 +61,8 @@ configs:
         enable: true
         table: "*"
         column: timestamp
-        interval: 7 days
-        keep: 12
+        interval: 30 days
+        keep: 3
         sync: 1 day
   publisher:
     compress: true
@@ -82,7 +85,7 @@ configs:
       value: bring [readings][][value]
   settings:
     # whether to deploy a local script that extends the default startup script
-    deploy_local_script: false
+    deploy_local_script: true
     # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
     tcp_thread_pool: 6
     # Amount of time (in seconds) until REST timeout
