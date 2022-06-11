@@ -11,10 +11,9 @@ general:
   
 image:
   secretName: imagepullsecret
-  repository: anylogco/anylog-network
-  tag: test
+  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
+  tag: predevelop
   pullPolicy: IfNotPresent
-
 configs:
   basic:
     node_type: rest
@@ -37,7 +36,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    master_node: anylog-svs.default.svc.cluster.local:32048
+    ledger_conn: anylog-svs.default.svc.cluster.local:32048
     sync_time: 30 seconds
     source: master
     destination: file
