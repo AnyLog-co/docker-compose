@@ -11,7 +11,7 @@ general:
   
 image:
   secretName: imagepullsecret
-  repository: anylogco/anylog-network
+  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
   tag: predevelop
   pullPolicy: Always
 
@@ -19,7 +19,7 @@ configs:
   basic:
     node_type: ledger
     node_name: anylog-master-node
-    company_name: Aarna Network
+    company_name:
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
   networking:
