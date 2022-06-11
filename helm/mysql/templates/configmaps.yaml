@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mysql-configs
-  labels:
-    app: wordpress
-data:
-  MYSQL_ROOT_PASSWORD: password

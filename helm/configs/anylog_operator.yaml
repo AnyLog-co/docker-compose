@@ -4,22 +4,24 @@
 general:
   namespace: default
   app_name: anylog
-  deployment_name: anylog-operator-app1
-  service_name: anylog-operator-svs1
-  configmap_name: anylog-operator-configs1
+  deployment_name: anylog-operator-app
+  service_name: anylog-operator-svs
+  configmap_name: anylog-operator-configs
   replicas: 1
   
 image:
   secretName: imagepullsecret
-  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: predevelop
+  repository: anylogco/anylog-network
+  tag: test
+#  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
+#  tag: predevelop
   pullPolicy: Always
 
 configs:
   basic:
     node_type: operator
-    node_name: anylog-operator-node1
-    company_name: Aarna Network
+    node_name: anylog-operator-node
+    company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
   networking:
@@ -29,7 +31,7 @@ configs:
     broker: ""
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
-    external_ip: ""
+    external_ip: anylog-operator-svs.default.svc.cluster.local
     local_ip: ""
   authentication:
     enable: false
@@ -37,7 +39,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    ledger_conn: 54.67.8.195:32048
+    master_node: anylog-master-svs.default.svc.cluster.local:32048
     sync_time: 30 seconds
     source: master
     destination: file
@@ -52,12 +54,12 @@ configs:
   operator:
     # set member ID for operator - should only be used when readding operator to blockchain but keep (file) configs consistent
     member: ""
-    cluster_name: aarna-cluster1
+    cluster_name: new-cluster
     create_table: true
     update_tsd: true
     archive: true
     distributor: true
-    db_name: aarna
+    db_name: test
     partition:
         enable: true
         table: "*"
@@ -79,7 +81,7 @@ configs:
     log: false
     topic:
       name: anylogedgex
-      db_name: aarna
+      db_name: test
       table: plc_device
       timestamp: now
       value_type: float

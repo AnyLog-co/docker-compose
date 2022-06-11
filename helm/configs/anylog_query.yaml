@@ -11,15 +11,17 @@ general:
   
 image:
   secretName: imagepullsecret
-  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: predevelop
+  repository: anylogco/anylog-network
+  tag: test
+#  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
+#  tag: predevelop
   pullPolicy: Always
 
 configs:
   basic:
     node_type: query
     node_name: anylog-query-node
-    company_name: Aarna Network
+    company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
   networking:
@@ -29,7 +31,7 @@ configs:
     broker: ""
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
-    external_ip: ""
+    external_ip: anylog-query-svs.default.svc.cluster.local
     local_ip: ""
   authentication:
     enable: false
@@ -37,7 +39,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    ledger_conn: 54.67.8.195:32048
+    master_node: anylog-master-svs.default.svc.cluster.local:32048
     sync_time: 30 seconds
     source: master
     destination: file

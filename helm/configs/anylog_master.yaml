@@ -11,15 +11,15 @@ general:
   
 image:
   secretName: imagepullsecret
-  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: predevelop
+  repository: anylogco/anylog-network
+  tag: test
   pullPolicy: Always
 
 configs:
   basic:
-    node_type: ledger
+    node_type: master
     node_name: anylog-master-node
-    company_name:
+    company_name: New Company
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
   networking:
@@ -29,7 +29,7 @@ configs:
     broker: ""
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
-    external_ip: ""
+    external_ip: anylog-master-svs.default.svc.cluster.local
     local_ip: ""
   authentication:
     enable: false
@@ -37,7 +37,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    ledger_conn: 127.0.0.1:32048
+    master_node: 127.0.0.1:32048
     sync_time: 30 seconds
     source: master
     destination: file
