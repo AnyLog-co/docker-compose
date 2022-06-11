@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
+# The following are the general values used to deploy an AnyLog instance of type: Master | AnyLog version: predevelop
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
@@ -17,7 +17,7 @@ image:
 
 configs:
   basic:
-    node_type: master
+    node_type: ledger
     node_name: anylog-master-node
     company_name: Nvidia
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
@@ -37,7 +37,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    master_node: 127.0.0.1:32048
+    ledger_conn: 127.0.0.1:32048
     sync_time: 30 seconds
     source: master
     destination: file

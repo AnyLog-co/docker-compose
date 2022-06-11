@@ -26,7 +26,7 @@ data:
   PASSWORD: '{{ .Values.configs.authentication.password }}'
 
   # blockchain
-  LEDGER_CONN: '{{ .Values.configs.blockchain.ledger_conn }}'
+  LEDGER_CONN: '{{ .Values.configs.blockchain.master_node }}'
   SYNC_TIME: '{{ .Values.configs.blockchain.sync_time }}'
   SOURCE: '{{ .Values.configs.blockchain.source }}'
   DESTINATION: '{{ .Values.configs.blockchain.destination }}'
