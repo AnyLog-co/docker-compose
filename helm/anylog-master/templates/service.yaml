@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: anylog-master
+  labels:
+    app: anylog-master
+spec:
+  type: NodePort
+  ports:
+  - name: master-tcp
+    port: 32048
+    targetPort: 32048
+    nodePort: 32048
+  - name: master-rest
+    port: 32049
+    targetPort: 32049
+    nodePort: 32049
+  selector:
+    app: anylog-master

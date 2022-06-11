@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anylog-query
+  labels:
+    app: anylog-query
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anylog-query
+  template:
+    metadata:
+      labels:
+        app: anylog-query
+    spec:
+      imagePullSecrets:
+      - name: imagepullsecret
+      containers:
+      - name: anylog-query
+        image: nvcr.io/uazwwnrnci5h/anylog/anylog-network:predevelop
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: query-configurations
+        ports:
+          - containerPort: 32348
+            name: query-tcp
+          - containerPort: 32349
+            name: query-rest
