@@ -25,10 +25,3 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
-        volumeMounts:
-        - name: {{ .Values.general.volume_claim_name }}
-          mountPath: '{{ .Values.volume.mountPath }}'
-      volumes:
-      - name: {{ .Values.general.volume_claim_name }}
-        persistentVolumeClaim:
-          claimName: {{ .Values.general.volume_claim_name }}

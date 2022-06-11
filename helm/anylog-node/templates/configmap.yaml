@@ -26,7 +26,7 @@ data:
   PASSWORD: '{{ .Values.configs.authentication.password }}'
 
   # blockchain
-  MASTER_NODE: '{{ .Values.configs.blockchain.master_node }}'
+  LEDGER_CONN: '{{ .Values.configs.blockchain.ledger_conn }}'
   SYNC_TIME: '{{ .Values.configs.blockchain.sync_time }}'
   SOURCE: '{{ .Values.configs.blockchain.source }}'
   DESTINATION: '{{ .Values.configs.blockchain.destination }}'
@@ -36,7 +36,7 @@ data:
   DB_IP: '{{ .Values.configs.database.ip }}'
   DB_PORT: '{{ .Values.configs.database.port }}'
   DB_USER: '{{ .Values.configs.database.user }}'
-  DB_PASSWORD: '{{ .Values.configs.database.password }}'
+  DB_PASSWD: '{{ .Values.configs.database.password }}'
   MEMORY: '{{ .Values.configs.database.memory }}'
 
   # operator params
