@@ -1,0 +1,17 @@
+{
+  "properties": [
+    {
+      "name": "openhorizon.allowPrivileged",
+      "value": true
+    },
+    {
+      "name": "ANYLOG_SERVER_PORT",
+      "value": 32148
+    },
+    {
+      "name": "ANYLOG_REST_PORT",
+      "value": 32149
+    }
+  ],
+  "constraints": []
+}

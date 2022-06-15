@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: Master | AnyLog version: predevelop
+# The following are the general values used to deploy an AnyLog instance of type: Query | AnyLog version: predevelop
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
@@ -12,7 +12,7 @@ general:
 image:
   secretName: imagepullsecret
   repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: predevelop
+  tag: nvidia
   pullPolicy: Always
 
 configs:
