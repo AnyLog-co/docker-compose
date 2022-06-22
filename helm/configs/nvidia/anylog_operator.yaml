@@ -12,7 +12,7 @@ general:
 image:
   secretName: imagepullsecret
   repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-  tag: nvidia
+  tag: predevelop
   pullPolicy: Always
 
 configs:
