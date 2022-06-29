@@ -12,16 +12,14 @@ general:
 image:
   secretName: imagepullsecret
   repository: anylogco/anylog-network
-  tag: test
-#  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
-#  tag: predevelop
+  tag: predevelop
   pullPolicy: Always
 
 configs:
   basic:
     node_type: query
     node_name: anylog-query-node
-    company_name: Nvidia
+    company_name: "Company Name"
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
   networking:
@@ -39,7 +37,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    master_node: anylog-master-svs.default.svc.cluster.local:32048
+    ledger_conn: anylog-master-svs.default.svc.cluster.local:32048
     sync_time: 30 seconds
     source: master
     destination: file

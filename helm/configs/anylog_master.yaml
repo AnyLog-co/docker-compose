@@ -12,7 +12,7 @@ general:
 image:
   secretName: imagepullsecret
   repository: anylogco/anylog-network
-  tag: test
+  tag: predevelop
   pullPolicy: Always
 
 configs:
@@ -37,7 +37,7 @@ configs:
     user: ""
     password: ""
   blockchain:
-    master_node: 127.0.0.1:32048
+    ledger_conn: 127.0.0.1:32048
     sync_time: 30 seconds
     source: master
     destination: file
