@@ -1,3 +1,5 @@
 .idea/
 docker-compose/anylog-node/envs/anylog_node.env
+helm/values/values.yaml
+.DS_Store
 
