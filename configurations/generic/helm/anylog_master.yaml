@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
+# The following are the general values used to deploy an AnyLog instance of type: Master | AnyLog version: develop
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
@@ -22,6 +22,10 @@ configs:
     company_name: New Company
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
+    country: ""
+    state: ""
+    city: ""
+
   networking:
     server: 32048
     rest: 32049
