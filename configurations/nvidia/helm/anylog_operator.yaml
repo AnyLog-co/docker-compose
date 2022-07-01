@@ -4,6 +4,7 @@
 general:
   namespace: default
   app_name: anylog
+  pod_name: anylog-operator-pod1
   deployment_name: anylog-operator-app1
   service_name: anylog-operator-svs1
   configmap_name: anylog-operator-configs1

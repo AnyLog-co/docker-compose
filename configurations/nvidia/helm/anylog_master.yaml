@@ -4,6 +4,7 @@
 general:
   namespace: default
   app_name: anylog
+  pod_name: anylog-master-pod
   deployment_name: anylog-master-app
   service_name: anylog-master-svs
   configmap_name: anylog-master-configs
