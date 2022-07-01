@@ -6,20 +6,10 @@ metadata:
   labels:
     app: '{{ .Values.general.deployment_name }}'
 spec:
-  replicas: {{ .Values.general.replicas }}
-  selector:
-    matchLabels:
-      app: '{{ .Values.general.deployment_name }}'
-  template:
-    metadata:
-      labels:
-        app: '{{ .Values.general.deployment_name }}'
-    spec:
-      imagePullSecrets:
-        - name: {{ .Values.image.secretName }}
-      containers:
-      - name: '{{ .Values.general.pod_name }}'
-        stdin: true
-        envFrom:
-        - configMapRef:
-            name: '{{ .Values.general.configmap_name }}'
+  imagePullSecrets:
+    - name: { { .Values.image.secretName } }
+  containers:
+  - name: '{{ .Values.general.pod_name }}'
+    image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+  hostNetwork: true
+  dnsPolicy: Default
