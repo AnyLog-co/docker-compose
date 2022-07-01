@@ -6,8 +6,6 @@ metadata:
   labels:
     app: '{{ .Values.general.deployment_name }}'
 spec:
-  imagePullSecrets:
-    - name: { { .Values.image.secretName } }
   containers:
   - name: '{{ .Values.general.pod_name }}'
     image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
