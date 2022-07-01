@@ -4,6 +4,7 @@
 general:
   namespace: default
   app_name: anylog
+  pod_name: anylog-publisher-pod
   deployment_name: anylog-publisher-app
   service_name: anylog-publisher-svs
   configmap_name: anylog-publisher-configs

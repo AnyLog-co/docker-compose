@@ -4,6 +4,7 @@
 general:
   namespace: default
   app_name: anylog
+  pod_name: anylog-query-pod
   deployment_name: anylog-query-app
   service_name: anylog-query-svs
   configmap_name: anylog-query-configs
