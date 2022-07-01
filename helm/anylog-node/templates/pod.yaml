@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Pod
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.pod_name }}'
+  labels:
+    app: '{{ .Values.general.deployment_name }}'
+spec:
+  replicas: {{ .Values.general.replicas }}
+  selector:
+    matchLabels:
+      app: '{{ .Values.general.deployment_name }}'
+  template:
+    metadata:
+      labels:
+        app: '{{ .Values.general.deployment_name }}'
+    spec:
+      {{- if ne .Values.image.secretName "" }}
+      imagePullSecrets:
+        - name: {{ .Values.image.secretName }}
+      {{ end }}
+      containers:
+      - name: '{{ .Values.general.pod_name }}'
+        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        stdin: true
+        envFrom:
+        - configMapRef:
+            name: '{{ .Values.general.configmap_name }}'
+        ports:
+        - name: server
+          containerPort: {{ .Values.configs.networking.server }}
+        - name: rest
+          containerPort: {{ .Values.configs.networking.rest }}
+        {{- if ne .Values.configs.networking.broker "" }}
+        - name: broker
+          containerPort: {{ .Values.configs.networking.broker }}
+        {{ end }}
