@@ -15,10 +15,8 @@ spec:
       labels:
         app: '{{ .Values.general.deployment_name }}'
     spec:
-      {{- if ne .Values.image.secretName "" }}
       imagePullSecrets:
         - name: {{ .Values.image.secretName }}
-      {{ end }}
       containers:
       - name: '{{ .Values.general.pod_name }}'
         stdin: true
