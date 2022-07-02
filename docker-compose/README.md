@@ -39,7 +39,8 @@ docker-compose up -d
 ```commandline
 curl -X GET ${LOCAL_IP}:${ANYLOG_REST_PORT} -H "command: get status" -H "User-Agent: AnyLog/1.23" 
 ```
-
+**Disclaimer** - If you'd like to use a single physical machine to run multiple AnyLog instances, you need to change 
+the [docker-compose.yml](anylog-node/docker-compose.yml) such that the naming for _service_ and _volumes_ are different.  
 
 ### Configuring `DEPLOY_LOCAL_SCRIPT`
 The `DEPLOY_LOCAL_SCRIPT` is an extension to the deployment process that the user can create and allow the system to 
