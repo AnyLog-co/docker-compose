@@ -1,6 +1,6 @@
 version: "2.2"
 services:
-  anylog-node:
+  anylog-operator-node:
     image: ${REPOSITORY}:${TAG}
     env_file:
       - ${ENV_FILE}
@@ -9,20 +9,20 @@ services:
     tty: true
     network_mode: "host" 
     volumes:
-      - anylog-node-anylog:/app/AnyLog-Network/anylog
-      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-node-data:/app/AnyLog-Network/data
-      - anylog-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-operator-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-operator-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-operator-node-data:/app/AnyLog-Network/data
+      - anylog-operator-node-local-scripts:/app/AnyLog-Network/scripts
 volumes:
-  anylog-node-anylog:
+  anylog-operator-node-anylog:
       external:
         name: ${CONTAINER_NAME}-anylog
-  anylog-node-blockchain:
+  anylog-operator-node-blockchain:
     external:
       name: ${CONTAINER_NAME}-blockchain
-  anylog-node-data:
+  anylog-operator-node-data:
     external:
       name: ${CONTAINER_NAME}-data
-  anylog-node-local-scripts:
+  anylog-operator-node-local-scripts:
     external:
       name: ${CONTAINER_NAME}-local-scripts
