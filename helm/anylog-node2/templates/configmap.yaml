@@ -1,0 +1,89 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.configmap_name }}'
+  labels:
+    app: '{{ .Values.general.deployment_name }}'
+data:
+  # general information
+  NODE_TYPE: '{{ .Values.configs.basic.node_type }}'
+  NODE_NAME: '{{ .Values.configs.basic.node_name }}'
+  COMPANY_NAME: '{{ .Values.configs.basic.company_name }}'
+  LOCATION: '{{ .Values.configs.basic.location }}'
+  COUNTRY: '{{ .Values.configs.basic.country }}'
+  STATE: '{{ .Values.configs.basic.state }}'
+  CITY: '{{ .Values.configs.basic.city }}'
+
+  # networking
+  ANYLOG_SERVER_PORT: '{{ .Values.configs.networking.server }}'
+  ANYLOG_REST_PORT: '{{ .Values.configs.networking.rest }}'
+  ANYLOG_BROKER_PORT: '{{ .Values.configs.networking.broker }}'
+  EXTERNAL_IP: '{{ .Values.configs.networking.external_ip }}'
+  LOCAL_IP: '{{ .Values.configs.networking.local_ip }}'
+
+  # authentication
+  AUTHENTICATION: '{{ .Values.configs.authentication.enable }}'
+  AUTH_TYPE: '{{ .Values.configs.authentication.type }}'
+  USERNAME: '{{ .Values.configs.authentication.user }}'
+  PASSWORD: '{{ .Values.configs.authentication.password }}'
+
+  # blockchain
+  LEDGER_CONN: '{{ .Values.configs.blockchain.ledger_conn }}'
+  SYNC_TIME: '{{ .Values.configs.blockchain.sync_time }}'
+  SOURCE: '{{ .Values.configs.blockchain.source }}'
+  DESTINATION: '{{ .Values.configs.blockchain.destination }}'
+
+  # database
+  DB_TYPE: '{{ .Values.configs.database.type }}'
+  DB_IP: '{{ .Values.configs.database.ip }}'
+  DB_PORT: '{{ .Values.configs.database.port }}'
+  DB_USER: '{{ .Values.configs.database.user }}'
+  DB_PASSWD: '{{ .Values.configs.database.password }}'
+  MEMORY: '{{ .Values.configs.database.memory }}'
+
+  # operator params
+  MEMBER: '{{ .Values.configs.operator.memory }}'
+  CLUSTER_NAME: '{{ .Values.configs.operator.cluster_name }}'
+  # run operator params
+  CREATE_TABLE: '{{ .Values.configs.operator.create_table }}'
+  UPDATE_TSD_INFO: '{{ .Values.configs.operator.update_tsd }}'
+  ARCHIVE: '{{ .Values.configs.operator.archive }}'
+  DEFAULT_DBMS:  '{{ .Values.configs.operator.db_name }}'
+  # partitioning
+  ENABLE_PARTITION: '{{ .Values.configs.operator.partition.enable }}'
+  TABLE_NAME: '{{ .Values.configs.operator.partition.table }}'
+  PARTITION_COLUMN: '{{ .Values.configs.operator.partition.column }}'
+  PARTITION_INTERVAL: '{{ .Values.configs.operator.partition.interval }}'
+  PARTITION_KEEP: '{{ .Values.configs.operator.partition.keep }}'
+
+  # publisher params
+  COMPRESS_JSON: '{{ .Values.configs.publisher.compress }}'
+  MOVE_JSON: '{{ .Values.configs.publisher.move }}'
+  DBMS_FILE_LOCATION: '{{ .Values.configs.publisher.db_location }}'
+  TABLE_FILE_LOCATION: '{{ .Values.configs.publisher.file_location }}'
+
+  # mqtt
+  MQTT_ENABLE: '{{ .Values.configs.mqtt.enable }}'
+  BROKER: '{{ .Values.configs.mqtt.broker }}'
+  MQTT_PORT: '{{ .Values.configs.mqtt.port }}'
+  MQTT_USER: '{{ .Values.configs.mqtt.user }}'
+  MQTT_PASSWORD: '{{ .Values.configs.mqtt.password }}'
+  MQTT_LOG: '{{ .Values.configs.mqtt.log }}'
+  MQTT_TOPIC_NAME: '{{ .Values.configs.mqtt.topic.name }}'
+  MQTT_TOPIC_DBMS: '{{ .Values.configs.mqtt.topic.db_name }}'
+  MQTT_TOPIC_TABLE: '{{ .Values.configs.mqtt.topic.table }}'
+  MQTT_COLUMN_TIMESTAMP: '{{ .Values.configs.mqtt.topic.timestamp }}'
+  MQTT_COLUMN_VALUE_TYPE: '{{ .Values.configs.mqtt.topic.value_type }}'
+  MQTT_COLUMN_VALUE: '{{ .Values.configs.mqtt.topic.value }}'
+
+  # settings
+  DEPLOY_LOCAL_SCRIPT: '{{ .Values.configs.settings.deploy_local_script }}'
+  TCP_THREAD_POOL: '{{ .Values.configs.settings.tcp_thread_pool }}'
+  REST_TIMEOUT: '{{ .Values.configs.settings.rest_timeout }}'
+  REST_THREADS: '{{ .Values.configs.settings.rest_threads }}'
+  QUERY_POOL: '{{ .Values.configs.settings.query_pool }}'
+  WRITE_IMMEDIATE: '{{ .Values.configs.settings.write_immediate }}'
+  THRESHOLD_TIME: '{{ .Values.configs.settings.threshold_time }}'
+  THRESHOLD_VOLUME: '{{ .Values.configs.settings.threshold_volume }}'
+
