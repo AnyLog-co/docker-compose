@@ -9,6 +9,9 @@ spec:
   containers:
   - name: '{{ .Values.general.pod_name }}'
     image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+    envFrom:
+    - configMapRef:
+        name: '{{ .Values.general.configmap_name }}'
     tty: true
     stdin: true
   hostNetwork: true
