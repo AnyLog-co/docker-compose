@@ -12,7 +12,7 @@ general:
 
 image:
   secretName: imagepullsecret
-  repository: nvcr.io/uazwwnrnci5h/anylog/anylog-network
+  repository: anylogco/anylog-network
   tag: predevelop
   pullPolicy: Always
 
@@ -20,17 +20,17 @@ configs:
   basic:
     node_type: operator
     node_name: anylog-operator-node2
-    company_name: Nvidia
+    company_name: Fujitsu
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
-    location: "37.373653, -121.927853"
-    country: US 
-    state: California 
-    city: "San Jose"
+    location: ""
+    country: ""
+    state:
+    city: ""
   networking:
     server: 32158
     rest: 32159
     # Optional broker port
-    broker: ""
+    broker: 32160
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
     external_ip: anylog-operator-svs2.default.svc.cluster.local
@@ -52,18 +52,18 @@ configs:
   operator:
     # set member ID for operator - should only be used when readding operator to blockchain but keep (file) configs consistent
     member: ""
-    cluster_name: nvidia-cluster2
+    cluster_name: fujitsu-cluster2
     create_table: true
     update_tsd: true
     archive: true
     distributor: true
-    db_name: fleet_command
+    db_name: fujitsu
     partition:
         enable: true
         table: "*"
         column: timestamp
-        interval: 30 days
-        keep: 3
+        interval: 14 days
+        keep: 6
         sync: 1 day
   publisher:
     compress: true
@@ -72,14 +72,14 @@ configs:
     table_location: file_name[1]
   mqtt:
     enable: true
-    broker: driver.cloudmqtt.com
-    port: 18785
-    user: ibglowct
-    password: MSY4e009J7ts
+    broker: local
+    port: 32160
+    user: ""
+    password: ""
     log: false
     topic:
       name: anylogedgex
-      db_name: fleet_command
+      db_name: fujitsu
       table: plc_device
       timestamp: now
       value_type: float
@@ -97,7 +97,4 @@ configs:
     operator_pool: 3
     write_immediate: true
     threshold_time : 60 seconds
-    threshold_volume: 10KB
-
-
-
+    threshold_volume: 10kb
