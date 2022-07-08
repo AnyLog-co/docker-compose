@@ -27,11 +27,11 @@ spec:
           containerPort: 3000
         {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
-          - mountPath: /var/lib/grafana
+          - mountPath: '/var/lib/grafana'
             name: {{ .Values.general.volume_name }}-data
-          - mountPath: /var/log/grafana
+          - mountPath: '/var/log/grafana'
             name: {{ .Values.general.volume_name }}-logs
-          - mountPath: /etc/grafana
+          - mountPath: '/etc/grafana'
             name: { { .Values.general.volume_name } }-config
         {{ end }}
       {{- if eq .Values.general.enable_volume true }}
