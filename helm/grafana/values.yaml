@@ -5,7 +5,7 @@ general:
   service_name: grafana-svs
   configmap_name: grafana-configs
   replicas: 1
-  volume_name: postgres-pv
+  volume_name: grafana-pv
 
 spec:
   storage_class: manual
