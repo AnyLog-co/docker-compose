@@ -13,7 +13,7 @@ spec:
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: {{ .Values.geneeral.volume_name }}
+  name: {{ .Values.general.volume_name }}
 spec:
   storageClassName: {{ .Values.spec.storage_class }}
   capacity:
