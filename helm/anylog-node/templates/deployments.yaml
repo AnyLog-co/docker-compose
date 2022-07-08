@@ -35,8 +35,8 @@ spec:
           containerPort: {{ .Values.configs.networking.rest }}
         {{- if .Values.configs.networking.broker }}
         - name: broker
-          containerPort: { { .Values.configs.networking.broker } }
-        { { end } }
+          containerPort: {{ .Values.configs.networking.broker }}
+        {{ end }}
         {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
           - mountPath: /app/AnyLog-Network/anylog
@@ -44,9 +44,9 @@ spec:
           - mountPath: /app/AnyLog-Network/blockchain
             name: {{ .Values.general.volume_name }}-blockchain
           - mountPath: /app/AnyLog-Network/data
-            name: { { .Values.general.volume_name } }-data
+            name: {{ .Values.general.volume_name }}-data
           - mountPath: /app/AnyLog-Network/scripts
-            name: { { .Values.general.volume_name } }-local-scripts
+            name: {{ .Values.general.volume_name }}-local-scripts
         {{ end }}
       {{- if eq .Values.general.enable_volume true }}
       volumes:
