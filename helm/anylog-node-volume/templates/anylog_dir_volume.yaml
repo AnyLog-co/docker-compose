@@ -22,4 +22,4 @@ spec:
     - {{ .Values.spec.access_mode }}
   persistentVolumeReclaimPolicy: {{ .Values.spec.retain_policy }}
   hostPath:
-    path: {{ .Values.spec.host_path }}
+    path: {{ .Values.spec.anylog_host_path }}
