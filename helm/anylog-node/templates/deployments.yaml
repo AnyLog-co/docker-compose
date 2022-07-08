@@ -33,7 +33,33 @@ spec:
           containerPort: {{ .Values.configs.networking.server }}
         - name: rest
           containerPort: {{ .Values.configs.networking.rest }}
-        {{- if .Values.configs.networking.broker }}
+        { { - if .Values.configs.networking.broker } }
         - name: broker
-          containerPort: {{ .Values.configs.networking.broker }}
+          containerPort: { { .Values.configs.networking.broker } }
+        { { end } }
+        {{- if .Values.general.enable_volume true }}
+        volumeMounts:
+          - mountPath: /app/AnyLog-Network/anylog
+            name: {{ .Values.general.volume_name }}-anylog
+          - mountPath: /app/AnyLog-Network/blockchain
+            name: {{ .Values.general.volume_name }}-blockchain
+          - mountPath: /app/AnyLog-Network/data
+            name: { { .Values.general.volume_name } }-data
+          - mountPath: /app/AnyLog-Network/scripts
+            name: { { .Values.general.volume_name } }-local-scripts
         {{ end }}
+      {{- if .Values.general.enable_volume true }}
+      volumes:
+        - name: {{ .Values.general.volume_name }}-anylog
+          persistentVolumeClaim:
+            claimName: {{ .Values.general.volume_name }}-anylog-claim
+        - name: {{ .Values.general.volume_name }}-blockchain
+          persistentVolumeClaim:
+            claimName: {{ .Values.general.volume_name }}-blockchain-claim
+        - name: {{ .Values.general.volume_name }}-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.general.volume_name }}-data-claim
+        - name: {{ .Values.general.volume_name }}-local-scripts
+          persistentVolumeClaim:
+            claimName: {{ .Values.general.volume_name }}-local-scripts-claim
+      {{ end }}
