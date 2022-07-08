@@ -1,0 +1,25 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.general.volume_name }}-config-claim
+spec:
+  storageClassName: {{ .Values.spec.storage_class }}
+  accessModes:
+    - {{ .Values.spec.access_mode }}
+  resources:
+    requests:
+      storage: {{ .Values.spec.storage_size }}
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: {{ .Values.general.volume_name }}-config
+spec:
+  storageClassName: {{ .Values.spec.storage_class }}
+  capacity:
+    storage: {{ .Values.spec.storage_size }}
+  accessModes:
+    - {{ .Values.spec.access_mode }}
+  persistentVolumeReclaimPolicy: {{ .Values.spec.retain_policy }}
+  hostPath:
+    path: {{ .Values.spec.config_host_path }}

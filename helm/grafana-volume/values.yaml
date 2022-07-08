@@ -1,0 +1,12 @@
+general:
+  namespace: default
+  volume_name: grafana-pv
+  
+spec:
+  storage_class: manual
+  access_mode: ReadWriteMany
+  storage_size: 5Gi
+  reclaim_policy: Retain
+  data_host_path: /opt/grafana-data
+  config_host_path: /opt/grafana-config
+  logs_host_path: /opt/grafana-logs
