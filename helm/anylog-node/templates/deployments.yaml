@@ -37,7 +37,7 @@ spec:
         - name: broker
           containerPort: { { .Values.configs.networking.broker } }
         { { end } }
-        {{- if .Values.general.enable_volume true }}
+        {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
           - mountPath: /app/AnyLog-Network/anylog
             name: {{ .Values.general.volume_name }}-anylog
@@ -48,7 +48,7 @@ spec:
           - mountPath: /app/AnyLog-Network/scripts
             name: { { .Values.general.volume_name } }-local-scripts
         {{ end }}
-      {{- if .Values.general.enable_volume true }}
+      {{- if eq .Values.general.enable_volume true }}
       volumes:
         - name: {{ .Values.general.volume_name }}-anylog
           persistentVolumeClaim:
