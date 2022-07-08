@@ -22,13 +22,16 @@ spec:
         envFrom:
         - configMapRef:
             name: '{{ .Values.general.configmap_name }}'
+        tty: true
+        stdin: true
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
         volumeMounts:
           - mountPath: /var/lib/postgresql/data
-            name: postgres-pv-claim
-          volumes:
-            - name: postgres-pv-claim
-              persistentVolumeClaim:
-                claimName: postgres-pv-claim
+            name: postgres-vol
+      volumes:
+        - name: postgres-vol
+          persistentVolumeClaim:
+            claimName: postgres-pv-claim
+
