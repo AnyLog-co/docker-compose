@@ -25,3 +25,14 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: 3000
+        {{- if eq .Values.general.enable_volume true }}
+        volumeMounts:
+          - mountPath: /var/lib/grafana
+            name: {{ .Values.general.volume_name }}
+        {{ end }}
+      {{- if eq .Values.general.enable_volume true }}
+      volumes:
+        - name: {{ .Values.general.volume_name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.general.volume_name }}-claim
+      {{ end }}
