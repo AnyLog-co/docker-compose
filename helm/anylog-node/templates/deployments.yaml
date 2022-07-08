@@ -37,14 +37,3 @@ spec:
         - name: broker
           containerPort: {{ .Values.configs.networking.broker }}
         {{ end }}
-        {{- if eq .Values.general.enable_volume true }}
-        volumeMounts:
-          - mountPath: /app/AnyLog-Network/scripts
-            name: {{ .Values.general.volume_name }}
-        {{ end }}
-      {{- if eq .Values.general.enable_volume true }}
-      volumes:
-        - name: {{ .Values.general.volume_name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.general.volume_name }}-claim
-      {{ end }}

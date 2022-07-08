@@ -5,14 +5,6 @@ general:
   service_name: grafana-svs
   configmap_name: grafana-configs
   replicas: 1
-  volume_name: grafana-pv
-
-spec:
-  storage_class: manual
-  access_mode: ReadWriteMany
-  storage_size: 5Gi
-  reclaim_policy: Retain
-  host_path: /opt/grafana-data
 
 image:
   repository: grafana/grafana
