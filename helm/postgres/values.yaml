@@ -4,6 +4,8 @@ general:
   deployment_name: postgres-app
   service_name: postgres-svs
   configmap_name: postgres-configs
+  volume_name: postgres-pv
+  enable_volume: true
   replicas: 1
   
 image:
