@@ -8,17 +8,8 @@ general:
   deployment_name: anylog-app
   service_name: anylog-svs
   configmap_name: anylog-configs
-  volume_name: anylog-pv
-  enable_volume: true
   replicas: 1
-
-spec:
-  storage_class: manual
-  access_mode: ReadWriteMany
-  storage_size: 5Gi
-  reclaim_policy: Retain
-  host_path: /opt/AnyLog-Network/scripts
-
+  
 image:
   secretName: imagepullsecret
   repository: anylogco/anylog-network
