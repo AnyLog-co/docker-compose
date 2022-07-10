@@ -39,7 +39,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.general.volume_name }}-configs-claim
         - name: {{ .Values.general.volume_name }}-data
-        persistentVolumeClaim:
+          persistentVolumeClaim:
           claimName: {{ .Values.general.volume_name }}-logs-claim
         - name: {{ .Values.general.volume_name }}-configs
           persistentVolumeClaim:
