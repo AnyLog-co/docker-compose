@@ -15,7 +15,7 @@ spec:
       labels:
         app: '{{ .Values.general.deployment_name }}'
     spec:
-      {{- if ne .Values.configs.nodeSelector "" }}
+      {{- if .Values.configs.nodeSelector }}
       nodeSelector:
         kubernetes.io/hostname: {{ .Values.configs.nodeSelector }}
       {{ end }}
