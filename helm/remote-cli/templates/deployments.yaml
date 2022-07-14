@@ -27,8 +27,9 @@ spec:
           containerPort: {{ .Values.networking.port }}
         {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
-          - mountPath: /app/Remote-CLI/anylog_query/static/json
-            name: {{ .Values.general.volume_name }}
+          - name: {{ .Values.general.volume_name }}
+            mountPath: /app/Remote-CLI/
+            subPath: anylog_query/static/json
         {{ end }}
       {{- if eq .Values.general.enable_volume true }}
       volumes:
