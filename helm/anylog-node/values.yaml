@@ -8,7 +8,10 @@ general:
   deployment_name: anylog-app
   service_name: anylog-svs
   configmap_name: anylog-configs
+  # nodeSelector - Allows to run Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
   replicas: 1
+
   
 image:
   secretName: imagepullsecret
@@ -31,7 +34,7 @@ configs:
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
     external_ip: ""
-    local_ip: ""
+    local_ip: anylog-svs.default.svc.cluster.local
   authentication:
     enable: false
     type: ""

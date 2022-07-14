@@ -7,4 +7,4 @@ spec:
   access_mode: ReadWriteMany
   storage_size: 5Gi
   reclaim_policy: Retain
-  host_path: /opt/remote-cli-data
+  host_path: /app/remote-cli

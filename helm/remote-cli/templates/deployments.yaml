@@ -28,8 +28,8 @@ spec:
         {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
           - name: {{ .Values.general.volume_name }}
-            mountPath: /app/Remote-CLI/
-            subPath: anylog_query/static/json
+            mountPath: /app/Remote-CLI/anylog_query/static/json
+            subPath: commands.json
         {{ end }}
       {{- if eq .Values.general.enable_volume true }}
       volumes:
