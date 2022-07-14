@@ -15,6 +15,10 @@ spec:
       labels:
         app: '{{ .Values.general.deployment_name }}'
     spec:
+      {{ - if ne .Values.configs.nodeSelector "" }}
+      nodeSelector:
+        kubernetes.io/hostname: {{ .Values.configs.nodeSelector }}
+      {{ end }}
       {{- if ne .Values.image.secretName "" }}
       imagePullSecrets:
         - name: {{ .Values.image.secretName }}
