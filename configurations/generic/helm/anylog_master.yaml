@@ -38,6 +38,8 @@ configs:
     # Optional external & local IP instead of the default values
     external_ip: ""
     local_ip: ""
+    # whether  to use service_name as an IP address in the system (default: true)
+    enable_k8s_ip: true
   authentication:
     enable: false
     type: ""
