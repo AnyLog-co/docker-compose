@@ -1,7 +1,10 @@
 general:
   namespace: default
   volume_name: anylog-pv
-  
+  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
+
+
 spec:
   storage_class: manual
   access_mode: ReadWriteOnce
