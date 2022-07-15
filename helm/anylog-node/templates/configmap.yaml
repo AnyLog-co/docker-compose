@@ -21,7 +21,9 @@ data:
   ANYLOG_BROKER_PORT: '{{ .Values.configs.networking.broker }}'
   EXTERNAL_IP: '{{ .Values.configs.networking.external_ip }}'
   LOCAL_IP: '{{ .Values.configs.networking.local_ip }}'
-
+  {{- if eq .Values.configs.networking.enable_k8s_ip true }}
+  K8S_LOCAL_IP: '{{ .Values.general.service_name }}.default.cluster.local'
+  {{ end }}
   # authentication
   AUTHENTICATION: '{{ .Values.configs.authentication.enable }}'
   AUTH_TYPE: '{{ .Values.configs.authentication.type }}'

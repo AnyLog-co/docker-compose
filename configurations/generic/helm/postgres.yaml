@@ -6,6 +6,8 @@ general:
   configmap_name: postgres-configs
   volume_name: postgres-pv
   enable_volume: true
+  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
   replicas: 1
   
 image:

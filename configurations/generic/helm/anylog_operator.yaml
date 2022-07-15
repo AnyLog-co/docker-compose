@@ -8,6 +8,8 @@ general:
   deployment_name: anylog-operator-app
   service_name: anylog-operator-svs
   configmap_name: anylog-operator-configs
+  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
   replicas: 1
   
 image:

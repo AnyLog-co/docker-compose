@@ -8,6 +8,8 @@ general:
   deployment_name: anylog-query-app
   service_name: anylog-query-svs
   configmap_name: anylog-query-configs
+  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
   replicas: 1
   
 image:
