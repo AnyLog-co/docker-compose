@@ -3,6 +3,7 @@
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
+  hostname: anylog-node
   app_name: anylog
   pod_name: anylog-pod
   deployment_name: anylog-app
