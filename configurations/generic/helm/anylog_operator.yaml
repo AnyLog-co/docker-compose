@@ -39,7 +39,7 @@ configs:
     external_ip: ""
     local_ip: ""
     # Proxy IP used by Nginx or other loadbalancer
-    k8s_proxy_ip: ""
+    k8s_proxy_ip: 10.0.0.209
 
   authentication:
     enable: false
