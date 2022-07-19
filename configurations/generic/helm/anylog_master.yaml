@@ -40,7 +40,7 @@ configs:
     external_ip: ""
     local_ip: ""
     # Proxy IP used by Nginx or other loadbalancer. We've tested with Nginx, setting the value to the local IP of the machine
-    k8s_proxy_ip: ""
+    k8s_proxy_ip: 10.0.0.209
 
   authentication:
     enable: false
@@ -60,8 +60,9 @@ configs:
     port: 5432
     user: admin
     password: demo
-    # whether to have system_query database to run against memory directly
+    # whether to have the node support system_query (ie querying data).
     deploy_system_query: false
+    # whether to have system_query database to run against memory directly
     memory: true
 
   settings:
