@@ -55,13 +55,13 @@ configs:
     destination: file
 
   database:
-    type: sqlite
-    ip: ""
-    port: ""
-    user: ""
-    password: ""
+    type: psql
+    ip: postgres-svs
+    port: 5432
+    user: admin
+    password: demo
     # whether to have system_query database to run against memory directly
-    deploy_system_query: true
+    deploy_system_query: false
     memory: true
 
   settings:
