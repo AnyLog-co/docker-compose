@@ -48,7 +48,7 @@ configs:
     password: ""
 
   blockchain:
-    ledger_conn: anylog-master-svs.default.svc.cluster.local:32048
+    ledger_conn: 10.0.0.209:32048
     sync_time: 30 seconds
     source: master
     destination: file
