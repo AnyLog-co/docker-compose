@@ -79,7 +79,7 @@ configs:
   mqtt:
     enable: true
     broker: local
-    port: 32250
+    port: 32160
     log: false
     topic:
       name: anylogedgex
