@@ -1,5 +1,5 @@
 #----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
+# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: predevelop
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
@@ -15,7 +15,7 @@ general:
 image:
   secretName: imagepullsecret
   repository: anylogco/anylog-network
-  tag: predevelop
+  tag: test
   pullPolicy: Always
 
 configs:
@@ -59,6 +59,8 @@ configs:
     port: 5432
     user: admin
     password: demo
+    # whether to have the node support system_query (ie querying data).
+    deploy_system_query: false
     # whether to have system_query database to run against memory directly
     memory: true
 
