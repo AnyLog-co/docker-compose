@@ -42,9 +42,11 @@ data:
   DB_PORT: '{{ .Values.configs.database.port }}'
   DB_USER: '{{ .Values.configs.database.user }}'
   DB_PASSWD: '{{ .Values.configs.database.password }}'
+  DEPLOY_SYSTEM_QUERY: '{{ .Values.configs.database.deploy_system_query }}'
   MEMORY: '{{ .Values.configs.database.memory }}'
 
   # operator params
+  {{- if .Values.configs.operator }}
   MEMBER: '{{ .Values.configs.operator.memory }}'
   CLUSTER_NAME: '{{ .Values.configs.operator.cluster_name }}'
   # run operator params
@@ -58,14 +60,18 @@ data:
   PARTITION_COLUMN: '{{ .Values.configs.operator.partition.column }}'
   PARTITION_INTERVAL: '{{ .Values.configs.operator.partition.interval }}'
   PARTITION_KEEP: '{{ .Values.configs.operator.partition.keep }}'
+  {{ end }}
 
   # publisher params
+  {{- if .Values.configs.publisher }}
   COMPRESS_JSON: '{{ .Values.configs.publisher.compress }}'
   MOVE_JSON: '{{ .Values.configs.publisher.move }}'
   DBMS_FILE_LOCATION: '{{ .Values.configs.publisher.db_location }}'
   TABLE_FILE_LOCATION: '{{ .Values.configs.publisher.file_location }}'
+  {{ end }}
 
   # mqtt
+  {{- if .Values.configs.mqtt }}
   MQTT_ENABLE: '{{ .Values.configs.mqtt.enable }}'
   BROKER: '{{ .Values.configs.mqtt.broker }}'
   MQTT_PORT: '{{ .Values.configs.mqtt.port }}'
@@ -78,6 +84,7 @@ data:
   MQTT_COLUMN_TIMESTAMP: '{{ .Values.configs.mqtt.topic.timestamp }}'
   MQTT_COLUMN_VALUE_TYPE: '{{ .Values.configs.mqtt.topic.value_type }}'
   MQTT_COLUMN_VALUE: '{{ .Values.configs.mqtt.topic.value }}'
+  {{ end }}
 
   # settings
   DEPLOY_LOCAL_SCRIPT: '{{ .Values.configs.settings.deploy_local_script }}'
