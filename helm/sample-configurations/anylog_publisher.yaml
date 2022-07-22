@@ -7,6 +7,8 @@ general:
   deployment_name: anylog-publisher-app
   service_name: anylog-publisher-svs
   configmap_name: anylog-publisher-configs
+  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
   replicas: 1
   
 image:
