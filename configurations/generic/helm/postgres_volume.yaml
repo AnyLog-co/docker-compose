@@ -1,7 +1,9 @@
 general:
   namespace: default
   volume_name: postgres-pv
-  
+  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
+
 spec:
   storage_class: manual
   access_mode: ReadWriteMany

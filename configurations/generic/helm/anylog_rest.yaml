@@ -10,7 +10,10 @@ general:
   configmap_name: anylog-configs
   volume_name: anylog-pv
   enable_volume: true
+  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
   replicas: 1
+
   
 image:
   secretName: imagepullsecret
@@ -34,6 +37,8 @@ configs:
     # Optional external & local IP instead of the default values
     external_ip: ""
     local_ip: ""
+    # Proxy IP used by Nginx or other loadbalancer
+    k8s_proxy_ip: ""
   authentication:
     enable: false
     type: ""

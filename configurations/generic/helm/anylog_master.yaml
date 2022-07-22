@@ -4,16 +4,19 @@
 general:
   namespace: default
   app_name: anylog
+  # pod name is used as a hostname for the pod
   pod_name: anylog-master-pod
   deployment_name: anylog-master-app
   service_name: anylog-master-svs
   configmap_name: anylog-master-configs
+  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
+  #nodeSelector: ""
   replicas: 1
   
 image:
   secretName: imagepullsecret
   repository: anylogco/anylog-network
-  tag: predevelop
+  tag: test
   pullPolicy: Always
 
 configs:
@@ -30,65 +33,36 @@ configs:
   networking:
     server: 32048
     rest: 32049
-    # Optional broker port
-    broker: ""
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
     external_ip: ""
     local_ip: ""
+    # Proxy IP used by Nginx or other loadbalancer. We've tested with Nginx, setting the value to the local IP of the machine
+    k8s_proxy_ip: 10.0.0.209
+
   authentication:
     enable: false
     type: ""
     user: ""
     password: ""
+
   blockchain:
     ledger_conn: 127.0.0.1:32048
     sync_time: 30 seconds
     source: master
-    destination: file
+    destination:  file
+
   database:
-    type: sqlite
-    ip: ""
-    port: ""
-    user: ""
-    password: ""
+    type: psql
+    ip: postgres-svs
+    port: 5432
+    user: admin
+    password: demo
+    # whether to have the node support system_query (ie querying data).
+    deploy_system_query: false
     # whether to have system_query database to run against memory directly
     memory: true
-  operator:
-    # set member ID for operator - should only be used when readding operator to blockchain but keep (file) configs consistent
-    member: ""
-    cluster_name: new-cluster
-    create_table: true
-    update_tsd: true
-    archive: true
-    distributor: true
-    db_name: tests
-    partition:
-        enable: false
-        table: "*"
-        column: timestamp
-        interval: 14 days
-        keep: 6
-        sync: 1 day
-  publisher:
-    compress: true
-    move: true
-    db_location: file_name[0]
-    table_location: file_name[1]
-  mqtt:
-    enable: false
-    broker: driver.cloudmqtt.com
-    port: 18785
-    user: ibglowct
-    password: MSY4e009J7ts
-    log: false
-    topic:
-      name: anylogedgex
-      db_name: test
-      table: plc_device
-      timestamp: now
-      value_type: float
-      value: bring [readings][][value]
+
   settings:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"
@@ -103,6 +77,3 @@ configs:
     write_immediate: true
     threshold_time : 60 seconds
     threshold_volume: 10KB
-
-
-
