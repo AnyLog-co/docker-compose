@@ -33,8 +33,6 @@ configs:
   networking:
     server: 32048
     rest: 32049
-    # Optional broker port
-    broker: ""
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
     external_ip: ""
@@ -52,7 +50,7 @@ configs:
     ledger_conn: 127.0.0.1:32048
     sync_time: 30 seconds
     source: master
-    destination: file
+    destination:  file
 
   database:
     type: psql
@@ -79,6 +77,3 @@ configs:
     write_immediate: true
     threshold_time : 60 seconds
     threshold_volume: 10KB
-
-
-
