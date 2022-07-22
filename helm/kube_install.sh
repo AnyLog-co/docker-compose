@@ -1,35 +1,88 @@
 # Based on -- https://www.linuxbuzz.com/how-to-install-minikube-on-ubuntu/#:~:text=Login%20to%20your%20Ubuntu%2022.04%20%2F%20Ubuntu%2020.04,case%20it%20is%20not%20installed%20the%20refer%20below%3A
-# Docker should already be installed
 
-sudo apt-get -y update
-sudo apt install curl wget apt-transport-https -y
-if [[ ${TYPE} == "x86_64" ]] || [[ ${TYPE} == "amd64" ]]
-then
-  wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-elif [[ ${TYPE} == "arm64" ]]
-then
-  wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-arm64
-else
-  wget https://storage.googleapis.com/minikube/releases/latest/minikube-linux-armv
-fi
+# update / upgrade env
+for CMD in update upgrade update
+do
+    sudo apt-get -y ${CMD}
+done
+# install docker
+sudo apt-get -y install docker.io docker-compose
 
-sudo cp minikube-linux-amd64 /usr/local/bin/minikube
-sudo chmod +x /usr/local/bin/minikube
+# Grant user permission to docker
+USER=`whoami`
+sudo groupadd docker
+sudo usermod -aG docker ${USER}
+newgrp docker
 
-if [[ ${TYPE} == "x86_64" ]] || [[ ${TYPE} == "amd64" ]]
-then
-  curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl
-elif [[ ${TYPE} == "arm64" ]]
-then
-  curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/arm64/kubectl
-else
-  curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/armv/kubectl
-fi
+# requirements for kubectl
+sudo apt-get install -y apt-transport-https ca-certificates curl
+# Download the Google Cloud public signing key
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 
-chmod +x kubectl
-sudo mv kubectl /usr/local/bin
+# Add the Kubernetes apt repository
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 
-minikube start --driver=docker
+# Update apt package index with the new repository and install kubectl
+sudo apt-get update
+sudo apt-get install -y kubectl
 
-# Helm based on -- https://helm.sh/docs/intro/install/
-curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+# download minikube - replace amd64 with arm64 for RPI4
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+# Install minikube
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+# install helm
+sudo snap instal helm --clasic
+
+# update / upgrade env
+for CMD in update upgrade update
+do
+    sudo apt-get -y ${CMD}
+done
+
+# start minikube
+minikube start
+# update / upgrade env
+for CMD in update upgrade update
+do
+    sudo apt-get -y ${CMD}
+done
+# install docker
+sudo apt-get -y install docker.io docker-compose
+
+# Grant user permission to docker
+USER=`whoami`
+sudo groupadd docker
+sudo usermod -aG docker ${USER}
+newgrp docker
+
+# requirements for kubectl
+sudo apt-get install -y apt-transport-https ca-certificates curl
+# Download the Google Cloud public signing key
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+# Add the Kubernetes apt repository
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+# Update apt package index with the new repository and install kubectl
+sudo apt-get update
+sudo apt-get install -y kubectl
+
+# download minikube - replace amd64 with arm64 for RPI4
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+# Install minikube
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+# install helm
+sudo snap instal helm --clasic
+
+# update / upgrade env
+for CMD in update upgrade update
+do
+    sudo apt-get -y ${CMD}
+done
+
+# start minikube
+minikube start

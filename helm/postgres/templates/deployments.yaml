@@ -15,6 +15,10 @@ spec:
       labels:
         app: {{ .Values.general.app_name }}
     spec:
+      {{- if .Values.configs.nodeSelector }}
+      nodeSelector:
+        kubernetes.io/hostname: {{ .Values.configs.nodeSelector }}
+      {{ end }}
       containers:
       - name: '{{ .Values.general.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
@@ -22,6 +26,20 @@ spec:
         envFrom:
         - configMapRef:
             name: '{{ .Values.general.configmap_name }}'
+        tty: true
+        stdin: true
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
+        {{- if eq .Values.general.enable_volume true }}
+        volumeMounts:
+          - mountPath: /var/lib/postgresql/data
+            name: {{ .Values.general.volume_name }}
+        {{ end }}
+      {{- if eq .Values.general.enable_volume true }}
+      volumes:
+        - name: {{ .Values.general.volume_name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.general.volume_name }}-claim
+      {{ end }}
+
