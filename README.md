@@ -8,7 +8,7 @@ Our [deplyoment documentation](https://github.com/AnyLog-co/documentation/tree/m
 terms of how to deploy the differnet AnyLog nodes. We recommend starting with our basic deployment - as shown in the 
 diagram below
 
-<img alt="deployment diagram" src="https://github.com/AnyLog-co/documentation/blob/master/imgs/deployment_diagram.png"/>
+![deployment diagram](https://github.com/AnyLog-co/documentation/blob/master/imgs/deployment_diagram.png)
 
 ### AnyLog Version & Node Types
 AnyLog has 3 major versions, each version is built on both _Ubuntu:20.04_ with _python:3.9-alpine_. 
