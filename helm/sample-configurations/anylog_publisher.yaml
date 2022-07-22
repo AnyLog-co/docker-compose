@@ -1,12 +1,12 @@
 #----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: REST | AnyLog version: develop
+# The following are the general values used to deploy an AnyLog instance of type: Publisher | AnyLog version: develop
 #----------------------------------------------------------------------------------------------------------------------
 general:
   namespace: default
   app_name: anylog
-  deployment_name: anylog-query-app
-  service_name: anylog-query-svs
-  configmap_name: anylog-query-configs
+  deployment_name: anylog-publisher-app
+  service_name: anylog-publisher-svs
+  configmap_name: anylog-publisher-configs
   replicas: 1
   
 image:
@@ -17,73 +17,71 @@ image:
 
 configs:
   basic:
-    node_type: query
-    node_name: anylog-query-node
-    company_name: "Company Name"
+    node_type: publisher
+    node_name: anylog-publisher-node
+    company_name: Company Name
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
+    country: ""
+    state: ""
+    city: ""
+
   networking:
-    server: 32348
-    rest: 32349
+    server: 32248
+    rest: 32249
     # Optional broker port
-    broker: ""
+    broker: 32250
     # master node is not needed for REST node
     # Optional external & local IP instead of the default values
-    external_ip: anylog-query-svs.default.svc.cluster.local
+    external_ip: ""
     local_ip: ""
+    # Proxy IP used by Nginx or other loadbalancer
+    k8s_proxy_ip: 172.104.180.110
+
   authentication:
     enable: false
     type: ""
     user: ""
     password: ""
+
   blockchain:
-    ledger_conn: anylog-master-svs.default.svc.cluster.local:32048
+    ledger_conn: 45.79.74.39:32048
     sync_time: 30 seconds
     source: master
     destination: file
+
   database:
     type: sqlite
     #ip: postgres-svs
     #port: 5432
     #user: admin
     #password: demo
-    # whether to have system_query database to run against memory directly
+    # whether to have the node support system_query (ie querying data).
+    deploy_system_query: false
+    # whether to have system_publisher database to run against memory directly
     memory: true
-  operator:
-    # set member ID for operator - should only be used when readding operator to blockchain but keep (file) configs consistent
-    member: ""
-    cluster_name: new-cluster
-    create_table: true
-    update_tsd: true
-    archive: true
-    distributor: true
-    db_name: tests
-    partition:
-        enable: false
-        table: "*"
-        column: timestamp
-        interval: 14 days
-        keep: 6
-        sync: 1 day
+
   publisher:
     compress: true
     move: true
     db_location: file_name[0]
     table_location: file_name[1]
+
   mqtt:
-    enable: false
-    broker: driver.cloudmqtt.com
-    port: 18785
-    user: ibglowct
-    password: MSY4e009J7ts
+    enable: true
+    broker: rest
+    port: 32249
+#    user: ibglowct
+#    password: MSY4e009J7ts
     log: false
     topic:
-      name: anylogedgex
-      db_name: test
-      table: plc_device
-      timestamp: now
+      name: anylogrest
+      db_name: "bring [dbms]"
+      table: "bring [table]"
+      timestamp: "bring [timestamp]"
       value_type: float
-      value: bring [readings][][value]
+      value: "bring [value]"
+
   settings:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"
@@ -94,7 +92,7 @@ configs:
     # The number of concurrent threads supporting HTTP requests.
     rest_threads: 5
     # Sets the number of threads supporting queries (the default is 3).
-    query_pool: 3
+    publisher_pool: 3
     write_immediate: true
     threshold_time : 60 seconds
     threshold_volume: 10KB
