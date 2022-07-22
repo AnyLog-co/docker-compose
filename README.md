@@ -41,5 +41,4 @@ docker run --network host -it --detach-keys="ctrl-d" --name anylog-node --rm any
 
 ## Support 
 * [AnyLog Documentation](https://github.com/AnyLog-co/documentation) - documentation for AnyLog  
-* [AnyLog API](https://github.com/AnyLog-co/AnyLog-API) - A python package to easily communicate with AnyLog via REST 
-* Directions for configuring nginx can be found in the [helm deployment documentation](helm/README.md#configuring-nginx)
+* [AnyLog API](https://github.com/AnyLog-co/AnyLog-API) - A python package to easily communicate with AnyLog via REST
