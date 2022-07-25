@@ -28,13 +28,13 @@ spec:
         {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
           - mountPath: /var/lib/grafana
-            name: { { .Values.general.volume_name }}
+            name: {{ .Values.general.volume_name }}
         {{ end }}
       {{- if eq .Values.general.enable_volume true }}
       volumes:
         - name: {{ .Values.general.volume_name }}
           emptyDir: {}
-          defaultMode: 420
+          defaultMode: 472
           persistentVolumeClaim:
             claimName: {{ .Values.general.volume_name }}-claim
       {{ end }}
