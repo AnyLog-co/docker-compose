@@ -7,4 +7,4 @@ spec:
   access_mode: ReadWriteMany
   storage_size: 5Gi
   reclaim_policy: Retain
-  host_path: /opt/grafana-data
+  host_path: /opt/grafana

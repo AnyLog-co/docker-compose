@@ -2,7 +2,7 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.volume_name }}-claim
+  name: {{ .Values.general.volume_name }}-logs-claim
 spec:
   storageClassName: {{ .Values.spec.storage_class }}
   accessModes:
@@ -15,7 +15,7 @@ kind: PersistentVolume
 apiVersion: v1
 metadata:
   namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.volume_name }}
+  name: {{ .Values.general.volume_name }}-logs
 spec:
   storageClassName: {{ .Values.spec.storage_class }}
   capacity:
@@ -24,4 +24,4 @@ spec:
     - {{ .Values.spec.access_mode }}
   persistentVolumeReclaimPolicy: {{ .Values.spec.retain_policy }}
   hostPath:
-    path: {{ .Values.spec.host_path }}
+    path: {{ .Values.spec.host_path }}/log
