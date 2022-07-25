@@ -1,7 +1,6 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  namespace: {{ .Values.general.namespace }}
   name: {{ .Values.general.volume_name }}-claim
 spec:
   storageClassName: {{ .Values.spec.storage_class }}
@@ -14,7 +13,6 @@ spec:
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  namespace: {{ .Values.general.namespace }}
   name: {{ .Values.general.volume_name }}
 spec:
   storageClassName: {{ .Values.spec.storage_class }}
