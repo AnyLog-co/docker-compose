@@ -1,4 +1,4 @@
-# Based on: https://github.com/Selvamraju007/K8s-Grafana-setup
+# Based On: https://medium.com/@suyashmohan/setting-up-postgresql-database-on-kubernetes-24a2a192e962
 apiVersion: v2
 name: grafana-volume
 description: A Helm chart for Kubernetes
@@ -22,5 +22,5 @@ version: 7.5.7
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "7.5.7"
+appVersion: "14.0-alpine"
 
