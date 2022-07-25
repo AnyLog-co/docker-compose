@@ -30,26 +30,13 @@ spec:
           - mountPath: /var/lib/grafana
             name: { { .Values.general.volume_name }}
         {{ end }}
-        {{ - if eq .Values.general.enable_volume true }}
-        volumes:
-          - name: {{ .Values.general.volume_name }}
-            persistentVolumeClaim:
-              claimName: {{ .Values.general.volume_name }}-claim
-        {{ end }}
-
-
-        volumeMounts:
-          - mountPath:
-            name: grafana-storage
-          - mountPath: /etc/grafana/provisioning/datasources
-            name: grafana-datasources
-            readOnly: false
+      {{ - if eq .Values.general.enable_volume true }}
       volumes:
-        - name: grafana-storage
-          emptyDir: { }
-        - name: grafana-datasources
-          configMap:
-            defaultMode: 420
-            name: grafana-datasources
+        - name: {{ .Values.general.volume_name }}
+          emptyDir: {}
+          defaultMode: 420
+          persistentVolumeClaim:
+            claimName: {{ .Values.general.volume_name }}-claim
+      {{ end }}
 
 
