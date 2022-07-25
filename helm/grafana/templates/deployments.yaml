@@ -34,7 +34,6 @@ spec:
       volumes:
         - name: {{ .Values.general.volume_name }}
           emptyDir: {}
-          defaultMode: 472
           persistentVolumeClaim:
             claimName: {{ .Values.general.volume_name }}-claim
       {{ end }}
