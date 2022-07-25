@@ -25,15 +25,18 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: 3000
-        {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
           - mountPath: /var/lib/grafana
-            name: {{ .Values.general.volume_name }}
-        {{ end }}
-      {{- if eq .Values.general.enable_volume true }}
+            name: grafana-storage
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: grafana-datasources
+            readOnly: false
       volumes:
-        - name: {{ .Values.general.volume_name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.general.volume_name }}-claim
-      {{ end }}
+        - name: grafana-storage
+          emptyDir: { }
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
+
 
