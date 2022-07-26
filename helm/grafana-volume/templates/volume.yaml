@@ -6,7 +6,7 @@ metadata:
   labels:
     app.kubernetes.io/component: grafana
 spec:
-  storageClassName: grafana.storageClass
+  storageClassName: manual
   accessModes:
     - {{ .Values.spec.access_mode }}
   resources:
