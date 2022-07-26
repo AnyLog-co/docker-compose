@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  namespace: {{ .Vaules.general.namespace }}
+  namespace: {{ .Values.general.namespace }}
   name: {{ .Values.general.volume_name }}-claim
   labels:
     app.kubernetes.io/component: grafana
