@@ -3,19 +3,19 @@
 The following provides general directions for installing AnyLog through _Docker_ and _docker-compose_. Detailed directions
 can be found in our [deployment documentation](https://github.com/AnyLog-co/documentation/tree/os-dev/deployments). 
 
-## Requirements 
+### Requirements 
 There are 2 [basic requirements](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Docker/Prerequisites.md) 
 for deploying AnyLog and its corresponding services.
 * Docker
 * docker-compose 
 
-## Deploying Postgres
+### Deploying Postgres
 ```shell
 cd deployments/docker-compose/postgres 
 docker-compose up -d 
 ```
 
-## Deploying AnyLog Node
+### Deploying AnyLog Node
 1. Go into docker-compose directory
 ```shell
 cd deployments/docker-compose/anylog-node
@@ -34,13 +34,13 @@ ENV_FILE=envs/anylog_rest.env
 docker-compose up -d 
 ```
 
-## Deploying Grafana 
+### Deploying Grafana 
 ```shell
 cd deployments/docker-compose/grafana 
 docker-compose up -d
 ```
 
-## Deploying Remote-CLI
+### Deploying Remote-CLI
 ```shell
 cd deployments/docker-compose/remote-cli 
 docker-compose up -d

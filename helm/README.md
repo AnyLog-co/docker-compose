@@ -3,14 +3,14 @@
 The following provides general directions for installing AnyLog through _helm_ and _Kubernetes_. Detailed directions
 can be found in our [deployment documentation](https://github.com/AnyLog-co/documentation/tree/os-dev/deployments). 
 
-## Requirements 
+### Requirements 
 There are 3 [basic requirements](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Kubernetes/Prerequisites.md) 
 for deploying AnyLog and its corresponding services.
 * Docker 
 * helm
 * Kubernetes deployment tools (we use [minikube](https://minikube.sigs.k8s.io/docs/start/)) 
 
-## Setting-up Nginx
+### Setting-up Nginx
 Due to [networking configurations](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Kubernetes/Networking.md), 
 we recommend setting-up _Nginx_ in order to have consistent IPs in policy declarations of the blockchain.    
 1. Install Nginx 
@@ -97,7 +97,13 @@ server {
 }
 ```
 
-## Deploying Postgres
+5. Update Nginx changes 
+```shell
+sudo service nginx reload 
+sudo service nginx restart 
+```
+
+### Deploying Postgres
 ```shell
 # Deploy Volume for PostgreSQL  
 helm install ~/deployments/packages/postgres-volume-14.0-alpine.tgz --values ~/deployments/configurations/helm/postgres_volume.yaml --name-template postgres-volume 
@@ -106,12 +112,12 @@ helm install ~/deployments/packages/postgres-volume-14.0-alpine.tgz --values ~/d
 helm install ~/deployments/packages/postgres-14.0-alpine.tgz --values ~/deployments/configurations/helm/postgres.yaml --name-template postgres
 ```
 
-## Deploying AnyLog Node
+### Deploying AnyLog Node
 By default, AnyLog _helm_ package is configured to run as a REST node if no `--values` are set.  
 ```shell
 helm install ~/deployments/helm/packages/anylog-node-1.22.3.tgz --values ~/deployments/helm/sample-configurations/${ANYLOG_CONFIG}.yaml --name-template ${DEPLOYMENT_NAME}
 ```
 
-## Deploying Grafana 
+### Deploying Grafana 
 
-## Deploying Remote-CLI 
+### Deploying Remote-CLI 
