@@ -25,3 +25,15 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
+        {{- if eq .Values.general.enable_volume true }}
+        volumeMounts:
+          - mountPath: /app/Remote-CLI/anylog_query/static/json
+            name: {{ .Values.general.volume_name }}
+        {{ end }}
+      {{- if eq .Values.general.enable_volume true }}
+      volumes:
+        - name: {{ .Values.general.volume_name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.general.volume_name }}-claim
+      {{ end }}
+
