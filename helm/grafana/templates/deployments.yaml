@@ -25,12 +25,12 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: 3000
-        {{- if eq .Values.general.enable_volume true }}
+        {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
           - name: local-vol
             mountPath: /var/lib/grafana/
         {{ end }}
-  {{- if eq .Values.general.enable_volume true }}
+  {{- if eq .Values.volume.enable_volume true }}
   volumeClaimTemplates:
   - metadata:
       name: local-vol
@@ -39,6 +39,6 @@ spec:
     storageClassName: "local-storage"
     resources:
       requests:
-        storage: {{ .Values.spec.storage_size }}
+        storage: {{ .Values.volume.storage_size }}
   {{ end }}
 

@@ -4,9 +4,12 @@ general:
   deployment_name: grafana-app
   service_name: grafana-svs
   configmap_name: grafana-configs
-  volume_name: grafana-pv
-  enable_volume: true
   replicas: 1
+
+volume:
+  enable_volume: true
+  volume_name: grafana-pv
+  storage_size: 5Gi
 
 image:
   repository: grafana/grafana
