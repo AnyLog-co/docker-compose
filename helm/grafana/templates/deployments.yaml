@@ -30,14 +30,15 @@ spec:
           - name: local-vol
             mountPath: /var/lib/grafana/
         {{ end }}
-      {{- if eq .Values.general.enable_volume true }}
-      volumeClaimTemplates:
-        - metadata:
-          name: local-vol
-          spec:
-          accessModes: [ "ReadWriteOnce" ]
-          storageClassName: "local-storage"
-          resources:
-            requests:
-              storage: 368Gi
-        {{ end }}
+  {{- if eq .Values.general.enable_volume true }}
+  volumeClaimTemplates:
+  - metadata:
+      name: local-vol
+    spec:
+    accessModes: [ "ReadWriteOnce" ]
+    storageClassName: "local-storage"
+    resources:
+      requests:
+        storage: {{ .Values.spec.storage_size }}
+  {{ end }}
+
