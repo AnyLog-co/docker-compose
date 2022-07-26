@@ -6,6 +6,7 @@ metadata:
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
+  serviceName: {{ .Values.general.service_name }}
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
