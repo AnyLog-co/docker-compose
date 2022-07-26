@@ -11,6 +11,8 @@ for deploying AnyLog and its corresponding services.
 * Kubernetes deployment tools (we use [minikube](https://minikube.sigs.k8s.io/docs/start/)) 
 
 ## Setting-up Nginx
+Due to [networking configurations](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Kubernetes/Networking.md), 
+we recommend setting-up _Nginx_ in order to have consistent IPs in policy declarations of the blockchain.    
 1. Install Nginx 
 ```shell 
 sudo apt-get -y install nginx
