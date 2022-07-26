@@ -7,11 +7,8 @@ else
   exit 1
 fi
 
-DOCKER_REGISTRY_SERVER=docker.io
-DOCKER_USER=oshadmon
-DOCKER_EMAIL=ori@anylog.co
 kubectl create secret docker-registry imagepullsecret \
-  --docker-server=${DOCKER_REGISTRY_SERVER} \
-  --docker-username=${DOCKER_USER} \
+  --docker-server=docker.io \
+  --docker-username=anyloguser \
   --docker-password=${DOCKER_PASSWORD} \
-  --docker-email=${DOCKER_EMAIL}
+  --docker-email=anyloguser@anylog.co
