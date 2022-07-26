@@ -35,10 +35,10 @@ spec:
   - metadata:
       name: local-vol
     spec:
-    accessModes: [ "ReadWriteOnce" ]
-    storageClassName: "local-storage"
-    resources:
-      requests:
-        storage: {{ .Values.volume.storage_size }}
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-storage"
+      resources:
+        requests:
+          storage: {{ .Values.volume.storage_size }}
   {{ end }}
 
