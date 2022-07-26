@@ -107,7 +107,7 @@ helm install ~/deployments/packages/postgres-14.0-alpine.tgz --values ~/deployme
 ```
 
 ## Deploying AnyLog Node
-
+By default, AnyLog _helm_ package is configured to run as a REST node if no `--values` are set.  
 ```shell
 helm install ~/deployments/helm/packages/anylog-node-1.22.3.tgz --values ~/deployments/helm/sample-configurations/${ANYLOG_CONFIG}.yaml --name-template ${DEPLOYMENT_NAME}
 ```
