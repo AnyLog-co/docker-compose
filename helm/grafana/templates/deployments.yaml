@@ -29,6 +29,7 @@ spec:
         volumeMounts:
           - name: {{ .Values.general.volume_name }}
             mountPath: /var/lib/grafana/
+            emptyDir: {}
         {{ end }}
       {{- if .Values.general.enable_volume true }}
       volumes:
