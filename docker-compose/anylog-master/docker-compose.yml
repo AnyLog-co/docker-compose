@@ -1,9 +1,9 @@
 version: "2.2"
 services:
   anylog-master-node:
-    image: anylogco/anylog-network:predevelop
+    image: anylogco/anylog-network:develop
     env_file:
-      - anylog_master.env
+      - anylog_configs.env
     container_name: anylog-master-node
     stdin_open: true
     tty: true

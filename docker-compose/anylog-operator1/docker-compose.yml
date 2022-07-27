@@ -1,0 +1,20 @@
+version: "2.2"
+services:
+  anylog-operator-node1:
+    image: anylogco/anylog-network:develop
+    env_file:
+      - anylog_configs.env
+    container_name: anylog-operator-node1
+    stdin_open: true
+    tty: true
+    network_mode: "host" 
+    volumes:
+      - anylog-operator-node1-anylog:/app/AnyLog-Network/anylog
+      - anylog-operator-node1-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-operator-node1-data:/app/AnyLog-Network/data
+      - anylog-operator-node1-local-scripts:/app/AnyLog-Network/scripts
+volumes:
+  anylog-operator-node1-anylog:
+  anylog-operator-node1-blockchain:
+  anylog-operator-node1-data:
+  anylog-operator-node1-local-scripts:
