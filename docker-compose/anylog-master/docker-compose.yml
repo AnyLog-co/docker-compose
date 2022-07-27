@@ -1,0 +1,20 @@
+version: "2.2"
+services:
+  anylog-master-node:
+    image: anylogco/anylog-network:predevelop
+    env_file:
+      - anylog_master.env
+    container_name: anylog-master-node
+    stdin_open: true
+    tty: true
+    network_mode: "host" 
+    volumes:
+      - anylog-master-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-master-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-master-node-data:/app/AnyLog-Network/data
+      - anylog-master-node-local-scripts:/app/AnyLog-Network/scripts
+volumes:
+  anylog-master-node-anylog:
+  anylog-master-node-blockchain:
+  anylog-master-node-data:
+  anylog-master-node-local-scripts:
