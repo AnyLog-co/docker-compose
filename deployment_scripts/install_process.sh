@@ -26,3 +26,4 @@ then
   bash installations/kube_install.sh
   bash installations/kube_credentials.sh ${DOCKER_PASSWORD}
 fi
+
