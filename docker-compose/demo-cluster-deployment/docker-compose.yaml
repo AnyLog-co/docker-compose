@@ -1,0 +1,49 @@
+version: "2.2"
+services:
+  postgres:
+      image: postgres:14.0-alpine
+      env_file:
+        - envs/postgres.env
+      container_name: postgres
+      stdin_open: true
+      tty: true
+      ports:
+        - "5432:5432"
+      volumes:
+        - pgdata:/var/lib/postgresql/data
+  anylog-master-node:
+    image: anylogco/anylog-network:develop
+    env_file:
+      - envs/anylog_master.env
+    container_name: anylog-master-node
+    stdin_open: true
+    tty: true
+    network_mode: "host"
+    volumes:
+      - anylog-master-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-master-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-master-node-data:/app/AnyLog-Network/data
+      - anylog-master-node-local-scripts:/app/AnyLog-Network/scripts
+  anylog-query-node:
+    image: anylogco/anylog-network:develop
+    env_file:
+      - envs/anylog_query.env
+    container_name: anylog-query-node
+    stdin_open: true
+    tty: true
+    network_mode: "host"
+    volumes:
+      - anylog-query-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-query-node-data:/app/AnyLog-Network/data
+      - anylog-query-node-local-scripts:/app/AnyLog-Network/scripts
+volumes:
+  pgdata:
+  anylog-master-node-anylog:
+  anylog-master-node-blockchain:
+  anylog-master-node-data:
+  anylog-master-node-local-scripts:
+  anylog-query-node-anylog:
+  anylog-query-node-blockchain:
+  anylog-query-node-data:
+  anylog-query-node-local-scripts:
