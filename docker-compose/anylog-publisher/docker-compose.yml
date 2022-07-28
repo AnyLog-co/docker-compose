@@ -1,0 +1,20 @@
+version: "2.2"
+services:
+  anylog-publisher-node:
+    image: anylogco/anylog-network:develop
+    env_file:
+      - anylog_configs.env
+    container_name: anylog-publisher-node
+    stdin_open: true
+    tty: true
+    network_mode: "host" 
+    volumes:
+      - anylog-publisher-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-publisher-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-publisher-node-data:/app/AnyLog-Network/data
+      - anylog-publisher-node-local-scripts:/app/AnyLog-Network/scripts
+volumes:
+  anylog-publisher-node-anylog:
+  anylog-publisher-node-blockchain:
+  anylog-publisher-node-data:
+  anylog-publisher-node-local-scripts:

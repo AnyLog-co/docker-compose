@@ -1,10 +1,10 @@
 version: "2.2"
 services:
   anylog-node:
-    image: ${REPOSITORY}:${TAG}
+    image: anylogco/anylog-network:develop
     env_file:
-      - ${ENV_FILE}
-    container_name: ${CONTAINER_NAME}
+      - anylog_configs.env
+    container_name: anylog-node
     stdin_open: true
     tty: true
     network_mode: "host" 
@@ -15,14 +15,6 @@ services:
       - anylog-node-local-scripts:/app/AnyLog-Network/scripts
 volumes:
   anylog-node-anylog:
-      external:
-        name: ${CONTAINER_NAME}-anylog
   anylog-node-blockchain:
-    external:
-      name: ${CONTAINER_NAME}-blockchain
   anylog-node-data:
-    external:
-      name: ${CONTAINER_NAME}-data
   anylog-node-local-scripts:
-    external:
-      name: ${CONTAINER_NAME}-local-scripts
