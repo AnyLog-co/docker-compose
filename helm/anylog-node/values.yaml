@@ -27,6 +27,7 @@ configs:
     company_name: new company
     # if location is not set, will use `https://ipinfo.io/json` to get coordinates
     location: ""
+
   networking:
     server: 32048
     rest: 32049
@@ -36,59 +37,13 @@ configs:
     local_ip: ""
     # Proxy IP used by Nginx or other loadbalancer
     k8s_proxy_ip: ""
+
   authentication:
     enable: false
     type: ""
     user: ""
     password: ""
-  blockchain:
-    ledger_conn: anylog-svs.default.svc.cluster.local:32048
-    sync_time: 30 seconds
-    source: master
-    destination: file
-  database:
-    type: psql
-    ip: postgres-sv
-    port: 5432
-    user: admin
-    password: demo
-    # whether to have system_query database to run against memory directly
-    memory: false
-  operator:
-    # set member ID for operator - should only be used when readding operator to blockchain but keep (file) configs consistent
-    member: ""
-    cluster_name: new-cluster
-    create_table: true
-    update_tsd: true
-    archive: true
-    distributor: true
-    db_name: tests
-    partition:
-        enable: false
-        table: "*"
-        column: timestamp
-        interval: 14 days
-        keep: 6
-        sync: 1 day
-  publisher:
-    compress: true
-    move: true
-    db_location: file_name[0]
-    table_location: file_name[1]
-  mqtt:
-    enable: false
-    broker: driver.cloudmqtt.com
-    port: 18785
-    user: ibglowct
-    password: MSY4e009J7ts
-    log: false
-    topic:
-      name: anylogedgex
-      db_name: test
-      table: plc_device
-      timestamp: now
-      value_type: float
-      value: bring [readings][][value]
+
   settings:
     # whether to deploy a local script that extends the default startup script
     deploy_local_script: "false"

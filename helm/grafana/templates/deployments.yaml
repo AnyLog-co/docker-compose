@@ -1,11 +1,12 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   namespace: '{{ .Values.general.namespace }}'
   name: '{{ .Values.general.deployment_name }}'
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
+  serviceName: {{ .Values.general.service_name }}
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
@@ -25,21 +26,20 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: 3000
-        {{- if eq .Values.general.enable_volume true }}
+        {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
-          - mountPath: /var/lib/postgresql/data
-            name: {{ .Values.general.volume_name }}
+          - name: local-vol
+            mountPath: /var/lib/grafana/
         {{ end }}
-      {{- if eq .Values.general.enable_volume true }}
-      volumes:
-        - name: {{ .Values.general.volume_name }}-data
-          persistentVolumeClaim:
-            claimName: {{ .Values.general.volume_name }}-data-claim
-        - name: {{ .Values.general.volume_name }}-configs
-          persistentVolumeClaim:
-            claimName: {{ .Values.general.volume_name }}-configs-claim
-        - name: {{ .Values.general.volume_name }}-logs
-          persistentVolumeClaim:
-            claimName: {{ .Values.general.volume_name }}-logs-claim
-      {{ end }}
+  {{- if eq .Values.volume.enable_volume true }}
+  volumeClaimTemplates:
+  - metadata:
+      name: local-vol
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-storage"
+      resources:
+        requests:
+          storage: {{ .Values.volume.storage_size }}
+  {{ end }}
 

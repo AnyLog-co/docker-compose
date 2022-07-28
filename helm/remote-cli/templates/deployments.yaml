@@ -27,9 +27,8 @@ spec:
           containerPort: {{ .Values.networking.port }}
         {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
-          - name: {{ .Values.general.volume_name }}
-            mountPath: /app/Remote-CLI/anylog_query/static/json
-            subPath: commands.json
+          - mountPath: /app/Remote-CLI/anylog_query/static/json
+            name: {{ .Values.general.volume_name }}
         {{ end }}
       {{- if eq .Values.general.enable_volume true }}
       volumes:
@@ -37,3 +36,4 @@ spec:
           persistentVolumeClaim:
             claimName: {{ .Values.general.volume_name }}-claim
       {{ end }}
+
