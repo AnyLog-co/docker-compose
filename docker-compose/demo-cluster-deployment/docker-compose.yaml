@@ -17,6 +17,9 @@ services:
         timeout: 5s
         retries: 5
   anylog-master-node:
+    depends_on:
+      postgres:
+        condition: service_healthy
     image: anylogco/anylog-network:${TAG}
     env_file:
       - envs/anylog_master.env
@@ -30,6 +33,9 @@ services:
       - anylog-master-node-data:/app/AnyLog-Network/data
       - anylog-master-node-local-scripts:/app/AnyLog-Network/scripts
   anylog-query-node:
+    depends_on:
+      postgres:
+        condition: service_healthy
     image: anylogco/anylog-network:${TAG}
     env_file:
       - envs/anylog_query.env
@@ -43,6 +49,9 @@ services:
       - anylog-query-node-data:/app/AnyLog-Network/data
       - anylog-query-node-local-scripts:/app/AnyLog-Network/scripts
   anylog-operator-node1:
+    depends_on:
+      postgres:
+        condition: service_healthy
     image: anylogco/anylog-network:${TAG}
     env_file:
       - envs/anylog_operator1.env
@@ -56,6 +65,9 @@ services:
       - anylog-operator-node1-data:/app/AnyLog-Network/data
       - anylog-operator-node1-local-scripts:/app/AnyLog-Network/scripts
   anylog-operator-node2:
+    depends_on:
+      postgres:
+        condition: service_healthy
     image: anylogco/anylog-network:${TAG}
     env_file:
       - envs/anylog_operator2.env
