@@ -1,0 +1,18 @@
+version: '3'
+services:
+  db:
+    image: mongo:latest
+    restart: always
+    container_name: mongodb
+    stdin_open: true
+    tty: true
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - db-data:/data/db
+      - mongo-config:/data/configdb
+volumes:
+  db-data:
+  mongo-config:
