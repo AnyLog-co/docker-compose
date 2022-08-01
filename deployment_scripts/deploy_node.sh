@@ -18,4 +18,4 @@ do
   read -p "Invalid Option '${DEPLOYMENT_TYPE}'. Deployment Type [options: docker, kubernetes]: " DEPLOYMENT_TYPE
 done
 
-python3 questions.py ${NODE_TYPE} ${DEPLOYMENT_TYPE}
+python3 questions.py ${NODE_TYPE} --deployment-type ${DEPLOYMENT_TYPE}
