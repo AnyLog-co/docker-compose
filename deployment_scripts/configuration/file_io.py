@@ -3,35 +3,35 @@ The following provides the needed methods for configuration file I/O
 - YAML: https://pynative.com/python-yaml/#:~:text=Use%20the%20PyYAML%20module%E2%80%99s%20yaml.dump%20%28%29%20method%20to,to%20convert%20Python%20dictionary%20into%20a%20YAML%20stream.
 - .env: https://www.makeuseof.com/dotenv-file-read-data-python-nodejs-golang/#:~:text=How%20to%20Read%20the.env%20File%20in%20Python%20You,the%20functionality%20to%20read%20data%20from%20a.env%20file.
 """
+import dotenv
+import json
 import os
 import yaml
-import dotenv
 
-
-def __validate_file(yaml_file:str)->str:
+def __validate_file(file_name:str)->str:
     """
     Validate if file exists
     :args:
-        yaml_file:str - YAML file to validate it exists
+        file_name:str - file to validate it exists
     :params:
         full_path:str - full path of YAML file
     :return:
         if success return full path, else return None
     """
-    full_path = os.path.expandvars(os.path.expanduser(yaml_file))
+    full_path = os.path.expandvars(os.path.expanduser(file_name))
     if not os.path.isfile(full_path):
-        print(f'Failed to locate YAML file {yaml_file}. Cannot continue')
+        print(f'Failed to locate file {file_name}. Cannot continue')
         full_path = None
     return full_path
 
 
-def __create_file(yaml_file:str)->str:
-    full_path = os.path.expandvars(os.path.expanduser(yaml_file))
+def __create_file(file_name:str)->str:
+    full_path = os.path.expandvars(os.path.expanduser(file_name))
     if not os.path.isfile(full_path):
         try:
             open(full_path, 'x')
         except Exception as error:
-            print(f'Failed to create file {yaml_file}. Cannot continue (Error: {error})')
+            print(f'Failed to create file {file_name}. Cannot continue (Error: {error})')
             full_path = None
         return full_path
 
@@ -48,7 +48,7 @@ def read_yaml_file(yaml_file:str)->dict:
         if file is properly read, then it returns a (content) dictionary, else None
     """
     content = None
-    full_path = __validate_file(yaml_file=yaml_file)
+    full_path = __validate_file(file_name=yaml_file)
     if full_path is not None:
         try:
             with open(full_path) as yml:
@@ -79,7 +79,7 @@ def write_yaml_file(content:dict, yaml_file:str='$HOME/deployments/helm/sample-c
         if success True, else False
     """
     status = False
-    full_path = __create_file(yaml_file=yaml_file)
+    full_path = __create_file(file_name=yaml_file)
     if full_path is not None:
         try:
             with open(full_path, 'w') as yml:
@@ -95,14 +95,26 @@ def write_yaml_file(content:dict, yaml_file:str='$HOME/deployments/helm/sample-c
     return status
 
 
-def read_dotenv_file(dotenv_file:str):
+def read_dotenv_file(dotenv_file:str)->dict:
+    """
+    Given a dotenv file, read its content & return it
+    :args:
+        dotenv_file:str - file to read content from
+    :params:
+        content:dict - content to return
+        full_path:str - full file path
+    :return:
+        content
+    """
     content = None
-    full_path = __validate_file(yaml_file=dotenv_file)
+    full_path = __validate_file(file_name=dotenv_file)
     if full_path is not None:
         try:
-            print(dotenv.load_dotenv(full_path))
+            content = json.loads(json.dumps(dotenv.dotenv_values(full_path)))
         except Exception as error:
             print(f'Failed to load {dotenv_file} (Error: {error})')
+
+    return content
 
 if __name__ == '__main__':
     # content = read_yaml_file(yaml_file='$HOME/deployments/helm/sample-configurations/anylog_master.yml')
