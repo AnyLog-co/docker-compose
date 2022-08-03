@@ -1,7 +1,9 @@
 import argparse
 import json
+import os
 import requests
 import socket
+import file_io
 
 def __local_ip():
     """
@@ -608,14 +610,41 @@ def policy_questsion(section:str):
 
 def main():
     """
-
+    Set configuration file(s)
+    :process:
+        0. install requirements - separate script
+        1. based on params - read configuration file(s)
+        2. update default params
+        3. user to update params
+        5. rewrite configs
+        6. deploy node(s) - separate script
+    :positional arguments:
+        node_type       select node type to prepare. Option help will provide details about the different node types
+            * help - provides an explanation for each node type
+            * rest - sandbox for understanding AnyLog as only TCP & REST are configured
+            * master - a database node replacing an actual blockchain
+            * operator - node where data will be stored
+            * query - node dedicated to querying data
+            * publisher - node for distributing data among operators
+            * demo - deployment of 1 master, 2 operator and a query node on a single machine using docker. In addition,
+                     the deployment also runs PostgreSQL, Grafana and Remote-CLI. This will overwrite deployment-type
+    :optional arguments:
+        -h, --help            show this help message and exit
+        --deployment-type     Deployment type
+            * docker
+            * kubernetes
+    :params:
+        ROOT_DIR:str - root directory
+        file_params:dict - parameters from file. For the case of "demo" deployment, it's a dictionary with all the variables
+                            from the different nodes
     """
+    ROOT_DIR = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
+
     parse = argparse.ArgumentParser()
-    parse.add_argument('node_type', choices=['help', 'rest', 'master', 'operator', 'query', 'publisher'], default='rest',
+    parse.add_argument('node_type', choices=['help', 'rest', 'master', 'operator', 'query', 'publisher', 'demo'], default='rest',
                        help='select node type to prepare. Option help will provide details about the different node types')
     parse.add_argument('--deployment-type', choices=['docker', 'kubernetes'], default='docker', help='Deployment type')
     args = parse.parse_args()
-
     if args.node_type == 'help':
         print('Node type options to deploy:'
               +'\n\trest - sandbox for understanding AnyLog as only TCP & REST are configured'
@@ -623,17 +652,44 @@ def main():
               +'\n\toperator - node where data will be stored'
               +'\n\tpublisher - node to distribute data among operators'
               +'\n\tquery - node dedicated to master node'
+              +'\n\tdemo - configure the (docker) demo-cluster-deployment. This will overwrite the deployment-type'
         )
         exit(1)
-    print("AnyLog Configuration Questionnaire. Type 'help' for information regarding param ")
-    for section in list(PARAMS.keys()):
-        if section == args.node_type: # publisher or operator
-            policy_questsion(section=section)
-        elif section == 'mqtt' and args.node_type in ['rest', 'operator', 'publisher']:
-            policy_questsion(section=section)
-        else:
-            policy_questsion(section=section)
-    print(json.dumps(PARAMS, indent=4))
+    elif args.node_type == 'demo' or args.deployment_type == 'docker':
+        ROOT_DIR = os.path.join(ROOT_DIR, 'docker-compose')
+    elif args.deployment_type == 'kubernetes':
+        ROOT_DIR = os.path.join(ROOT_DIR, 'helm', 'sample-configurations')
+
+    # Read configs
+    if args.node_type != 'demo' and args.deployment_type == 'docker':
+        file_name = os.path.join(ROOT_DIR, f'anylog-{args.node_type}', 'anylog_configs.env')
+        if args.node_type == 'operator':
+            file_name = os.path.join(ROOT_DIR, f'anylog-{args.node_type}1', 'anylog_configs.env')
+        file_params = file_io.read_dotenv_file(file_name)
+    elif args.node_type != 'demo' and args.deployment_type == 'kubernetes':
+        file_name = os.path.join(ROOT_DIR, f'anylog_{args.node_type}.yml')
+        if args.node_type == 'operator':
+            os.path.join(ROOT_DIR, f'anylog_{args.node_type}1.yml')
+        file_params = file_io.read_yaml_file(file_name)
+    elif args.node_type == 'demo':
+        file_params = {'master': {}, 'operator1': {}, 'operator2': {}, 'query': {}}
+        ROOT_DIR = os.path.join(ROOT_DIR, 'demo-cluster-deployment', 'envs')
+        for key in file_params:
+            file_path = os.path.join(ROOT_DIR, f'anylog_{key}.env')
+            file_params[key] = file_io.read_dotenv_file(file_path)
+
+    # Update configurations
+
+    # print("AnyLog Configuration Questionnaire. Type 'help' for information regarding param ")
+    # # Update parameters
+    # for section in list(PARAMS.keys()):
+    #     if section == args.node_type: # publisher or operator
+    #         policy_questsion(section=section)
+    #     elif section == 'mqtt' and args.node_type in ['rest', 'operator', 'publisher']:
+    #         policy_questsion(section=section)
+    #     else:
+    #         policy_questsion(section=section)
+    # print(json.dumps(PARAMS, indent=4))
 
 
 if __name__ == '__main__':
