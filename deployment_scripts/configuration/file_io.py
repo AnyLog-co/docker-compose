@@ -26,14 +26,23 @@ def __validate_file(file_name:str)->str:
 
 
 def __create_file(file_name:str)->str:
+    """
+    Create file to write content into if DNE
+    :Args:
+        file_name:str - file to create
+    :params:
+        full_path:str - full path of file_name
+    """
     full_path = os.path.expandvars(os.path.expanduser(file_name))
+
     if not os.path.isfile(full_path):
         try:
             open(full_path, 'x')
         except Exception as error:
             print(f'Failed to create file {file_name}. Cannot continue (Error: {error})')
             full_path = None
-        return full_path
+
+    return full_path
 
 
 def read_yaml_file(yaml_file:str)->dict:
@@ -116,7 +125,44 @@ def read_dotenv_file(dotenv_file:str)->dict:
 
     return content
 
+
+def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/helm/docker-compose/test.dotenv')->bool:
+    """
+    Write content into YAML file
+    :disclaimer:
+        The Order of sections changes, but this should not affect the code as the values within the section(s) stay
+        consistent
+    :args:
+        content:dict - content to write into YAML file
+        dotenv_file:str - file to write content into
+    :params:
+        status:bool
+        full_path:str - full path of the node
+    :return:
+        if success True, else False
+    """
+    status = False
+    full_path = __create_file(file_name=dotenv_file)
+    if os.path.isfile(full_path):
+        try:
+            with open(full_path, 'w') as denv:
+                for key in content:
+                    input = f'{key}={content[key]}'
+                    if key != list(content)[-1]:
+                        input += "\n"
+                    try:
+                        denv.write(input)
+
+                    except Exception as error:
+                        print(f'Failed to write content ({key}={content[key]}) into {dotenv_file} (Error: {error})')
+        except Exception as error:
+            print(f'Failed to open {dotenv_file} (Error: {error})')
+        else:
+            status = True
+    return status
+
 if __name__ == '__main__':
     # content = read_yaml_file(yaml_file='$HOME/deployments/helm/sample-configurations/anylog_master.yml')
     # write_yaml_file(content=content, yaml_file='$HOME/deployments/helm/sample-configurations/test.yml')
-    read_dotenv_file(dotenv_file='$HOME/deployments/docker-compose/anylog-master/anylog_configs.env')
+    content = read_dotenv_file(dotenv_file='$HOME/deployments/docker-compose/anylog-master/anylog_configs.env')
+    write_dotenv_file(content=content, dotenv_file='$HOME/deployments/docker-compose/test.env')
