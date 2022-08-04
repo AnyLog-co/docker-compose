@@ -23,8 +23,8 @@ The following docker-compose package deploys the following services on a single 
       * COMPANY_NAME
       * _DB_USER_ & _DB_PASSWORD_ if using PostgreSQL & changed its credentials
       * logical database name (_DEFAULT_DBMS_ and _MQTT_TOPIC_DBMS_)
-      * _CLUSTER_NAME_
-   4. By default the deployment is set to download anylog-network version: `demo`. To use a different version 
+      * CLUSTER_NAME
+   4. By default, the deployment is set to download anylog-network version: `demo`. To use a different version 
 (such as `predevelop`) change the _tag_ value in [.env](.env) file. 
 
 
@@ -49,10 +49,12 @@ cd lfedge-code/edgex
     MQTT_USER=""
     MQTT_PASSWORD=""
     ```
-   2. If you're using update the `ARCH` value in _line 27_. Sample ARCH value for ARM64: `ARCH=-arm64`
+   2. If you're using a machine with CPU type other than _amd64_ update the `ARCH` value in _line 27_. 
+   Sample ARCH value for ARM64: `ARCH=-arm64`
    ```dotenv
     # default amd64 machine 
    ARCH=""
+   
     # update to arm64 machine 
    ARCH=-arm64
    ```
