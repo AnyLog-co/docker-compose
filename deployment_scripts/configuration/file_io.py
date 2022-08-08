@@ -45,6 +45,31 @@ def __create_file(file_name:str)->str:
     return full_path
 
 
+def read_json(json_file:str)->dict:
+    """
+    Given a JSON file, read its content
+    :args:
+        json_file:str - JSON file to read
+    :params:
+        content:dict - content from JSON file
+        full_path:str - get full path of JSON file
+    :return:
+        if file is properly read, then it returns a (content) dictionary, else None
+    """
+    content = None
+    full_path = __validate_file(file_name=json_file)
+    if full_path is not None:
+        try:
+            with open(json_file) as jsn:
+                try:
+                    content = json.load(jsn)
+                except Exception as error:
+                    print(f'Failed to load content from {json_file} (Error: {error})')
+        except Exception as error:
+            print(f'Failed to open JSON file {json_file} (Error: {error})')
+    return  content
+
+
 def read_yaml_file(yaml_file:str)->dict:
     """
     Given a YAML file, read its content
@@ -64,8 +89,7 @@ def read_yaml_file(yaml_file:str)->dict:
                 try:
                     content = yaml.load(yml, Loader=yaml.loader.SafeLoader)
                 except Exception as error:
-                    print(f'Failed to read load content from {yaml_file} (Error: {error})')
-                    status = False
+                    print(f'Failed to load content from {yaml_file} (Error: {error})')
         except Exception as error:
             print(f'Failed to open YAML file {yaml_file} (Error: {error})')
 
