@@ -45,6 +45,31 @@ def __create_file(file_name:str)->str:
     return full_path
 
 
+def read_json(json_file:str)->dict:
+    """
+    Given a JSON file, read its content
+    :args:
+        json_file:str - JSON file to read
+    :params:
+        content:dict - content from JSON file
+        full_path:str - get full path of JSON file
+    :return:
+        if file is properly read, then it returns a (content) dictionary, else None
+    """
+    content = None
+    full_path = __validate_file(file_name=json_file)
+    if full_path is not None:
+        try:
+            with open(json_file) as jsn:
+                try:
+                    content = json.load(jsn)
+                except Exception as error:
+                    print(f'Failed to load content from {json_file} (Error: {error})')
+        except Exception as error:
+            print(f'Failed to open JSON file {json_file} (Error: {error})')
+    return  content
+
+
 def read_yaml_file(yaml_file:str)->dict:
     """
     Given a YAML file, read its content
@@ -64,8 +89,7 @@ def read_yaml_file(yaml_file:str)->dict:
                 try:
                     content = yaml.load(yml, Loader=yaml.loader.SafeLoader)
                 except Exception as error:
-                    print(f'Failed to read load content from {yaml_file} (Error: {error})')
-                    status = False
+                    print(f'Failed to load content from {yaml_file} (Error: {error})')
         except Exception as error:
             print(f'Failed to open YAML file {yaml_file} (Error: {error})')
 
@@ -126,7 +150,7 @@ def read_dotenv_file(dotenv_file:str)->dict:
     return content
 
 
-def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/helm/docker-compose/test.dotenv')->bool:
+def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/docker-compose/test.dotenv')->bool:
     """
     Write content into YAML file
     :disclaimer:
@@ -143,27 +167,34 @@ def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/helm/docker-c
     """
     status = False
     full_path = __create_file(file_name=dotenv_file)
+    stmt = ""
     if os.path.isfile(full_path):
+        for section in content:
+            for param in content[section]:
+                if 'value' in content[section][param] and content[section][param]['value'] != "":
+                    if content[section][param]['value'] in [True, False]:
+                        content[section][param]['value'] = str(content[section][param]['value']).lower()
+                    input = f"{param}={content[section][param]['value']}"
+                elif content[section][param]['default'] != "":
+                    if content[section][param]['default'] in [True, False]:
+                        content[section][param]['default'] = str(content[section][param]['default']).lower()
+                    input = f"{param}={content[section][param]['default']}"
+                else:
+                    input = f"#{param}=<{param}>"
+                stmt += f"# {content[section][param]['description']}\n{input}\n"
+
+            stmt += "\n"
+
         try:
             with open(full_path, 'w') as denv:
-                for key in content:
-                    input = f'{key}={content[key]}'
-                    if key != list(content)[-1]:
-                        input += "\n"
-                    try:
-                        denv.write(input)
-
-                    except Exception as error:
-                        print(f'Failed to write content ({key}={content[key]}) into {dotenv_file} (Error: {error})')
+                try:
+                    denv.write(stmt)
+                except Exception as error:
+                    print(f'Failed to write params into file: {file_name} (Error: {error})')
         except Exception as error:
-            print(f'Failed to open {dotenv_file} (Error: {error})')
+            print(f'Failed to write open file: {file_name} (Error: {error})')
         else:
             status = True
+
     return status
 
-
-if __name__ == '__main__':
-    # content = read_yaml_file(yaml_file='$HOME/deployments/helm/sample-configurations/anylog_master.yml')
-    # write_yaml_file(content=content, yaml_file='$HOME/deployments/helm/sample-configurations/test.yml')
-    content = read_dotenv_file(dotenv_file='$HOME/deployments/docker-compose/anylog-master/anylog_configs.env')
-    write_dotenv_file(content=content, dotenv_file='$HOME/deployments/docker-compose/test.env')
