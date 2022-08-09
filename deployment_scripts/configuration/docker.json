@@ -6,7 +6,7 @@
       "description": "Deployment node type"
     },
     "NODE_NAME": {
-      "default": "anylog-operator-node1",
+      "default": "anylog-node",
       "value": "",
       "description": "Unique name for the AnyLog node"
     },

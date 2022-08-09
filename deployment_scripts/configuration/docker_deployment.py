@@ -157,6 +157,7 @@ def main():
         exit(1)
 
     file_path = os.path.join(__file__.rsplit('docker_deployment.py', 1)[0], 'docker.json')
+    dotenv_file = os.path.join(__file__.rsplit('configuration', 1)[0], 'configs', f'{args.node_type}.env')
     configurations = __update_configs(node_type=args.node_type, config_file=file_path)
 
     for section in configurations:
@@ -170,8 +171,7 @@ def main():
 
         print("\n")
 
-    file_io.write_dotenv_file(content=configurations)
-
+    file_io.write_dotenv_file(content=configurations, dotenv_file=dotenv_file)
 
 
 
