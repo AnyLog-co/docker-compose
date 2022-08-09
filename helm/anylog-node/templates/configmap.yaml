@@ -60,6 +60,7 @@ data:
   PARTITION_COLUMN: '{{ .Values.configs.operator.partition.column }}'
   PARTITION_INTERVAL: '{{ .Values.configs.operator.partition.interval }}'
   PARTITION_KEEP: '{{ .Values.configs.operator.partition.keep }}'
+  PARTITION_SYNC: '{{ .Values.configs.operator.partition.sync }}'
   {{ end }}
 
   # publisher params
