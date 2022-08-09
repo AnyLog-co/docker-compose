@@ -156,9 +156,12 @@ def main():
         )
         exit(1)
 
+    file_path = os.path.join(__file__.rsplit('docker_deployment.py', 1)[0], 'docker.json')
+    configurations = __update_configs(node_type=args.node_type, config_file=file_path)
+
     for section in configurations:
         print(f'Configurations for {args.node_type.capitalize()} - {section.capitalize().replace("Mqtt", "MQTT").replace("Db", "DB")}')
-        configurations[section] = questions.questions(section_params=configurations[section])
+        configurations[section] = questions.questions(section_name=section, section_params=configurations[section])
 
         if section == 'networking' and 'ANYLOG_BROKER_PORT' in configurations[section] and configurations[section]['ANYLOG_BROKER_PORT']['value'] != '':
             # update MQTT broker & port if anylog_broker_port is configured

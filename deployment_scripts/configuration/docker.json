@@ -78,17 +78,12 @@
     },
     "SOURCE": {
       "default": "master",
-      "value": "",
       "options": ["blockchain", "master"],
       "description": "Source of where the data is coming from"
     },
     "DESTINATION": {
       "default": "file",
-      "value": "",
-      "options": [
-        "file",
-        "dbms"
-      ],
+      "options": ["file", "dbms"],
       "description": "Where will the copy of the blockchain be stored"
     }
   },
