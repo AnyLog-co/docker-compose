@@ -19,11 +19,11 @@ done
 
 if [[ ${DEPLOYMENT_TYPE} == docker ]] ;
 then
-  bash installations/docker_install.sh
-  bash installations/docker_credentials.sh ${DOCKER_PASSWORD}
+  bash $HOME/deployments/deployment_scripts/installations/docker_install.sh
+  bash $HOME/deployments/deployment_scripts/installations/docker_credentials.sh ${DOCKER_PASSWORD}
 elif [[ ${DEPLOYMENT_TYPE} == kubernetes ]] ;
 then
-  bash installations/kube_install.sh
-  bash installations/kube_credentials.sh ${DOCKER_PASSWORD}
+  bash $HOME/deployments/deployment_scripts/installations/kube_install.sh
+  bash $HOME/deployments/deployment_scripts/installations/kube_credentials.sh ${DOCKER_PASSWORD}
 fi
 
