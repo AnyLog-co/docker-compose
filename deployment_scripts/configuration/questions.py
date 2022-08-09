@@ -109,4 +109,5 @@ def questions(section_params:str)->dict:
                         status = True
                 elif section_params[param]['default'] == '' and value == '':
                     status = True
+
     return section_params

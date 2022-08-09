@@ -6,6 +6,7 @@ import requests
 import file_io
 import questions
 
+ROOT_DIR = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 def __local_ip():
     """
     Get the local IP address of the machine
@@ -130,25 +131,18 @@ def main():
             * operator - node where data will be stored
             * query - node dedicated to querying data
             * publisher - node for distributing data among operators
-            * demo - deployment of 1 master, 2 operator and a query node on a single machine using docker. In addition,
-                     the deployment also runs PostgreSQL, Grafana and Remote-CLI. This will overwrite deployment-type
     :optional arguments:
         -h, --help            show this help message and exit
-        --deployment-type     Deployment type
-            * docker
-            * kubernetes
     :params:
         ROOT_DIR:str - root directory
         file_params:dict - parameters from file. For the case of "demo" deployment, it's a dictionary with all the variables
                             from the different nodes
     """
-    ROOT_DIR = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
     parse = argparse.ArgumentParser()
-    parse.add_argument('node_type', choices=['help', 'rest', 'master', 'operator', 'query', 'publisher', 'demo'],
+    parse.add_argument('node_type', choices=['help', 'rest', 'master', 'operator', 'query', 'publisher'],
                        default='rest',
                        help='select node type to prepare. Option "help" will provide details about the different nodes')
-    parse.add_argument('--deployment-type', choices=['docker', 'kubernetes'], default='docker', help='Deployment type')
     args = parse.parse_args()
 
     # Based on user input read generic config file
@@ -159,17 +153,9 @@ def main():
               + '\n\toperator - node where data will be stored'
               + '\n\tpublisher - node to distribute data among operators'
               + '\n\tquery - node dedicated to master node'
-              + '\n\tdemo - configure the (docker) demo-cluster-deployment. This will overwrite the deployment-type'
-              )
+        )
         exit(1)
-    elif args.node_type == 'demo' or args.deployment_type == 'docker':
-        file_path = os.path.join(__file__.rsplit('main.py', 1)[0], 'docker.json')
-        args.deployment_type = 'docker'
-    elif args.deployment_type == 'kubernetes':
-        file_path = os.path.join(__file__.rsplit('main.py', 1)[0], 'kubernetes.json')
-    configurations = __update_configs(node_type=args.node_type, config_file=file_path)
 
-    # User input
     for section in configurations:
         print(f'Configurations for {args.node_type.capitalize()} - {section.capitalize().replace("Mqtt", "MQTT").replace("Db", "DB")}')
         configurations[section] = questions.questions(section_params=configurations[section])
@@ -181,10 +167,10 @@ def main():
 
         print("\n")
 
-    if args.deployment_type == 'docker':
-        file_io.write_dotenv_file(content=configurations)
-    else:
-        pass
+    file_io.write_dotenv_file(content=configurations)
+
+
+
 
 if __name__ == '__main__':
     main()

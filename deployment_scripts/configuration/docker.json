@@ -178,10 +178,25 @@
         "year",
         "month",
         "week",
-        "days",
         "day"
       ],
       "description": "Amount of time to partition by"
+    },
+    "PARTITION_KEEP": {
+      "default": 6,
+      "value": "",
+      "description": "Number of partitioned tables to keep"
+    },
+    "PARTITION_SYNC": {
+      "default": "1 day",
+      "value": "",
+      "options": [
+        "year",
+        "month",
+        "week",
+        "day"
+      ],
+      "description": "How often to check / remove old paritions"
     },
     "MEMBER": {
       "default": "",
