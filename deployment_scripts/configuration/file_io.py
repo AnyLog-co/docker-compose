@@ -150,7 +150,7 @@ def read_dotenv_file(dotenv_file:str)->dict:
     return content
 
 
-def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/helm/docker-compose/test.dotenv')->bool:
+def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/docker-compose/test.dotenv')->bool:
     """
     Write content into YAML file
     :disclaimer:
@@ -167,27 +167,34 @@ def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/helm/docker-c
     """
     status = False
     full_path = __create_file(file_name=dotenv_file)
+    stmt = ""
     if os.path.isfile(full_path):
+        for section in content:
+            for param in content[section]:
+                if 'value' in content[section][param] and content[section][param]['value'] != "":
+                    if content[section][param]['value'] in [True, False]:
+                        content[section][param]['value'] = str(content[section][param]['value']).lower()
+                    input = f"{param}={content[section][param]['value']}"
+                elif content[section][param]['default'] != "":
+                    if content[section][param]['default'] in [True, False]:
+                        content[section][param]['default'] = str(content[section][param]['default']).lower()
+                    input = f"{param}={content[section][param]['default']}"
+                else:
+                    input = f"#{param}=<{param}>"
+                stmt += f"# {content[section][param]['description']}\n{input}\n"
+
+            stmt += "\n"
+
         try:
             with open(full_path, 'w') as denv:
-                for key in content:
-                    input = f'{key}={content[key]}'
-                    if key != list(content)[-1]:
-                        input += "\n"
-                    try:
-                        denv.write(input)
-
-                    except Exception as error:
-                        print(f'Failed to write content ({key}={content[key]}) into {dotenv_file} (Error: {error})')
+                try:
+                    denv.write(stmt)
+                except Exception as error:
+                    print(f'Failed to write params into file: {file_name} (Error: {error})')
         except Exception as error:
-            print(f'Failed to open {dotenv_file} (Error: {error})')
+            print(f'Failed to write open file: {file_name} (Error: {error})')
         else:
             status = True
+
     return status
 
-
-if __name__ == '__main__':
-    # content = read_yaml_file(yaml_file='$HOME/deployments/helm/sample-configurations/anylog_master.yml')
-    # write_yaml_file(content=content, yaml_file='$HOME/deployments/helm/sample-configurations/test.yml')
-    content = read_dotenv_file(dotenv_file='$HOME/deployments/docker-compose/anylog-master/anylog_configs.env')
-    write_dotenv_file(content=content, dotenv_file='$HOME/deployments/docker-compose/test.env')

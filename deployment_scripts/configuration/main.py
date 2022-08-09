@@ -52,6 +52,7 @@ def __locations():
     return loc, country, state, city
 
 
+
 def __update_configs(config_file:str, node_type:str, ledger:str=None)->dict:
     """
     Based on node information, update configurations
@@ -71,6 +72,8 @@ def __update_configs(config_file:str, node_type:str, ledger:str=None)->dict:
         # configurations['networking']['EXTERNAL_IP']['default'] = __external_ip()
         # configurations['networking']['LOCAL_IP']['default'] = __local_ip()
         if node_type == 'master':
+            configurations['general']['NODE_TYPE']['default'] = 'ledger'
+            del configurations['networking']['ANYLOG_BROKER_PORT']
             configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32048
             configurations['networking']['ANYLOG_REST_PORT']['default'] = 32049
             configurations['blockchain']['LEDGER_CONN']['default'] = '127.0.0.1:32048'
@@ -90,6 +93,7 @@ def __update_configs(config_file:str, node_type:str, ledger:str=None)->dict:
                 configurations['blockchain']['LEDGER_CONN']['default'] = ledger
             del configurations['operator']
         elif node_type == 'query':
+            del configurations['networking']['ANYLOG_BROKER_PORT']
             configurations['database']['DEPLOY_SYSTEM_QUERY']['default'] = True
             configurations['database']['MEMORY']['default'] = True
             configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32348
@@ -143,9 +147,11 @@ def main():
     parse = argparse.ArgumentParser()
     parse.add_argument('node_type', choices=['help', 'rest', 'master', 'operator', 'query', 'publisher', 'demo'],
                        default='rest',
-                       help='select node type to prepare. Option help will provide details about the different node types')
+                       help='select node type to prepare. Option "help" will provide details about the different nodes')
     parse.add_argument('--deployment-type', choices=['docker', 'kubernetes'], default='docker', help='Deployment type')
     args = parse.parse_args()
+
+    # Based on user input read generic config file
     if args.node_type == 'help':
         print('Node type options to deploy:'
               + '\n\trest - sandbox for understanding AnyLog as only TCP & REST are configured'
@@ -156,8 +162,6 @@ def main():
               + '\n\tdemo - configure the (docker) demo-cluster-deployment. This will overwrite the deployment-type'
               )
         exit(1)
-
-    # Based on user input read generic config file
     elif args.node_type == 'demo' or args.deployment_type == 'docker':
         file_path = os.path.join(__file__.rsplit('main.py', 1)[0], 'docker.json')
         args.deployment_type = 'docker'
@@ -167,13 +171,20 @@ def main():
 
     # User input
     for section in configurations:
-        print(f'Configurations for {args.node_type.capitalize()} - {section.capitalize().replace("Mqtt", "MQTT")}')
+        print(f'Configurations for {args.node_type.capitalize()} - {section.capitalize().replace("Mqtt", "MQTT").replace("Db", "DB")}')
         configurations[section] = questions.questions(section_params=configurations[section])
-        if section == 'networking' and configurations[section]['ANYLOG_BROKER_PORT'] != '':
-            configurations['mqtt']['BROKER']['default'] = 'local'
-        print("\n")
-    
 
+        if section == 'networking' and 'ANYLOG_BROKER_PORT' in configurations[section] and configurations[section]['ANYLOG_BROKER_PORT']['value'] != '':
+            # update MQTT broker & port if anylog_broker_port is configured
+            configurations['mqtt']['BROKER']['default'] = 'local'
+            configurations['mqtt']['MQTT_PORT']['default'] = configurations[section]['ANYLOG_BROKER_PORT']['value']
+
+        print("\n")
+
+    if args.deployment_type == 'docker':
+        file_io.write_dotenv_file(content=configurations)
+    else:
+        pass
 
 if __name__ == '__main__':
     main()

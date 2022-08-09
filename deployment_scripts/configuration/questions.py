@@ -62,8 +62,6 @@ def questions(section_params:str)->dict:
         if 'value' in section_params[param]:
             status = False
             stmt = "\t" + param.replace('_', ' ').lower().title().replace('Mqtt', 'MQTT').replace('Ip', 'IP').replace('Anylog', 'AnyLog').replace('Dmbs', 'DBMS')
-            if section_params[param]['default'] == '' and value == '':
-                status = True
             if section_params[param]['default'] != '':
                 stmt += f" [default: {section_params[param]['default']}"
             if 'options' in section_params[param] and section_params[param]['default'] != '':
@@ -109,4 +107,6 @@ def questions(section_params:str)->dict:
                     else:
                         section_params[param]['value'] = value
                         status = True
+                elif section_params[param]['default'] == '' and value == '':
+                    status = True
     return section_params
