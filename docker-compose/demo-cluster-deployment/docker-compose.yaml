@@ -44,6 +44,7 @@ services:
     tty: true
     network_mode: "host"
     volumes:
+      - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
       - anylog-query-node-anylog:/app/AnyLog-Network/anylog
       - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-query-node-data:/app/AnyLog-Network/data
@@ -92,6 +93,7 @@ services:
       - CLI_PORT=${CLI_PORT}
     volumes:
       - remote-cli:/app/Remote-CLI/anylog_query/static/json
+      - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
   grafana:
     image: grafana/grafana:7.5.7
     env_file:
@@ -108,6 +110,7 @@ services:
 volumes:
   pgdata:
   remote-cli:
+  remote-cli-current:
   grafana-data:
   grafana-log:
   grafana-config:
