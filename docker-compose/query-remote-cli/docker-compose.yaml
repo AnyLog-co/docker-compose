@@ -1,0 +1,36 @@
+version: "2.2"
+services:
+  remote-cli:
+    image: anylogco/remote-cli:latest
+    container_name: remote-cli
+    stdin_open: true
+    tty: true
+    ports:
+      - "${CLI_PORT}:${CLI_PORT}"
+    environment:
+      - CONN_IP=${CONN_IP}
+      - CLI_PORT=${CLI_PORT}
+    volumes:
+      - remote-cli:/app/Remote-CLI/anylog_query/static/json
+      - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
+  anylog-query-node:
+    image: anylogco/anylog-network:${TAG}
+    env_file:
+      - anylog_configs.env
+    container_name: anylog-query-node
+    stdin_open: true
+    tty: true
+    network_mode: "host"
+    volumes:
+      - anylog-query-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-query-node-data:/app/AnyLog-Network/data
+      - anylog-query-node-local-scripts:/app/AnyLog-Network/scripts
+      - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
+volumes:
+  remote-cli:
+  remote-cli-current:
+  anylog-query-node-anylog:
+  anylog-query-node-blockchain:
+  anylog-query-node-data:
+  anylog-query-node-local-scripts:
