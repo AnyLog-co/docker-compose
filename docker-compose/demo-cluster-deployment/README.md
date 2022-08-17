@@ -30,6 +30,7 @@ The following docker-compose package deploys the following services on a single 
 
 2. Start Cluster
 ```shell
+cd deployments/docker-compose/demo-cluster-deployment
 docker-compose up -d
 ```
 
@@ -59,9 +60,9 @@ cd lfedge-code/edgex
    ARCH=-arm64
    ```
 3. Start EdgeX instance 
-```shell
-git clone https://github.com/AnyLog-co/lfedge-code 
-cd lfedge-code/edgex 
+```shell 
+cd lfedge-code/edgex
+docker-compose up -ds 
 ```
 
 ## Validate Deployment 
