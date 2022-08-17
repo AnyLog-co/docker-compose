@@ -67,7 +67,7 @@ def read_json(json_file:str)->dict:
                     print(f'Failed to load content from {json_file} (Error: {error})')
         except Exception as error:
             print(f'Failed to open JSON file {json_file} (Error: {error})')
-    return  content
+    return content
 
 
 def read_yaml_file(yaml_file:str)->dict:
@@ -197,4 +197,3 @@ def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/docker-compos
             status = True
 
     return status
-

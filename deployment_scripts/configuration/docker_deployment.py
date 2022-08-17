@@ -2,11 +2,14 @@ import argparse
 import json
 import os
 import requests
+import shutil
 
 import file_io
 import questions
 
 ROOT_DIR = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
+DOCKER_FILE = os.path.join(ROOT_DIR, 'docker-compose', 'anylog-%s', 'anylog_configs.env')
+
 def __local_ip():
     """
     Get the local IP address of the machine
@@ -15,6 +18,7 @@ def __local_ip():
         return socket.gethostbyname(socket.gethostname())
     except:
         return '127.0.0.1'
+
 
 def __external_ip():
     """
@@ -29,6 +33,7 @@ def __external_ip():
             return r.text
         except:
             pass
+
 
 def __locations():
     """
@@ -53,62 +58,82 @@ def __locations():
     return loc, country, state, city
 
 
+def __merge_configs(original_configs:dict)->dict:
+    """
+    Using original_configs + JSON in configs merge the two to have a preset configurations
+    :args:
+        original_configs:dict - configurations from docker-compose file
+    :params:
+        config_file:str - path to JSON config file
+        default_configs:dict - JSON of content in defautl configs
+    :params:
+        default_configs with defaults as values from original_configs
+    """
+    config_file = os.path.join(ROOT_DIR, 'deployment_scripts', 'configs', 'docker.json')
+    default_configs = file_io.read_json(json_file=config_file)
+    for section in default_configs:
+        for key in default_configs[section]:
+            if key in original_configs:
+                default_configs[section][key]['default'] = original_configs[key]
 
-def __update_configs(config_file:str, node_type:str, ledger:str=None)->dict:
+    return default_configs
+
+
+def __update_configs(configurations:dict, node_type:str, ledger:str=None)->dict:
     """
     Based on node information, update configurations
     :args:
+        configurations:dict - configurations content to update
         config_file:str - JSON configuration file
         node_type:str - Node type (rest, master, operator, query, publisher)
         ledger:str - Master node TCP IP + port connection information
     :params:
         configurations:dict - configs from config_file
     """
-    configurations = file_io.read_json(json_file=config_file)
-    if configurations is not None:
-        loc, country, state, city = __locations()
 
-        configurations['general']['NODE_TYPE']['default'] = node_type
+    loc, country, state, city = __locations()
 
-        # configurations['networking']['EXTERNAL_IP']['default'] = __external_ip()
-        # configurations['networking']['LOCAL_IP']['default'] = __local_ip()
-        if node_type == 'master':
-            configurations['general']['NODE_TYPE']['default'] = 'ledger'
-            del configurations['networking']['ANYLOG_BROKER_PORT']
-            configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32048
-            configurations['networking']['ANYLOG_REST_PORT']['default'] = 32049
-            configurations['blockchain']['LEDGER_CONN']['default'] = '127.0.0.1:32048'
-            del configurations['operator']
-            del configurations['publisher']
-            del configurations['mqtt']
-        elif node_type == 'operator':
-            configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32148
-            configurations['networking']['ANYLOG_REST_PORT']['default'] = 32149
-            if ledger is not None:
-                configurations['blockchain']['LEDGER_CONN']['default'] = ledger
-            del configurations['publisher']
-        elif node_type == 'publisher':
-            configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32248
-            configurations['networking']['ANYLOG_REST_PORT']['default'] = 32249
-            if ledger is not None:
-                configurations['blockchain']['LEDGER_CONN']['default'] = ledger
-            del configurations['operator']
-        elif node_type == 'query':
-            del configurations['networking']['ANYLOG_BROKER_PORT']
-            configurations['database']['DEPLOY_SYSTEM_QUERY']['default'] = True
-            configurations['database']['MEMORY']['default'] = True
-            configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32348
-            configurations['networking']['ANYLOG_REST_PORT']['default'] = 32349
-            if ledger is not None:
-                configurations['blockchain']['LEDGER_CONN']['default'] = ledger
-            del configurations['operator']
-            del configurations['publisher']
-            del configurations['mqtt']
+    configurations['general']['NODE_TYPE']['default'] = node_type
 
-        configurations['general']['LOCATION']['default'] = loc
-        configurations['general']['COUNTRY']['default'] = country
-        configurations['general']['STATE']['default'] = state
-        configurations['general']['CITY']['default'] = city
+    # configurations['networking']['EXTERNAL_IP']['default'] = __external_ip()
+    # configurations['networking']['LOCAL_IP']['default'] = __local_ip()
+    if node_type == 'master':
+        configurations['general']['NODE_TYPE']['default'] = 'ledger'
+        del configurations['networking']['ANYLOG_BROKER_PORT']
+        configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32048
+        configurations['networking']['ANYLOG_REST_PORT']['default'] = 32049
+        configurations['blockchain']['LEDGER_CONN']['default'] = '127.0.0.1:32048'
+        del configurations['operator']
+        del configurations['publisher']
+        del configurations['mqtt']
+    elif node_type == 'operator':
+        configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32148
+        configurations['networking']['ANYLOG_REST_PORT']['default'] = 32149
+        if ledger is not None:
+            configurations['blockchain']['LEDGER_CONN']['default'] = ledger
+        del configurations['publisher']
+    elif node_type == 'publisher':
+        configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32248
+        configurations['networking']['ANYLOG_REST_PORT']['default'] = 32249
+        if ledger is not None:
+            configurations['blockchain']['LEDGER_CONN']['default'] = ledger
+        del configurations['operator']
+    elif node_type == 'query':
+        del configurations['networking']['ANYLOG_BROKER_PORT']
+        configurations['database']['DEPLOY_SYSTEM_QUERY']['default'] = True
+        configurations['database']['MEMORY']['default'] = True
+        configurations['networking']['ANYLOG_SERVER_PORT']['default'] = 32348
+        configurations['networking']['ANYLOG_REST_PORT']['default'] = 32349
+        if ledger is not None:
+            configurations['blockchain']['LEDGER_CONN']['default'] = ledger
+        del configurations['operator']
+        del configurations['publisher']
+        del configurations['mqtt']
+
+    configurations['general']['LOCATION']['default'] = loc
+    configurations['general']['COUNTRY']['default'] = country
+    configurations['general']['STATE']['default'] = state
+    configurations['general']['CITY']['default'] = city
 
     return configurations
 
@@ -134,9 +159,9 @@ def main():
     :optional arguments:
         -h, --help            show this help message and exit
     :params:
-        ROOT_DIR:str - root directory
-        file_params:dict - parameters from file. For the case of "demo" deployment, it's a dictionary with all the variables
-                            from the different nodes
+        base_dotenv_file:str - base .env file from docker-compose. This will also be the file that gets updated at the
+                               end of the process.
+        base_docker_env_file_content:dict - content in base_dotenv_file
     """
 
     parse = argparse.ArgumentParser()
@@ -156,9 +181,13 @@ def main():
         )
         exit(1)
 
-    file_path = os.path.join(__file__.rsplit('docker_deployment.py', 1)[0], 'docker.json')
-    dotenv_file = os.path.join(__file__.rsplit('configuration', 1)[0], 'configs', f'{args.node_type}.env')
-    configurations = __update_configs(node_type=args.node_type, config_file=file_path)
+    # based on node_type prepare default configurations
+    base_docker_env_file = DOCKER_FILE % args.node_type
+    shutil.copyfile(base_docker_env_file, base_docker_env_file + ".orig")
+    base_docker_env_file_content = file_io.read_dotenv_file(dotenv_file=base_docker_env_file)
+    configurations = __merge_configs(original_configs=base_docker_env_file_content)
+    configurations = __update_configs(configurations=configurations, node_type=args.node_type)
+
 
     for section in configurations:
         print(f'Configurations for {args.node_type.capitalize()} - {section.capitalize().replace("Mqtt", "MQTT").replace("Db", "DB")}')
@@ -171,8 +200,7 @@ def main():
 
         print("\n")
 
-    file_io.write_dotenv_file(content=configurations, dotenv_file=dotenv_file)
-
+    file_io.write_dotenv_file(content=configurations, dotenv_file=base_docker_env_file)
 
 
 if __name__ == '__main__':
