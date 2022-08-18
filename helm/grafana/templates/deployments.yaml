@@ -6,34 +6,33 @@ metadata:
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
-  serviceName: {{ .Values.general.service_name }}
-  replicas: {{ .Values.general.replicas }}
-  selector:
-    matchLabels:
-      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
-      name: '{{ .Values.general.deployment_name }}'
       labels:
-        app: {{ .Values.general.app_name }}
-    spec:
+        app: '{{ .Values.general.app_name }}'
+      spec:
+        securityContext:
+          fsGroup: 472
+          supplementalGroup:
+            - 0
       containers:
-      - name: '{{ .Values.general.deployment_name }}'
-        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
-        envFrom:
-          - configMapRef:
-              name: '{{ .Values.general.configmap_name }}'
-        ports:
-        - name: '{{ .Values.networking.port_name }}'
-          containerPort: 3000
-        {{- if eq .Values.volume.enable_volume true }}
-        volumeMounts:
-          - name: {{ .Values.volume.volume_name }}
-            mountPath: /var/lib/grafana/
-        {{ end }}
-    {{- if eq .Values.volume.enable_volume true }}
-    volumes:
-      - name: {{ .Values.volume.volume_name }}
-        persistentVolume:
+        - name: grafana
+          image: grafana/grafana:7.5.7
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: '{{ .Values.networking.port_name }}
+              containerPort: 3000
+          {{- if eq .Values.volume.enable_volume true }}
+          volumeMounts:
+            - name: {{ .Values.volume.volume_name }}
+              persistentVolumeClaim:
+                claimName: {{ .Values.volume.volume_name }}-claim
+          {{ end }}
+      {{- if eq .Values.volume.enable_volume true }}
+      volumes:
+        - name: {{ .Values.volume.volume_name }}
+        persistentVolumeClaim:
           claimName: {{ .Values.volume.volume_name }}-claim
-    {{ end }}
+      {{ end }}
+
+
