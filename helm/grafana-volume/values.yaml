@@ -5,7 +5,7 @@ general:
   config_volume_name: grafana-config
 spec:
   storage_class: manual
-  access_mode: ReadWriteOnce
+  access_mode: ReadWriteMany
   storage_size: 5Gi
   reclaim_policy: Retain
   data_host_path: /opt/grafana-data
