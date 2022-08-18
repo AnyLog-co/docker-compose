@@ -14,7 +14,7 @@ volume:
 
 image:
   repository: grafana/grafana
-  tag: latest
+  tag: 7.5.7
   pullPolicy: Always
 
 networking:
