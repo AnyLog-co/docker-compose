@@ -3,8 +3,8 @@ general:
   volume_name: grafana-pv
   
 spec:
-  storage_class: manual
+#  storage_class: manual
   access_mode: ReadWriteOnce
   storage_size: 5Gi
-  reclaim_policy: Retain
-  host_path: /opt/grafana-data
+#  reclaim_policy: Retain
+#  host_path: /opt/grafana-data

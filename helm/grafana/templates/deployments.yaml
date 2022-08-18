@@ -28,18 +28,12 @@ spec:
           containerPort: 3000
         {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
-          - name: local-vol
+          - name: {{ .Values.volume.volume_name }}
             mountPath: /var/lib/grafana/
         {{ end }}
-  {{- if eq .Values.volume.enable_volume true }}
-  volumeClaimTemplates:
-  - metadata:
-      name: local-vol
-    spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: "local-storage"
-      resources:
-        requests:
-          storage: {{ .Values.volume.storage_size }}
-  {{ end }}
-
+    {{- if eq .Values.volume.enable_volume true }}
+    volumes:
+      - name: {{ .Values.volume.volume_name }}
+        persistentVolume:
+          claimName: {{ .Values.volume.volume_name }}-claim
+    {{ end }}
