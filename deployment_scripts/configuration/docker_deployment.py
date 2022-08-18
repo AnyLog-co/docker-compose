@@ -191,7 +191,9 @@ def main():
 
     for section in configurations:
         print(f'Configurations for {args.node_type.capitalize()} - {section.capitalize().replace("Mqtt", "MQTT").replace("Db", "DB")}')
-        questionnaire.questions(section_params=configurations[section])
+        print(configurations[section])
+        configurations[section] = questionnaire.questions(section_params=configurations[section])
+        print(configurations[section])
         print('\n')
         # configurations[section] = questions.questions(section_name=section, section_params=configurations[section])
         #

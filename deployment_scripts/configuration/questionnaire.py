@@ -14,6 +14,7 @@ Updates needed:
 """
 import copy
 import os
+import re
 
 
 def __validate_options(value:str, options:list)->bool:
@@ -63,22 +64,80 @@ def __validate_ports(ports:dict)->dict:
         1. check if any 2 port values are the same
         2. print error
         3. reask for port values
-    repeat until all values are
+    repeat until all values are unique
     :args:
         ports:dict - subset of section_params, for AnyLog network ports
     :return:
         ports
     """
-    while ports['ANYLOG_SERVER_PORT']['value'] == ports['ANYLOG_REST_PORT']['value'] or ports['ANYLOG_BROKER_PORT']['value'] == ports['ANYLOG_REST_PORT']['value'] or ports['ANYLOG_BROKER_PORT']['value'] == ports['ANYLOG_TCP_PORT']['value']:
-        print('One or more ports are the same value.')
-        ports = questions(section_params=ports)
+    validate = False
+    if (ports['ANYLOG_SERVER_PORT']['value'] == ports['ANYLOG_REST_PORT']['value'] or
+        ports['ANYLOG_SERVER_PORT']['value'] == ports['ANYLOG_BROKER_PORT']['value'] or
+        ports['ANYLOG_REST_PORT']['value'] == ports['ANYLOG_BROKER_PORT']['value']):
+        validate = True
+
+    while ports['ANYLOG_SERVER_PORT']['value'] == ports['ANYLOG_REST_PORT']['value']:
+        print(f'REST Port is set to the same value as TCP Port')
+        port = questions(section_params={'ANYLOG_REST_PORT': ports['ANYLOG_REST_PORT']})
+        ports['ANYLOG_REST_PORT'] = port['ANYLOG_REST_PORT']
+
+    while ports['ANYLOG_SERVER_PORT']['value'] == ports['ANYLOG_BROKER_PORT']['value']:
+        print(f'Broker Port is set to the same value as TCP Port')
+        port = questions(section_params={'ANYLOG_BROKER_PORT': ports['ANYLOG_BROKER_PORT']})
+        ports['ANYLOG_BROKER_PORT'] = port['ANYLOG_BROKER_PORT']
+
+    while ports['ANYLOG_REST_PORT']['value'] == ports['ANYLOG_BROKER_PORT']['value']:
+        print(f'Broker Port is set to the same value as REST Port')
+        port = questions(section_params={'ANYLOG_BROKER_PORT': ports['ANYLOG_BROKER_PORT']})
+        ports['ANYLOG_BROKER_PORT'] = port['ANYLOG_BROKER_PORT']
+
+    if validate is True: # once all three params are changed, validate values are actualy unique
+        ports = __validate_ports(ports=ports)
+
     return ports
+
+
+def __validate_ledger(ledger_obj:dict)->dict:
+    """
+    Validate Ledger connection information
+    :args:
+        ledger_conn:dict - ledger dictonary object
+    :params:
+        status:bool
+        ip:str,port:int - extraction from ledger_conn object
+        ip_status:bool - whether IP address is valid
+        port_status:bool - whether Pot value is valid
+    :return:
+        ledger_obj
+    """
+    status = False
+
+    while status is False:
+        if ':' not in ledger_obj['LEDGER_CONN']['value']:
+            print('Invalid Master Node credentials. Format: ${IP}:${ANYLOG_TCP_PORT}')
+        else:
+            ip, port = ledger_obj['LEDGER_CONN']['value'].split(':')
+            ip_status = re.match(r"^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$", ip)
+            try:
+                port = int(port)
+            except Exception:
+                port_status = False
+            else:
+                port_status = __validate_range(value=int(port), range=[30000, 32767])
+            if ip_status is False or port_status is False:
+                print(f'Invalid Master Node connection infromation value {ledger_obj["LEDGER_CONN"]["value"]}')
+            else:
+                status = True
+        if status is False:
+            ledger_obj = questions(section_params=ledger_obj)
+
+    return ledger_obj
 
 
 def questions(section_params:dict)->dict:
     updated_section_params = copy.deepcopy(section_params)
     for key in section_params:
-        if 'value' in section_params[key] and key in updated_section_params:
+        if 'value' in section_params[key] and section_params[key]['value'] == "" and key in updated_section_params:
             status = False
             question = f"\t{section_params[key]['question']}"
 
@@ -92,7 +151,7 @@ def questions(section_params:dict)->dict:
                 else:
                     sub_question = f"options: {options}"
             elif 'range' in section_params[key]:
-                rng = str(section_params[key]['range']).split('[')[-1].split(']')[0].replace(', ', ',').replace(' ,', ',')
+                rng = str(section_params[key]['range']).split('[')[-1].split(']')[0].replace(', ', ',').replace(' ,', ',').replace(',', '-')
                 if sub_question != "":
                     sub_question += f" | range: {rng}"
                 else:
@@ -112,8 +171,9 @@ def questions(section_params:dict)->dict:
                 if user_input == 'help':
                     print(f'{key} - {section_params[key]["description"]}')
                 elif user_input == '':
-                    updated_section_params[key]['value'] = section_params[key]['default']
                     status = True
+                    if user_input == '' and section_params[key]['default'] != '':
+                        updated_section_params[key]['value'] = section_params[key]['default']
                 elif 'options' in section_params[key]:
                     if not __validate_options(value=user_input, options=section_params[key]['options']):
                         print(f'Invalid value "{user_input}" for {key}. Options: {options}')
@@ -126,8 +186,10 @@ def questions(section_params:dict)->dict:
                     else:
                         updated_section_params[key]['value'] = user_input
                         status = True
-                elif user_input == '' and section_params[key]['default'] == '':
+                else:
+                    updated_section_params[key]['value'] = user_input
                     status = True
+
 
             # based on params remove ones that are not needed
             if key == 'DB_TYPE' and updated_section_params[key]['value'] == 'sqlite':
@@ -138,6 +200,12 @@ def questions(section_params:dict)->dict:
                               'MQTT_TOPIC_DBMS', 'MQTT_TABLE_NAME', 'MQTT_TOPIC_TIMESTAMP', 'MQTT_COLUMN_VALUE',
                               'MQTT_COLUMN_VALUE_TYPE']:
                     del updated_section_params[param]
+            # if key is DEPLOY_SYSTEM_QUERY + set to False then set memory to false as well
+            elif key == 'DEPLOY_SYSTEM_QUERY' and updated_section_params[key]['value'] is False:
+                updated_section_params['MEMORY']['default'] = False
+                section_params['MEMORY']['default'] = False
+                section_params['MEMORY']['value'] = False
+
 
     # validate ports are not the same
     if 'ANYLOG_SERVER_PORT' in updated_section_params and 'ANYLOG_REST_PORT' in updated_section_params and 'ANYLOG_BROKER_PORT' in updated_section_params:
@@ -150,6 +218,9 @@ def questions(section_params:dict)->dict:
         updated_section_params['ANYLOG_SERVER_PORT'] = ports['ANYLOG_SERVER_PORT']
         updated_section_params['ANYLOG_REST_PORT'] = ports['ANYLOG_REST_PORT']
         updated_section_params['ANYLOG_BROKER_PORT'] = ports['ANYLOG_BROKER_PORT']
+    elif 'LEDGER_CONN' in updated_section_params: # validate master connnection information is correct
+       updated_section_params['LEDGER_CONN'] = __validate_ledger(ledger_obj={'LEDGER_CONN': updated_section_params['LEDGER_CONN']})
+
 
     return updated_section_params
 
