@@ -6,11 +6,6 @@ general:
   configmap_name: grafana-configs
   replicas: 1
 
-volume:
-  enable_volume: true
-  volume_name: grafana-pv
-  storage_size: 5Gi
-
 image:
   repository: grafana/grafana
   tag: 7.5.7
