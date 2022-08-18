@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   namespace: '{{ .Values.general.namespace }}'
   name: '{{ .Values.general.deployment_name }}'
