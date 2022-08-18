@@ -131,7 +131,7 @@ def __validate_ledger(ledger_obj:dict)->dict:
         if status is False:
             ledger_obj = questions(section_params=ledger_obj)
 
-    return ledger_obj
+    return ledger_obj['LEDGER_CONN']
 
 
 def questions(section_params:dict)->dict:

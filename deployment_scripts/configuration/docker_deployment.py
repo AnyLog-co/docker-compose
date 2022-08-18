@@ -183,7 +183,7 @@ def main():
 
     # based on node_type prepare default configurations
     base_docker_env_file = DOCKER_FILE % args.node_type
-    # shutil.copyfile(base_docker_env_file, base_docker_env_file + ".orig")
+    shutil.copyfile(base_docker_env_file, base_docker_env_file + ".orig")
     base_docker_env_file_content = file_io.read_dotenv_file(dotenv_file=base_docker_env_file)
     configurations = __merge_configs(original_configs=base_docker_env_file_content)
     configurations = __update_configs(configurations=configurations, node_type=args.node_type)
@@ -193,7 +193,7 @@ def main():
         configurations[section] = questionnaire.questions(section_params=configurations[section])
 
         # if AnyLog Broker is enabled, then we can assume user would like to run MQTT client process
-        if section == 'networking' and configurations[section]['ANYLOG_BROKER_PORT']['value'] != '':
+        if section == 'networking' and 'ANYLOG_BROKER_PORT' in configurations[section] and configurations[section]['ANYLOG_BROKER_PORT']['value'] != '':
             configurations['mqtt']['ENABLE_MQTT']['default'] = True
             configurations['mqtt']['BROKER']['default'] = 'local'
             configurations['mqtt']['MQTT_PORT']['default'] = configurations[section]['ANYLOG_BROKER_PORT']['value']
