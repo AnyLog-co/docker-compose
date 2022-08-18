@@ -31,8 +31,8 @@ spec:
             mountPath: /var/lib/grafana
           - name: {{ .Values.volume.log_volume_name }}
             mountPath: /var/log/grafana
-          - name: {{ .Values.volume.config_volume_name }}
-            mountPath: :/etc/grafana
+#          - name: {{ .Values.volume.config_volume_name }}
+#            mountPath: :/etc/grafana
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
@@ -42,7 +42,7 @@ spec:
         - name: {{ .Values.volume.log_volume_name }}
           persistentVolumeClaim:
             claimName: {{ .Values.volume.log_volume_name }}-claim
-        - name: {{ .Values.volume.config_volume_name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.volume.config_volume_name }}-claim
+#        - name: {{ .Values.volume.config_volume_name }}
+#          persistentVolumeClaim:
+#            claimName: {{ .Values.volume.config_volume_name }}-claim
       {{ end }}
