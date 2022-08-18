@@ -190,7 +190,6 @@ def questions(section_params:dict)->dict:
                     updated_section_params[key]['value'] = user_input
                     status = True
 
-
             # based on params remove ones that are not needed
             if key == 'DB_TYPE' and updated_section_params[key]['value'] == 'sqlite':
                 for param in ['DB_IP', 'DB_PORT', 'DB_USER', 'DB_PASSWD']:

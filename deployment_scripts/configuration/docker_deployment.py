@@ -188,23 +188,23 @@ def main():
     configurations = __merge_configs(original_configs=base_docker_env_file_content)
     configurations = __update_configs(configurations=configurations, node_type=args.node_type)
 
-
     for section in configurations:
         print(f'Configurations for {args.node_type.capitalize()} - {section.capitalize().replace("Mqtt", "MQTT").replace("Db", "DB")}')
-        print(configurations[section])
         configurations[section] = questionnaire.questions(section_params=configurations[section])
-        print(configurations[section])
-        print('\n')
-        # configurations[section] = questions.questions(section_name=section, section_params=configurations[section])
-        #
-        # if section == 'networking' and 'ANYLOG_BROKER_PORT' in configurations[section] and configurations[section]['ANYLOG_BROKER_PORT']['value'] != '':
-        #     # update MQTT broker & port if anylog_broker_port is configured
-        #     configurations['mqtt']['BROKER']['default'] = 'local'
-        #     configurations['mqtt']['MQTT_PORT']['default'] = configurations[section]['ANYLOG_BROKER_PORT']['value']
-        #
-        # print("\n")
 
-    # file_io.write_dotenv_file(content=configurations, dotenv_file=base_docker_env_file)
+        # if AnyLog Broker is enabled, then we can assume user would like to run MQTT client process
+        if section == 'networking' and configurations[section]['ANYLOG_BROKER_PORT']['value'] != '':
+            configurations['mqtt']['ENABLE_MQTT']['default'] = True
+            configurations['mqtt']['BROKER']['default'] = 'local'
+            configurations['mqtt']['MQTT_PORT']['default'] = configurations[section]['ANYLOG_BROKER_PORT']['value']
+
+            del configurations['mqtt']['ENABLE_MQTT']['value']
+            del configurations['mqtt']['BROKER']['value']
+            del configurations['mqtt']['MQTT_PORT']['value']
+
+        print('\n')
+
+    file_io.write_dotenv_file(content=configurations, dotenv_file=base_docker_env_file)
 
 
 if __name__ == '__main__':
