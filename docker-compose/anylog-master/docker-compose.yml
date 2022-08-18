@@ -2,6 +2,7 @@ version: "2.2"
 services:
   anylog-master-node:
     image: anylogco/anylog-network:develop
+    restart: always
     env_file:
       - anylog_configs.env
     container_name: anylog-master-node
