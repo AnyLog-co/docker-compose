@@ -30,7 +30,7 @@ spec:
           {{ end }}
     {{- if eq .Values.volume.enable_volume true }}
     volumes:
-      - name: '{{ .Values.volume.volume_name }}'
+      name: '{{ .Values.volume.volume_name }}'
       persistentVolumeClaim:
         claimName: {{ .Values.volume.volume_name }}-claim
     {{ end }}
