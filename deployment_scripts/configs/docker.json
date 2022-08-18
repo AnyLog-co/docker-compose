@@ -1,36 +1,43 @@
 {
   "general": {
     "NODE_TYPE": {
+      "question": "Node Type",
       "default": "rest",
       "options": ["rest", "master", "operator", "query", "publisher"],
       "description": "Deployment node type"
     },
     "NODE_NAME": {
+      "question": "Node Name",
       "default": "anylog-node",
       "value": "",
       "description": "Unique name for the AnyLog node"
     },
     "COMPANY_NAME": {
+      "question": "Company Name",
       "default": "New Company",
       "value": "",
       "description": "Company owner of the node"
     },
     "LOCATION": {
+      "question": "Node Coordinates",
       "default": "0.0, 0.0",
       "value": "",
       "description": "Physical location of the node"
     },
     "COUNTRY": {
+      "question": "Node Country",
       "default": "Unknown",
       "value": "",
       "description": "Country node is located in"
     },
     "STATE": {
+      "question": "Node State",
       "default": "Unknown",
       "value": "",
       "description": "State node is located in"
     },
     "CITY": {
+      "question": "Node City",
       "default": "Unknown",
       "value": "",
       "description": "City node is located in"
@@ -38,39 +45,46 @@
   },
   "networking": {
     "ANYLOG_SERVER_PORT": {
+      "question": "TCP Server Port",
       "default": 32548,
       "value": "",
       "range": [30000, 32767],
       "description": "Port for TCP communication between nodes"
     },
     "ANYLOG_REST_PORT": {
+      "question": "REST Server Port",
       "default": 32549,
       "value": "",
       "range": [30000, 32767],
       "description": "Port for REST communication with the node"
     },
     "ANYLOG_BROKER_PORT": {
+      "question": "MQTT Message Broker Port",
       "default": "",
       "value": "",
       "range": [30000, 32767],
       "description": "Message Broker Port for the node"
     },
     "EXTERNAL_IP": {
+      "question": "External IP",
       "default": "",
       "description": "External Network IP address"
     },
     "LOCAL_IP": {
+      "question": "Local IP",
       "default": "",
       "description": "Local IP of the machine - if running on Kubernetes this value will be set as the Proxy IP"
     }
   },
   "blockchain": {
     "LEDGER_CONN": {
+      "question": "Master Node (TCP) Connection Information",
       "default": "45.79.74.39:32048",
       "value": "",
       "description": "Blockchain ledger TCP connection information"
     },
     "SYNC_TIME": {
+      "question": "Frequency to Sync with Master Node",
       "default": "30 seconds",
       "value": "",
       "options": ["seconds", "minute", "hour", "day"],
@@ -89,6 +103,7 @@
   },
   "database": {
     "DB_TYPE": {
+      "question": "Physical Database Type",
       "default": "psql",
       "value": "",
       "options": [
@@ -98,26 +113,31 @@
       "description": "Physical database type"
     },
     "DB_IP": {
+      "question": "Database IP Address",
       "default": "127.0.0.1",
       "value": "",
       "description": "Physical database IP address"
     },
     "DB_PORT": {
+      "question": "Database Port",
       "default": 5432,
       "default": "",
       "description": "Physical database port"
     },
     "DB_USER": {
+      "question": "Database User",
       "default": "admin",
       "value": "",
       "description": "Database user"
     },
     "DB_PASSWD": {
+      "question": "Password Correlated to database user",
       "default": "demo",
       "value": "",
       "description": "Password correlated to database user"
     },
     "DEPLOY_SYSTEM_QUERY": {
+      "question": "Deploy system_query logical database",
       "default": false,
       "value": "",
       "options": [
@@ -127,6 +147,7 @@
       "description": "Whether to automatically deploy system_query logical database on node - enabled by default on Query node"
     },
     "MEMORY": {
+      "question": "Run system_query in memory",
       "default": true,
       "value": "",
       "options": [
@@ -138,16 +159,19 @@
   },
   "operator": {
     "CLUSTER_NAME": {
+      "question": "Cluster Name",
       "default": "new-cluster",
       "value": "",
       "description": "Name of the cluster operator will be associated with"
     },
     "DATABASE_NAME": {
+      "question": "Logical Database Name",
       "default": "test",
       "value": "",
       "description": "Logical database to store data coming into operator node"
     },
     "ENABLE_PARTITIONS": {
+      "question": "Enable Partitions",
       "default": true,
       "value": "",
       "options": [
@@ -157,16 +181,19 @@
       "description": "whether or not to partition data on node"
     },
     "PARTITION_TABLE": {
+      "question": "Table to partition by",
       "default": "*",
       "value": "",
       "description": "table(s) to partition (default - all tables)"
     },
     "PARTITION_COLUMN": {
+      "question": "Column to Partition by",
       "default": "insert_timestamp",
       "value": "",
       "description": "Timestamp column to partition by"
     },
     "PARTITION_INTERVAL": {
+      "question": "Partition Intervals",
       "default": "14 days",
       "value": "",
       "options": [
@@ -178,11 +205,13 @@
       "description": "Amount of time to partition by"
     },
     "PARTITION_KEEP": {
+      "question": "How many partitions to keep",
       "default": 6,
       "value": "",
       "description": "Number of partitioned tables to keep"
     },
     "PARTITION_SYNC": {
+      "question": "How often to remove extra partitions",
       "default": "1 day",
       "value": "",
       "options": [
@@ -240,64 +269,76 @@
   },
   "mqtt": {
     "ENABLE_MQTT": {
+      "question": "Execute `run mqtt client`",
       "default": false,
       "value": "",
       "options": [true, false],
       "description": "Whether or not to enable MQTT client process"
     },
     "BROKER": {
+      "question": "Broker Address",
       "default": "driver.cloudmqtt.com",
       "value": "",
       "description": "MQTT broker address"
     },
     "MQTT_PORT": {
+      "question": "Broker Port",
       "default": 18785,
       "value": "",
       "description": "Port correlated to MQTT user"
     },
     "MQTT_USER": {
+      "question": "Broker User",
       "default": "ibglowct",
       "value": "",
       "description": "Set MQTT user"
     },
     "MQTT_PASSWORD": {
+      "question": "Password correlated to Broker User",
       "default": "MSY4e009J7ts",
       "value": "",
       "description": "Password correlated to MQTT user"
     },
     "MQTT_LOG": {
+      "question": "Enable `run mqtt client` log",
       "default": false,
       "value": "",
       "options": [true, false],
       "description": "Whether or not to output the broekr log messages to screen"
     },
     "MQTT_TOPIC_NAME": {
+      "question": "MQTT Topic Name",
       "default": "anylogedgex",
       "value": "",
       "description": "MQTT topic name"
     },
     "MQTT_TOPIC_DBMS": {
+      "question": "Logical database Name to store data in",
       "default": "test",
       "value": "",
       "description": "Logical database to store data coming from MQTT client"
     },
     "MQTT_TABLE_NAME": {
+      "question": "Table to store data in",
       "default": "rand_data",
       "value": "",
       "description": "Physical table to store data in"
     },
     "MQTT_TOPIC_TIMESTAMP": {
+      "question": "Timestamp Column",
       "default": "now",
       "value": "",
       "description": "timestamp column"
     },
     "MQTT_COLUMN_VALUE_TYPE": {
+      "question": "Value Column Type",
       "default": "float",
       "value": "",
       "options": ["str", "int", "float", "timestamp", "bool"],
       "description": "Data-type for non-timestamp column"
     },
     "MQTT_COLUMN_VALUE": {
+      "question": "Value Column Name",
       "default": "bring readings[][value]",
       "value": "",
       "description": "How to extract value from data coming in"
@@ -305,6 +346,7 @@
   },
   "other": {
     "DEPLOY_LOCAL_SCRIPT": {
+      "question": "Execute Local Script",
       "default": false,
       "value": "",
       "options": [true, false],
@@ -343,3 +385,4 @@
     }
   }
 }
+

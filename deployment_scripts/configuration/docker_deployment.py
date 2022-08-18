@@ -5,7 +5,7 @@ import requests
 import shutil
 
 import file_io
-import questions
+import questionnaire
 
 ROOT_DIR = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 DOCKER_FILE = os.path.join(ROOT_DIR, 'docker-compose', 'anylog-%s', 'anylog_configs.env')
@@ -183,7 +183,7 @@ def main():
 
     # based on node_type prepare default configurations
     base_docker_env_file = DOCKER_FILE % args.node_type
-    shutil.copyfile(base_docker_env_file, base_docker_env_file + ".orig")
+    # shutil.copyfile(base_docker_env_file, base_docker_env_file + ".orig")
     base_docker_env_file_content = file_io.read_dotenv_file(dotenv_file=base_docker_env_file)
     configurations = __merge_configs(original_configs=base_docker_env_file_content)
     configurations = __update_configs(configurations=configurations, node_type=args.node_type)
@@ -191,16 +191,18 @@ def main():
 
     for section in configurations:
         print(f'Configurations for {args.node_type.capitalize()} - {section.capitalize().replace("Mqtt", "MQTT").replace("Db", "DB")}')
-        configurations[section] = questions.questions(section_name=section, section_params=configurations[section])
+        questionnaire.questions(section_params=configurations[section])
+        print('\n')
+        # configurations[section] = questions.questions(section_name=section, section_params=configurations[section])
+        #
+        # if section == 'networking' and 'ANYLOG_BROKER_PORT' in configurations[section] and configurations[section]['ANYLOG_BROKER_PORT']['value'] != '':
+        #     # update MQTT broker & port if anylog_broker_port is configured
+        #     configurations['mqtt']['BROKER']['default'] = 'local'
+        #     configurations['mqtt']['MQTT_PORT']['default'] = configurations[section]['ANYLOG_BROKER_PORT']['value']
+        #
+        # print("\n")
 
-        if section == 'networking' and 'ANYLOG_BROKER_PORT' in configurations[section] and configurations[section]['ANYLOG_BROKER_PORT']['value'] != '':
-            # update MQTT broker & port if anylog_broker_port is configured
-            configurations['mqtt']['BROKER']['default'] = 'local'
-            configurations['mqtt']['MQTT_PORT']['default'] = configurations[section]['ANYLOG_BROKER_PORT']['value']
-
-        print("\n")
-
-    file_io.write_dotenv_file(content=configurations, dotenv_file=base_docker_env_file)
+    # file_io.write_dotenv_file(content=configurations, dotenv_file=base_docker_env_file)
 
 
 if __name__ == '__main__':
