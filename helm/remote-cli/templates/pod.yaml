@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.pod_name }}'
+spec:
+  containers:
+    - name: '{{ .Values.general.deployment_name }}'
+      image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
+      volumeMounts:
+        - name: remote-cli
+          mountPath: /opt/Remote-CLI/anylog_query/static/json
+  volumes:
+    - name: remote-cli
+      persistentVolumeClaim:
+        claimName: remote-cli
