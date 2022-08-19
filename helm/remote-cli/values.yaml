@@ -8,8 +8,6 @@ general:
   deployment_name: remote-cli-app
   service_name: remote-cli-svs
   configmap_name: remote-cli-configs
-  volume_name: remote-cli-pv
-  enable_volume: true
   replicas: 1
 
 image:
