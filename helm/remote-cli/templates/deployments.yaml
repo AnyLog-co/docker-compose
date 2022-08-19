@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: Pod
 metadata:
   annotations:
     kompose.cmd: kompose convert -f /Users/orishadmon/deployments/docker-compose/remote-cli/docker-compose.yaml
@@ -45,5 +45,5 @@ spec:
         - name: remote-cli
           persistentVolumeClaim:
             claimName: remote-cli
-          emptyDir: {}
+
 status: {}
