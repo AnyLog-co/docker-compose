@@ -5,7 +5,7 @@ metadata:
   name: '{{ .Values.general.pod_name }}'
 spec:
   containers:
-    - name: '{{ .Values.general.deployment_name }}'
+    - name: '{{ .Values.general.pod_name }}'
       image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
       volumeMounts:
         - name: remote-cli
