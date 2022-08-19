@@ -1,27 +1,14 @@
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.volume_name }}-claim
+  creationTimestamp: null
+  labels:
+    io.kompose.service: remote-cli
+  name: remote-cli
 spec:
-  storageClassName: {{ .Values.spec.storage_class }}
   accessModes:
-    - {{ .Values.spec.access_mode }}
+    - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.spec.storage_size }}
----
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.volume_name }}
-spec:
-  storageClassName: {{ .Values.spec.storage_class }}
-  capacity:
-    storage: {{ .Values.spec.storage_size }}
-  accessModes:
-    - {{ .Values.spec.access_mode }}
-  persistentVolumeReclaimPolicy: {{ .Values.spec.retain_policy }}
-  hostPath:
-    path: {{ .Values.spec.host_path }}
+      storage: 100Mi
+status: {}
