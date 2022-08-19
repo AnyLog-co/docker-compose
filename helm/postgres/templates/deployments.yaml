@@ -41,5 +41,6 @@ spec:
         - name: {{ .Values.general.volume_name }}
           persistentVolumeClaim:
             claimName: {{ .Values.general.volume_name }}-claim
+          emptyDir: {}
       {{ end }}
 
