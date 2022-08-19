@@ -1,27 +1,48 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
-  name: '{{ .Values.general.deployment_name }}'
+  annotations:
+    kompose.cmd: kompose convert -f /Users/orishadmon/deployments/docker-compose/remote-cli/docker-compose.yaml
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
   labels:
-    app: '{{ .Values.general.app_name }}'
+    io.kompose.service: remote-cli
+  name: remote-cli
 spec:
-  replicas: {{ .Values.general.replicas }}
+  replicas: 1
   selector:
     matchLabels:
-      app: '{{ .Values.general.app_name }}'
+      io.kompose.service: remote-cli
+  strategy:
+    type: Recreate
   template:
     metadata:
+      annotations:
+        kompose.cmd: kompose convert -f /Users/orishadmon/deployments/docker-compose/remote-cli/docker-compose.yaml
+        kompose.version: 1.26.1 (HEAD)
+      creationTimestamp: null
       labels:
-        app: {{ .Values.general.app_name }}
+        io.kompose.service: remote-cli
     spec:
       containers:
-      - name: '{{ .Values.general.deployment_name }}'
-        image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        envFrom:
-        - configMapRef:
-            name: '{{ .Values.general.configmap_name }}'
-        ports:
-        - name: '{{ .Values.networking.port_name }}'
-          containerPort: {{ .Values.networking.port }}
+        - env:
+            - name: CLI_PORT
+              value: "31800"
+            - name: CONN_IP
+              value: 0.0.0.0
+          image: anylogco/remote-cli:latest
+          name: remote-cli
+          ports:
+            - containerPort: 31800
+          resources: {}
+          stdin: true
+          tty: true
+          volumeMounts:
+            - mountPath: /app/Remote-CLI/anylog_query/static/json
+              name: remote-cli
+      restartPolicy: Always
+      volumes:
+        - name: remote-cli
+          persistentVolumeClaim:
+            claimName: remote-cli
+status: {}
