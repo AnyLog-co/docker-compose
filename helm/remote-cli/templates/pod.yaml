@@ -14,3 +14,4 @@ spec:
     - name: remote-cli
       persistentVolumeClaim:
         claimName: remote-cli
+
