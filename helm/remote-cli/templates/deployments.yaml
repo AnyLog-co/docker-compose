@@ -25,10 +25,10 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
-#        volumeMounts:
-#        - mountPath: /app/Remote-CLI/anylog_query/static/json
-#          name: remote-cli-json
-#      volumes:
-#      - name: remote-cli-json
-#        hostPath:
-#          path: /app/Remote-CLI/anylog_query/static/json
+        volumeMounts:
+        - mountPath: /app/Remote-CLI/anylog_query/static/json
+          name: remote-cli-json
+      volumes:
+      - name: remote-cli-json
+        hostPath:
+          path: /app/Remote-CLI/anylog_query/static/json
