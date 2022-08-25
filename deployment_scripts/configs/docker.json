@@ -269,7 +269,7 @@
   },
   "mqtt": {
     "ENABLE_MQTT": {
-      "question": "Execute `run mqtt client`",
+      "question": "Do you want to enable MQTT client",
       "default": false,
       "value": "",
       "options": [true, false],
