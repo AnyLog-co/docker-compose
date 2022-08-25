@@ -38,7 +38,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana-ewan
-  namespace: grafana
+#  namespace: grafana
 spec:
   replicas: 1
   selector:
