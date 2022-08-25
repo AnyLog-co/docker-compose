@@ -76,7 +76,7 @@ spec:
       volumes:
         - name: grafana-storage
           hostPath:
-                  path: /home/ec2-user
+                  path: /home/anylog
                   type: Directory
           #persistentVolumeClaim:
           #        claimName: allow
