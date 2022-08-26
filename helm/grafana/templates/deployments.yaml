@@ -71,9 +71,9 @@ spec:
         volumeMounts:
           - mountPath: /var/lib/grafana
             name: grafana-storage
-          - mountPath: /etc/grafana/provisioning/datasources
-            name: grafana-datasources
-            readOnly: false
+#          - mountPath: /etc/grafana/provisioning/datasources
+#            name: grafana-datasources
+#            readOnly: false
       volumes:
         - name: grafana-storage
           hostPath:
@@ -81,10 +81,10 @@ spec:
                   type: Directory
           #persistentVolumeClaim:
           #        claimName: allow
-        - name: grafana-datasources
-          configMap:
-              defaultMode: 420
-              name: grafana-datasources
+#        - name: grafana-datasources
+#          configMap:
+#              defaultMode: 420
+#              name: grafana-datasources
 #      nodeSelector:
 #               node: host1
 
