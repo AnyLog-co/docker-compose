@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.blockchain_volume }}-pvc
+  name: {{ .Values.general.data_volume_name }}-pvc
 spec:
   accessModes:
     - {{ .Values.spec.access_mode }}

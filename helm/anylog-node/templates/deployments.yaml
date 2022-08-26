@@ -40,12 +40,31 @@ spec:
         {{ end }}
         {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
-          - name: '{{ .Values.volume.blockchain_volume_name }}' # grafana data volume
+          - name: '{{ .Values.volume.anylog_volume_name }}'
+            mountPath: /app/AnyLog-Network/anylog
+          - name: '{{ .Values.volume.blockchain_volume_name }}'
             mountPath: /app/AnyLog-Network/blockchain
+          - name: '{{ .Values.volume.data_volume_name }}'
+            mountPath: /app/AnyLog-Network/data
+          {{- if .Values.volume.remote_cli }}
+          - name: '{{ .Values.volume.remote_cli }}'
+            mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
+          {{ end }}
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
-        - name: '{{ .Values.volume.blockchain_volume_name }}' # grafana data volume
+        - name: '{{ .Values.volume.anylog_volume_name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.anylog_volume_name }}-pvc'
+        - name: '{{ .Values.volume.blockchain_volume_name }}'
           persistentVolumeClaim:
             claimName: '{{ .Values.volume.blockchain_volume_name }}-pvc'
+        - name: '{{ .Values.volume.data_volume_name }}'
+          persistentVolumeCalim:
+            claimName: '{{ .Values.volume.data_volume_name }}-pvc'
+        {{- if .Values.volume.remote_cli }}
+        - name: '{{ .Values.volume.remote_cli }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.remote_cli }}-pvc'
+        {{ end }}
       {{ end }}

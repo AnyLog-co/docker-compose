@@ -1,6 +1,9 @@
 general:
   namespace: default
-  blockchain_volume: anylog-node-blockchain
+  anylog_volume_name: anylog-node-anylog
+  blockchain_volume_name: anylog-node-blockchain
+  data_volume_name: anylog-node-data
+
 spec:
   access_mode: ReadWriteOnce
   storage_size: 1Gi
