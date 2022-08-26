@@ -10,7 +10,7 @@ general:
  service_name: anylog-master-svs
  configmap_name: anylog-master-configs
 # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
- nodeSelector: ""
+# nodeSelector: ""
  replicas: 1
 
 image:
