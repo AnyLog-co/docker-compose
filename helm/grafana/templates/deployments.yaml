@@ -57,23 +57,23 @@ spec:
       containers:
       - name: grafana
         # command: ['sh', '-c', 'chown -R 472:472 /var/lib/grafana']
-        image: grafana/grafana:7.5.7
+        image: grafana/grafana:5.4.2
         ports:
         - name: grafana
           containerPort: 3000
-#        resources:
-#          limits:
-#            memory: "2Gi"
-#            cpu: "1000m"
-#          requests:
-#            memory: "1Gi"
-#            cpu: "500m"
+        resources:
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
         volumeMounts:
           - mountPath: /var/lib/grafana
             name: grafana-storage
-#          - mountPath: /etc/grafana/provisioning/datasources
-#            name: grafana-datasources
-#            readOnly: false
+          - mountPath: /etc/grafana/provisioning/datasources
+            name: grafana-datasources
+            readOnly: false
       volumes:
         - name: grafana-storage
           hostPath:
@@ -81,12 +81,13 @@ spec:
                   type: Directory
           #persistentVolumeClaim:
           #        claimName: allow
-#        - name: grafana-datasources
-#          configMap:
-#              defaultMode: 420
-#              name: grafana-datasources
-#      nodeSelector:
-#               node: host1
-#
+        - name: grafana-datasources
+          configMap:
+              defaultMode: 420
+              name: grafana-datasources
+      nodeSelector:
+               node: host1
+
+
 
 
