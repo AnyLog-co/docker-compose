@@ -41,7 +41,7 @@ spec:
         {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
           - name: '{{ .Values.volume.blockchain_volume_name }}' # grafana data volume
-            mountPath: /var/lib/grafana
+            mountPath: /app/AnyLog-Network/blockchain
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
