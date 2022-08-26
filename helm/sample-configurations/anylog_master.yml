@@ -19,6 +19,10 @@ image:
  tag: predevelop
  pullPolicy: Always
 
+volume:
+  enable_volume: true
+  blockchain_volume_name: anylog-node-blockchain
+
 configs:
  basic:
    node_type: ledger

@@ -20,6 +20,11 @@ image:
   tag: develop
   pullPolicy: IfNotPresent
 
+volume:
+  enable_volume: true
+  blockchain_volume_name: anylog-node-blockchain
+
+
 configs:
   basic:
     node_type: rest

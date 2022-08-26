@@ -9,8 +9,6 @@ general:
 volume:
   enable_volume: true
   data_volume_name: grafana-data
-  log_volume_name: grafana-log
-  config_volume_name: grafana-config
 
 image:
   repository: grafana/grafana

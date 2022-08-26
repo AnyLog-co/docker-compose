@@ -42,3 +42,14 @@ spec:
         - name: broker
           containerPort: {{ .Values.configs.networking.broker }}
         {{ end }}
+        {{- if eq .Values.volume.enable_volume true }}
+        volumeMounts:
+          - name: '{{ .Values.volume.blockchain_volume_name }}' # grafana data volume
+            mountPath: /var/lib/grafana
+        {{ end }}
+      {{- if eq .Values.volume.enable_volume true }}
+      volumes:
+        - name: '{{ .Values.volume.blockchain_volume_name }}' # grafana data volume
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.blockchain_volume_name }}-pvc'
+      {{ end }}
