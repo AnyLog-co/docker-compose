@@ -1,86 +1,10 @@
-# - grafana-data:/var/lib/grafana
-kind: PersistentVolumeClaim
 apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.data_volume_name }}-claim
+  name: grafana-pvc
 spec:
-  storageClassName: {{ .Values.spec.storage_class }}
   accessModes:
-    - {{ .Values.spec.access_mode }}
+    - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.spec.storage_size }}
----
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.data_volume_name }}
-spec:
-  storageClassName: {{ .Values.spec.storage_class }}
-  capacity:
-    storage: {{ .Values.spec.storage_size }}
-  accessModes:
-    - {{ .Values.spec.access_mode }}
-  persistentVolumeReclaimPolicy: {{ .Values.spec.retain_policy }}
-  hostPath:
-    path: {{ .Values.spec.data_host_path }}
----
-# - grafana-log:/var/log/grafana
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.log_volume_name }}-claim
-spec:
-  storageClassName: {{ .Values.spec.storage_class }}
-  accessModes:
-    - {{ .Values.spec.access_mode }}
-  resources:
-    requests:
-      storage: {{ .Values.spec.storage_size }}
----
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.log_volume_name }}
-spec:
-  storageClassName: {{ .Values.spec.storage_class }}
-  capacity:
-    storage: {{ .Values.spec.storage_size }}
-  accessModes:
-    - {{ .Values.spec.access_mode }}
-  persistentVolumeReclaimPolicy: {{ .Values.spec.retain_policy }}
-  hostPath:
-    path: {{ .Values.spec.log_host_path }}
----
-# - grafana-config:/etc/grafana
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.config_volume_name }}-claim
-spec:
-  storageClassName: {{ .Values.spec.storage_class }}
-  accessModes:
-    - {{ .Values.spec.access_mode }}
-  resources:
-    requests:
-      storage: {{ .Values.spec.storage_size }}
----
-kind: PersistentVolume
-apiVersion: v1
-metadata:
-  namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.config_volume_name }}
-spec:
-  storageClassName: {{ .Values.spec.storage_class }}
-  capacity:
-    storage: {{ .Values.spec.storage_size }}
-  accessModes:
-    - {{ .Values.spec.access_mode }}
-  persistentVolumeReclaimPolicy: {{ .Values.spec.retain_policy }}
-  hostPath:
-    path: {{ .Values.spec.config_host_path }}
+      storage: 1Gi

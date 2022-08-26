@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: '{{ .Values.general.namespace }}'
-  name: '{{ .Values.general.service_name }}'
+  name: grafana
   annotations:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '3000'
