@@ -21,6 +21,9 @@ spec:
         - name: grafana
           image: grafana/grafana:7.5.7
           imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: '{{ .Values.general.configmap_name }}'
           ports:
             - containerPort: 3000
               name: http-grafana
