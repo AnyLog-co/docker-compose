@@ -32,11 +32,15 @@ spec:
         {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
           - name: '{{ .Values.volume.json_volume }}' # grafana data volume
-            mountPath: /app/
+            mountPath: /app/Remote-CLI
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
-        - name: '{{ .Values.volume.json_volume }}' # grafana data volume
-          persistentVolumeClaim:
-            claimName: '{{ .Values.volume.json_volume }}-pvc'
+        - name: '{{ .Values.volume.json_volume }}'
+          hostPath:
+            path: /mnt/Remote-CLI
+            type: DirectoryOrCreate
+#        - name: '{{ .Values.volume.json_volume }}' # grafana data volume
+#          persistentVolumeClaim:
+#            claimName: '{{ .Values.volume.json_volume }}-pvc'
       {{ end }}
