@@ -8,4 +8,4 @@ spec:
     - {{ .Values.spec.access_mode }}
   resources:
     requests:
-      storage: {.Values.spec.storage_size }
+      storage: {{ .Values.spec.storage_size }}
