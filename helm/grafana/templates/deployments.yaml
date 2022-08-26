@@ -52,7 +52,7 @@ spec:
             requests:
               cpu: 250m
               memory: 750Mi
-          {{- if eq .Values.general.enable_volume true }}
+          {{- if eq .Values.volume.enable_volume true }}
           volumeMounts:
             - name: '{{ .Values.volume.data_volume_name }}' # grafana data volume
               mountPath: /var/lib/grafana
@@ -61,9 +61,9 @@ spec:
             - name: '{{ .Values.volume.log_volume_name }}' # grafana log volume
               mountPath: /var/log/grafana
             {{ end }}
-      {{- if eq .Values.general.enable_volume true }}
+      {{- if eq .Values.volume.enable_volume true }}
       volumes:
-        - name:' {{ .Values.volume.data_volume_name }}' # grafana data volume
+        - name: '{{ .Values.volume.data_volume_name }}' # grafana data volume
           persistentVolumeClaim:
             claimName: '{{ .Values.volume.data_volume_name }}-pvc'
         - name: '{{ .Values.volume.config_volume_name }}' # grafana config volume
