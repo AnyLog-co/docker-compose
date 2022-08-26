@@ -19,8 +19,7 @@ image:
 volume:
   enable_volume: true
   json_volume: remote-cli-json-data
-  log_volume_name: grafana-log
-  config_volume_name: grafana-config
+  blob_volume: remote-cli-blobs-volume
 
 networking:
   ip: 0.0.0.0

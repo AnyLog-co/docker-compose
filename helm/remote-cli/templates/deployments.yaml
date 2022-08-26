@@ -29,18 +29,12 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
-        {{- if eq .Values.volume.enable_volume true }}
-        volumeMounts:
-          - name: '{{ .Values.volume.json_volume }}' # grafana data volume
-            mountPath: /app/Remote-CLI
+        {{- if .Values.volume.enable_volume true }}
+        - name: '{{.Values.volume.blob_volume }}'
+          mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
         {{ end }}
-      {{- if eq .Values.volume.enable_volume true }}
-      volumes:
-        - name: '{{ .Values.volume.json_volume }}'
-          hostPath:
-            path: /mnt/Remote-CLI
-            type: DirectoryOrCreate
-#        - name: '{{ .Values.volume.json_volume }}' # grafana data volume
-#          persistentVolumeClaim:
-#            claimName: '{{ .Values.volume.json_volume }}-pvc'
+      {{- if .Values.volume.enable_volume true }}
+      - name: '{{.Values.volume.blob_volume }}'
+        persistentVolumeClaim:
+          claimName: '{{.Values.volume.blob_volume }}-pvc'
       {{ end }}
