@@ -1,6 +1,6 @@
 general:
   namespace: default
-  json_volume_name: remote-cli-json-volume
+  json_volume_name: remote-cli-json-data
 
 spec:
   access_mode: ReadWriteOnce
