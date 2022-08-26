@@ -21,7 +21,9 @@ image:
 
 volume:
   enable_volume: true
-  blockchain_volume_name: anylog-node-blockchain
+  anylog_volume_name: anylog-master-node-anylog
+  blockchain_volume_name: anylog-master-node-blockchain
+  data_volume_name: anylog-master-node-data
 
 configs:
  basic:

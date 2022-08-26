@@ -17,6 +17,12 @@ image:
   tag: predevelop
   pullPolicy: Always
 
+volume:
+  enable_volume: true
+  anylog_volume_name: anylog-publisher-node-anylog
+  blockchain_volume_name: anylog-publisher-node-blockchain
+  data_volume_name: anylog-publisher-node-data
+
 configs:
   basic:
     node_type: publisher

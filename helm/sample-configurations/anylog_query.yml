@@ -18,6 +18,14 @@ image:
  tag: predevelop
  pullPolicy: Always
 
+volume:
+  enable_volume: true
+  anylog_volume_name: anylog-query-node-anylog
+  blockchain_volume_name: anylog-query-node-blockchain
+  data_volume_name: anylog-query-node-data
+  # claim for when using Remote-CLI for image data
+  # remote_cli: remote-cli-blobs-volume
+
 configs:
  basic:
    node_type: query

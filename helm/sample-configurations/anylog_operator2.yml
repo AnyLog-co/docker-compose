@@ -18,6 +18,12 @@ image:
  tag: predevelop
  pullPolicy: Always
 
+volume:
+  enable_volume: true
+  anylog_volume_name: anylog-operator2-node-anylog
+  blockchain_volume_name: anylog-operator2-node-blockchain
+  data_volume_name: anylog-operator2-node-data
+
 configs:
  basic:
    node_type: operator
