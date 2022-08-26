@@ -25,10 +25,14 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
+        {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
-        - mountPath: /app/Remote-CLI/anylog_query/static/json
-          name: remote-cli-json
+          - name: '{{ .Values.volume.json_volume }}' # grafana data volume
+            mountPath: /app/Remote-CLI/anylog_query/static/json
+        {{ end }}
+      {{- if eq .Values.volume.enable_volume true }}
       volumes:
-      - name: remote-cli-json
-        hostPath:
-          path: /app/Remote-CLI/anylog_query/static/json
+        - name: '{{ .Values.volume.json_volume }}' # grafana data volume
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.json_volume }}-pvc'
+      {{ end }}
