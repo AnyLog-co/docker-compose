@@ -56,20 +56,20 @@ spec:
           volumeMounts:
             - name: '{{ .Values.volume.data_volume_name }}' # grafana data volume
               mountPath: /var/lib/grafana
-            - name: '{{ .Values.volume.config_volume_name }}' # grafana config volume
-              mountPath: /etc/grafana
-            - name: '{{ .Values.volume.log_volume_name }}' # grafana log volume
-              mountPath: /var/log/grafana
+#            - name: '{{ .Values.volume.config_volume_name }}' # grafana config volume
+#              mountPath: /etc/grafana
+#            - name: '{{ .Values.volume.log_volume_name }}' # grafana log volume
+#              mountPath: /var/log/grafana
             {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
         - name: '{{ .Values.volume.data_volume_name }}' # grafana data volume
           persistentVolumeClaim:
             claimName: '{{ .Values.volume.data_volume_name }}-pvc'
-        - name: '{{ .Values.volume.config_volume_name }}' # grafana config volume
-          persistentVolumeClaim:
-            claimName: '{{ .Values.volume.config_volume_name }}-pvc'
-        - name: '{{ .Values.volume.log_volume_name }}' # grafana log volume
-          persistentVolumeClaim:
-            claimName: '{{ .Values.volume.log_volume_name }}-pvc'
+#        - name: '{{ .Values.volume.config_volume_name }}' # grafana config volume
+#          persistentVolumeClaim:
+#            claimName: '{{ .Values.volume.config_volume_name }}-pvc'
+#        - name: '{{ .Values.volume.log_volume_name }}' # grafana log volume
+#          persistentVolumeClaim:
+#            claimName: '{{ .Values.volume.log_volume_name }}-pvc'
       {{ end }}
