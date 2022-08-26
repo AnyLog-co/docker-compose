@@ -32,7 +32,7 @@ spec:
         {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
           - name: '{{ .Values.volume.json_volume }}' # grafana data volume
-            mountPath: /app/Remote-CLI/anylog_query/static/json
+            mountPath: /app/
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
