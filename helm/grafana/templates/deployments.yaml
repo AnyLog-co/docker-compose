@@ -85,8 +85,8 @@ spec:
           configMap:
               defaultMode: 420
               name: grafana-datasources
-      nodeSelector:
-               node: host1
+#      nodeSelector:
+#               node: host1
 
 
 
