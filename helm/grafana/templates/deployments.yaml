@@ -1,33 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: '{{ .Values.general.deployment_name }}'
   labels:
-    app: grafana
-  name: grafana
+    app: '{{ .Values.general.app_name }}'
 spec:
+  replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: grafana
+      app: '{{ .Values.general.app_name }}'
   template:
     metadata:
+      name: '{{ .Values.general.deployment_name }}'
       labels:
-        app: grafana
+        app: {{ .Values.general.app_name }}
     spec:
       securityContext:
         fsGroup: 472
         supplementalGroups:
           - 0
       containers:
-        - name: grafana
-          image: grafana/grafana:7.5.7
+        - name: '{{ .Values.general.deployment_name }}'
+          image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
                 name: '{{ .Values.general.configmap_name }}'
           ports:
-            - containerPort: 3000
-              name: http-grafana
-              protocol: TCP
+            - name: '{{ .Values.networking.port_name }}'
+              containerPort: 3000
           readinessProbe:
             failureThreshold: 3
             httpGet:
@@ -50,10 +52,24 @@ spec:
             requests:
               cpu: 250m
               memory: 750Mi
+          {{- if eq .Values.general.enable_volume true }}
           volumeMounts:
-            - mountPath: /var/lib/grafana
-              name: grafana-pv
+            - name: {{ data_volume_name }} # grafana data volume
+              mountPath: /var/lib/grafana
+            - name: {{ config_volume_name }} # grafana config volume
+              mountPath: /etc/grafana
+            - name: {{ log_volume_name }} # grafana log volume
+              mountPath: /var/log/grafana
+            {{ end }}
+      {{- if eq .Values.general.enable_volume true }}
       volumes:
-        - name: grafana-pv
+        - name: {{ data_volume_name }} # grafana data volume
           persistentVolumeClaim:
-            claimName: grafana-pvc
+            claimName: {{ data_volume_name }}
+        - name: {{ config_volume_name }} # grafana config volume
+          persistentVolumeClaim:
+            claimName: {{ data_volume_name }}
+        - name: {{ data_volume_name }} # grafana log volume
+          persistentVolumeClaim:
+            claimName: {{ log_volume_name }}
+      {{ end }}
