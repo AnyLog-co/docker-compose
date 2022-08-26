@@ -1,8 +1,6 @@
 general:
   namespace: default
   data_volume_name: grafana-data
-  log_volume_name: grafana-log
-  config_volume_name: grafana-config
 spec:
   access_mode: ReadWriteOnce
   storage_size: 1Gi
