@@ -54,22 +54,22 @@ spec:
               memory: 750Mi
           {{- if eq .Values.general.enable_volume true }}
           volumeMounts:
-            - name: {{ data_volume_name }} # grafana data volume
+            - name: {{ .Values.volume.data_volume_name }} # grafana data volume
               mountPath: /var/lib/grafana
-            - name: {{ config_volume_name }} # grafana config volume
+            - name: {{ .Values.volume.config_volume_name }} # grafana config volume
               mountPath: /etc/grafana
-            - name: {{ log_volume_name }} # grafana log volume
+            - name: {{ .Values.volume.log_volume_name }} # grafana log volume
               mountPath: /var/log/grafana
             {{ end }}
       {{- if eq .Values.general.enable_volume true }}
       volumes:
-        - name: {{ data_volume_name }} # grafana data volume
+        - name: {{ .Values.volume.data_volume_name }} # grafana data volume
           persistentVolumeClaim:
-            claimName: {{ data_volume_name }}
-        - name: {{ config_volume_name }} # grafana config volume
+            claimName: {{ .Values.volume.data_volume_name }}
+        - name: {{ .Values.volume.config_volume_name }} # grafana config volume
           persistentVolumeClaim:
-            claimName: {{ data_volume_name }}
-        - name: {{ data_volume_name }} # grafana log volume
+            claimName: {{ .Values.volume.data_volume_name }}
+        - name: {{ .Values.volume.data_volume_name }} # grafana log volume
           persistentVolumeClaim:
-            claimName: {{ log_volume_name }}
+            claimName: {{ .Values.volume.log_volume_name }}
       {{ end }}
