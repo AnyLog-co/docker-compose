@@ -20,7 +20,6 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: {{ .Values.general.nodeSelector }}
       {{ end }}
-
       {{- if ne .Values.image.secretName "" }}
       imagePullSecrets:
         - name: {{ .Values.image.secretName }}
