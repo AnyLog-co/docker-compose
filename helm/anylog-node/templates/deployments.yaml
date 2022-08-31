@@ -67,7 +67,7 @@ spec:
         - name: '{{ .Values.volume.data_volume.name }}'
           persistentVolumeClaim:
             claimName: '{{ .Values.volume.data_volume.name }}-pvc'
-        {{- if .VAlues.volume.remote_cli }}
+        {{- if .Values.volume.remote_cli }}
         - name: '{{ .Values.volume.remote_cli.name }}'
           persistentVolumeClaim:
             claimName: '{{ .Values.volume.remote_cli.name }}-pvc'
