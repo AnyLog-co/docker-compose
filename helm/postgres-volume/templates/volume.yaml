@@ -2,26 +2,26 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.volume_name }}-claim
+  name: {{ .Values.volume.name }}-claim
 spec:
-  storageClassName: {{ .Values.spec.storage_class }}
+  storageClassName: {{ .Values.volume.specs.storage_class }}
   accessModes:
-    - {{ .Values.spec.access_mode }}
+    - {{ .Values.volume.specs.access_mode }}
   resources:
     requests:
-      storage: {{ .Values.spec.storage_size }}
+      storage: {{ .Values.volume.specs.storage_size }}
 ---
 kind: PersistentVolume
 apiVersion: v1
 metadata:
   namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.general.volume_name }}
+  name: {{ .Values.volume.name }}
 spec:
-  storageClassName: {{ .Values.spec.storage_class }}
+  storageClassName: {{ .Values.volume.specs.storage_class }}
   capacity:
-    storage: {{ .Values.spec.storage_size }}
+    storage: {{ .Values.volume.specs.storage_size }}
   accessModes:
-    - {{ .Values.spec.access_mode }}
-  persistentVolumeReclaimPolicy: {{ .Values.spec.retain_policy }}
+    - {{ .Values.volume.specs.access_mode }}
+  persistentVolumeReclaimPolicy: {{ .Values.volume.specs.retain_policy }}
   hostPath:
-    path: {{ .Values.spec.host_path }}
+    path: {{ .Values.volume.specs.host_path }}
