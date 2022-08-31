@@ -36,7 +36,7 @@ spec:
         {{ end }}
 
       {{- if eq .Values.volume.enable_volume true }}
-      volume:
+      volumes:
       - name: '{{.Values.volume.blob_volume.name }}'
         persistentVolumeClaim:
           claimName: '{{.Values.volume.blob_volume.name }}-pvc'
