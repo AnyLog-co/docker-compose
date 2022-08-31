@@ -4,6 +4,7 @@ general:
   deployment_name: postgres-app
   service_name: postgres-svs
   configmap_name: postgres-configs
+  nodeSelector: ""
   replicas: 1
 
 volume:
