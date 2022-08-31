@@ -20,14 +20,23 @@ image:
 
 volume:
   enable_volume: true
-  anylog_volume_name: anylog-operator-node-anylog
-  blockchain_volume_name: anylog-operator-node-blockchain
-  data_volume_name: anylog-operator-node-data
+  anylog_volume:
+    name: anylog-operator-node1-anylog
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  blockchain_volume:
+    name: anylog-operator-node1-blockchain
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  data_volume:
+    name: anylog-operator-node1-data
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
 
 configs:
  basic:
    node_type: operator
-   node_name: anylog-operator-node
+   node_name: anylog-operator-node1
    company_name: New Company
    # if location is not set, will use `https://ipinfo.io/json` to get coordinates
    location: ""

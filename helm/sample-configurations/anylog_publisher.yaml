@@ -19,9 +19,18 @@ image:
 
 volume:
   enable_volume: true
-  anylog_volume_name: anylog-publisher-node-anylog
-  blockchain_volume_name: anylog-publisher-node-blockchain
-  data_volume_name: anylog-publisher-node-data
+  anylog_volume:
+    name: anylog-publisher-anylog
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  blockchain_volume:
+    name: anylog-publisher-blockchain
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  data_volume:
+    name: anylog-publisher-data
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
 
 configs:
   basic:
