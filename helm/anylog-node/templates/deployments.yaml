@@ -45,31 +45,30 @@ spec:
         {{ end }}
         {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
-          - name: '{{ .Values.volume.anylog_volume_name }}'
+          - name: '{{ .Values.volume.anylog_volume.name }}'
             mountPath: /app/AnyLog-Network/anylog
-          - name: '{{ .Values.volume.blockchain_volume_name }}'
+          - name: '{{ .Values.volume.blockchain_volume.name }}'
             mountPath: /app/AnyLog-Network/blockchain
-          - name: '{{ .Values.volume.data_volume_name }}'
+          - name: '{{ .Values.volume.data_volume.name }}'
             mountPath: /app/AnyLog-Network/data
           {{- if .Values.volume.remote_cli }}
-          - name: '{{ .Values.volume.remote_cli }}'
+          - name: '{{ .Values.volume.remote_cli.name }}'
             mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
           {{ end }}
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
-        - name: '{{ .Values.volume.anylog_volume_name }}'
+        - name: '{{ .Values.volume.anylog_volume.name }}'
           persistentVolumeClaim:
-            claimName: '{{ .Values.volume.anylog_volume_name }}-pvc'
-        - name: '{{ .Values.volume.blockchain_volume_name }}'
+            claimName: '{{ .Values.volume.anylog_volume.name }}-pvc'
+        - name: '{{ .Values.volume.blockchain_volume.name }}'
           persistentVolumeClaim:
-            claimName: '{{ .Values.volume.blockchain_volume_name }}-pvc'
-        - name: '{{ .Values.volume.data_volume_name }}'
+            claimName: '{{ .Values.volume.blockchain_volume.name }}-pvc'
+        - name: '{{ .Values.volume.data_volume.name }}'
           persistentVolumeClaim:
-            claimName: '{{ .Values.volume.data_volume_name }}-pvc'
-#        {{- if .Values.volume.remote_cli }}
-#        - name: '{{ .Values.volume.remote_cli }}'
-#          persistentVolumeClaim:
-#            claimName: '{{ .Values.volume.remote_cli }}-pvc'
-#        {{ end }}
+            claimName: '{{ .Values.volume.data_volume.name }}-pvc'
+        {{- if .VAlues.volume.remote_cli }}
+        - name: '{{ .Values.volume.remote_cli.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.remote_cli.name }}-pvc'
       {{ end }}
