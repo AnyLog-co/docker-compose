@@ -8,7 +8,9 @@ general:
 
 volume:
   enable_volume: true
-  data_volume_name: grafana-data
+  name: grafana-data
+  access_mode: ReadWriteOnce
+  storage_size: 1Gi
 
 image:
   repository: grafana/grafana

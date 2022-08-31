@@ -4,9 +4,13 @@ general:
   deployment_name: grafana-app
   service_name: grafana-svs
   configmap_name: grafana-configs
-  volume_name: grafana-pv
-  enable_volume: true
   replicas: 1
+
+volume:
+  enable_volume: true
+  name: grafana-data
+  access_mode: ReadWriteOnce
+  storage_size: 1Gi
 
 image:
   repository: grafana/grafana
@@ -27,4 +31,8 @@ configs:
       simpod-json-datasource,
       grafana-worldmap-panel
   ]
+  ini_file:
+    disable_login_form: false
+    enabled: true
+    allow_embedding: true
 

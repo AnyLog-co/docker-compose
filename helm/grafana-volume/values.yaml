@@ -1,7 +1,9 @@
 general:
   namespace: default
-  data_volume_name: grafana-data
-spec:
+
+volume:
+  enable_volume: true
+  name: grafana-data
   access_mode: ReadWriteOnce
   storage_size: 1Gi
 

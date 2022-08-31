@@ -54,12 +54,12 @@ spec:
               memory: 750Mi
           {{- if eq .Values.volume.enable_volume true }}
           volumeMounts:
-            - name: '{{ .Values.volume.data_volume_name }}' # grafana data volume
+            - name: '{{ .Values.volume.name }}' # grafana data volume
               mountPath: /var/lib/grafana
             {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
-        - name: '{{ .Values.volume.data_volume_name }}' # grafana data volume
+        - name: '{{ .Values.volume.name }}' # grafana data volume
           persistentVolumeClaim:
-            claimName: '{{ .Values.volume.data_volume_name }}-pvc'
+            claimName: '{{ .Values.volume.name }}-pvc'
       {{ end }}
