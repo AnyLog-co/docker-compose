@@ -30,11 +30,11 @@ spec:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
         {{- if .Values.volume.enable_volume true }}
-        - name: '{{.Values.volume.blob_volume }}'
+        - name: '{{.Values.volume.blob_volume.name }}'
           mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
         {{ end }}
       {{- if .Values.volume.enable_volume true }}
-      - name: '{{.Values.volume.blob_volume }}'
+      - name: '{{.Values.volume.blob_volume.name }}'
         persistentVolumeClaim:
-          claimName: '{{.Values.volume.blob_volume }}-pvc'
+          claimName: '{{.Values.volume.blob_volume.name }}-pvc'
       {{ end }}
