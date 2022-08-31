@@ -18,8 +18,14 @@ image:
 
 volume:
   enable_volume: true
-  json_volume: remote-cli-json-data
-  blob_volume: remote-cli-blobs-volume
+#  json_volume:
+#    name: remote-cli-json-data
+#    access_mode: ReadWriteOnce
+#    storage_size: 1Gi
+  blob_volume:
+    name: remote-cli-blobs-volume
+    access_mode: ReadWriteMany
+    storage_size: 1Gi
 
 networking:
   ip: 0.0.0.0
