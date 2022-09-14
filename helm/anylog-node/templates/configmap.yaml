@@ -98,4 +98,3 @@ data:
   WRITE_IMMEDIATE: '{{ .Values.configs.settings.write_immediate }}'
   THRESHOLD_TIME: '{{ .Values.configs.settings.threshold_time }}'
   THRESHOLD_VOLUME: '{{ .Values.configs.settings.threshold_volume }}'
-
