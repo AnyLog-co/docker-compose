@@ -19,6 +19,21 @@ image:
  tag: predevelop
  pullPolicy: Always
 
+volume:
+  enable_volume: true
+  anylog_volume:
+    name: anylog-master-node-anylog
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  blockchain_volume:
+    name: anylog-master-node-blockchain
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  data_volume:
+    name: anylog-master-node-data
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+
 configs:
  basic:
    node_type: ledger

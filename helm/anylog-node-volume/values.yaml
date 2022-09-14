@@ -1,13 +1,18 @@
 general:
   namespace: default
-  volume_name: anylog-pv
-  
-spec:
-  storage_class: manual
-  access_mode: ReadWriteMany
-  storage_size: 5Gi
-  reclaim_policy: Retain
-  anylog_host_path: /opt/anylog-node/anylog
-  blockchain_host_path: /opt/anylog-node/blockchain
-  data_host_path: /opt/anylog-node/data
-  local_scripts_host_path: /opt/anylog-node/scripts
+
+volume:
+  enable_volume: true
+  anylog_volume:
+    name: anylog-node-anylog
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  blockchain_volume:
+    name: anylog-node-blockchain
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  data_volume:
+    name: anylog-node-data
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+

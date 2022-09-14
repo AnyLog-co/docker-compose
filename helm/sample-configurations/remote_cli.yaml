@@ -16,6 +16,17 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
+volume:
+  enable_volume: true
+#  json_volume:
+#    name: remote-cli-json-data
+#    access_mode: ReadWriteOnce
+#    storage_size: 1Gi
+  blob_volume:
+    name: remote-cli-blobs-volume
+    access_mode: ReadWriteMany
+    storage_size: 1Gi
+
 networking:
   ip: 0.0.0.0
   port_name: rmt-cli-port

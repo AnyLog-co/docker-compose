@@ -4,10 +4,19 @@ general:
   deployment_name: postgres-app
   service_name: postgres-svs
   configmap_name: postgres-configs
-  volume_name: postgres-pv
-  enable_volume: true
+  nodeSelector: ""
   replicas: 1
-  
+
+volume:
+  enable_volume: true
+  name: postgres-pv
+  specs:
+    storage_class: manual
+    access_mode: ReadWriteMany
+    storage_size: 5Gi
+    reclaim_policy: Retain
+    host_path: /opt/postgres-data
+
 image:
   repository: postgres
   tag: 14.0-alpine

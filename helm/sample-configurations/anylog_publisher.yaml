@@ -17,6 +17,21 @@ image:
   tag: predevelop
   pullPolicy: Always
 
+volume:
+  enable_volume: true
+  anylog_volume:
+    name: anylog-publisher-anylog
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  blockchain_volume:
+    name: anylog-publisher-blockchain
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  data_volume:
+    name: anylog-publisher-data
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+
 configs:
   basic:
     node_type: publisher

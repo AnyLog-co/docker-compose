@@ -67,7 +67,7 @@ def read_json(json_file:str)->dict:
                     print(f'Failed to load content from {json_file} (Error: {error})')
         except Exception as error:
             print(f'Failed to open JSON file {json_file} (Error: {error})')
-    return  content
+    return content
 
 
 def read_yaml_file(yaml_file:str)->dict:
@@ -170,12 +170,14 @@ def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/docker-compos
     stmt = ""
     if os.path.isfile(full_path):
         for section in content:
+            if section == 'broker':
+                pass
             for param in content[section]:
                 if 'value' in content[section][param] and content[section][param]['value'] != "":
                     if content[section][param]['value'] in [True, False]:
                         content[section][param]['value'] = str(content[section][param]['value']).lower()
                     input = f"{param}={content[section][param]['value']}"
-                elif content[section][param]['default'] != "":
+                elif 'default' in content[section][param] and content[section][param]['default'] != "":
                     if content[section][param]['default'] in [True, False]:
                         content[section][param]['default'] = str(content[section][param]['default']).lower()
                     input = f"{param}={content[section][param]['default']}"
@@ -197,4 +199,3 @@ def write_dotenv_file(content:dict, dotenv_file='$HOME/deployments/docker-compos
             status = True
 
     return status
-

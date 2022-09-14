@@ -5,6 +5,7 @@ services:
     env_file:
       - anylog_configs.env
     container_name: anylog-node
+    restart: always
     stdin_open: true
     tty: true
     network_mode: "host" 

@@ -15,9 +15,9 @@ spec:
       labels:
         app: {{ .Values.general.app_name }}
     spec:
-      {{- if .Values.configs.nodeSelector }}
+      {{- if ne .Values.general.nodeSelector "" }}
       nodeSelector:
-        kubernetes.io/hostname: {{ .Values.configs.nodeSelector }}
+        kubernetes.io/hostname: {{ .Values.general.nodeSelector }}
       {{ end }}
       containers:
       - name: '{{ .Values.general.deployment_name }}'
@@ -31,15 +31,15 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
-        {{- if eq .Values.general.enable_volume true }}
+        {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
           - mountPath: /var/lib/postgresql/data
-            name: {{ .Values.general.volume_name }}
+            name: {{ .Values.volume.name }}
         {{ end }}
-      {{- if eq .Values.general.enable_volume true }}
+      {{- if eq .Values.volume.enable_volume true }}
       volumes:
-        - name: {{ .Values.general.volume_name }}
+        - name: {{ .Values.volume.name }}
           persistentVolumeClaim:
-            claimName: {{ .Values.general.volume_name }}-claim
+            claimName: {{ .Values.volume.name }}-claim
       {{ end }}
 

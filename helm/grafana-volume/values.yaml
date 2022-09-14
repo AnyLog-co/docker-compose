@@ -1,10 +1,10 @@
 general:
   namespace: default
-  volume_name: grafana-pv
-  
-spec:
-  storage_class: manual
+
+volume:
+  enable_volume: true
+  name: grafana-data
   access_mode: ReadWriteOnce
-  storage_size: 5Gi
-  reclaim_policy: Retain
-  host_path: /opt/grafana-data
+  storage_size: 1Gi
+
+

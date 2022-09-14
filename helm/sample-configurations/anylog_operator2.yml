@@ -18,6 +18,21 @@ image:
  tag: predevelop
  pullPolicy: Always
 
+volume:
+  enable_volume: true
+  anylog_volume:
+    name: anylog-operator-node2-anylog
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  blockchain_volume:
+    name: anylog-operator-node2-blockchain
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+  data_volume:
+    name: anylog-operator-node2-data
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+
 configs:
  basic:
    node_type: operator

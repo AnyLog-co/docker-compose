@@ -5,6 +5,7 @@ services:
       env_file:
         - postgres.env
       container_name: postgres
+      restart: always
       stdin_open: true
       tty: true
       ports:

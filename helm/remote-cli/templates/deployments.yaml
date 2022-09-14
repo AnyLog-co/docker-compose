@@ -15,6 +15,10 @@ spec:
       labels:
         app: {{ .Values.general.app_name }}
     spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
       containers:
       - name: '{{ .Values.general.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
@@ -25,15 +29,15 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
-        {{- if eq .Values.general.enable_volume true }}
         volumeMounts:
-          - mountPath: /app/Remote-CLI/anylog_query/static/json
-            name: {{ .Values.general.volume_name }}
+        {{- if eq .Values.volume.enable_volume true }}
+        - name: '{{.Values.volume.blob_volume.name }}'
+          mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
         {{ end }}
-      {{- if eq .Values.general.enable_volume true }}
-      volumes:
-        - name: {{ .Values.general.volume_name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.general.volume_name }}-claim
-      {{ end }}
 
+      {{- if eq .Values.volume.enable_volume true }}
+      volumes:
+      - name: '{{.Values.volume.blob_volume.name }}'
+        persistentVolumeClaim:
+          claimName: '{{.Values.volume.blob_volume.name }}-pvc'
+      {{ end }}

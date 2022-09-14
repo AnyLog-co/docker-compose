@@ -8,8 +8,6 @@ general:
   deployment_name: remote-cli-app
   service_name: remote-cli-svs
   configmap_name: remote-cli-configs
-  volume_name: remote-cli-pv
-  enable_volume: true
   replicas: 1
 
 image:
@@ -17,6 +15,17 @@ image:
   repository: anylogco/remote-cli
   tag: latest
   pullPolicy: IfNotPresent
+
+volume:
+  enable_volume: true
+#  json_volume:
+#    name: remote-cli-json-data
+#    access_mode: ReadWriteOnce
+#    storage_size: 1Gi
+  blob_volume:
+    name: remote-cli-blobs-volume
+    access_mode: ReadWriteMany
+    storage_size: 1Gi
 
 networking:
   ip: 0.0.0.0

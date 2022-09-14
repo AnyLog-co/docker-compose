@@ -8,8 +8,9 @@ general:
 
 volume:
   enable_volume: true
-  volume_name: grafana-pv
-  storage_size: 5Gi
+  name: grafana-data
+  access_mode: ReadWriteOnce
+  storage_size: 1Gi
 
 image:
   repository: grafana/grafana
@@ -30,4 +31,8 @@ configs:
       simpod-json-datasource,
       grafana-worldmap-panel
   ]
+  ini_file:
+    disable_login_form: false
+    enabled: true
+    allow_embedding: true
 

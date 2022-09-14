@@ -2,6 +2,7 @@ version: "2.2"
 services:
   anylog-operator-node2:
     image: anylogco/anylog-network:develop
+    restart: always
     env_file:
       - anylog_configs.env
     container_name: anylog-operator-node2

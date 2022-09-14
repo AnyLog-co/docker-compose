@@ -1,10 +1,12 @@
 general:
   namespace: default
-  volume_name: postgres-pv
-  
-spec:
-  storage_class: manual
-  access_mode: ReadWriteMany
-  storage_size: 5Gi
-  reclaim_policy: Retain
-  host_path: /opt/postgres-data
+
+volume:
+  enable_volume: true
+  name: postgres-pv
+  specs:
+    storage_class: manual
+    access_mode: ReadWriteMany
+    storage_size: 5Gi
+    reclaim_policy: Retain
+    host_path: /opt/postgres-data

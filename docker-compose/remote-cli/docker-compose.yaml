@@ -3,6 +3,7 @@ services:
   remote-cli:
     image: anylogco/remote-cli:latest
     container_name: remote-cli
+    restart: always
     stdin_open: true
     tty: true
     ports:
