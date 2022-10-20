@@ -97,6 +97,9 @@ def generic_questions(configs:dict)->dict:
             answer = __ask_question(question=full_question, description=configs[param]['description'])
             if answer == "" and param in ['NODE_NAME', 'COMPANY_NAME']:
                 configs[param]['value'] = configs[param]['default']
+        else:
+            configs[param]['value'] = configs[param]['default']
+
     return configs
 
 
@@ -128,7 +131,10 @@ def networking_questions(configs:dict):
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
-    return configs
+        else:
+            configs[param]['value'] = configs[param]['default']
+
+     return configs
 
 
 def validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dict):
@@ -225,6 +231,9 @@ def database_questions(configs:dict)->dict:
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
+        else:
+            configs[param]['value'] = configs[param]['default']
+
         # skip all other questions if DB_TYPE is SQLite or NoSQL is disabled
         if param == 'DB_TYPE' and configs['DB_TYPE']['value'] == 'sqlite':
             for key in configs:
@@ -286,10 +295,81 @@ def blockchain_questions(configs:dict)->dict:
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
+        else:
+            configs[param]['value'] = configs[param]['default']
+
     return configs
 
 
+def operator_questons(configs:dict)->dict:
+    """
+    Generate questions for operator configurations
+    :args:
+        configs:dict - database configurations
+    :params:
+        status:bool
+        error_msg:str - error message
+        full_question:str - question
+        answer:str - user input
+    :return:
+        updated configs
+    """
+    for param in configs:
+        if configs[param]['enable'] is True:
+            error_msg = ""
+            full_question = __generate_question(configs=configs[param])
+            status = False
+            while status is False:
+                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                if param in ['ENABLE_HA', 'ENABLE_PARTITIONS', 'CREATE_TABLE', 'UPDAE_TSD_INFO', 'ARCHIVE',
+                             'COMPRESS_FILE']:
+                    if answer not in configs[param]['options'] and answer != "":
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    elif answer in configs[param]['options']:
+                        configs[param]['value'] = answer
+                    if answer == "" or answer == 'false':
+                        configs[param]['value'] = configs[param]['default']
+                        if param == 'ENABLE_HA':
+                            configs['START_DATE']['enable'] = False
+                        elif param == 'ENABLE_PARTITIONS':
+                            for config in ['TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP',
+                                           'PARTITION_SYNC']:
+                                configs[config]['enable'] = False
+                elif param == 'START_DATE':
+                    if answer != "":
+                        try:
+                            answer = int(answer)
+                        except:
+                            error_msg = f"Invalid value {answer}. Please try again... "
+                        else:
+                            configs[param]['value'] = f"-{answer}d"
+                    else:
+                        configs[param]['value'] = f"-{configs[param]['defaul']}d"
+                elif param in ["PARTITION_INTERVAL", "PARTITION_SYNC"] and answer != "":
+                    for option in configs[param]['options']:
+                        if 's' == answer[-1]:
+                            answer = answer[:-1]
+                        if option in answer:
+                            configs[param]['value'] = answer
+                            status = True
+                    if status is False:
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                elif param in ['PARTITION_KEEP', 'OPERATOR_THREADS'] and answer != "":
+                    try:
+                        answer = int(answer)
+                    except:
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    else:
+                        if answer < configs[param]['default']:
+                            answer = configs[param]['default']
+                        configs[param]['value'] = answer
+                        status = True
+                else:
+                    configs[param]['value'] = configs[param]['default']
+        else:
+            configs[param]['value'] = configs[param]['default']
 
+    return configs
 
 
 

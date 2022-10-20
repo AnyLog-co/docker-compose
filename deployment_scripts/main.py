@@ -43,6 +43,8 @@ def main():
             configs[section] = questionnaire.database_questions(configs=configs[section])
         elif section == 'blockchain':
             configs[section] = questionnaire.database_questions(configs=configs[section])
+        elif section == 'operator':
+            configs[section] = questionnaire.operator_questons(configs=configs[section])
 
         print('\n')
 

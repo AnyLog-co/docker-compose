@@ -264,13 +264,14 @@
       "description": "Whether of not to enable HA against the cluster",
       "enable": true,
       "default": "false",
+      "options": ["true", "false"],
       "value": ""
     },
     "START_DATE": {
-      "question": "HA Sync",
+      "question": "Number of days to sync",
       "description": "How far back to sync between nodes",
       "enable": true,
-      "default": "-30d",
+      "default": 30,
       "value": ""
     },
     "ENABLE_PARTITIONS": {
@@ -278,6 +279,7 @@
       "description": "Whether or not to enable partitioning",
       "enable": true,
       "default": "false",
+      "options": ["true", "false"],
       "value": ""
     },
     "TABLE_NAME": {
@@ -294,7 +296,67 @@
       "default": "insert_timestamp",
       "value": ""
     },
-    ""
-
+    "PARTITION_INTERVAL": {
+      "question": "Partition Interval",
+      "description": "Time period to partition by",
+      "enable": true,
+      "default": "14 days",
+      "options": ["hour", "day", "month"],
+      "value": ""
+    },
+    "PARTITION_KEEP": {
+      "question": "Partition Keep",
+      "description": "How many paritions to keep",
+      "enable": true,
+      "default": 6,
+      "value": ""
+    },
+    "PARTITION_SYNC": {
+      "question": "Partition Sync",
+      "description": "How often to check if an old partition should be removed",
+      "enable": true,
+      "default": "1 day",
+      "options": ["day", "month"],
+      "value": ""
+    },
+    "CREATE_TABLE": {
+      "question": "Create Table",
+      "description": "Whether or not to create a new table in the operator",
+      "enable": false,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "UPDAE_TSD_INFO": {
+      "question": "Track JSON Files",
+      "description": "Record data inserted on Operator",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "ARCHIVE": {
+      "question": "Archive Files",
+      "description": "Archive data coming in",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "COMPRESS_FILE": {
+      "question": "Compress Files",
+      "description": "Compress JSON and SQL file(s) backup",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "OPERATOR_THREADS": {
+      "question": "Operator Threads",
+      "description": "How many threads to use in the operator process\n",
+      "enable": true,
+      "default": 1,
+      "value": ""
+    }
   }
 }
