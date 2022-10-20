@@ -382,5 +382,35 @@
       "options": ["true", "false"],
       "value": ""
     }
+  },
+  "authentication": {
+    "AUTHENTICATION": {
+      "question": "Enable Authentication",
+      "description": "Whether or not to enable authentication",
+      "enable": false,
+      "default": "false",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "AUTH_USER": {
+      "question": "Username",
+      "description": "authentication user",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "AUTH_PASSWD": {
+      "question": "Password",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "AUTH_TYPE":{
+      "question": "Type",
+      "description": "authentication administration type",
+      "default": "admin",
+      "options": ["admin", "user"],
+      "value": ""
+    }
   }
 }

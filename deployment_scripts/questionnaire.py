@@ -377,7 +377,7 @@ def operator_questions(configs:dict)->dict:
 
 def publisher_questions(configs:dict)->dict:
     """
-    Generate questions for operator configurations
+    Generate questions for publisher configurations
     :args:
         configs:dict - database configurations
     :params:
@@ -414,9 +414,43 @@ def publisher_questions(configs:dict)->dict:
         configs[param]['value'] = configs[param]['default']
 
 
+def authentication_questions(configs:dict)->dict:
+    """
+    Generate questions for authentication configurations
+    :args:
+        configs:dict - database configurations
+    :params:
+        status:bool
+        error_msg:str - error message
+        full_question:str - question
+        answer:str - user input
+    :return:
+        updated configs
+    """
+    for param in configs:
+        if configs[param]['enable'] is True:
+            error_msg = ""
+            full_question = __generate_question(configs=configs[param])
+            status = False
+            while status is False:
+                if param in ['AUTHENTICATION', 'AUTH_TYPE']:
+                    if answer not in configs[param]['options']:
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    else:
+                        configs[param]['value'] = answer
+                        status = True
+                elif answer != '':
+                    configs[param]['value'] = answer
+                    status = True
+                else:
+                    configs[param]['value'] = configs[param]['default']
+                    status = True
+            if param == 'AUTHENTICATION' and configs[param]['value'] == 'false':
+                for sub_param in configs:
+                    if sub_param != 'AUTHENTICATION':
+                        configs[sub_param]['enable'] = False
 
-
-
+    return  configs
 
 
 
