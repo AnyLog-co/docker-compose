@@ -38,7 +38,9 @@ def clean_configs(node_type:str, configs:dict)->dict:
     if node_type == 'query': 
         configs['sql database']['SYSTEM_QUERY']['default'] = True
     if node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
-        del configs['nosql database']
+        for param in configs['database']:
+            if 'NOSQL' in param:
+                configs['database'][param]['enable'] = False
     if node_type in ['master', 'query']:
         # remove operator and publisher configs
         pass

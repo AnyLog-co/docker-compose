@@ -93,12 +93,12 @@
       "question": "Local Broker Port",
       "description": "Port value to be used as an MQTT borker, or some other third-party broker",
       "enable": true,
-      "defualt": "",
+      "default": "",
       "range": [30000, 32767],
       "value": ""
     }
   },
-  "sql database": {
+  "database": {
     "DB_TYPE": {
       "question": "Database Type",
       "description": "Physical database type",
@@ -118,14 +118,14 @@
       "question": "Database Password",
       "description": "Password correlated to database user",
       "enable": true,
-      "default": "",
+      "default": "127.0.0.1",
       "value": ""
     },
     "DB_IP": {
       "question": "Database IP Address",
       "description": "Database IP address",
       "enable": true,
-      "default": "",
+      "default": 5432,
       "value": ""
     },
     "DB_PORT": {
@@ -139,34 +139,32 @@
       "question": "Enable Autocommit",
       "description": "Whether or not autocommit data",
       "enable": true,
-      "default": false,
-      "options": [true, false],
+      "default": "false",
+      "options": ["true", "false"],
       "value": ""
     },
     "SYSTEM_QUERY": {
       "question": "Enable System Query Database",
       "description": "Whether or not to start to start system_query logical database",
       "enable": true,
-      "default": false,
-      "options": [true, false],
+      "default": "false",
+      "options": ["true", "false"],
       "value": ""
     },
     "MEMORY": {
       "question": "Set System Query in-memory",
       "description": "Run system_query using in-memory SQLite. If set to false, will use pre-set database type",
       "enable": true,
-      "default": true,
-      "options": [true, false],
+      "default": "true",
+      "options": ["true", "false"],
       "value": ""
-    }
-  },
-  "nosql database": {
-    "ENABLE_NOSQL": {
+    },
+    "NOSQL_ENABLE": {
       "question": "Enable NoSQL Database",
       "description": "Whether or not to enable NoSQL logical database",
       "enable": true,
-      "default": false,
-      "options": [true, false],
+      "default": "false",
+      "options": ["true", "false"],
       "value": ""
     },
     "NOSQL_TYPE": {
@@ -211,15 +209,15 @@
       "question": "Master Node TCP Connection",
       "description": "How often to sync from blockchain",
       "enable": true,
-      "default": "12.0.0.1:32048",
+      "default": "127.0.0.1:32048",
       "value": ""
     },
     "SYNC_TIME": {
       "question": "Sync Time",
       "description": "How often to sync from blockchain",
       "enable": true,
-      "default": "30 seconds",
-      "options": ["seconds", "minute", "hour", "day"],
+      "default": "30 second",
+      "options": ["second", "minute", "hour", "day"],
       "value": ""
     },
     "BLOCKCHAIN_SOURCE": {
@@ -238,5 +236,6 @@
       "options": ["file", "dbms"],
       "value": ""
     }
-  }
+  },
+  ""
 }

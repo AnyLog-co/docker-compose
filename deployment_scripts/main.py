@@ -25,7 +25,7 @@ def main():
     for section in configs:
         print(f'Section: {section.title().replace("Sql", "SQL")}')
         if section == 'general':
-            configs['general'] = questionnaire.generic_param_questions(configs=configs[section])
+            configs['general'] = questionnaire.generic_questions(configs=configs[section])
         elif section == 'networking':
             configs[section] = questionnaire.networking_questions(configs=configs[section])
             rest_info, broker_info = questionnaire.validate_ports(tcp_port=configs[section]['ANYLOG_SERVER_PORT']['value'],
@@ -34,9 +34,12 @@ def main():
                                                                       )
             configs[section]['ANYLOG_REST_PORT'] = rest_info
             configs[section]['ANYLOG_BROKER_PORT'] = broker_info
-        elif 'database' in section: 
-            configs[section] = questionnaire.questions(configs=configs[section])
-        elif 
+        elif section == 'database':
+            configs[section] = questionnaire.database_questions(configs=configs[section])
+        elif section == 'blockchain':
+            configs[section] = questionnaire.database_questions(configs=configs[section])
+
+        print('\n')
 
 
 

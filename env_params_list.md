@@ -151,14 +151,14 @@ Disclaimer: If not hardcoded, location information are found using https://ipinf
     <td></td>
     <td>DB_IP</td>
     <td>db_ip</td>
-    <td></td>
+    <td>127.0.0.1</td>
     <td>Database IP address</td>
   </tr>
   <tr>
     <td></td>
     <td>DB_PORT</td>
     <td>db_port</td>
-    <td></td>
+    <td>5432</td>
     <td>Database port number</td>
   </tr>
   <tr>
@@ -184,7 +184,7 @@ Disclaimer: If not hardcoded, location information are found using https://ipinf
   </tr> 
   <tr>
     <td align="center"><b>NoSQL Database</b></td>
-    <td>ENABLE_NOSQL</td>
+    <td>NOSQL_ENABLE</td>
     <td>enable_nosql</td>
     <td>false</td>
     <td>Whether or not to enable NoSQL logical database</td>
