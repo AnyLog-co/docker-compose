@@ -49,11 +49,6 @@ deployment scripts.
     <td>0.0, 0.0</td>
     <td>Coordinates of the machine - used by Grafana to map the network</td>
   </tr>
-    <td>LOCATION</td>
-    <td>location</td>
-    <td>0.0, 0.0</td>
-    <td>Coordinates of the machine - used by Grafana to map the network</td>
-  </tr>
   <tr>
     <td>COUNTRY</td>
     <td>country</td>
@@ -284,6 +279,12 @@ Disclaimer: If not hardcoded, location information are found using https://ipinf
     <td>cluster_name</td>
     <td>Company Name</td>
     <td>Owner of the cluster</td>
+  </tr>
+  <tr>
+    <td>DEFAULT_DBMS</td>
+    <td>default_dbms</td>
+    <td>test</td>
+    <td>Logical database name</td>
   </tr>
   <tr>
     <td>ENABLE_HA</td>

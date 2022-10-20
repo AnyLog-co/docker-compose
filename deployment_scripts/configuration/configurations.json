@@ -1,0 +1,242 @@
+{
+  "general": {
+    "NODE_TYPE": {
+      "question": "Node Type",
+      "description": "Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols",
+      "enable": false,
+      "options": ["none", "rest", "master", "operator", "query", "publisher", "standalone", "standalone-publisher"],
+      "default": "rest",
+      "value": ""
+    },
+    "NODE_NAME": {
+      "question": "Node Name",
+      "description": "Name of the AnyLog instance",
+      "enable": true,
+      "default": "anylog-node",
+      "value": ""
+    },
+    "COMPANY_NAME": {
+      "question": "Company Name",
+      "description": "Owner of the AnyLog instance",
+      "enable": true,
+      "default": "New Company",
+      "value": ""
+    },
+    "LOCATION": {
+      "question": "Location",
+      "description": "Coordinates of the machine - used by Grafana to map the network",
+      "enable": true,
+      "default": "0.0, 0.0",
+      "value": ""
+    },
+    "COUNTRY": {
+      "question": "Country",
+      "description": "Country where machine is located",
+      "enable": true,
+      "default": "Unknown",
+      "value": ""
+    },
+    "STATE": {
+      "question": "State",
+      "description": "State where machine is located",
+      "enable": true,
+      "default": "Unknown",
+      "value": ""
+    },
+    "CITY": {
+      "question": "City",
+      "description": "City where machine is located",
+      "enable": true,
+      "default": "Unknown",
+      "value": ""
+    }
+  },
+  "networking": {
+    "EXTERNAL_IP": {
+      "question": "External IP",
+      "description": "External IP address of the machine",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "LOCAL_IP": {
+      "question": "Local IP",
+      "description": "Local or  internal network IP address of the machine",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "K8S_PROXY_IP": {
+      "question": "Proxy IP",
+      "description": "Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "ANYLOG_SERVER_PORT": {
+      "question": "TCP Port",
+      "description": "Port address used by AnyLog's TCP protocol to communicate with other nodes in the network",
+      "enable": true,
+      "default": 32048,
+      "range": [30000, 32767],
+      "value": ""
+    },
+    "ANYLOG_REST_PORT": {
+      "question": "REST Port",
+      "description": "Port address used by AnyLog's REST protocol",
+      "enable": true,
+      "default": 32049,
+      "range": [30000, 32767],
+      "value": ""
+    },
+    "ANYLOG_BROKER_PORT": {
+      "question": "Local Broker Port",
+      "description": "Port value to be used as an MQTT borker, or some other third-party broker",
+      "enable": true,
+      "defualt": "",
+      "range": [30000, 32767],
+      "value": ""
+    }
+  },
+  "sql database": {
+    "DB_TYPE": {
+      "question": "Database Type",
+      "description": "Physical database type",
+      "enable": true,
+      "default": "sqlite",
+      "options": ["sqlite", "psql"],
+      "value": ""
+    },
+    "DB_USER": {
+      "question": "Database User",
+      "description": "Username for SQL database connection",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "DB_PASSWD": {
+      "question": "Database Password",
+      "description": "Password correlated to database user",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "DB_IP": {
+      "question": "Database IP Address",
+      "description": "Database IP address",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "DB_PORT": {
+      "question": "Database Port:",
+      "description": "Database port number",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "AUTOCOMMIT": {
+      "question": "Enable Autocommit",
+      "description": "Whether or not autocommit data",
+      "enable": true,
+      "default": false,
+      "options": [true, false],
+      "value": ""
+    },
+    "SYSTEM_QUERY": {
+      "question": "Enable System Query Database",
+      "description": "Whether or not to start to start system_query logical database",
+      "enable": true,
+      "default": false,
+      "options": [true, false],
+      "value": ""
+    },
+    "MEMORY": {
+      "question": "Set System Query in-memory",
+      "description": "Run system_query using in-memory SQLite. If set to false, will use pre-set database type",
+      "enable": true,
+      "default": true,
+      "options": [true, false],
+      "value": ""
+    }
+  },
+  "nosql database": {
+    "ENABLE_NOSQL": {
+      "question": "Enable NoSQL Database",
+      "description": "Whether or not to enable NoSQL logical database",
+      "enable": true,
+      "default": false,
+      "options": [true, false],
+      "value": ""
+    },
+    "NOSQL_TYPE": {
+      "question": "Database Type",
+      "description": "Physical database type",
+      "enable": true,
+      "default": "mongo",
+      "options": ["mongo"],
+      "value": ""
+    },
+    "NOSQL_USER": {
+      "question": "Database User",
+      "description": "Username for SQL database connection",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "NOSQL_PASSWD": {
+      "question": "Database Password",
+      "description": "Password correlated to database user",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "NOSQL_IP": {
+      "question": "Database IP Address",
+      "description": "Database IP address",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "NOSQL_PORT": {
+      "question": "Database Port:",
+      "description": "Database port number",
+      "enable": true,
+      "default": "",
+      "value": ""
+    }
+  },
+  "blockchain": {
+    "LEDGER_CONN": {
+      "question": "Master Node TCP Connection",
+      "description": "How often to sync from blockchain",
+      "enable": true,
+      "default": "12.0.0.1:32048",
+      "value": ""
+    },
+    "SYNC_TIME": {
+      "question": "Sync Time",
+      "description": "How often to sync from blockchain",
+      "enable": true,
+      "default": "30 seconds",
+      "options": ["seconds", "minute", "hour", "day"],
+      "value": ""
+    },
+    "BLOCKCHAIN_SOURCE": {
+      "question": "Blockchain Source",
+      "description": "Source of where the data is coming from",
+      "enable": true,
+      "default": "master",
+      "options": ["master", "blockchain"],
+      "value": ""
+    },
+    "BLOCKCHAIN_DESTINATION": {
+      "question": "Blockchain Destination",
+      "description": "Where will the copy of the blockchain be stored",
+      "enable": true,
+      "default": "file",
+      "options": ["file", "dbms"],
+      "value": ""
+    }
+  }
+}
