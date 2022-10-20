@@ -358,5 +358,29 @@
       "default": 1,
       "value": ""
     }
+  },
+  "publisher": {
+    "DBMS_FILE_LOCATION": {
+      "question": "DB File Location",
+      "description": "Location of logical database name within file name",
+      "enable": true,
+      "default": 0,
+      "value": ""
+    },
+    "TABLE_FILE_LOCATION": {
+      "question": "Table File Location",
+      "description": "Location of table name within file name",
+      "enable": true,
+      "default": 0,
+      "value": ""
+    },
+    "COMPRESS_FILE": {
+      "question": "Compress Files",
+      "description": "Compress JSON and SQL file(s) backup",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    }
   }
 }

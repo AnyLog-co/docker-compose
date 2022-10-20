@@ -33,19 +33,14 @@ def main():
             configs['general'] = questionnaire.generic_questions(configs=configs[section])
         elif section == 'networking':
             configs[section] = questionnaire.networking_questions(configs=configs[section])
-            rest_info, broker_info = questionnaire.validate_ports(tcp_port=configs[section]['ANYLOG_SERVER_PORT']['value'],
-                                                                      rest_info=configs[section]['ANYLOG_REST_PORT'],
-                                                                      broker_info=configs[section]['ANYLOG_BROKER_PORT']
-                                                                      )
-            configs[section]['ANYLOG_REST_PORT'] = rest_info
-            configs[section]['ANYLOG_BROKER_PORT'] = broker_info
         elif section == 'database':
             configs[section] = questionnaire.database_questions(configs=configs[section])
         elif section == 'blockchain':
             configs[section] = questionnaire.database_questions(configs=configs[section])
         elif section == 'operator':
-            configs[section] = questionnaire.operator_questons(configs=configs[section])
-
+            configs[section] = questionnaire.operator_questions(configs=configs[section])
+        elif section == 'publisher':
+            configs[section] = questionnaire.publisher_questions(configs=configs[section])
         print('\n')
 
 

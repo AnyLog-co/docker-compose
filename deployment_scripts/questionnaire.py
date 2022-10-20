@@ -82,6 +82,60 @@ def __validate_port(port:str, check_range:bool=True)->(int, str):
     return port, error_msg
 
 
+def __validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dict):
+    """
+    Check if one or more of the ports is already used
+    :args:
+        tcp_port:int - TCP port number
+        rest_info:dict - REST information
+        broker_info:dict - broker information
+    :params:
+        status:bool
+        error_msg:str - error message
+        full_question:str - full question
+        answer:str - user input
+    :return:
+        rest and broker info (updated)
+    """
+    # check if REST port is double used
+    while tcp_port == rest_info['value'] or rest_info['value'] == broker_info['value']:
+        error_msg = f"Port Value {rest_info['value']} already used. Please try again... "
+        status = False
+        full_question = __generate_question(configs=rest_info)
+        while status is False:
+            answer = answer = __ask_question(error_msg=error_msg, question=full_question, description=rest_info['description'])
+            if answer != "":
+                port, error_msg = __validate_port(port=answer)
+                if error_msg == "":
+                    configs[param]['value'] = answer
+                    status = True
+            else:
+                rest_info['value'] = rest_info[param]['default']
+                status = True
+
+    # check if Broker port is double used
+    if broker_info['value'] != "":
+        # if user originally set a value for broker, then the default is 1 value great than REST port value
+        broker_info['default'] = rest_info['value'] + 1
+        while tcp_port == broker_info['value'] or rest_info['value'] == broker_info['value']:
+            error_msg = f"Port Value {broker_info['value']} already used"
+            status = False
+            full_question = __generate_question(configs=broker_info)
+            while status is False:
+                answer = __ask_question(error_msg=error_msg, question=full_question, description=broker_info['description'])
+                if answer != "":
+                    port, error_msg = __validate_port(port=answer)
+                    if error_msg == "":
+                        configs[param]['value'] = answer
+                        status = True
+                else:
+                    # if originally
+                    broker_info['value'] = broker_info['default']
+                    status = True
+
+    return rest_info, broker_info
+
+
 def generic_questions(configs:dict)->dict:
     """
     Generic configuration questionnaire
@@ -134,61 +188,10 @@ def networking_questions(configs:dict):
         else:
             configs[param]['value'] = configs[param]['default']
 
-     return configs
-
-
-def validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dict):
-    """
-    Check if one or more of the ports is already used
-    :args:
-        tcp_port:int - TCP port number
-        rest_info:dict - REST information
-        broker_info:dict - broker information
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - full question
-        answer:str - user input
-    :return:
-        rest and broker info (updated)
-    """
-    # check if REST port is double used
-    while tcp_port == rest_info['value'] or rest_info['value'] == broker_info['value']:
-        error_msg = f"Port Value {rest_info['value']} already used. Please try again... "
-        status = False
-        full_question = __generate_question(configs=rest_info)
-        while status is False:
-            answer = answer = __ask_question(error_msg=error_msg, question=full_question, description=rest_info['description'])
-            if answer != "":
-                port, error_msg = __validate_port(port=answer)
-                if error_msg == "":
-                    configs[param]['value'] = answer
-                    status = True
-            else:
-                rest_info['value'] = rest_info[param]['default']
-                status = True
-
-    # check if Broker port is double used
-    if broker_info['value'] != "":
-        # if user originally set a value for broker, then the default is 1 value great than REST port value
-        broker_info['default'] = rest_info['value'] + 1
-        while tcp_port == broker_info['value'] or rest_info['value'] == broker_info['value']:
-            error_msg = f"Port Value {broker_info['value']} already used"
-            status = False
-            full_question = __generate_question(configs=broker_info)
-            while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=broker_info['description'])
-                if answer != "":
-                    port, error_msg = __validate_port(port=answer)
-                    if error_msg == "":
-                        configs[param]['value'] = answer
-                        status = True
-                else:
-                    # if originally
-                    broker_info['value'] = broker_info['default']
-                    status = True
-
-    return rest_info, broker_info
+    configs['ANYLOG_REST_PORT'], configs['ANYLOG_BROKER_PORT'] = __validate_ports(tcp_port=configs['ANYLOG_SERVER_PORT']['value'],
+                                                                                  rest_info=configs['ANYLOG_REST_PORT'],
+                                                                                  broker_info=configs['ANYLOG_BROKER_PORT'])
+    return configs
 
 
 def database_questions(configs:dict)->dict:
@@ -301,7 +304,7 @@ def blockchain_questions(configs:dict)->dict:
     return configs
 
 
-def operator_questons(configs:dict)->dict:
+def operator_questions(configs:dict)->dict:
     """
     Generate questions for operator configurations
     :args:
@@ -370,6 +373,50 @@ def operator_questons(configs:dict)->dict:
             configs[param]['value'] = configs[param]['default']
 
     return configs
+
+
+def publisher_questions(configs:dict)->dict:
+    """
+    Generate questions for operator configurations
+    :args:
+        configs:dict - database configurations
+    :params:
+        status:bool
+        error_msg:str - error message
+        full_question:str - question
+        answer:str - user input
+    :return:
+        updated configs
+    """
+    for param in configs:
+        if configs[param]['enable'] is True:
+            error_msg = ""
+            full_question = __generate_question(configs=configs[param])
+            status = False
+            while status is False:
+                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                if param in ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION'] and answer != "":
+                    try:
+                        answer = int(answer)
+                    except:
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    else:
+                        configs[param]['value'] = answer
+                        status = True
+                elif param == 'COMPRESS_FILE' and answer != "":
+                    if answer not in configs[param]['options'] and answer != "":
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    elif answer in configs[param]['options']:
+                        configs[param]['value'] = answer
+                else:
+                    configs[param]['value'] = configs[param]['default']
+    else:
+        configs[param]['value'] = configs[param]['default']
+
+
+
+
+
 
 
 
