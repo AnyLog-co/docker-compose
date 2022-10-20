@@ -41,8 +41,9 @@ def main():
             configs[section] = questionnaire.operator_questions(configs=configs[section])
         elif section == 'publisher':
             configs[section] = questionnaire.publisher_questions(configs=configs[section])
-        elif param == 'authentication':
-            configs[section] = questionnaire.authentication_questions(configs=configs[section])
+        # we need to enable authentication code within deployment scripts
+        # elif param == 'authentication':
+        #     configs[section] = questionnaire.authentication_questions(configs=configs[section])
         print('\n')
 
 
