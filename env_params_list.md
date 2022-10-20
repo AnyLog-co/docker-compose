@@ -277,7 +277,7 @@ Disclaimer: If not hardcoded, location information are found using https://ipinf
   <tr>
     <td>CLUSTER_NAME</td>
     <td>cluster_name</td>
-    <td>Company Name</td>
+    <td>new-company-cluster</td>
     <td>Owner of the cluster</td>
   </tr>
   <tr>

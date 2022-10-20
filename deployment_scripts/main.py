@@ -22,6 +22,11 @@ def main():
     args = parser.parse_args()
     config_file = support.json_read_file(file_name=args.config_file)
     configs = support.clean_configs(node_type=args.node_type, configs=config_file)
+    if len(configs) == "":
+        print('Empty configurations, cannot continue...')
+        exit(1)
+    else:
+        print('Welcome to AnyLog configurations tool, type `help` to get details about a parameter')
     for section in configs:
         print(f'Section: {section.title().replace("Sql", "SQL")}')
         if section == 'general':

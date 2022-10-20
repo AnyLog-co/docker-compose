@@ -51,7 +51,7 @@ def __ask_question(question:str, description:str, error_msg:str="")->str:
     status = False
     while status is False:
         user_input = input(f"\t{error_msg}{question}")
-        if user_input == 'description':
+        if user_input == 'help':
             error_msg = ""
             print(f"\tparam description - {description}")
         else:

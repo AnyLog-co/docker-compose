@@ -237,5 +237,64 @@
       "value": ""
     }
   },
-  ""
+  "operator": {
+    "MEMBER": {
+      "question": "Member ID",
+      "description": "Operator ID",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "CLUSTER_NAME": {
+      "question": "Cluster Name",
+      "description": "Owner of the cluster",
+      "enable": true,
+      "default": "new-company-cluster",
+      "value": ""
+    },
+    "DEFAULT_DBMS": {
+      "question": "Database Name",
+      "description": "Logical database name",
+      "enable": true,
+      "default": "test",
+      "value": ""
+    },
+    "ENABLE_HA": {
+      "question": "Enable HA",
+      "description": "Whether of not to enable HA against the cluster",
+      "enable": true,
+      "default": "false",
+      "value": ""
+    },
+    "START_DATE": {
+      "question": "HA Sync",
+      "description": "How far back to sync between nodes",
+      "enable": true,
+      "default": "-30d",
+      "value": ""
+    },
+    "ENABLE_PARTITIONS": {
+      "question": "Enable Partitions",
+      "description": "Whether or not to enable partitioning",
+      "enable": true,
+      "default": "false",
+      "value": ""
+    },
+    "TABLE_NAME": {
+      "question": "Partitioned Table(s)",
+      "description": "Which tables to partition",
+      "enable": true,
+      "default": "*",
+      "value": ""
+    },
+    "PARTITION_COLUMN": {
+      "question": "Partitioned Column",
+      "description": "Which timestamp column to partition by",
+      "enable": true,
+      "default": "insert_timestamp",
+      "value": ""
+    },
+    ""
+
+  }
 }
