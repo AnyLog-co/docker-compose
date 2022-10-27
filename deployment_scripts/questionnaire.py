@@ -56,7 +56,7 @@ def __ask_question(question:str, description:str, error_msg:str="")->str:
             print(f"\tparam description - {description}")
         else:
             status = True
-    return user_input
+    return user_input.strip()
 
 
 def __validate_port(port:str, check_range:bool=True)->(int, str):

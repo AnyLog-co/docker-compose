@@ -628,7 +628,7 @@
     },
     "WRITE_IMMEDIATE": {
       "question": "Write Data Immediate",
-      "description": "When data comes in write to database immidiately, as opposed to waiting for a full buffer"
+      "description": "When data comes in write to database immidiately, as opposed to waiting for a full buffer",
       "enable": true,
       "default": "true",
       "options": ["true", "false"],

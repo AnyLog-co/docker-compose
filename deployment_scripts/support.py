@@ -16,13 +16,13 @@ def json_read_file(file_name:str) -> dict:
     full_path = os.path.expandvars(os.path.expanduser(file_name))
     if os.path.isfile(full_path):
         try:
-            with open(file_name, 'r') as f:
+            with open(full_path, 'r') as f:
                 try:
                     content = json.load(f)
                 except Exception as error:
-                    print(f'Failed to read content in {CONFIGS_FILE} (Error: {error})')
+                    print(f'Failed to read content in {file_name} (Error: {error})')
         except Exception as error:
-            print(f'Failed to open file {CONFIGS_FILE} (Error: {error})')
+            print(f'Failed to open file {file_name} (Error: {error})')
 
     return content 
 
