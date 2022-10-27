@@ -433,6 +433,7 @@ def authentication_questions(configs:dict)->dict:
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False:
+                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
                 if param in ['AUTHENTICATION', 'AUTH_TYPE']:
                     if answer not in configs[param]['options']:
                         error_msg = f"Invalid value {answer}. Please try again... "
@@ -450,8 +451,99 @@ def authentication_questions(configs:dict)->dict:
                     if sub_param != 'AUTHENTICATION':
                         configs[sub_param]['enable'] = False
 
-    return  configs
+    return configs
 
 
+def mqtt_questions(configs:dict)->dict:
+    """
+    Generate questions for MQTT configurations
+    :args:
+        configs:dict - database configurations
+    :params:
+        status:bool
+        error_msg:str - error message
+        full_question:str - question
+        answer:str - user input
+    :return:
+        updated configs
+    """
+    for param in configs:
+        if configs[param]['enable'] is True:
+            error_msg = ""
+            full_question = __generate_question(configs=configs[param])
+            status = False
+            while status is False:
+                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                if param in ['ENABLE_MQTT', 'MQTT_LOG'] and answer != '':
+                    if answer not in configs[param]['options']:
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    else:
+                        configs[param]['value'] = answer
+                        status = True
+                elif answer != '':
+                    configs[param]['value'] = answer
+                    status = True
+                else:
+                    configs[param]['value'] = configs[param]['default']
+                    status = True
+            if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
+                for sub_param in configs:
+                    configs[sub_param]['enable'] = False
+
+    return configs
 
 
+def advanced_settings(configs:dict)->dict:
+    """
+    Generate questions for advanced settings configurations
+    :args:
+        configs:dict - database configurations
+    :params:
+        status:bool
+        error_msg:str - error message
+        full_question:str - question
+        answer:str - user input
+        str_answer:str - when needing to separate between between REST and
+    :return:
+        updated configs
+    """
+    for param in configs:
+        if configs[param]['enable'] is True:
+            error_msg = ""
+            full_question = __generate_question(configs=configs[param])
+            status = False
+            while status is False:
+                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                if param in ['DEPLOY_LOCAL_SCRIPT', 'WRITE_IMMEDIATE'] and answer != "":
+                    if answer not in configs[param]['options']:
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    else:
+                        configs[param]['value'] = answer
+                        status = True
+                elif param in ['TCP_THREAD_POOL', 'REST_THREADS', 'QUERY_POOL', 'REST_TIMEOUT'] and answer != '':
+                    try:
+                        answer = int(answer)
+                    except Exception as error:
+                        error_msg = f"Invalid value {answer}. Please try again..."
+                    else:
+                        if answer < configs[param]['default'] and param != 'REST_TIMEOUT':
+                            error_msg = f"Value {answer} is out of range, minimum value is {configs[param]['default']}. Please try again... "
+                        elif param == 'REST_TIMEOUT' and -1 >= answer:
+                            error_msg = f"Value {answer} is out of range minimum value is 0. Please try again... "
+                        else:
+                            configs[param]['value'] = answer
+                            status = True
+                elif param in ['THRESHOLD_TIME', 'THRESHOLD_VOLUME'] and answer != '':
+                    if param == 'THRESHOLD_VOLUME':
+                        answer = answer.replace(" ", "")
+                    str_answer = ''.join([i for i in answer if not i.isdigit()]).strip()
+                    if str_answer.lower() not in configs[param]['options'] and str_answer.upper() not in configs[param]['options']:
+                        error_msg = f"Invalid value {answer}. Please try again"
+                    else:
+                        configs[param]['value'] = answer
+                        status = True
+                else:
+                    configs[param]['value'] = configs[param]['default']
+                    status = True
+
+    return configs

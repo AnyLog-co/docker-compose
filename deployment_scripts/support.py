@@ -1,6 +1,7 @@
 import json 
 import os 
 
+
 def json_read_file(file_name:str) -> dict:
     """
     Read JSON file 
@@ -24,6 +25,7 @@ def json_read_file(file_name:str) -> dict:
             print(f'Failed to open file {CONFIGS_FILE} (Error: {error})')
 
     return content 
+
 
 def clean_configs(node_type:str, configs:dict)->dict:
     """
@@ -50,5 +52,27 @@ def clean_configs(node_type:str, configs:dict)->dict:
     elif node_type in ['publisher', 'standalone-publisher']:
         # remove operator configs
         pass
+
+    return configs
+
+
+def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:str)->dict:
+    """
+    update the default MQTT parameters to match information already provided by the user.
+    :args:
+        configs:dict - (preset) MQTT configurations
+        db_name:str - default logical database
+        port:int - AnyLog broker port
+        user:str - authentication user
+        password:str - authentication user
+    :return:
+        (updated) configs
+    """
+    configs['MQTT_TOPIC_DBMS']['default'] = db_name
+    configs['MQTT_PORT']['default'] = port
+    if port != "": # if local broker port is set, then update configs accordingly
+        configs['MQTT_broker']['default'] = 'local'
+        configs['MQTT_USER']['default'] = user
+        configs['MQTT_PASSWD']['default'] = password
 
     return configs

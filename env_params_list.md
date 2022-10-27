@@ -533,7 +533,7 @@ processes the user needs to write their own MQTT client process.
     <td>Number of TCP threads</td>
   </tr>
   <tr>
-    <td>REST_TIME</td>
+    <td>REST_TIMEOUT</td>
     <td>rest_timeout</td>
     <td>30</td>
     <td>REST timeout</td>
