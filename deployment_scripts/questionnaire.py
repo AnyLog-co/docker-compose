@@ -414,6 +414,7 @@ def publisher_questions(configs:dict)->dict:
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
+    return configs
 
 
 def authentication_questions(configs:dict)->dict:
