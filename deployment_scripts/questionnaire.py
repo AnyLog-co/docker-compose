@@ -155,8 +155,6 @@ def generic_questions(configs:dict)->dict:
                 configs[param]['value'] = configs[param]['default']
             else:
                 configs[param]['value'] = answer
-        else:
-            configs[param]['value'] = configs[param]['default']
 
     return configs
 

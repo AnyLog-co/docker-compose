@@ -66,12 +66,13 @@ def write_docker_configs(node_type:str, configs:dict):
     if not os.path.isfile(anylog_configs):
         status = __create_file(file_name=anylog_configs)
 
+    # write configs to file
     if status is True:
         for section in configs:
             __write_line(file_name=anylog_configs, input_line=f'# {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
             for param in configs[section]:
                 value = ""
-                line = f"{param}=%s"
+                line = f"# {configs[section][param]['description']} \n{param}=%s"
                 if configs[section][param]['value'] != '': # non-empty value
                     value = str(configs[section][param]['value'])
                     if ' ' in value:
@@ -86,8 +87,12 @@ def write_docker_configs(node_type:str, configs:dict):
                         line = line % value
                 else:
                     line = f"{param}=<{section.upper()}_{param}>"
-                if line == f"{param}=<{section.upper()}_{param}>" or configs[section][param]['enable'] is False and \
-                        param not in ["NODE_TYPE", 'CREATE_TABLE']:
+                if line == f"{param}=<{section.upper()}_{param}>" or configs[section][param]['enable'] is False and param not in ["NODE_TYPE", 'CREATE_TABLE']:
                     line = f"#{line}"
                 __write_line(file_name=anylog_configs, input_line=f"\n{line}")
             __write_line(file_name=anylog_configs, input_line="\n\n")
+
+
+def update_build_version(node_type:str, build:str):
+    docker_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    docker_path = os.path.join(docker_path, '.env')

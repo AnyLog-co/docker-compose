@@ -28,4 +28,4 @@ do
   read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop]: " BUILD_TYPE
 done
 
-python3 $HOME/deployments/deployment_scripts/configuration/docker_deployment.py ${NODE_TYPE} $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
+python3 $HOME/deployments/deployment_scripts/configuration/docker_deployment.py ${NODE_TYPE} $HOME/deployments/deployment_scripts/configuration/configurations.json
