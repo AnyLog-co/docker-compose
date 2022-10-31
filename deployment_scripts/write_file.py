@@ -1,4 +1,6 @@
+import dotenv
 import os
+
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
 
@@ -39,6 +41,32 @@ def __write_line(file_name:str, input_line:str)->bool:
                 print(f'Failed to append content into {file_name} (Error: {error}')
     except Exception as error:
         print(f'Failed to open file {file_name} to append content (Error: {error})')
+
+
+def __read_env_file(env_file:str)->dict:
+    """
+    Read configurations from .env file
+    :args:
+        env_file:str - .env file
+    :params:
+        configs:dict - read configs
+    :return:
+        configs
+    """
+    configs = {}
+    try:
+        with open(env_file, 'r') as f:
+            try:
+                for line in f.readlines():
+                    if line != "" and line != "\n":
+                        key, value = line.split('\n')[0].split('=')
+                        configs[key] = value
+            except Exception as error:
+                print(f'Failed to read content from {env_file} (Error: {error})')
+    except Exception as error:
+        print(f'Failed to open file {env_file} to read content (Error: {error})')
+
+    return configs
 
 
 def write_docker_configs(node_type:str, configs:dict):
@@ -93,6 +121,17 @@ def write_docker_configs(node_type:str, configs:dict):
             __write_line(file_name=anylog_configs, input_line="\n\n")
 
 
-def update_build_version(node_type:str, build:str):
-    docker_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
-    docker_path = os.path.join(docker_path, '.env')
+def update_build_version(node_type:str, container_name:str, build:str):
+    env_file = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    env_file = os.path.join(env_file, '.env')
+    if os.path.isfile(env_file):
+        configs = __read_env_file(env_file=env_file)
+        if len(configs) > 0:
+            configs['BUILD'] = build
+            configs['CONTAINER_NAME'] = container_name
+            __create_file(file_name=env_file)
+            for key in configs:
+                __write_line(file_name=env_file, input_line=f"{key}={configs[key]}\n")
+
+
+

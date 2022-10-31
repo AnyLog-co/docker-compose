@@ -64,6 +64,9 @@ def main():
         print('\n')
 
     write_file.write_docker_configs(node_type=args.node_type, configs=configs)
+    
+    write_file.update_build_version(node_type=args.node_type, container_name=configs['general']['NODE_NAME']['value'],
+                                    build='predevelop')
 
 
 if __name__ == '__main__':
