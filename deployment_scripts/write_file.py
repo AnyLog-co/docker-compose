@@ -54,36 +54,44 @@ def write_docker_configs(node_type:str, configs:dict):
     """
     status = False
     docker_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
-
+    anylog_configs = os.path.join(docker_path, 'anylog_configs.env')
     # move exiting configs to backup + create new config file
     if os.path.isdir(docker_path):
-        anylog_configs = os.path.join(docker_path, 'anylog_configs.env')
         try:
             os.rename(anylog_configs, anylog_configs.replace('.env', '.env.old'))
         except Exception as error:
             status = False
             print(f'Failed to move to move original configuration file into backup (Error: {error})')
-        else:
-            if os.path.isfile(anylog_configs):
-                status = __create_file(file_name=anylog_configs)
+
+    if not os.path.isfile(anylog_configs):
+        status = __create_file(file_name=anylog_configs)
 
     if status is True:
         for section in configs:
             __write_line(file_name=anylog_configs, input_line=f'# {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-            for param in section:
-                if configs[section][param]['enable'] is False or configs[section][param]['value'] == "":
-                    if len(configs[section][param]['default'].split(' ')) > 1:
-                        line = f'#{param}=\"{configs[section][param]["default"]}\"'
+            for param in configs[section]:
+                value = ""
+                if configs[section][param]['value'] != '': # non-empty value
+                    value = str(configs[section][param]['value'])
+                    if ' ' in value:
+                        line = f"{param}=\"{value}\""
                     else:
-                        line = f'#{param}={configs[section][param]["default"]}'
+                        line = f"{param}={value}"
+                elif configs[section][param]['default'] != "": # empty value
+                    value = str(configs[section][param]['default'])
+                    if ' ' in value:
+                        line = f"{param}=\"{value}\""
+                    elif value != "" and value != "Unknown":
+                        line = f"{param}={value}"
+                    else:
+                        line = f'{param}=""'
                 else:
-                    if len(configs[section][param]['value'].split(' ')) > 1:
-                        line = f'{param}=\"{configs[section][param]["value"]}\"'
-                    else:
-                        line = f'{param}={configs[section][param]["value"]}'
-                __write_line(file_name=anylog_configs, input_line=line)
-            __write_line(file_name=anylog_configs, input_line="\n")
+                    line = f"{param}=<{section.upper()}_{param}>"
+                if configs[section][param]['enable'] is False:
+                    line = f"#{line}"
 
+                __write_line(file_name=anylog_configs, input_line=f"\n{line}")
+            __write_line(file_name=anylog_configs, input_line="\n\n")
 
 
 if __name__ == '__main__':

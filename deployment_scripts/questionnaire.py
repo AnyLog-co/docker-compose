@@ -149,8 +149,12 @@ def generic_questions(configs:dict)->dict:
         if configs[param]['enable'] is True:
             full_question = __generate_question(configs=configs[param])
             answer = __ask_question(question=full_question, description=configs[param]['description'])
-            if answer == "" and param in ['NODE_NAME', 'COMPANY_NAME']:
+            if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                configs[param]['value'] = ''
+            elif answer == "":
                 configs[param]['value'] = configs[param]['default']
+            else:
+                configs[param]['value'] = answer
         else:
             configs[param]['value'] = configs[param]['default']
 
@@ -214,38 +218,23 @@ def database_questions(configs:dict)->dict:
             status = False
             while status is False:
                 answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
-                if param in ['DB_TYPE', 'NOSQL_TYPE'] and answer != "":
-                    if answer not in configs[param]['options']:
-                        error_msg = f"Invalid database type {answer}. Please try again... "
-                    else:
+                if param in ['DB_TYPE', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY', 'NOSQL_ENABLE', 'NOSQL_TYPE']:
+                    if answer != "" and answer not in configs[param]['options']:
+                        print(f'Invalid value {answer}. Please try again...')
+                    elif answer != "":
                         configs[param]['value'] = answer
                         status = True
-                elif param in ["DB_PORT", "NOSQL_PORT"] and answer != "":
-                    port, error_msg = __validate_port(port=answer, check_range=False)
-                    if error_msg == "":
-                        configs['param']['value'] = port
-                        status = True
-                elif param in ['AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY', 'ENABLE_NOSQL'] and answer != "":
-                    if answer not in configs[param]['options']:
-                        error_msg = f"Invalid value {answer}. Please try again... "
                     else:
-                        configs[param]['value'] = answer
+                        configs[param]['value'] = configs[param]['default']
                         status = True
-                else:
-                    configs[param]['value'] = configs[param]['default']
-                    status = True
-        else:
-            configs[param]['value'] = configs[param]['default']
-
-        # skip all other questions if DB_TYPE is SQLite or NoSQL is disabled
-        if param == 'DB_TYPE' and configs['DB_TYPE']['value'] == 'sqlite':
-            for key in configs:
-                if 'NOSQL' not in key:
-                    configs[key]['enable'] = False
-        elif param == 'NOSQL_ENABLE' and configs['NOSQL_ENABLE']['value'] == 'false':
-            for key in configs:
-                if 'NOSQL' in key:
-                    configs[key]['enable'] = False
+            if param == 'DB_TYPE' and configs[param]['value'] == 'sqlite':
+                for prm in ['DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT']:
+                    configs[prm]['enable'] = False
+            elif param == 'SYSTEM_QUERY' and configs[param]['value'] == 'false':
+                configs['MEMORY']['enable'] = False
+            elif param == 'NOSQL_ENABLE' and configs[param]['value'] == 'false':
+                for prm in ['NOSQL_TYPE', 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT']:
+                    configs[prm]['enable'] = False
 
     if configs['DB_TYPE']['value'] != 'sqlite': # if missing username and/or password then set DB_TYPE back to sqlite
         if configs['DB_USER']['value'] == "" or configs['DB_PASSWD']['value'] == "":
@@ -275,13 +264,20 @@ def blockchain_questions(configs:dict)->dict:
             while status is False:
                 answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
                 if param == 'LEDGER_CONN':
+                    # need to change to support etherium blockchain
                     if re.search(r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\:[30000-32767]', answer):
                        configs[param]['value'] = answer
                        status = True
+                    elif answer == "":
+                        configs[param]['value'] = configs[param]['default']
+                        status = True
                     else:
                         error_msg = f"Invalid LEDGER_CONN information value {answer}. Please try again... "
                 elif param == 'SYNC_TIME':
-                    if answer[-1] == "s":
+                    if answer == "":
+                        configs[param]['value'] = configs[param]['default']
+                        status = True
+                    elif answer[-1] == "s":
                         answer = answer[:-1]
                     for option in configs[param]['options']:
                         if option not in answer:
@@ -293,11 +289,11 @@ def blockchain_questions(configs:dict)->dict:
                     if answer in configs[param]['options']:
                         configs[param]['value'] = answer
                         status = True
-                    else:
+                    elif answer != "":
                         error_msg = f"Invalid value {answer}. Please try again... "
-                else:
-                    configs[param]['value'] = configs[param]['default']
-                    status = True
+                    else:
+                        configs[param]['value'] = configs[param]['default']
+                        status = True
         else:
             configs[param]['value'] = configs[param]['default']
 
@@ -324,12 +320,12 @@ def operator_questions(configs:dict)->dict:
             status = False
             while status is False:
                 answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
-                if param in ['ENABLE_HA', 'ENABLE_PARTITIONS', 'CREATE_TABLE', 'UPDAE_TSD_INFO', 'ARCHIVE',
-                             'COMPRESS_FILE']:
+                if param in ['ENABLE_HA', 'ENABLE_PARTITIONS', 'CREATE_TABLE', 'UPDAE_TSD_INFO', 'ARCHIVE', 'COMPRESS_FILE']:
                     if answer not in configs[param]['options'] and answer != "":
                         error_msg = f"Invalid value {answer}. Please try again... "
                     elif answer in configs[param]['options']:
                         configs[param]['value'] = answer
+                        status = True
                     if answer == "" or answer == 'false':
                         configs[param]['value'] = configs[param]['default']
                         if param == 'ENABLE_HA':
@@ -338,6 +334,7 @@ def operator_questions(configs:dict)->dict:
                             for config in ['TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP',
                                            'PARTITION_SYNC']:
                                 configs[config]['enable'] = False
+                        status = True
                 elif param == 'START_DATE':
                     if answer != "":
                         try:
@@ -367,10 +364,15 @@ def operator_questions(configs:dict)->dict:
                             answer = configs[param]['default']
                         configs[param]['value'] = answer
                         status = True
+                elif answer != "":
+                    configs[param][value] = answer
+                    status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
+                    status = True
         else:
             configs[param]['value'] = configs[param]['default']
+            status = True
 
     return configs
 
@@ -408,10 +410,10 @@ def publisher_questions(configs:dict)->dict:
                         error_msg = f"Invalid value {answer}. Please try again... "
                     elif answer in configs[param]['options']:
                         configs[param]['value'] = answer
+                        status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
-    else:
-        configs[param]['value'] = configs[param]['default']
+                    status = True
 
 
 def authentication_questions(configs:dict)->dict:

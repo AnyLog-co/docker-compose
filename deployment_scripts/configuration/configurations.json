@@ -485,6 +485,7 @@
     "AUTH_TYPE": {
       "question": "Type",
       "description": "authentication administration type",
+      "enable": false,
       "default": "admin",
       "options": [
         "admin",
