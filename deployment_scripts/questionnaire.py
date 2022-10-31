@@ -232,6 +232,7 @@ def database_questions(configs:dict)->dict:
                     configs[prm]['enable'] = False
             elif param == 'SYSTEM_QUERY' and configs[param]['value'] == 'false':
                 configs['MEMORY']['enable'] = False
+                configs['MEMORY']['value'] = False
             elif param == 'NOSQL_ENABLE' and configs[param]['value'] == 'false':
                 for prm in ['NOSQL_TYPE', 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT']:
                     configs[prm]['enable'] = False
@@ -491,7 +492,8 @@ def mqtt_questions(configs:dict)->dict:
                     status = True
             if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
                 for sub_param in configs:
-                    configs[sub_param]['enable'] = False
+                    if sub_param != "ENABLE_MQTT":
+                        configs[sub_param]['enable'] = False
 
     return configs
 

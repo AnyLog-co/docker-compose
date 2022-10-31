@@ -71,28 +71,23 @@ def write_docker_configs(node_type:str, configs:dict):
             __write_line(file_name=anylog_configs, input_line=f'# {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
             for param in configs[section]:
                 value = ""
+                line = f"{param}=%s"
                 if configs[section][param]['value'] != '': # non-empty value
                     value = str(configs[section][param]['value'])
                     if ' ' in value:
-                        line = f"{param}=\"{value}\""
+                        line = line % f'"{value}"'
                     else:
-                        line = f"{param}={value}"
+                        line = line % value
                 elif configs[section][param]['default'] != "": # empty value
                     value = str(configs[section][param]['default'])
                     if ' ' in value:
-                        line = f"{param}=\"{value}\""
-                    elif value != "" and value != "Unknown":
-                        line = f"{param}={value}"
+                        line = line % f'"{value}"'
                     else:
-                        line = f'{param}=""'
+                        line = line % value
                 else:
                     line = f"{param}=<{section.upper()}_{param}>"
-                if configs[section][param]['enable'] is False:
+                if line == f"{param}=<{section.upper()}_{param}>" or configs[section][param]['enable'] is False and \
+                        param not in ["NODE_TYPE", 'CREATE_TABLE']:
                     line = f"#{line}"
-
                 __write_line(file_name=anylog_configs, input_line=f"\n{line}")
             __write_line(file_name=anylog_configs, input_line="\n\n")
-
-
-if __name__ == '__main__':
-    write_docker_configs('rest', configs={})
