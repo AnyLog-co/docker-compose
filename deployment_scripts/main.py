@@ -13,17 +13,36 @@ Other node types:
     * standalone - Master + Operator 
     * standalone-publisher - Master + Publisher 
 """
-NODE_TYPES = ['none', 'rest', 'master', 'operator', 'publisher,', 'query', 'standalone', 'standalone-publisher']
+NODE_TYPES = ['none', 'rest', 'master', 'operator', 'publisher', 'query', 'standalone', 'standalone-publisher']
 
 
 def main():
     """
+    :positional arguments:
+        node_type   Node type to deploy
+            * none
+            * rest
+            * master
+            * operator
+            * publisher
+            * query
+            * standalone
+            * standalone-publisher
+    : optional arguments:
+        -h, --help                      show this help message and exit
+        --build         BUILD           Which AnyLog version to run
+        --config-file   CONFIG_FILE     JSON file to get configurations from
+            * develop
+            * predevelop
+            * test
     :params:
         config_file:dict - content from configuration file
         configs:dict - removed un-needed configurations
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('node_type', type=str, choices=NODE_TYPES, default='rest', help='Node type to deploy')
+    parser.add_argument('--build', type=str, choices=['develop', 'predevelop', 'test'], default='develop',
+                        help='Which AnyLog version to run')
     parser.add_argument('--config-file', type=str, default=DEFAULT_CONFIG_FILE,
                         help='JSON file to get configurations from')
     args = parser.parse_args()
@@ -64,9 +83,9 @@ def main():
         print('\n')
 
     write_file.write_docker_configs(node_type=args.node_type, configs=configs)
-    
+
     write_file.update_build_version(node_type=args.node_type, container_name=configs['general']['NODE_NAME']['value'],
-                                    build='predevelop')
+                                    build=args.build)
 
 
 if __name__ == '__main__':
