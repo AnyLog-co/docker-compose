@@ -28,14 +28,4 @@ do
   read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop]: " BUILD_TYPE
 done
 
-#python3 $HOME/deployments/deployment_scripts/configuration/docker_deployment.py ${NODE_TYPE}
-
-cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
-
-VALUE=`grep "image: anylogco/anylog-network" docker-compose.yml`
-OLD_VALUE=`echo ${VALUE} | awk -F ":" '{print $2}'`
-
-
-sed "s/image: anylogco\/anylog-network:${OLD_VALUE}/image: anylogco\/anylog-network:${BUILD_TYPE}/g" docker-compose.yml > new-docker-compose.yml
-mv new-docker-compose.yml docker-compose.yml
-
+python3 $HOME/deployments/deployment_scripts/configuration/docker_deployment.py ${NODE_TYPE} $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
