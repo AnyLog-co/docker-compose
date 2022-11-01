@@ -17,20 +17,17 @@ do
     read -p "Invalid node type '${NODE_TYPE}'. Node Type [default: rest | options: rest, master, operator, publisher, query, info]: " NODE_TYPE
   fi
 done
-if [[ -z ${NODE_TYPE} ]] ;
-then
-  NODE_TYPE=rest
-fi
+if [[ -z ${NODE_TYPE} ]] ; then NODE_TYPE=rest ; fi
 
 read -p "AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
-while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]] ;
+while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
 do
   read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
 done
+if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=develop ; fi
+printf "\n"
 
-echo "\n"
-
-python3 $HOME/deployments/deployment_scripts/configuration/docker_deployment.py ${NODE_TYPE} \
+python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
   --build ${BUILD_TYPE} \
   --deployment-type docker \
   --config-file $HOME/deployments/deployment_scripts/configuration/configurations.json
