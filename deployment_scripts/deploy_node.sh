@@ -11,7 +11,7 @@ do
     printf '\n\tmaster - a database node replacing an actual blockchain'
     printf '\n\toperator - node where data will be stored'
     printf '\n\tpublisher - node to distribute data among operators'
-    printf '\n\tquery - node dedicated to master node\n'
+    printf '\n\tquery - node dedicated to master node (installed with Remote-CLI)\n'
     read -p "Node Type [default: rest | options: rest, master, operator, publisher, query, info]: " NODE_TYPE
   else
     read -p "Invalid node type '${NODE_TYPE}'. Node Type [default: rest | options: rest, master, operator, publisher, query, info]: " NODE_TYPE
@@ -22,10 +22,15 @@ then
   NODE_TYPE=rest
 fi
 
-read -p "AnyLog Build Version [default: develop | options: develop, predevelop]: " BUILD_TYPE
-while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] ;
+read -p "AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
+while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]] ;
 do
-  read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop]: " BUILD_TYPE
+  read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
 done
 
-python3 $HOME/deployments/deployment_scripts/configuration/docker_deployment.py ${NODE_TYPE} $HOME/deployments/deployment_scripts/configuration/configurations.json
+echo "\n"
+
+python3 $HOME/deployments/deployment_scripts/configuration/docker_deployment.py ${NODE_TYPE} \
+  --build ${BUILD_TYPE} \
+  --deployment-type docker \
+  --config-file $HOME/deployments/deployment_scripts/configuration/configurations.json

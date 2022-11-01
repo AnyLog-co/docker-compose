@@ -81,8 +81,12 @@ def write_docker_configs(node_type:str, configs:dict):
         line:str - content to store in file
     """
     status = False
-    docker_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    if node_type != 'query':
+        docker_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    else:
+        docker_path = os.path.join(ROOT_PATH, 'docker-compose', '%s-remote-cli' % node_type.lower())
     anylog_configs = os.path.join(docker_path, 'anylog_configs.env')
+
     # move exiting configs to backup + create new config file
     if os.path.isdir(docker_path):
         try:
@@ -122,8 +126,23 @@ def write_docker_configs(node_type:str, configs:dict):
 
 
 def update_build_version(node_type:str, container_name:str, build:str):
-    env_file = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    """
+    Update .env file
+    :args:
+        node_type:str - Node type
+        container_name:str - NODE_NAME
+        build:str - AnyLog build version
+    :params:
+        env_file:str - file to store content in
+    """
+    # set file name
+    if node_type != 'query':
+        env_file = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    else:
+        env_file = os.path.join(ROOT_PATH, 'docker-compose', '%s-remote-cli' % node_type.lower())
     env_file = os.path.join(env_file, '.env')
+
+    # read + write content into .env file
     if os.path.isfile(env_file):
         configs = __read_env_file(env_file=env_file)
         if len(configs) > 0:

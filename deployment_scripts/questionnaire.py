@@ -419,6 +419,9 @@ def publisher_questions(configs:dict)->dict:
 def authentication_questions(configs:dict)->dict:
     """
     Generate questions for authentication configurations
+    :notes:
+        need to write code in AnyLog deployment script to support authentication. As such, process is disabled in 
+        deployment main.  
     :args:
         configs:dict - database configurations
     :params:
