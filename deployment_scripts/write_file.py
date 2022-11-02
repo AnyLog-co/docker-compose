@@ -101,38 +101,36 @@ def write_docker_configs(node_type:str, configs:dict):
     # write configs to file
     if status is True:
         for section in configs:
-            __write_line(file_name=anylog_configs, input_line=f'# {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+            __write_line(file_name=anylog_configs, input_line=f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---')
             for param in configs[section]:
-                if param == 'OPERATOR_THREADS':
-                    print('test')
-                value = ""
-                line = f"{param}=%s"
+                comment = configs[section][param]['description'].replace('\n', '')
                 if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
-                    value = str(configs[section][param]['value'])
+                    value = str(configs[section][param]['value']).replace('\n', '')
                     if value == '':
-                        line = f'#{param}={configs[section][param]["default"]}'
+                        line = f'{param}=<{section.upper()}_{param.upper()}>'
                     elif ' ' in value:
-                        line = line % f'"{value}"'
+                        line = f'{param}="{value}"'
                     else:
-                        line = line % value
-                elif configs[section][param]['value'] != '': # non-empty value
-                    value = str(configs[section][param]['value'])
+                        line = f"{param}={value}"
+                elif configs[section][param]['value'] != '':
+                    value = str(configs[section][param]['value']).replace('\n', '')
                     if ' ' in value:
-                        line = line % f'"{value}"'
+                        line = f'{param}="{value}"'
                     else:
-                        line = line % value
-                elif configs[section][param]['default'] != "": # empty value
-                    value = str(configs[section][param]['default'])
+                        line = f"{param}={value}"
+                elif configs[section][param]['default'] != '':
+                    value = str(configs[section][param]['default']).replace('\n', '')
                     if ' ' in value:
-                        line = line % f'"{value}"'
+                        line = f'{param}="{value}"'
                     else:
-                        line = line % value
+                        line = f"{param}={value}"
                 else:
-                    line = line % f"<{section.upper()}_{param}>"
-                if line == f"{param}=<{section.upper()}_{param}>" or configs[section][param]['enable'] is False and param not in ["NODE_TYPE", 'CREATE_TABLE']:
+                    line = f"{param}=<{section.upper()}_{param.upper()}>"
+
+                if line == f"{param}=<{section.upper()}_{param.upper()}>" or configs[section][param]['enable'] is False:
                     line = f"#{line}"
-                line=f"# {configs[section][param]['description']}\n{line}"
-                __write_line(file_name=anylog_configs, input_line=f"{line}\n")
+                line = f"# {comment}\n{line}"
+                __write_line(file_name=anylog_configs, input_line=f"\n{line}")
             __write_line(file_name=anylog_configs, input_line="\n\n")
 
 
