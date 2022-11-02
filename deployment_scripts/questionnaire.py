@@ -146,7 +146,7 @@ def generic_questions(configs:dict)->dict:
         answer:str - user inputted answer
     """
     for param in configs:
-        if configs[param]['enable'] is True:
+        if configs[param]['enable'] is True:    
             full_question = __generate_question(configs=configs[param])
             answer = __ask_question(question=full_question, description=configs[param]['description'])
             if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
