@@ -15,14 +15,14 @@ services:
       - remote-cli:/app/Remote-CLI/anylog_query/static/json
       - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
   anylog-query-node:
-    image: anylogco/anylog-network:${TAG}
+    image: anylogco/anylog-network:${BUILD}
     env_file:
-      - anylog_configs.env
-    container_name: anylog-query-node
+      - ${ENV_FILE}
+    container_name: ${CONTAINER_NAME}
     restart: always
     stdin_open: true
     tty: true
-    network_mode: "host"
+    network_mode: "${NETWORK}"
     volumes:
       - anylog-query-node-anylog:/app/AnyLog-Network/anylog
       - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain

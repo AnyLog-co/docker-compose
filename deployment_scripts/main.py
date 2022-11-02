@@ -59,39 +59,41 @@ def main():
 
     # iterate through configurations and get user input
     for section in configs:
-        print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-        if section == 'general':
-            configs['general'] = questionnaire.generic_questions(configs=configs[section])
-        elif section == 'networking':
-            configs[section] = questionnaire.networking_questions(configs=configs[section])
-        elif section == 'database':
-            configs[section] = questionnaire.database_questions(configs=configs[section])
-        elif section == 'blockchain':
-            configs[section] = questionnaire.blockchain_questions(configs=configs[section])
-        elif section == 'operator':
-            configs[section] = questionnaire.operator_questions(configs=configs[section])
-        elif section == 'publisher':
-            configs[section] = questionnaire.publisher_questions(configs=configs[section])
-        # we need to enable authentication code within deployment scripts
-        # elif param == 'authentication':
-        #     configs[section] = questionnaire.authentication_questions(configs=configs[section])
-        elif section == 'mqtt':
-            configs[section] = support.prepare_mqtt_params(configs=configs[section],
-                                                           db_name=configs['operator']['DEFAULT_DBMS']['value'],
-                                                           port=configs['networking']['ANYLOG_BROKER_PORT']['value'],
-                                                           user=configs['authentication']['AUTH_USER']['value'],
-                                                           password=configs['authentication']['AUTH_PASSWD']['value'])
+        status = support.print_questions(configs[section])
+        if status is True or section in ['general', 'networking', 'database']:
+            print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+            if section == 'general':
+                configs['general'] = questionnaire.generic_questions(configs=configs[section])
+            elif section == 'networking':
+                configs[section] = questionnaire.networking_questions(configs=configs[section])
+            elif section == 'database':
+                configs[section] = questionnaire.database_questions(configs=configs[section])
+            elif section == 'blockchain':
+                configs[section] = questionnaire.blockchain_questions(configs=configs[section])
+            elif section == 'operator':
+                configs[section] = questionnaire.operator_questions(configs=configs[section])
+            elif section == 'publisher':
+                configs[section] = questionnaire.publisher_questions(configs=configs[section])
+            # we need to enable authentication code within deployment scripts
+            # elif param == 'authentication':
+            #     configs[section] = questionnaire.authentication_questions(configs=configs[section])
+            elif section == 'mqtt':
+                configs[section] = support.prepare_mqtt_params(configs=configs[section],
+                                                               db_name=configs['operator']['DEFAULT_DBMS']['value'],
+                                                               port=configs['networking']['ANYLOG_BROKER_PORT']['value'],
+                                                               user=configs['authentication']['AUTH_USER']['value'],
+                                                               password=configs['authentication']['AUTH_PASSWD']['value'])
 
-            configs[section] = questionnaire.mqtt_questions(configs=configs[section])
-        elif section == 'advanced settings':
-            configs[section] = questionnaire.advanced_settings(configs=configs[section])
-        print('\n')
+                configs[section] = questionnaire.mqtt_questions(configs=configs[section])
+            elif section == 'advanced settings':
+                configs[section] = questionnaire.advanced_settings(configs=configs[section])
+            print('\n')
 
-    if args.deployment_type == 'docker':
-        write_file.write_docker_configs(node_type=args.node_type, configs=configs)
-        write_file.update_build_version(node_type=args.node_type,
-                                        container_name=configs['general']['NODE_NAME']['value'],
-                                        build=args.build)
+        if args.deployment_type == 'docker':
+            write_file.write_docker_configs(node_type=args.node_type, configs=configs)
+            write_file.update_build_version(node_type=args.node_type,
+                                            container_name=configs['general']['NODE_NAME']['value'],
+                                            build=args.build)
 
 
 if __name__ == '__main__':

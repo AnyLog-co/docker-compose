@@ -367,7 +367,7 @@ def operator_questions(configs:dict)->dict:
                         configs[param]['value'] = answer
                         status = True
                 elif answer != "":
-                    configs[param][value] = answer
+                    configs[param]['value'] = answer
                     status = True
                 else:
                     configs[param]['value'] = configs[param]['default']

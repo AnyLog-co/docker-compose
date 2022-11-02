@@ -43,7 +43,7 @@ def clean_configs(node_type:str, configs:dict)->dict:
         elif section == 'database' and node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
             for param in configs[section]:
                 if param == 'SYSTEM_QUERY' and node_type == 'query':
-                    configs[section][param]['default'] = True
+                    configs[section][param]['default'] = 'true'
                 elif 'NOSQL' in param or param == 'AUTOCOMMIT':
                     configs[section][param]['enable'] = False
         elif section == 'operator' and node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
@@ -62,6 +62,13 @@ def clean_configs(node_type:str, configs:dict)->dict:
 
     return configs
 
+
+def print_questions(configs:dict)->bool:
+    status = True
+    for param in configs:
+        if configs[param]['enable'] is False:
+            status = False
+    return status
 
 def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:str)->dict:
     """
