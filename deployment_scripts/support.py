@@ -37,21 +37,28 @@ def clean_configs(node_type:str, configs:dict)->dict:
         cleaned configs
     """
     configs['general']['NODE_TYPE']['value'] = node_type
-    if node_type == 'query': 
-        configs['sql database']['SYSTEM_QUERY']['default'] = True
-    if node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
-        for param in configs['database']:
-            if 'NOSQL' in param:
-                configs['database'][param]['enable'] = False
-    if node_type in ['master', 'query']:
-        # remove operator and publisher configs
-        pass
-    elif node_type in ['operator', 'standalone']:
-        # remove publisher configs
-        pass
-    elif node_type in ['publisher', 'standalone-publisher']:
-        # remove operator configs
-        pass
+    for section in configs:
+        if section == 'networking' and node_type in ['master', 'query']:
+            configs[section]['ANYLOG_BROKER_PORT']['enable'] = False
+        elif section == 'database' and node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
+            for param in configs[section]:
+                if param == 'SYSTEM_QUERY' and node_type == 'query':
+                    configs[section][param]['default'] = True
+                elif 'NOSQL' in param or param == 'AUTOCOMMIT':
+                    configs[section][param]['enable'] = False
+        elif section == 'operator' and node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
+            for param in configs[section]:
+                configs[section][param]['enable'] = False
+        elif section == 'publisher' and node_type in ['master', 'operator', 'query', 'standalone']:
+            for param in configs[section]:
+                configs[section][param]['enable'] = False
+        elif section == 'mqtt' and node_type in ['master', 'query']:
+            for param in configs[section]:
+                configs[section][param]['enable'] = False
+        elif section == 'advanced settings' and node_type in ['master', 'query']:
+            for param in configs[section]:
+                if param != 'DEPLOY_LOCAL_SCRIPT':
+                    configs[section][param]['enable'] = False
 
     return configs
 

@@ -127,7 +127,7 @@ def write_docker_configs(node_type:str, configs:dict):
                 else:
                     line = f"{param}=<{section.upper()}_{param.upper()}>"
 
-                if line == f"{param}=<{section.upper()}_{param.upper()}>" or configs[section][param]['enable'] is False:
+                if line == f"{param}=<{section.upper()}_{param.upper()}>" or configs[section][param]['enable'] is False and param != 'NODE_TYPE':
                     line = f"#{line}"
                 line = f"# {comment}\n{line}"
                 __write_line(file_name=anylog_configs, input_line=f"\n{line}")

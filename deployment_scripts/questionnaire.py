@@ -76,8 +76,8 @@ def __validate_port(port:str, check_range:bool=True)->(int, str):
     except Exception as error:
         error_msg=f'Port value {answer} is invalid. Please try again... '
     else:
-        if check_range is True and (30000 < port  or port > 32767):
-            error_msg=f'Value {answer} out of range. Please try again... '
+        if check_range is True and not (30000 <= port <= 32767):
+            error_msg=f'Value {port} out of range. Please try again... '
 
     return port, error_msg
 
@@ -107,7 +107,7 @@ def __validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dic
             if answer != "":
                 port, error_msg = __validate_port(port=answer)
                 if error_msg == "":
-                    configs[param]['value'] = answer
+                    rest_info['value'] = answer
                     status = True
             else:
                 rest_info['value'] = rest_info[param]['default']
@@ -126,7 +126,7 @@ def __validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dic
                 if answer != "":
                     port, error_msg = __validate_port(port=answer)
                     if error_msg == "":
-                        configs[param]['value'] = answer
+                        broker_info['value'] = answer
                         status = True
                 else:
                     # if originally
@@ -146,7 +146,7 @@ def generic_questions(configs:dict)->dict:
         answer:str - user inputted answer
     """
     for param in configs:
-        if configs[param]['enable'] is True:    
+        if configs[param]['enable'] is True:
             full_question = __generate_question(configs=configs[param])
             answer = __ask_question(question=full_question, description=configs[param]['description'])
             if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
@@ -225,6 +225,9 @@ def database_questions(configs:dict)->dict:
                     else:
                         configs[param]['value'] = configs[param]['default']
                         status = True
+                else:
+                    configs[param]['value'] = answer
+                    status = True
             if param == 'DB_TYPE' and configs[param]['value'] == 'sqlite':
                 for prm in ['DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT']:
                     configs[prm]['enable'] = False

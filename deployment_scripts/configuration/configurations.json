@@ -139,21 +139,21 @@
       "question": "Database Password",
       "description": "Password correlated to database user",
       "enable": true,
-      "default": "127.0.0.1",
+      "default": "",
       "value": ""
     },
     "DB_IP": {
       "question": "Database IP Address",
       "description": "Database IP address",
       "enable": true,
-      "default": 5432,
+      "default": "127.0.0.1",
       "value": ""
     },
     "DB_PORT": {
-      "question": "Database Port:",
+      "question": "Database Port",
       "description": "Database port number",
       "enable": true,
-      "default": "",
+      "default": 5432,
       "value": ""
     },
     "AUTOCOMMIT": {
