@@ -11,31 +11,23 @@ do
     printf '\n\tmaster - a database node replacing an actual blockchain'
     printf '\n\toperator - node where data will be stored'
     printf '\n\tpublisher - node to distribute data among operators'
-    printf '\n\tquery - node dedicated to master node\n'
+    printf '\n\tquery - node dedicated to master node (installed with Remote-CLI)\n'
     read -p "Node Type [default: rest | options: rest, master, operator, publisher, query, info]: " NODE_TYPE
   else
     read -p "Invalid node type '${NODE_TYPE}'. Node Type [default: rest | options: rest, master, operator, publisher, query, info]: " NODE_TYPE
   fi
 done
-if [[ -z ${NODE_TYPE} ]] ;
-then
-  NODE_TYPE=rest
-fi
+if [[ -z ${NODE_TYPE} ]] ; then NODE_TYPE=rest ; fi
 
-read -p "AnyLog Build Version [default: develop | options: develop, predevelop]: " BUILD_TYPE
-while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] ;
+read -p "AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
+while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
 do
-  read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop]: " BUILD_TYPE
+  read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
 done
+if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=develop ; fi
+printf "\n"
 
-#python3 $HOME/deployments/deployment_scripts/configuration/docker_deployment.py ${NODE_TYPE}
-
-cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
-
-VALUE=`grep "image: anylogco/anylog-network" docker-compose.yml`
-OLD_VALUE=`echo ${VALUE} | awk -F ":" '{print $2}'`
-
-
-sed "s/image: anylogco\/anylog-network:${OLD_VALUE}/image: anylogco\/anylog-network:${BUILD_TYPE}/g" docker-compose.yml > new-docker-compose.yml
-mv new-docker-compose.yml docker-compose.yml
-
+python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+  --build ${BUILD_TYPE} \
+  --deployment-type docker \
+  --config-file $HOME/deployments/deployment_scripts/configuration/configurations.json
