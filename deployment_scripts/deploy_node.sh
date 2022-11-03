@@ -32,5 +32,5 @@ python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
   --deployment-type docker \
   --config-file configurations.json
 
-cd ../docker-compose/anylog-${NODE_TYPE}
+cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
 docker-compose up -d
