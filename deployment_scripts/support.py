@@ -64,11 +64,19 @@ def clean_configs(node_type:str, configs:dict)->dict:
 
 
 def print_questions(configs:dict)->bool:
-    status = True
+    """
+    Whether or not to print question
+    :args:
+        configs:dict - configuration
+    :param:
+        status:bool
+    :return:
+        if one or more of the config params is enabled return True, else returns False
+    """
     for param in configs:
-        if configs[param]['enable'] is False:
-            status = False
-    return status
+        if configs[param]['enable'] is True:
+            return True
+    return False
 
 
 def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:str)->dict:

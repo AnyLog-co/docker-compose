@@ -479,7 +479,7 @@
     "AUTH_PASSWD": {
       "question": "Password",
       "description": "authentication password correlated with user",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": ""
     },
