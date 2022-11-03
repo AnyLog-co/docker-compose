@@ -43,7 +43,7 @@ def clean_configs(node_type:str, configs:dict)->dict:
         elif section == 'database' and node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
             for param in configs[section]:
                 if param == 'SYSTEM_QUERY' and node_type == 'query':
-                    configs[section][param]['default'] = True
+                    configs[section][param]['default'] = 'true'
                 elif 'NOSQL' in param or param == 'AUTOCOMMIT':
                     configs[section][param]['enable'] = False
         elif section == 'operator' and node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
@@ -63,6 +63,22 @@ def clean_configs(node_type:str, configs:dict)->dict:
     return configs
 
 
+def print_questions(configs:dict)->bool:
+    """
+    Whether or not to print question
+    :args:
+        configs:dict - configuration
+    :param:
+        status:bool
+    :return:
+        if one or more of the config params is enabled return True, else returns False
+    """
+    for param in configs:
+        if configs[param]['enable'] is True:
+            return True
+    return False
+
+
 def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:str)->dict:
     """
     update the default MQTT parameters to match information already provided by the user.
@@ -76,9 +92,10 @@ def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:
         (updated) configs
     """
     configs['MQTT_TOPIC_DBMS']['default'] = db_name
-    configs['MQTT_PORT']['default'] = port
-    if port != "": # if local broker port is set, then update configs accordingly
-        configs['MQTT_broker']['default'] = 'local'
+    # if local broker port is set, then update configs accordingly
+    if port != "":
+        configs['MQTT_PORT']['default'] = port
+        configs['MQTT_BROKER']['default'] = 'local'
         configs['MQTT_USER']['default'] = user
         configs['MQTT_PASSWD']['default'] = password
 

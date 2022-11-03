@@ -228,21 +228,53 @@
       "question": "Database IP Address",
       "description": "Database IP address",
       "enable": true,
-      "default": "",
+      "default": "127.0.0.1",
       "value": ""
     },
     "NOSQL_PORT": {
-      "question": "Database Port:",
+      "question": "Database Port",
       "description": "Database port number",
       "enable": true,
-      "default": "",
+      "default": 27017,
+      "value": ""
+    },
+    "NOSQL_BLOBS_DBMS": {
+      "question": "Blobs DBMS",
+      "description": "Store blobs in database",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_FOLDER": {
+      "question": "Blobs Folder",
+      "description": "Store blobs in folder",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_COMPRESS": {
+      "question": "Compress Blobs",
+      "description": "Compress stored blobs",
+      "enable": true,
+      "default": "false",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_REUSE": {
+      "question": "Reuse Blobs",
+      "description": "Whether or not (re)store a blob if already exists",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
       "value": ""
     }
   },
   "blockchain": {
     "LEDGER_CONN": {
       "question": "Master Node TCP Connection",
-      "description": "How often to sync from blockchain",
+      "description": "TCP connection information for Master Node",
       "enable": true,
       "default": "127.0.0.1:32048",
       "value": ""
@@ -318,7 +350,7 @@
     },
     "START_DATE": {
       "question": "Number of days to sync",
-      "description": "How far back to sync between nodes",
+      "description": "How many days back to sync between nodes",
       "enable": true,
       "default": 30,
       "value": ""
@@ -362,7 +394,7 @@
     },
     "PARTITION_KEEP": {
       "question": "Partition Keep",
-      "description": "How many paritions to keep",
+      "description": "How many partitions to keep",
       "enable": true,
       "default": 6,
       "value": ""
@@ -479,7 +511,7 @@
     "AUTH_PASSWD": {
       "question": "Password",
       "description": "authentication password correlated with user",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": ""
     },
@@ -529,7 +561,7 @@
       "question": "Port",
       "description": "Port associated with MQTT broker",
       "enable": true,
-      "default": "18785",
+      "default": 18785,
       "value": ""
     },
     "MQTT_USER": {
