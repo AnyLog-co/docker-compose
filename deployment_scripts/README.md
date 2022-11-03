@@ -15,7 +15,7 @@
         "description": "parameter description",
         "enable": "Whether or not to show parameter to user",
         "default": "default value",
-        "options": "list of options to choose from"
+        "options": "list of options to choose from",
         "value": "empty value waiting for user to input data"
     },
     "INT_PARAM": {
