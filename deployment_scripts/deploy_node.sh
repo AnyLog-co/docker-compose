@@ -30,4 +30,7 @@ printf "\n"
 python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
   --build ${BUILD_TYPE} \
   --deployment-type docker \
-  --config-file $HOME/deployments/deployment_scripts/configuration/configurations.json
+  --config-file configurations.json
+
+cd ../docker-compose/anylog-${NODE_TYPE}
+docker-compose up -d

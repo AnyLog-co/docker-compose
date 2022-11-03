@@ -222,7 +222,8 @@ def database_questions(configs:dict)->dict:
             while status is False:
                 answer = __ask_question(question=full_question, description=configs[param]['description'],
                                         param=param, error_msg=error_msg)
-                if param in ['DB_TYPE', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY', 'NOSQL_ENABLE', 'NOSQL_TYPE']:
+                if param in ['DB_TYPE', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY', 'NOSQL_ENABLE', 'NOSQL_TYPE',
+                             'NOSQL_BLOBS_DBMS', 'NOSQL_BLOBS_FOLDER', 'NOSQL_BLOBS_COMPRESS', 'NOSQL_BLOBS_REUSE']:
                     if answer != "" and answer not in configs[param]['options']:
                         print(f'Invalid value {answer}. Please try again...')
                     elif answer != "":

@@ -237,6 +237,38 @@
       "enable": true,
       "default": 27017,
       "value": ""
+    },
+    "NOSQL_BLOBS_DBMS": {
+      "question": "Blobs DBMS",
+      "description": "Store blobs in database",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_FOLDER": {
+      "question": "Blobs Folder",
+      "description": "Store blobs in folder",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_COMPRESS": {
+      "question": "Compress Blobs",
+      "description": "Compress stored blobs",
+      "enable": true,
+      "default": "false",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_REUSE": {
+      "question": "Reuse Blobs",
+      "description": "Whether or not (re)store a blob if already exists",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
     }
   },
   "blockchain": {
