@@ -85,7 +85,7 @@ def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:
     configs['MQTT_TOPIC_DBMS']['default'] = db_name
     configs['MQTT_PORT']['default'] = port
     if port != "": # if local broker port is set, then update configs accordingly
-        configs['MQTT_broker']['default'] = 'local'
+        configs['MQTT_BROKER']['default'] = 'local'
         configs['MQTT_USER']['default'] = user
         configs['MQTT_PASSWD']['default'] = password
 

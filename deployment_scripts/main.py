@@ -60,7 +60,7 @@ def main():
     # iterate through configurations and get user input
     for section in configs:
         status = support.print_questions(configs[section])
-        if status is True or section in ['general', 'networking', 'database']:
+        if status is True or section in ['general', 'networking', 'database'] or args.node_type == 'rest':
             print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
             if section == 'general':
                 configs['general'] = questionnaire.generic_questions(configs=configs[section])

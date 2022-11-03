@@ -37,7 +37,7 @@ def __generate_question(configs:dict)->str:
     return question
 
 
-def __ask_question(question:str, description:str, error_msg:str="")->str:
+def __ask_question(question:str, description:str, param:str="", error_msg:str="")->str:
     """
     ask question
     :args:
@@ -53,7 +53,7 @@ def __ask_question(question:str, description:str, error_msg:str="")->str:
         user_input = input(f"\t{error_msg}{question}")
         if user_input == 'help':
             error_msg = ""
-            print(f"\tparam description - {description}")
+            print(f"\t`{param}` param description - {description}")
         else:
             status = True
     return user_input.strip()
@@ -103,7 +103,8 @@ def __validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dic
         status = False
         full_question = __generate_question(configs=rest_info)
         while status is False:
-            answer = answer = __ask_question(error_msg=error_msg, question=full_question, description=rest_info['description'])
+            answer = __ask_question(question=full_question, description=configs[param]['description'], 
+                                    param=param, error_msg=error_msg)
             if answer != "":
                 port, error_msg = __validate_port(port=answer)
                 if error_msg == "":
@@ -122,7 +123,8 @@ def __validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dic
             status = False
             full_question = __generate_question(configs=broker_info)
             while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=broker_info['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if answer != "":
                     port, error_msg = __validate_port(port=answer)
                     if error_msg == "":
@@ -146,9 +148,11 @@ def generic_questions(configs:dict)->dict:
         answer:str - user inputted answer
     """
     for param in configs:
+        error_msg = ""
         if configs[param]['enable'] is True:
             full_question = __generate_question(configs=configs[param])
-            answer = __ask_question(question=full_question, description=configs[param]['description'])
+            answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                    param=param, error_msg=error_msg)
             if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
                 configs[param]['value'] = ''
             elif answer == "":
@@ -178,7 +182,8 @@ def networking_questions(configs:dict):
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False: # iterate through options if type PORT then convert to int
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if param in ['ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'ANYLOG_BROKER_PORT'] and answer != "":
                     port, error_msg = __validate_port(port=answer)
                     if error_msg == "":
@@ -215,7 +220,8 @@ def database_questions(configs:dict)->dict:
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if param in ['DB_TYPE', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY', 'NOSQL_ENABLE', 'NOSQL_TYPE']:
                     if answer != "" and answer not in configs[param]['options']:
                         print(f'Invalid value {answer}. Please try again...')
@@ -264,7 +270,8 @@ def blockchain_questions(configs:dict)->dict:
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if param == 'LEDGER_CONN':
                     # need to change to support etherium blockchain
                     if re.search(r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\:[30000-32767]', answer):
@@ -321,7 +328,8 @@ def operator_questions(configs:dict)->dict:
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if param in ['ENABLE_HA', 'ENABLE_PARTITIONS', 'CREATE_TABLE', 'UPDAE_TSD_INFO', 'ARCHIVE', 'COMPRESS_FILE']:
                     if answer not in configs[param]['options'] and answer != "":
                         error_msg = f"Invalid value {answer}. Please try again... "
@@ -345,8 +353,10 @@ def operator_questions(configs:dict)->dict:
                             error_msg = f"Invalid value {answer}. Please try again... "
                         else:
                             configs[param]['value'] = f"-{answer}d"
+                            status=True
                     else:
-                        configs[param]['value'] = f"-{configs[param]['defaul']}d"
+                        configs[param]['value'] = f"-{configs[param]['default']}d"
+                        status = True
                 elif param in ["PARTITION_INTERVAL", "PARTITION_SYNC"] and answer != "":
                     for option in configs[param]['options']:
                         if 's' == answer[-1]:
@@ -398,7 +408,8 @@ def publisher_questions(configs:dict)->dict:
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if param in ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION'] and answer != "":
                     try:
                         answer = int(answer)
@@ -441,7 +452,8 @@ def authentication_questions(configs:dict)->dict:
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if param in ['AUTHENTICATION', 'AUTH_TYPE']:
                     if answer not in configs[param]['options']:
                         error_msg = f"Invalid value {answer}. Please try again... "
@@ -481,7 +493,8 @@ def mqtt_questions(configs:dict)->dict:
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if param in ['ENABLE_MQTT', 'MQTT_LOG'] and answer != '':
                     if answer not in configs[param]['options']:
                         error_msg = f"Invalid value {answer}. Please try again... "
@@ -522,7 +535,8 @@ def advanced_settings(configs:dict)->dict:
             full_question = __generate_question(configs=configs[param])
             status = False
             while status is False:
-                answer = __ask_question(error_msg=error_msg, question=full_question, description=configs[param]['description'])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg)
                 if param in ['DEPLOY_LOCAL_SCRIPT', 'WRITE_IMMEDIATE'] and answer != "":
                     if answer not in configs[param]['options']:
                         error_msg = f"Invalid value {answer}. Please try again... "
