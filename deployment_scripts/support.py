@@ -70,6 +70,7 @@ def print_questions(configs:dict)->bool:
             status = False
     return status
 
+
 def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:str)->dict:
     """
     update the default MQTT parameters to match information already provided by the user.
@@ -83,8 +84,9 @@ def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:
         (updated) configs
     """
     configs['MQTT_TOPIC_DBMS']['default'] = db_name
-    configs['MQTT_PORT']['default'] = port
-    if port != "": # if local broker port is set, then update configs accordingly
+    # if local broker port is set, then update configs accordingly
+    if port != "":
+        configs['MQTT_PORT']['default'] = port
         configs['MQTT_BROKER']['default'] = 'local'
         configs['MQTT_USER']['default'] = user
         configs['MQTT_PASSWD']['default'] = password
