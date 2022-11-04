@@ -678,7 +678,7 @@
         "minute",
         "hour",
         "day"
-      ],,
+      ],
       "value": ""
     },
     "THRESHOLD_VOLUME": {

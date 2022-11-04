@@ -49,12 +49,15 @@ def main():
     args = parser.parse_args()
 
     # read configuration file
-    config_file = os.path.expandvars(os.path.expanduser(args.config_file))
-    if not os.path.isfile(config_file):
-        print(f'Failed to locate file {config_file}')
+    configs_file = os.path.expandvars(os.path.expanduser(args.config_file))
+    if not os.path.isfile(configs_file):
+        print(f'Failed to locate file {configs_file}')
         exit(1) 
 
-    config_file = support.json_read_file(file_name=config_file)
+    config_file = support.json_read_file(file_name=configs_file)
+    if not config_file:
+        print(f'Failed to get data from {configs_file}')
+        exit(1)
     configs = support.clean_configs(node_type=args.node_type, configs=config_file)
     if len(configs) == {}:
         print('Empty configurations, cannot continue...')
