@@ -37,6 +37,8 @@ def clean_configs(node_type:str, configs:dict)->dict:
         cleaned configs
     """
     configs['general']['NODE_TYPE']['value'] = node_type
+    if node_type == 'master':
+        configs['general']['NODE_TYPE']['value'] = 'ledger'
     for section in configs:
         if section == 'networking' and node_type in ['master', 'query']:
             configs[section]['ANYLOG_BROKER_PORT']['enable'] = False
