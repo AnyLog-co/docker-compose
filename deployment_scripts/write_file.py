@@ -108,22 +108,14 @@ def write_docker_configs(node_type:str, configs:dict):
                     value = str(configs[section][param]['value']).replace('\n', '')
                     if value == '':
                         line = f'{param}=<{section.upper()}_{param.upper()}>'
-                    elif ' ' in value:
-                        line = f'{param}="{value}"'
                     else:
                         line = f"{param}={value}"
                 elif configs[section][param]['value'] != '':
                     value = str(configs[section][param]['value']).replace('\n', '')
-                    if ' ' in value:
-                        line = f'{param}="{value}"'
-                    else:
-                        line = f"{param}={value}"
+                    line = f"{param}={value}"
                 elif configs[section][param]['default'] != '':
                     value = str(configs[section][param]['default']).replace('\n', '')
-                    if ' ' in value:
-                        line = f'{param}="{value}"'
-                    else:
-                        line = f"{param}={value}"
+                    line = f"{param}={value}"
                 else:
                     line = f"{param}=<{section.upper()}_{param.upper()}>"
 
