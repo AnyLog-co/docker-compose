@@ -1,4 +1,31 @@
-# Adding New Configurations
+# Deployment Scripts 
+
+The following tool provides a questionnaire to help setup configuration file(s) for deploying an AnyLog node. 
+
+
+## Requirements
+1. [Docker](../docker-compose/README.md) or [Kubernetes](../helm/README.md)  
+2. Python `dotenv` package - 
+```bash 
+# using python3-pip
+python3 -m pip install dotenv 
+
+# using apt-get if python3-pip command fails 
+sudo apt-get -y install python3-dotenv
+``` 
+
+## Process
+1. Make sure databases are installed and configured
+   * The package contains deployment scripts for PostgreSQL ([Docker](../docker-compose/postgres) || 
+   [Kubernetes](../helm/postgres)) and MongoDB ([Docker](../docker-compose/mongodb)).
+2. Execute [deploy_node.sh](deploy_node.sh) for form of parameters to fill-out 
+```bash
+bash $HOME/deployments/deployment_scripts/deploy_node.sh
+```
+3. The code automatically deploys an AnyLog instance based on the configuration provided in the previous step.
+ 
+
+## Adding New Configurations
 1. In [configurations.json](configurations.json), add a new JSON object above "advanced settings" section.
 ```json
 {
