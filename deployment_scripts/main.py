@@ -9,7 +9,7 @@ ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_s
 DEFAULT_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'configurations.json')
 
 
-NODE_TYPES = ['none', 'rest', 'master', 'operator', 'publisher', 'query', 'standalone', 'standalone-publisher']
+NODE_TYPES = ['none', 'rest', 'ledger', 'operator', 'publisher', 'query', 'standalone', 'standalone-publisher']
 
 
 def main():
