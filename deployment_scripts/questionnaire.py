@@ -242,8 +242,9 @@ def database_questions(configs:dict)->dict:
                 configs['MEMORY']['enable'] = False
                 configs['MEMORY']['value'] = False
             elif param == 'NOSQL_ENABLE' and configs[param]['value'] == 'false':
-                for prm in ['NOSQL_TYPE', 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT']:
-                    configs[prm]['enable'] = False
+                for prm in configs:
+                    if 'NOSQL' in param:
+                        configs[prm]['enable'] = False
 
     if configs['DB_TYPE']['value'] != 'sqlite': # if missing username and/or password then set DB_TYPE back to sqlite
         if configs['DB_USER']['value'] == "" or configs['DB_PASSWD']['value'] == "":
