@@ -69,6 +69,7 @@ credentials to log into Docker if you were not alreaddy provided with one.
 # 1. update .env file and anylog_configs.env
 
 # 2. execute docker-compose command
+cd ~/deployments/docker-compose/${ANYLOG_NODE}
 docker-compose up -d 
 
 # Helm
