@@ -558,8 +558,7 @@ def advanced_settings(configs:dict)->dict:
                             configs[param]['value'] = answer
                             status = True
                 elif param in ['THRESHOLD_TIME', 'THRESHOLD_VOLUME'] and answer != '':
-                    if param == 'THRESHOLD_VOLUME':
-                        answer = answer.replace(" ", "")
+                    answer = answer.replace(" ", "")
                     str_answer = ''.join([i for i in answer if not i.isdigit()]).strip()
                     if str_answer.lower() not in configs[param]['options'] and str_answer.upper() not in configs[param]['options']:
                         error_msg = f"Invalid value {answer}. Please try again"

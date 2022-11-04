@@ -672,7 +672,13 @@
       "question": "Threshold Time",
       "description": "If buffer is not full, how long to wait until pushing data through",
       "enable": true,
-      "default": 60,
+      "default": "60 seconds",
+      "options": [
+        "second",
+        "minute",
+        "hour",
+        "day"
+      ],,
       "value": ""
     },
     "THRESHOLD_VOLUME": {
