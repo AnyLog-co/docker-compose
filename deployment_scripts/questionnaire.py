@@ -412,13 +412,17 @@ def publisher_questions(configs:dict)->dict:
             while status is False:
                 answer = __ask_question(question=full_question, description=configs[param]['description'],
                                         param=param, error_msg=error_msg)
-                if param in ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION'] and answer != "":
-                    try:
-                        answer = int(answer)
-                    except:
-                        error_msg = f"Invalid value {answer}. Please try again... "
+                if param in ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION']:
+                    if answer != "":
+                        try:
+                            answer = int(answer)
+                        except:
+                            error_msg = f"Invalid value {answer}. Please try again... "
+                        else:
+                            configs[param]['value'] = f"dbms_file_location[{answer}]" 
+                            status = True
                     else:
-                        configs[param]['value'] = answer
+                        configs[param]['value'] = f"file_name[{configs[param]['default']}]"
                         status = True
                 elif param == 'COMPRESS_FILE' and answer != "":
                     if answer not in configs[param]['options'] and answer != "":
