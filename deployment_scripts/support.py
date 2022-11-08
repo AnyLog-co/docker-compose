@@ -103,7 +103,7 @@ def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:
     :return:
         (updated) configs
     """
-    configs['MQTT_TOPIC_DBMS']['default'] = db_name
+    configs['MQTT_DBMS']['default'] = db_name
     # if local broker port is set, then update configs accordingly
     if port != "":
         configs['MQTT_PORT']['default'] = port
