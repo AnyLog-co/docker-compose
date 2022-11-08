@@ -48,5 +48,11 @@ then
     --config-file $HOME/deployments/deployment_scripts/configurations.json
 fi
 
-cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
+if [[ ! ${NODE_TYPE} == query ]] ;
+then
+  cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
+else
+  cd $HOME/deployments/docker-compose/query-remote-cli/
+fi
+
 docker-compose up -d
