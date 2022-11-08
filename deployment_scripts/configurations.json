@@ -578,42 +578,42 @@
       "default": "MSY4e009J7ts",
       "value": ""
     },
-    "MQTT_TOPIC_NAME": {
+    "MQTT_TOPIC": {
       "question": "Topic",
       "description": "Topic to get data for",
       "enable": true,
       "default": "anylogedgex",
       "value": ""
     },
-    "MQTT_TOPIC_DBMS": {
+    "MQTT_DBMS": {
       "question": "Database Name",
       "description": "Logical database name",
       "enable": true,
       "default": "test",
       "value": ""
     },
-    "MQTT_TOPIC_TABLE": {
+    "MQTT_TABLE": {
       "question": "Table Name",
       "description": "Table where to store data",
       "enable": true,
-      "default": "bring [table]",
+      "default": "rand_data",
       "value": ""
     },
-    "MQTT_COLUMN_TIMESTAMP": {
+    "MQTT_TIMESTAMP_COLUMN": {
       "question": "Timestamp Column",
       "description": "Timestamp column name",
       "enable": true,
       "default": "now",
       "value": ""
     },
-    "MQTT_COLUMN_VALUE": {
+    "MQTT_VALUE_COLUMN": {
       "question": "Value Column",
       "description": "Value column name",
       "enable": true,
       "default": "bring [readings][][value]",
       "value": ""
     },
-    "MQTT_COLUMN_VALUE_TYPE": {
+    "MQTT_VALUE_COLUMN_TYPE": {
       "question": "Value type",
       "description": "Column value type",
       "enable": true,
