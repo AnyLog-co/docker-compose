@@ -23,7 +23,6 @@ do
   fi
 done
 if [[ -z ${NODE_TYPE} ]] ; then NODE_TYPE=rest ; fi
-if [ ${NODE_TYPE} == master ] ; then NODE_TYPE=ledger ; fi
 
 
 read -p "Deploy Existing Configs [y / n]: " EXISTING_CONFIGS
