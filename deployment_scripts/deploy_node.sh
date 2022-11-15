@@ -48,11 +48,23 @@ then
     --config-file $HOME/deployments/deployment_scripts/configurations.json
 fi
 
-if [[ ! ${NODE_TYPE} == query ]] ;
+read -p  "Would you like to deploy AnyLog now (y/n)?" DEPLOY_NODE
+if [[ ! ${DEPLOY_NODE} == "n" ]];
 then
-  cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
+  if [[ ! ${NODE_TYPE} == query ]] ;
+  then
+    cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
+  else
+    cd $HOME/deployments/docker-compose/query-remote-cli/
+  fi
+  docker-compose up -d
 else
-  cd $HOME/deployments/docker-compose/query-remote-cli/
+  if [[ ! ${NODE_TYPE} == query ]] ;
+  then
+    NODE_PATH=$HOME/deployments/docker-compose/anylog-${NODE_TYPE}
+  else
+    NODE_PATH=$HOME/deployments/docker-compose/query-remote-cli
+  fi
+  echo "Node was not deployed. Configurations were saved in: ${NODE_PATH}"
 fi
 
-docker-compose up -d
