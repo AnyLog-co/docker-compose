@@ -1,20 +1,21 @@
 version: "2.2"
 services:
-  anylog-node:
-    image: anylogco/anylog-network:develop
+  anylog-rest-node:
+    image: anylogco/anylog-network:${BUILD}
+    restart: always
     env_file:
-      - anylog_configs.env
-    container_name: anylog-node
+      - ${ENV_FILE}
+    container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
-    network_mode: "host" 
+    network_mode: "${NETWORK}"
     volumes:
-      - anylog-node-anylog:/app/AnyLog-Network/anylog
-      - anylog-node-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-node-data:/app/AnyLog-Network/data
-      - anylog-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-rest-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-rest-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-rest-node-data:/app/AnyLog-Network/data
+      - anylog-rest-node-local-scripts:/app/AnyLog-Network/scripts
 volumes:
-  anylog-node-anylog:
-  anylog-node-blockchain:
-  anylog-node-data:
-  anylog-node-local-scripts:
+  anylog-rest-node-anylog:
+  anylog-rest-node-blockchain:
+  anylog-rest-node-data:
+  anylog-rest-node-local-scripts:

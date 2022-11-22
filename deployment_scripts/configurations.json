@@ -1,0 +1,693 @@
+{
+  "general": {
+    "NODE_TYPE": {
+      "question": "Node Type",
+      "description": "Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols",
+      "enable": false,
+      "options": [
+        "none",
+        "rest",
+        "master",
+        "operator",
+        "query",
+        "publisher",
+        "standalone",
+        "standalone-publisher"
+      ],
+      "default": "rest",
+      "value": ""
+    },
+    "NODE_NAME": {
+      "question": "Node Name",
+      "description": "Name of the AnyLog instance",
+      "enable": true,
+      "default": "anylog-node",
+      "value": ""
+    },
+    "COMPANY_NAME": {
+      "question": "Company Name",
+      "description": "Owner of the AnyLog instance",
+      "enable": true,
+      "default": "New Company",
+      "value": ""
+    },
+    "LOCATION": {
+      "question": "Location",
+      "description": "Coordinates of the machine - used by Grafana to map the network",
+      "enable": true,
+      "default": "0.0, 0.0",
+      "value": ""
+    },
+    "COUNTRY": {
+      "question": "Country",
+      "description": "Country where machine is located",
+      "enable": true,
+      "default": "Unknown",
+      "value": ""
+    },
+    "STATE": {
+      "question": "State",
+      "description": "State where machine is located",
+      "enable": true,
+      "default": "Unknown",
+      "value": ""
+    },
+    "CITY": {
+      "question": "City",
+      "description": "City where machine is located",
+      "enable": true,
+      "default": "Unknown",
+      "value": ""
+    }
+  },
+  "networking": {
+    "EXTERNAL_IP": {
+      "question": "External IP",
+      "description": "External IP address of the machine",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "LOCAL_IP": {
+      "question": "Local IP",
+      "description": "Local or  internal network IP address of the machine",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "K8S_PROXY_IP": {
+      "question": "Proxy IP",
+      "description": "Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "ANYLOG_SERVER_PORT": {
+      "question": "TCP Port",
+      "description": "Port address used by AnyLog's TCP protocol to communicate with other nodes in the network",
+      "enable": true,
+      "default": 32048,
+      "range": [
+        30000,
+        32767
+      ],
+      "value": ""
+    },
+    "ANYLOG_REST_PORT": {
+      "question": "REST Port",
+      "description": "Port address used by AnyLog's REST protocol",
+      "enable": true,
+      "default": 32049,
+      "range": [
+        30000,
+        32767
+      ],
+      "value": ""
+    },
+    "ANYLOG_BROKER_PORT": {
+      "question": "Local Broker Port",
+      "description": "Port value to be used as an MQTT borker, or some other third-party broker",
+      "enable": true,
+      "default": "",
+      "range": [
+        30000,
+        32767
+      ],
+      "value": ""
+    }
+  },
+  "database": {
+    "DB_TYPE": {
+      "question": "Database Type",
+      "description": "Physical database type",
+      "enable": true,
+      "default": "sqlite",
+      "options": [
+        "sqlite",
+        "psql"
+      ],
+      "value": ""
+    },
+    "DB_USER": {
+      "question": "Database User",
+      "description": "Username for SQL database connection",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "DB_PASSWD": {
+      "question": "Database Password",
+      "description": "Password correlated to database user",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "DB_IP": {
+      "question": "Database IP Address",
+      "description": "Database IP address",
+      "enable": true,
+      "default": "127.0.0.1",
+      "value": ""
+    },
+    "DB_PORT": {
+      "question": "Database Port",
+      "description": "Database port number",
+      "enable": true,
+      "default": 5432,
+      "value": ""
+    },
+    "AUTOCOMMIT": {
+      "question": "Enable Autocommit",
+      "description": "Whether or not autocommit data",
+      "enable": true,
+      "default": "false",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "SYSTEM_QUERY": {
+      "question": "Enable System Query Database",
+      "description": "Whether or not to start to start system_query logical database",
+      "enable": true,
+      "default": "false",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "MEMORY": {
+      "question": "Set System Query in-memory",
+      "description": "Run system_query using in-memory SQLite. If set to false, will use pre-set database type",
+      "enable": true,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "NOSQL_ENABLE": {
+      "question": "Enable NoSQL Database",
+      "description": "Whether or not to enable NoSQL logical database",
+      "enable": true,
+      "default": "false",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "NOSQL_TYPE": {
+      "question": "Database Type",
+      "description": "Physical database type",
+      "enable": true,
+      "default": "mongo",
+      "options": [
+        "mongo"
+      ],
+      "value": ""
+    },
+    "NOSQL_USER": {
+      "question": "Database User",
+      "description": "Username for SQL database connection",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "NOSQL_PASSWD": {
+      "question": "Database Password",
+      "description": "Password correlated to database user",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "NOSQL_IP": {
+      "question": "Database IP Address",
+      "description": "Database IP address",
+      "enable": true,
+      "default": "127.0.0.1",
+      "value": ""
+    },
+    "NOSQL_PORT": {
+      "question": "Database Port",
+      "description": "Database port number",
+      "enable": true,
+      "default": 27017,
+      "value": ""
+    },
+    "NOSQL_BLOBS_DBMS": {
+      "question": "Blobs DBMS",
+      "description": "Store blobs in database",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_FOLDER": {
+      "question": "Blobs Folder",
+      "description": "Store blobs in folder",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_COMPRESS": {
+      "question": "Compress Blobs",
+      "description": "Compress stored blobs",
+      "enable": true,
+      "default": "false",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_REUSE": {
+      "question": "Reuse Blobs",
+      "description": "Whether or not (re)store a blob if already exists",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    }
+  },
+  "blockchain": {
+    "LEDGER_CONN": {
+      "question": "Master Node TCP Connection",
+      "description": "TCP connection information for Master Node",
+      "enable": true,
+      "default": "127.0.0.1:32048",
+      "value": ""
+    },
+    "SYNC_TIME": {
+      "question": "Sync Time",
+      "description": "How often to sync from blockchain",
+      "enable": true,
+      "default": "30 second",
+      "options": [
+        "second",
+        "minute",
+        "hour",
+        "day"
+      ],
+      "value": ""
+    },
+    "BLOCKCHAIN_SOURCE": {
+      "question": "Blockchain Source",
+      "description": "Source of where the data is coming from",
+      "enable": true,
+      "default": "master",
+      "options": [
+        "master",
+        "blockchain"
+      ],
+      "value": ""
+    },
+    "BLOCKCHAIN_DESTINATION": {
+      "question": "Blockchain Destination",
+      "description": "Where will the copy of the blockchain be stored",
+      "enable": true,
+      "default": "file",
+      "options": [
+        "file",
+        "dbms"
+      ],
+      "value": ""
+    }
+  },
+  "operator": {
+    "MEMBER": {
+      "question": "Member ID",
+      "description": "Operator ID",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "CLUSTER_NAME": {
+      "question": "Cluster Name",
+      "description": "Owner of the cluster",
+      "enable": true,
+      "default": "new-company-cluster",
+      "value": ""
+    },
+    "DEFAULT_DBMS": {
+      "question": "Database Name",
+      "description": "Logical database name",
+      "enable": true,
+      "default": "test",
+      "value": ""
+    },
+    "ENABLE_HA": {
+      "question": "Enable HA",
+      "description": "Whether of not to enable HA against the cluster",
+      "enable": true,
+      "default": "false",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "START_DATE": {
+      "question": "Number of days to sync",
+      "description": "How many days back to sync between nodes",
+      "enable": true,
+      "default": 30,
+      "value": ""
+    },
+    "ENABLE_PARTITIONS": {
+      "question": "Enable Partitions",
+      "description": "Whether or not to enable partitioning",
+      "enable": true,
+      "default": "false",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "TABLE_NAME": {
+      "question": "Partitioned Table(s)",
+      "description": "Which tables to partition",
+      "enable": true,
+      "default": "*",
+      "value": ""
+    },
+    "PARTITION_COLUMN": {
+      "question": "Partitioned Column",
+      "description": "Which timestamp column to partition by",
+      "enable": true,
+      "default": "insert_timestamp",
+      "value": ""
+    },
+    "PARTITION_INTERVAL": {
+      "question": "Partition Interval",
+      "description": "Time period to partition by",
+      "enable": true,
+      "default": "14 days",
+      "options": [
+        "hour",
+        "day",
+        "month"
+      ],
+      "value": ""
+    },
+    "PARTITION_KEEP": {
+      "question": "Partition Keep",
+      "description": "How many partitions to keep",
+      "enable": true,
+      "default": 6,
+      "value": ""
+    },
+    "PARTITION_SYNC": {
+      "question": "Partition Sync",
+      "description": "How often to check if an old partition should be removed",
+      "enable": true,
+      "default": "1 day",
+      "options": [
+        "day",
+        "month"
+      ],
+      "value": ""
+    },
+    "CREATE_TABLE": {
+      "question": "Create Table",
+      "description": "Whether or not to create a new table in the operator",
+      "enable": false,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "UPDAE_TSD_INFO": {
+      "question": "Track JSON Files",
+      "description": "Record data inserted on Operator",
+      "enable": true,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "ARCHIVE": {
+      "question": "Archive Files",
+      "description": "Archive data coming in",
+      "enable": true,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "COMPRESS_FILE": {
+      "question": "Compress Files",
+      "description": "Compress JSON and SQL file(s) backup",
+      "enable": true,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "OPERATOR_THREADS": {
+      "question": "Operator Threads",
+      "description": "How many threads to use in the operator process\n",
+      "enable": true,
+      "default": 1,
+      "value": ""
+    }
+  },
+  "publisher": {
+    "DBMS_FILE_LOCATION": {
+      "question": "DB File Location",
+      "description": "Location of logical database name within file name",
+      "enable": true,
+      "default": 0,
+      "value": ""
+    },
+    "TABLE_FILE_LOCATION": {
+      "question": "Table File Location",
+      "description": "Location of table name within file name",
+      "enable": true,
+      "default": 0,
+      "value": ""
+    },
+    "COMPRESS_FILE": {
+      "question": "Compress Files",
+      "description": "Compress JSON and SQL file(s) backup",
+      "enable": true,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    }
+  },
+  "authentication": {
+    "AUTHENTICATION": {
+      "question": "Enable Authentication",
+      "description": "Whether or not to enable authentication",
+      "enable": false,
+      "default": "false",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "AUTH_USER": {
+      "question": "Username",
+      "description": "authentication user",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "AUTH_PASSWD": {
+      "question": "Password",
+      "description": "authentication password correlated with user",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "AUTH_TYPE": {
+      "question": "Type",
+      "description": "authentication administration type",
+      "enable": false,
+      "default": "admin",
+      "options": [
+        "admin",
+        "user"
+      ],
+      "value": ""
+    }
+  },
+  "mqtt": {
+    "ENABLE_MQTT": {
+      "question": "Enable MQTT",
+      "description": "Whether or not to enable the default MQTT process",
+      "enable": true,
+      "default": "false",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "MQTT_LOG": {
+      "question": "Enable MQTT Logging",
+      "description": "Whether or not to enable MQTT logging process",
+      "enable": true,
+      "default": "false",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "MQTT_BROKER": {
+      "question": "Broker",
+      "description": "IP address of MQTT broker",
+      "enable": true,
+      "default": "driver.cloudmqtt.com",
+      "value": ""
+    },
+    "MQTT_PORT": {
+      "question": "Port",
+      "description": "Port associated with MQTT broker",
+      "enable": true,
+      "default": 18785,
+      "value": ""
+    },
+    "MQTT_USER": {
+      "question": "MQTT User",
+      "description": "User associated with MQTT broker",
+      "enable": true,
+      "default": "ibglowct",
+      "value": ""
+    },
+    "MQTT_PASSWD": {
+      "question": "MQTT Password",
+      "description": "Password associated with MQTT user",
+      "enable": true,
+      "default": "MSY4e009J7ts",
+      "value": ""
+    },
+    "MQTT_TOPIC": {
+      "question": "Topic",
+      "description": "Topic to get data for",
+      "enable": true,
+      "default": "anylogedgex",
+      "value": ""
+    },
+    "MQTT_DBMS": {
+      "question": "Database Name",
+      "description": "Logical database name",
+      "enable": true,
+      "default": "test",
+      "value": ""
+    },
+    "MQTT_TABLE": {
+      "question": "Table Name",
+      "description": "Table where to store data",
+      "enable": true,
+      "default": "rand_data",
+      "value": ""
+    },
+    "MQTT_TIMESTAMP_COLUMN": {
+      "question": "Timestamp Column",
+      "description": "Timestamp column name",
+      "enable": true,
+      "default": "now",
+      "value": ""
+    },
+    "MQTT_VALUE_COLUMN": {
+      "question": "Value Column",
+      "description": "Value column name",
+      "enable": true,
+      "default": "bring [readings][][value]",
+      "value": ""
+    },
+    "MQTT_VALUE_COLUMN_TYPE": {
+      "question": "Value type",
+      "description": "Column value type",
+      "enable": true,
+      "default": "float",
+      "options": ["str", "int", "float", "timestamp", "bool"],
+      "value": ""
+    }
+
+  },
+  "advanced settings": {
+    "DEPLOY_LOCAL_SCRIPT": {
+      "question": "Enable Local Script",
+      "description": "Whether or not to automatically run a local (or personalized) script at the end of the process",
+      "enable": true,
+      "default": "false",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "TCP_THREAD_POOL": {
+      "question": "TCP Thread Count",
+      "description": "Number of TCP threads",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_TIMEOUT": {
+      "question": "REST Timeout",
+      "description": "How long to wait until REST timeout",
+      "enable": false,
+      "default": 30,
+      "value": ""
+    },
+    "REST_THREADS": {
+      "question": "REST Threads",
+      "description": "Number of REST threads",
+      "enable": false,
+      "default": 5,
+      "value": ""
+    },
+    "QUERY_POOL": {
+      "question": "Query Pool",
+      "description": "Number of parallel queries",
+      "enable": false,
+      "default": 3,
+      "value": ""
+    },
+    "WRITE_IMMEDIATE": {
+      "question": "Write Data Immediate",
+      "description": "When data comes in write to database immidiately, as opposed to waiting for a full buffer",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "THRESHOLD_TIME": {
+      "question": "Threshold Time",
+      "description": "If buffer is not full, how long to wait until pushing data through",
+      "enable": true,
+      "default": "60 seconds",
+      "options": [
+        "second",
+        "minute",
+        "hour",
+        "day"
+      ],
+      "value": ""
+    },
+    "THRESHOLD_VOLUME": {
+      "question": "Threshold Volume",
+      "description": "Buffer size to reach, at which point data is pushed through",
+      "enable": true,
+      "default": "10KB",
+      "options": ["KB", "MB", "GB"],
+      "value": ""
+    }
+  }
+}

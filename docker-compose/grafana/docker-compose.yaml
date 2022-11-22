@@ -5,6 +5,7 @@ services:
     env_file:
       - grafana.env
     container_name: grafana
+    restart: always
     stdin_open: true
     tty: true
     ports:

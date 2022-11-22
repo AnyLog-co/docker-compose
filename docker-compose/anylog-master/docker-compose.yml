@@ -1,13 +1,14 @@
 version: "2.2"
 services:
   anylog-master-node:
-    image: anylogco/anylog-network:develop
+    image: anylogco/anylog-network:${BUILD}
+    restart: always
     env_file:
-      - anylog_configs.env
-    container_name: anylog-master-node
+      - ${ENV_FILE}
+    container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
-    network_mode: "host" 
+    network_mode: "${NETWORK}"
     volumes:
       - anylog-master-node-anylog:/app/AnyLog-Network/anylog
       - anylog-master-node-blockchain:/app/AnyLog-Network/blockchain
