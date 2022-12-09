@@ -31,14 +31,12 @@ data:
   PASSWORD: '{{ .Values.configs.authentication.password }}'
 
   # blockchain
-  {{- if .Values.configs.blockchain }}
   LEDGER_CONN: '{{ .Values.configs.blockchain.ledger_conn }}'
   SYNC_TIME: '{{ .Values.configs.blockchain.sync_time }}'
   SOURCE: '{{ .Values.configs.blockchain.source }}'
   DESTINATION: '{{ .Values.configs.blockchain.destination }}'
-  {{ end }}
+
   # database
-  {{- if .Values.configs.database }}
   DB_TYPE: '{{ .Values.configs.database.type }}'
   DB_IP: '{{ .Values.configs.database.ip }}'
   DB_PORT: '{{ .Values.configs.database.port }}'
@@ -46,7 +44,7 @@ data:
   DB_PASSWD: '{{ .Values.configs.database.password }}'
   DEPLOY_SYSTEM_QUERY: '{{ .Values.configs.database.deploy_system_query }}'
   MEMORY: '{{ .Values.configs.database.memory }}'
-  {{ end }}
+
   # operator params
   {{- if .Values.configs.operator }}
   MEMBER: '{{ .Values.configs.operator.memory }}'
@@ -62,7 +60,6 @@ data:
   PARTITION_COLUMN: '{{ .Values.configs.operator.partition.column }}'
   PARTITION_INTERVAL: '{{ .Values.configs.operator.partition.interval }}'
   PARTITION_KEEP: '{{ .Values.configs.operator.partition.keep }}'
-  PARTITION_SYNC: '{{ .Values.configs.operator.partition.sync }}'
   {{ end }}
 
   # publisher params
@@ -98,3 +95,4 @@ data:
   WRITE_IMMEDIATE: '{{ .Values.configs.settings.write_immediate }}'
   THRESHOLD_TIME: '{{ .Values.configs.settings.threshold_time }}'
   THRESHOLD_VOLUME: '{{ .Values.configs.settings.threshold_volume }}'
+
