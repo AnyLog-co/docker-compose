@@ -3,7 +3,7 @@ import os
 
 import support
 import questionnaire
-import write_file
+import write_docker_file 
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 DEFAULT_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'configurations.json')
@@ -98,8 +98,8 @@ def main():
             print('\n')
 
         if args.deployment_type == 'docker':
-            write_file.write_docker_configs(node_type=args.node_type, configs=configs)
-            write_file.update_build_version(node_type=args.node_type,
+            write_docker_file.write_docker_configs(node_type=args.node_type, configs=configs)
+            write_docker_file.update_build_version(node_type=args.node_type,
                                             container_name=configs['general']['NODE_NAME']['value'],
                                             build=args.build)
 
