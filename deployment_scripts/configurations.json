@@ -158,7 +158,7 @@
     },
     "AUTOCOMMIT": {
       "question": "Enable Autocommit",
-      "description": "Whether or not autocommit data",
+      "description": "Whether to set autocommit data",
       "enable": true,
       "default": "false",
       "options": [
@@ -169,7 +169,7 @@
     },
     "SYSTEM_QUERY": {
       "question": "Enable System Query Database",
-      "description": "Whether or not to start to start system_query logical database",
+      "description": "Whether to start to start system_query logical database",
       "enable": true,
       "default": "false",
       "options": [
@@ -191,7 +191,7 @@
     },
     "NOSQL_ENABLE": {
       "question": "Enable NoSQL Database",
-      "description": "Whether or not to enable NoSQL logical database",
+      "description": "Whether to enable NoSQL logical database",
       "enable": true,
       "default": "false",
       "options": [
@@ -264,7 +264,7 @@
     },
     "NOSQL_BLOBS_REUSE": {
       "question": "Reuse Blobs",
-      "description": "Whether or not (re)store a blob if already exists",
+      "description": "Whether (re)store a blob if already exists",
       "enable": true,
       "default": "true",
       "options": ["true", "false"],
@@ -357,7 +357,7 @@
     },
     "ENABLE_PARTITIONS": {
       "question": "Enable Partitions",
-      "description": "Whether or not to enable partitioning",
+      "description": "Whether to enable partitioning",
       "enable": true,
       "default": "false",
       "options": [
@@ -412,7 +412,7 @@
     },
     "CREATE_TABLE": {
       "question": "Create Table",
-      "description": "Whether or not to create a new table in the operator",
+      "description": "Whether to create a new table in the operator",
       "enable": false,
       "default": "true",
       "options": [
@@ -492,7 +492,7 @@
   "authentication": {
     "AUTHENTICATION": {
       "question": "Enable Authentication",
-      "description": "Whether or not to enable authentication",
+      "description": "Whether to enable authentication",
       "enable": false,
       "default": "false",
       "options": [
@@ -530,7 +530,7 @@
   "mqtt": {
     "ENABLE_MQTT": {
       "question": "Enable MQTT",
-      "description": "Whether or not to enable the default MQTT process",
+      "description": "Whether to enable the default MQTT process",
       "enable": true,
       "default": "false",
       "options": [
@@ -541,7 +541,7 @@
     },
     "MQTT_LOG": {
       "question": "Enable MQTT Logging",
-      "description": "Whether or not to enable MQTT logging process",
+      "description": "Whether to enable MQTT logging process",
       "enable": true,
       "default": "false",
       "options": [
@@ -626,7 +626,7 @@
   "advanced settings": {
     "DEPLOY_LOCAL_SCRIPT": {
       "question": "Enable Local Script",
-      "description": "Whether or not to automatically run a local (or personalized) script at the end of the process",
+      "description": "Whether to automatically run a local (or personalized) script at the end of the process",
       "enable": true,
       "default": "false",
       "options": ["true", "false"],
