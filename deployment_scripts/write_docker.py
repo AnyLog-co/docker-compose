@@ -1,4 +1,4 @@
-import dotenv
+# import dotenv
 import os
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
@@ -69,7 +69,45 @@ def __read_env_file(env_file:str)->dict:
     return configs
 
 
-def write_docker_configs(node_type:str, configs:dict):
+def configure_dir(node_type:str)->(bool, str):
+    """
+    Configure directory & create backup of configs if exists)
+    :process:
+        1. create directory path
+        2. if directory DNE create it
+           if directory exists copy anylog_configs (if exists) to bkup
+        3. create anylog_configs
+    :args:
+        node_type:str - AnyLog node type
+    :params:
+        status:bool
+        dir_path:str - docker directory path where configs are stored
+        anylog_configs:str - configurations file (full path)
+    :return:
+        status, anylog_configs
+    """
+    status = True
+    if node_type != 'query':
+        dir_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    else:
+        dir_path = os.path.join(ROOT_PATH, 'docker-compose', '%s-remote-cli' % node_type.lower())
+    anylog_configs = os.path.join(dir_path, 'anylog_config.env')
+
+    if not os.path.isdir(dir_path):
+        os.makedirs(dir_path)
+    elif os.path.isfile(anylog_configs):
+        try:
+            os.rename(anylog_configs, anylog_configs.replace('.env', '.env.old'))
+        except Exception as error:
+            status = False
+            print(f'Failed to copy {anylog_configs} into a backup file (Error: {error})')
+        else:
+            status = __create_file(file_name=anylog_configs)
+
+    return status, anylog_configs
+
+
+def write_configs(configs:dict, anylog_configs:str):
     """
     "main" process for writing content into docker file
     :args:
@@ -80,50 +118,30 @@ def write_docker_configs(node_type:str, configs:dict):
         docker_path:str - full path for docker-compose package
         line:str - content to store in file
     """
-    status = False
-    if node_type != 'query':
-        docker_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
-    else:
-        docker_path = os.path.join(ROOT_PATH, 'docker-compose', '%s-remote-cli' % node_type.lower())
-    anylog_configs = os.path.join(docker_path, 'anylog_configs.env')
-
-    # move exiting configs to backup + create new config file
-    if os.path.isdir(docker_path):
-        try:
-            os.rename(anylog_configs, anylog_configs.replace('.env', '.env.old'))
-        except Exception as error:
-            status = False
-            print(f'Failed to move to move original configuration file into backup (Error: {error})')
-
-    if not os.path.isfile(anylog_configs):
-        status = __create_file(file_name=anylog_configs)
-
-    # write configs to file
-    if status is True:
-        for section in configs:
-            __write_line(file_name=anylog_configs, input_line=f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---')
-            for param in configs[section]:
-                comment = configs[section][param]['description'].replace('\n', '')
-                if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
-                    value = str(configs[section][param]['value']).replace('\n', '')
-                    if value == '':
-                        line = f'{param}=<{section.upper()}_{param.upper()}>'
-                    else:
-                        line = f"{param}={value}"
-                elif configs[section][param]['value'] != '':
-                    value = str(configs[section][param]['value']).replace('\n', '')
-                    line = f"{param}={value}"
-                elif configs[section][param]['default'] != '':
-                    value = str(configs[section][param]['default']).replace('\n', '')
-                    line = f"{param}={value}"
+    for section in configs:
+        __write_line(file_name=anylog_configs, input_line=f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---')
+        for param in configs[section]:
+            comment = configs[section][param]['description'].replace('\n', '')
+            if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                value = str(configs[section][param]['value']).replace('\n', '')
+                if value == '':
+                    line = f'{param}=<{section.upper()}_{param.upper()}>'
                 else:
-                    line = f"{param}=<{section.upper()}_{param.upper()}>"
+                    line = f"{param}={value}"
+            elif configs[section][param]['value'] != '':
+                value = str(configs[section][param]['value']).replace('\n', '')
+                line = f"{param}={value}"
+            elif configs[section][param]['default'] != '':
+                value = str(configs[section][param]['default']).replace('\n', '')
+                line = f"{param}={value}"
+            else:
+                line = f"{param}=<{section.upper()}_{param.upper()}>"
 
-                if line == f"{param}=<{section.upper()}_{param.upper()}>" or configs[section][param]['enable'] is False and param != 'NODE_TYPE':
-                    line = f"#{line}"
-                line = f"# {comment}\n{line}"
-                __write_line(file_name=anylog_configs, input_line=f"\n{line}")
-            __write_line(file_name=anylog_configs, input_line="\n\n")
+            if line == f"{param}=<{section.upper()}_{param.upper()}>" or configs[section][param]['enable'] is False and param != 'NODE_TYPE':
+                line = f"#{line}"
+            line = f"# {comment}\n{line}"
+            __write_line(file_name=anylog_configs, input_line=f"\n{line}")
+        __write_line(file_name=anylog_configs, input_line="\n\n")
 
 
 def update_build_version(node_type:str, container_name:str, build:str):
