@@ -9,13 +9,11 @@ metadata:
 	#nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
 	#nodeSelector: ""
 	replicas: 1
-
 image: 
 	secretName: imagepullsecret
 	repository: anylogco/anylog-network
 	tag: test
 	pullPolicy: IfNotPresent
-
 general:
 	# Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
 	NODE_TYPE: rest
