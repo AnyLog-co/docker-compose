@@ -72,6 +72,15 @@ def configure_dir(node_type:str)->(str, str):
 
 
 def write_configs(build:str, configs:dict, anylog_configs:str):
+    """
+    Write configruations for kubernetes (YAML) files
+    :args:
+        build:str - AnyLog build/tag
+        configs:dict - user defined configurations
+        anylog_configs:str - file path to store AnyLog configs
+    :params:
+        content:str - content to store in config file
+    """
     content = ""
     node_name = 'anylog'
 
@@ -81,6 +90,8 @@ def write_configs(build:str, configs:dict, anylog_configs:str):
             content += f"\n\t# {configs[config][param]['description']}"
             if configs[config][param]['value'] == '':
                 if configs[config][param]["default"] == '':
+                    content += f'\n\t{param}: ""'
+                elif param == 'LOCATION' or param in ['COUNTRY', 'STATE', 'CITY']:
                     content += f'\n\t{param}: ""'
                 else:
                     content += f'\n\t{param}: {configs[config][param]["default"]}'
