@@ -85,7 +85,7 @@ def write_configs(build:str, configs:dict, anylog_configs:str):
     node_name = 'anylog'
 
     for config in configs:
-        content += f"\n{config}:"
+        content += f"\n{config.replace(' ', '_')}:"
         for param in configs[config]:
             content += f"\n\t# {configs[config][param]['description']}"
             if configs[config][param]['value'] == '':

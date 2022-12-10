@@ -75,7 +75,7 @@
       "default": "",
       "value": ""
     },
-    "K8S_PROXY_IP": {
+    "PROXY_IP": {
       "question": "Proxy IP",
       "description": "Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP",
       "enable": true,
@@ -477,7 +477,7 @@
       "default": 0,
       "value": ""
     },
-    "COMPRESS_FILE": {
+    "PUBLISHER_COMPRESS_FILE": {
       "question": "Compress Files",
       "description": "Compress JSON and SQL file(s) backup",
       "enable": true,

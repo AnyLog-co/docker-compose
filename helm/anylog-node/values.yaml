@@ -38,7 +38,7 @@ networking:
 	# Local or  internal network IP address of the machine
 	LOCAL_IP: ""
 	# Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
-	K8S_PROXY_IP: ""
+	PROXY_IP: ""
 	# Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
 	ANYLOG_SERVER_PORT: 32048
 	# Port address used by AnyLog's REST protocol
@@ -126,7 +126,6 @@ operator:
 	# Compress JSON and SQL file(s) backup
 	COMPRESS_FILE: true
 	# How many threads to use in the operator process
-
 	OPERATOR_THREADS: 1
 
 publisher:
