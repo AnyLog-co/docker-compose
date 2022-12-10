@@ -1,5 +1,5 @@
 import os
-from write_docker import __create_file
+from write_docker import __create_file, __write_line
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
 
@@ -42,9 +42,12 @@ def configure_dir(node_type:str)->(str, str):
 def write_configs(build:str, configs:dict, anylog_configs:str):
     content = ""
     for config in configs:
-        content += f"\n{config}:"
+        if config == list(configs)[0]:
+            content += f"{config}:"
+        else:
+            content += f"\n{config}:"
         if config == 'general':
-            content += '# AnyLog build version'
+            content += '\n\t# AnyLog build version'
             content += f'\n\tbuild: {build}'
         for param in configs[config]:
             content += f"\n\t# {configs[config][param]['description']}"
@@ -56,4 +59,4 @@ def write_configs(build:str, configs:dict, anylog_configs:str):
             else:
                 content += f'\n\t{param}: {configs[config][param]["value"]}'
         content += "\n"
-    print(content)
+    __write_line(file_name=anylog_configs,  input_line=content)
