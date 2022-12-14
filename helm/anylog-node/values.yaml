@@ -24,13 +24,13 @@ general:
   # Owner of the AnyLog instance
   COMPANY_NAME: New Company
   # Coordinates of the machine - used by Grafana to map the network
-  LOCATION: 0.0, 0.0
+  LOCATION: ""
   # Country where machine is located
-  COUNTRY: Unknown
+  COUNTRY: ""
   # State where machine is located
-  STATE: Unknown
+  STATE: ""
   # City where machine is located
-  CITY: Unknown
+  CITY: ""
 
 networking:
   # External IP address of the machine
@@ -108,7 +108,7 @@ operator:
   # Whether to enable partitioning
   ENABLE_PARTITIONS: false
   # Which tables to partition
-  TABLE_NAME: *
+  TABLE_NAME: '*'
   # Which timestamp column to partition by
   PARTITION_COLUMN: insert_timestamp
   # Time period to partition by
@@ -172,7 +172,7 @@ mqtt:
   # Column value type
   MQTT_VALUE_COLUMN_TYPE: float
 
-advanced settings:
+advanced_settings:
   # Whether to automatically run a local (or personalized) script at the end of the process
   DEPLOY_LOCAL_SCRIPT: false
   # Number of TCP threads

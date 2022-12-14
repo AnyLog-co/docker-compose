@@ -14,27 +14,43 @@ data:
   # Owner of the AnyLog instance
   COMPANY_NAME: '{{ .Values.general.COMPANY_NAME }}'
   # Coordinates of the machine - used by Grafana to map the network
+  {{ if ne .Values.general.LOCATION "" }} 
   LOCATION: '{{ .Values.general.LOCATION }}'
+  {{ end }}
   # Country where machine is located
+  {{ if ne .Values.general.COUNTRY "" }}
   COUNTRY: '{{ .Values.general.COUNTRY }}'
+  {{ end }} 
   # State where machine is located
+  {{ if ne .Values.general.STATE "" }}
   STATE: '{{ .Values.general.STATE }}'
+  {{ end }} 
   # City where machine is located
+  {{ if ne .Values.general.CITY "" }}
   CITY: '{{ .Values.general.CITY }}'
+  {{ end }} 
 
   # -- Networking --
   # External IP address of the machine
+  {{ if ne .Values.networking.EXTERNAL_IP "" }}
   EXTERNAL_IP: '{{ .Values.networking.EXTERNAL_IP }}'
+  {{ end }} 
   # Local or  internal network IP address of the machine
+  {{ if ne .Values.networking.LOCAL_IP "" }}
   LOCAL_IP: '{{ .Values.networking.LOCAL_IP }}'
+  {{ end }} 
   # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
+  {{ if ne .Values.networking.PROXY_IP "" }}
   PROXY_IP: '{{ .Values.networking.PROXY_IP }}'
+  {{ end }} 
   # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
-  ANYLOG_SERVER_PORT: {{ .Values.networking.ANYLOG_SERVER_PORT }}
+  ANYLOG_SERVER_PORT: '{{ .Values.networking.ANYLOG_SERVER_PORT }}'
   # Port address used by AnyLog's REST protocol
-  ANYLOG_REST_PORT: {{ .Values.networking.ANYLOG_REST_PORT }}
+  ANYLOG_REST_PORT: '{{ .Values.networking.ANYLOG_REST_PORT }}'
   # Port value to be used as an MQTT borker, or some other third-party broker
-  ANYLOG_BROKER_PORT: {{ .Values.networking.ANYLOG_BROKER_PORT }}
+  {{ if ne .Values.networking.ANYLOG_BROKER_PORT "" }} 
+  ANYLOG_BROKER_PORT: '{{ .Values.networking.ANYLOG_BROKER_PORT }}'
+  {{ end }} 
 
   # -- Database --
   # --> SQL
@@ -47,7 +63,7 @@ data:
   # Database IP address
   DB_IP: '{{ .Values.database.DB_IP }}'
   # Database port number
-  DB_PORT: {{ .Values.database.DB_PORT }}
+  DB_PORT: '{{ .Values.database.DB_PORT }}'
   # Whether to set autocommit data
   AUTOCOMMIT: '{{ .Values.database.AUTOCOMMIT }}'
   # Whether to start to start system_query logical database
@@ -66,7 +82,7 @@ data:
   # Database IP address
   NOSQL_IP: '{{ .Values.database.NOSQL_IP }}'
   # Database port number
-  NOSQL_PORT: {{ .Values.database.NOSQL_PORT }}
+  NOSQL_PORT: '{{ .Values.database.NOSQL_PORT }}'
   # Store blobs in database
   NOSQL_BLOBS_DMBS: '{{ .Values.database.NOSQL_BLOBS_DMBS }}'
   # Store blobs in folder
@@ -131,58 +147,46 @@ data:
 
   #-- MQTT --
   # Whether to enable the default MQTT process
-  ENABLE_MQTT: '{{ .VALUES.mqtt.ENABLE_MQTT }}'
+  ENABLE_MQTT: '{{ .Values.mqtt.ENABLE_MQTT }}'
   # Whether to enable MQTT logging process
-  MQTT_LOG: '{{ .VALUES.mqtt.MQTT_LOG }}'
+  MQTT_LOG: '{{ .Values.mqtt.MQTT_LOG }}'
   # IP address of MQTT broker
-  MQTT_BROKER: '{{ .VALUES.mqtt.MQTT_BROKER }}'
+  MQTT_BROKER: '{{ .Values.mqtt.MQTT_BROKER }}'
   # Port associated with MQTT broker
-  MQTT_PORT: {{ .VALUES.mqtt.MQTT_PORT }}
+  MQTT_PORT: '{{ .Values.mqtt.MQTT_PORT }}'
   # User associated with MQTT broker
-  MQTT_USER: '{{ .VALUES.mqtt.MQTT_USER }}'
+  MQTT_USER: '{{ .Values.mqtt.MQTT_USER }}'
   # Password associated with MQTT user
-  MQTT_PASSWD: '{{ .VALUES.mqtt.MQTT_PASSWD }}'
+  MQTT_PASSWD: '{{ .Values.mqtt.MQTT_PASSWD }}'
   # Topic to get data for
-  MQTT_TOPIC: '{{ .VALUES.mqtt.MQTT_TOPIC }}'
+  MQTT_TOPIC: '{{ .Values.mqtt.MQTT_TOPIC }}'
   # Logical database name
-  MQTT_DBMS: '{{ .VALUES.mqtt.MQTT_DBMS }}'
+  MQTT_DBMS: '{{ .Values.mqtt.MQTT_DBMS }}'
   # Table where to store data
-  MQTT_TABLE: '{{ .VALUES.mqtt.MQTT_TABLE }}'
+  MQTT_TABLE: '{{ .Values.mqtt.MQTT_TABLE }}'
   # Timestamp column name
-  MQTT_TIMESTAMP_COLUMN: '{{ .VALUES.mqtt.MQTT_TIMESTAMP_COLUMN }}'
+  MQTT_TIMESTAMP_COLUMN: '{{ .Values.mqtt.MQTT_TIMESTAMP_COLUMN }}'
   # Value column name
-  MQTT_VALUE_COLUMN: '{{ .VALUES.mqtt.MQTT_VALUE_COLUMN }}'
+  MQTT_VALUE_COLUMN: '{{ .Values.mqtt.MQTT_VALUE_COLUMN }}'
   # Column value type
-  MQTT_VALUE_COLUMN_TYPE: '{{ .VALUES.mqtt.MQTT_VALUE_COLUMN_TYPE }}'
+  MQTT_VALUE_COLUMN_TYPE: '{{ .Values.mqtt.MQTT_VALUE_COLUMN_TYPE }}'
 
   #-- Advanced Settings --
   # Whether to automatically run a local (or personalized) script at the end of the process
   DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
   # Number of TCP threads
-  TCP_THREAD_POOL: {{ .Values.advanced_settings.TCP_THREAD_POOL }}
+  TCP_THREAD_POOL: '{{ .Values.advanced_settings.TCP_THREAD_POOL }}'
   # How long to wait until REST timeout
-  REST_TIMEOUT: {{ .Values.advanced_settings.REST_TIMEOUT }}
+  REST_TIMEOUT: '{{ .Values.advanced_settings.REST_TIMEOUT }}'
   # Number of REST threads
-  REST_THREADS: {{ .Values.advanced_settings.REST_THREADS }}
+  REST_THREADS: '{{ .Values.advanced_settings.REST_THREADS }}'
   # Number of parallel queries
-  QUERY_POOL: {{ .Values.advanced_settings.QUERY_POOL }}
+  QUERY_POOL: '{{ .Values.advanced_settings.QUERY_POOL }}'
   # When data comes in write to database immidiately, as opposed to waiting for a full buffer
   WRITE_IMMEDIATE: '{{ .Values.advanced_settings.WRITE_IMMEDIATE }}'
   # If buffer is not full, how long to wait until pushing data through
   THRESHOLD_TIME: '{{ .Values.advanced_settings.THRESHOLD_TIME }}'
   # Buffer size to reach, at which point data is pushed through
   THRESHOLD_VOLUME: '{{ .Values.advanced_settings.THRESHOLD_VOLUME }}'
-
-
-
-
-
-
-
-
-
-
-
-
 
 
