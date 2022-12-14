@@ -15,12 +15,12 @@ def __metadata_configs(build:str, node_name:str)->str:
     """
     content="metadata: "
     content += "\n\tnamespace: default"
-    content += f"\n\thostname: {node_name}"
-    content += f"\n\tapp_name: {node_name}-app"
-    content += f"\n\tpod_name: {node_name}-pod"
-    content += f"\n\tdeployment_name: {node_name}-deployment"
-    content += f"\n\tservice_name: {node_name}-svs"
-    content += f"\n\tconfigmap_name: {node_name}-configs"
+    content += f"\n  hostname: {node_name}"
+    content += f"\n  app_name: {node_name}-app"
+    content += f"\n  pod_name: {node_name}-pod"
+    content += f"\n  deployment_name: {node_name}-deployment"
+    content += f"\n  service_name: {node_name}-svs"
+    content += f"\n  configmap_name: {node_name}-configs"
     content += "\n\t#nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it"
     content += '\n\t#nodeSelector: ""'
     content += "\n\treplicas: 1"
@@ -28,7 +28,7 @@ def __metadata_configs(build:str, node_name:str)->str:
     content += "\nimage: "
     content += "\n\tsecretName: imagepullsecret"
     content += "\n\trepository: anylogco/anylog-network"
-    content += f"\n\ttag: {build}"
+    content += f"\n  tag: {build}"
     content += "\n\tpullPolicy: IfNotPresent"
     content += "\n"
 
@@ -87,18 +87,18 @@ def write_configs(build:str, configs:dict, anylog_configs:str):
     for config in configs:
         content += f"\n{config.replace(' ', '_')}:"
         for param in configs[config]:
-            content += f"\n\t# {configs[config][param]['description']}"
+            content += f"\n  # {configs[config][param]['description']}"
             if configs[config][param]['value'] == '':
                 if configs[config][param]["default"] == '':
-                    content += f'\n\t{param}: ""'
+                    content += f'\n  {param}: ""'
                 elif param == 'LOCATION' or param in ['COUNTRY', 'STATE', 'CITY']:
-                    content += f'\n\t{param}: ""'
+                    content += f'\n  {param}: ""'
                 else:
-                    content += f'\n\t{param}: {configs[config][param]["default"]}'
+                    content += f'\n  {param}: {configs[config][param]["default"]}'
                     if param == 'NODE_NAME':
                         node_name = configs[config][param]['default']
             else:
-                content += f'\n\t{param}: {configs[config][param]["value"]}'
+                content += f'\n  {param}: {configs[config][param]["value"]}'
                 if param == 'NODE_NAME':
                     node_name = configs[config][param]['default']
         content += "\n"
