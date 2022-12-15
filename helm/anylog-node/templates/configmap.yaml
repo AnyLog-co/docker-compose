@@ -48,7 +48,7 @@ data:
   # Port address used by AnyLog's REST protocol
   ANYLOG_REST_PORT: '{{ .Values.networking.ANYLOG_REST_PORT }}'
   # Port value to be used as an MQTT borker, or some other third-party broker
-  {{ if ne .Values.networking.ANYLOG_BROKER_PORT "" }} 
+  {{- if  .Values.networking.ANYLOG_BROKER_PORT }} 
   ANYLOG_BROKER_PORT: '{{ .Values.networking.ANYLOG_BROKER_PORT }}'
   {{ end }} 
 

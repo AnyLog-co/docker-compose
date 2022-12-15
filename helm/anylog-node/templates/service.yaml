@@ -19,7 +19,7 @@ spec:
     port: {{ .Values.networking.ANYLOG_REST_PORT }}
     targetPort: {{ .Values.networking.ANYLOG_REST_PORT }}
     nodePort: {{ .Values.networking.ANYLOG_REST_PORT }}
-  {{- if ne .Values.networking.ANYLOG_BROKER_PORT "" }}
+  {{- if .Values.networking.ANYLOG_BROKER_PORT }}
   - name: broker
     protocol: TCP
     port: {{ .Values.networking.ANYLOG_BROKER_PORT }}
