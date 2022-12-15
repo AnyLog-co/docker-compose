@@ -27,4 +27,4 @@ spec:
     nodePort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
   {{ end }} 
   selector:
-    app: '{{ .Values.general.deployment_name }}'
+    app: '{{ .Values.metadata.deployment_name }}'
