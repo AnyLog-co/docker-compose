@@ -49,7 +49,7 @@ spec:
           - name: '{{ .Values.volume.blockchain_volume.name }}'
             mountPath: {{ .Values.volume.blockchain_volume.path }}
           - name: '{{ .Values.volume.data_volume.name }}'
-            mountPath: { { .Values.volume.data_volume.path } }
+            mountPath: {{ .Values.volume.data_volume.path }}
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
