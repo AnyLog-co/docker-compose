@@ -44,3 +44,4 @@ spec:
         - name: '{{ .Values.volume.blobs_volume.name }}'
           persistentVolumeClaim:
             claimName: '{{ .Values.volume.blobs_volume.name }}-pvc'
+      {{ end }}
