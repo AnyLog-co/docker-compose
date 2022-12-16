@@ -32,17 +32,17 @@ spec:
 
         {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
-          - name: '{{ .Values.volume.json_volume.name }}'
-            mountPath: '{{ .Values.volume.json_volume.path }}'
-#          - name: '{{ .Values.volume.blobs_volume.name }}'
-#            mountPath: '{{ .Values.volume.blobs_volume.path }}'
+#          - name: '{{ .Values.volume.json_volume.name }}'
+#            mountPath: '{{ .Values.volume.json_volume.path }}'
+          - name: '{{ .Values.volume.blobs_volume.name }}'
+            mountPath: '{{ .Values.volume.blobs_volume.path }}'
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
-        - name: '{{ .Values.volume.json_volume.name }}'
-          persistentVolumeClaim:
-            claimName: '{{ .Values.volume.json_volume.name }}-pvc'
-#        - name: '{{ .Values.volume.blobs_volume.name }}'
+#        - name: '{{ .Values.volume.json_volume.name }}'
 #          persistentVolumeClaim:
-#            claimName: '{{ .Values.volume.blobs_volume.name }}-pvc'
+#            claimName: '{{ .Values.volume.json_volume.name }}-pvc'
+        - name: '{{ .Values.volume.blobs_volume.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.blobs_volume.name }}-pvc'
       {{ end }}
