@@ -17,14 +17,17 @@ image:
   pullPolicy: IfNotPresent
 
 volume:
-  anylog:
-    name: rest-anylog-volume
+  enable_volume: true
+  anylog_volume:
+    name: anylog-node-anylog
     path: /app/AnyLog-Network/anylog
-  blockchain:
-    name: rest-blockchain-volume
+
+  blockchain_volume:
+    name: anylog-node-blockchain
     path: /app/AnyLog-Network/blockchain
-  data:
-    name: rest-data-volume
+
+  data_volume:
+    name: anylog-node-data
     path: /app/AnyLog-Network/data
 
 general:
