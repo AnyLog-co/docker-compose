@@ -38,7 +38,7 @@ networking:
   # Local or  internal network IP address of the machine
   LOCAL_IP: ""
   # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
-  PROXY_IP: 10.0.0.218
+  PROXY_IP: ""
   # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
   ANYLOG_SERVER_PORT: 32048
   # Port address used by AnyLog's REST protocol
