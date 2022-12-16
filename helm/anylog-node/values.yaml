@@ -16,6 +16,17 @@ image:
   tag: test
   pullPolicy: IfNotPresent
 
+volume:
+  anylog:
+    name: rest-anylog-volume
+    path: /app/AnyLog-Network/anylog
+  blockchain:
+    name: rest-blockchain-volume
+    path: /app/AnyLog-Network/blockchain
+  data:
+    name: rest-data-volume
+    path: /app/AnyLog-Network/data
+
 general:
   # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
   NODE_TYPE: rest

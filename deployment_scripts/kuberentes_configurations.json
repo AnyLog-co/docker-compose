@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "namespace": {
+      "question": "Namespace",
+      "description": "Kubernetes Instance namespace",
+      "enable": true,
+      "default": "default",
+      "value": ""
+    },
+    "hostname": {
+      "question": "Kubernetes pod hostname",
+      "description": "hostname for deployment",
+      "enable": false,
+      "default": "anylog-node",
+      "value": ""
+    },
+    "app_name": {
+      "question": "App Name",
+      "description": "deployment application name",
+      "enable": false,
+      "default": "anylog-node-app",
+      "value": ""
+    },
+    "pod_name": {
+      "question": "Pod Name",
+      "description": "Pod application name",
+      ""
+
+    }
+  }
+}

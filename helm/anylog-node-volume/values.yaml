@@ -1,0 +1,25 @@
+general:
+  namespace: default
+
+volume:
+  enable_volume: true
+  anylog_volume:
+    name: anylog-node-anylog
+    path: /app/AnyLog-Network/anylog
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+
+  blockchain_volume:
+    name: anylog-node-blockchain
+    path: /app/AnyLog-Network/blockchain
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+
+  data_volume:
+    name: anylog-node-data
+    path: /app/AnyLog-Network/data
+    access_mode: ReadWriteOnce
+    storage_size: 1Gi
+
+
+
