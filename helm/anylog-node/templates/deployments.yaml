@@ -16,9 +16,9 @@ spec:
         app: '{{ .Values.metadata.deployment_name }}'
     spec:
       hostname: {{ .Values.metadata.pod_name }}
-      {{- if .Values.metadata.nodeSelector }}
+      {{- if ne .Values.metadata.node_selector "" }}
       nodeSelector:
-        kubernetes.io/hostname: {{ .Values.metadata.nodeSelector }}
+        kubernetes.io/hostname: {{ .Values.metadata.node_selector }}
       {{ end }}
       {{- if ne .Values.image.secretName "" }}
       imagePullSecrets:

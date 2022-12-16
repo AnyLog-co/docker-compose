@@ -7,7 +7,7 @@ metadata:
   service_name: anylog-node-svs
   configmap_name: anylog-node-configs
   #nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
-  #nodeSelector: ""
+  node_selector: ""
   replicas: 1
 
 image:
