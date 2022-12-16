@@ -65,7 +65,7 @@
     }
   },
   "image": {
-    "secretName": {
+    "secret_name": {
       "question": "Secret Name",
       "description": "Image secret naming",
       "enable": true,
@@ -91,7 +91,7 @@
       "default": "develop",
       "value": ""
     },
-    "pullPolicy": {
+    "pull_policy": {
       "question": "Pull Policy",
       "description": "Image pulling policy",
       "enable": true,

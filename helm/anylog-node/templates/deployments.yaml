@@ -20,14 +20,14 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: {{ .Values.metadata.node_selector }}
       {{ end }}
-      {{- if ne .Values.image.secretName "" }}
+      {{- if ne .Values.image.secret_name "" }}
       imagePullSecrets:
-        - name: {{ .Values.image.secretName }}
+        - name: {{ .Values.image.secret_name }}
       {{ end }}
       containers:
       - name: '{{ .Values.metadata.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pull_policy }}
         envFrom:
         - configMapRef:
             name: '{{ .Values.metadata.configmap_name }}'
