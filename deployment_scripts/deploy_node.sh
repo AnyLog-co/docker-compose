@@ -58,7 +58,7 @@ fi
 
 while [[ ! ${DEPLOY_NODE} == y ]] && [[ ! ${DEPLOY_NODE} == n ]] ;
 do
-  read -p  "Would you like to deploy AnyLog now (y/n)?" DEPLOY_NODE
+  read -p  "Would you like to deploy AnyLog now (y/n)? " DEPLOY_NODE
 done
 
 if [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]]

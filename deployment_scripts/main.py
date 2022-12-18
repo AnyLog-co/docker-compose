@@ -94,8 +94,8 @@ def main():
                 configs[section] = support.prepare_mqtt_params(configs=configs[section],
                                                                db_name=configs['operator']['DEFAULT_DBMS']['value'],
                                                                port=configs['networking']['ANYLOG_BROKER_PORT']['value'],
-                                                               user=configs['authentication']['AUTH_USER']['value'],
-                                                               password=configs['authentication']['AUTH_PASSWD']['value'])
+                                                               user=None, #configs['authentication']['AUTH_USER']['value'],
+                                                               password=None) #configs['authentication']['AUTH_PASSWD']['value'])
 
                 configs[section] = questionnaire.mqtt_questions(configs=configs[section])
             elif section == 'advanced settings':
