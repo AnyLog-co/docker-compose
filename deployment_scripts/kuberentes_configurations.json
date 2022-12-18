@@ -10,56 +10,56 @@
     "hostname": {
       "question": "Kubernetes pod hostname",
       "description": "hostname for deployment",
-      "enable": false,
+      "enable": true,
       "default": "anylog-node",
       "value": ""
     },
     "app_name": {
       "question": "App Name",
       "description": "deployment application name",
-      "enable": false,
+      "enable": true,
       "default": "anylog-node-app",
       "value": ""
     },
     "pod_name": {
       "question": "Pod Name",
       "description": "Pod application name",
-      "enable": false,
+      "enable": true,
       "default": "anylog-node-pod",
       "value": ""
     },
     "deployment_name": {
       "question": "Deployment Name",
       "description": "Kubernetes deployment name",
-      "enable": false,
+      "enable": true,
       "default": "anylog-node-deployment",
       "value": ""
     },
     "service_name": {
       "question": "Service Name",
       "description": "Kubernetes service name",
-      "enable": false,
+      "enable": true,
       "default": "anylog-node-svs",
       "value": ""
     },
     "configmap_name": {
       "question": "Configuration Name",
       "description": "Kubernetes configuration mapping name",
-      "enable": false,
+      "enable": true,
       "default": "anylog-node-configs",
       "value": ""
     },
     "node_selector": {
       "question": "Node Selector",
       "description": "Allows running Kubernetes remotely. If commented out, code will ignore it",
-      "enable": false,
+      "enable": true,
       "default": "",
       "value": ""
     },
     "replicas": {
       "question": "Replicas",
       "description": "Number of Kubernetes replicas",
-      "enable": false,
+      "enable": true,
       "default": 1,
       "value": ""
     }
@@ -75,14 +75,14 @@
     "repository": {
       "question": "Repository",
       "description": "(Docker Hub) Image Path",
-      "enable": false,
+      "enable": true,
       "default": "anylogco/anylog-network",
       "value": ""
     },
     "tag": {
       "question": "Deployment Version",
       "description": "Image version",
-      "enable": false,
+      "enable": true,
       "options": [
         "develop",
         "predevelop",
@@ -106,7 +106,7 @@
   },
   "volume": {
     "enable_volume": {
-      "question": "Enable",
+      "question": "Enable Volumes",
       "description": "Whether or not to enable volumes for AnyLog",
       "enable": true,
       "options": [
@@ -120,7 +120,7 @@
       "name": {
         "question": "Name",
         "description": "AnyLog Volume name",
-        "enable": false,
+        "enable": true,
         "default": "anylog-node-anylog-volume",
         "value": ""
       },
@@ -134,7 +134,7 @@
       "access_mode": {
         "question": "Access Mode",
         "description": "Volume access mode",
-        "enable": false,
+        "enable": true,
         "options": [
           "ReadWriteOnce",
           "ReadWriteMany",
@@ -147,7 +147,7 @@
       "storage_size": {
         "question": "Storage Size",
         "description": "Volume storage size",
-        "enable": false,
+        "enable": true,
         "default": "1Gi",
         "value": ""
       }
@@ -156,7 +156,7 @@
       "name": {
         "question": "Name",
         "description": "AnyLog Volume name",
-        "enable": false,
+        "enable": true,
         "default": "anylog-node-anylog-volume",
         "value": ""
       },
@@ -170,7 +170,7 @@
       "access_mode": {
         "question": "Access Mode",
         "description": "Volume access mode",
-        "enable": false,
+        "enable": true,
         "options": [
           "ReadWriteOnce",
           "ReadWriteMany",
@@ -183,7 +183,7 @@
       "storage_size": {
         "question": "Storage Size",
         "description": "Volume storage size",
-        "enable": false,
+        "enable": true,
         "default": "1Gi",
         "value": ""
       }
@@ -192,7 +192,7 @@
       "name": {
         "question": "Name",
         "description": "AnyLog Volume name",
-        "enable": false,
+        "enable": true,
         "default": "anylog-node-anylog-volume",
         "value": ""
       },
@@ -206,7 +206,7 @@
       "access_mode": {
         "question": "Access Mode",
         "description": "Volume access mode",
-        "enable": false,
+        "enable": true,
         "options": [
           "ReadWriteOnce",
           "ReadWriteMany",
@@ -219,7 +219,7 @@
       "storage_size": {
         "question": "Storage Size",
         "description": "Volume storage size",
-        "enable": false,
+        "enable": true,
         "default": "1Gi",
         "value": ""
       }
