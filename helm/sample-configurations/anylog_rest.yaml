@@ -14,7 +14,7 @@ metadata:
   # Kubernetes configuration mapping name
   configmap_name: anylog-node-configs
   # Allows running Kubernetes remotely. If commented out, code will ignore it
-  node_selector: 
+  node_selector: ""
   # Number of Kubernetes replicas
   replicas: 1
 
