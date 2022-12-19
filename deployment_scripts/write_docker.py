@@ -87,15 +87,14 @@ def configure_dir(node_type:str)->(bool, str):
         status, anylog_configs
     """
     status = True
-    if node_type != 'query':
-        dir_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
-    else:
+    dir_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    if node_type == 'query':
         dir_path = os.path.join(ROOT_PATH, 'docker-compose', '%s-remote-cli' % node_type.lower())
-    anylog_configs = os.path.join(dir_path, 'anylog_config.env')
+    anylog_configs = os.path.join(dir_path, 'anylog_configs.env')
 
     if not os.path.isdir(dir_path):
         os.makedirs(dir_path)
-    elif os.path.isfile(anylog_configs):
+    if os.path.isfile(anylog_configs):
         try:
             os.rename(anylog_configs, anylog_configs.replace('.env', '.env.old'))
         except Exception as error:
@@ -137,7 +136,7 @@ def write_configs(configs:dict, anylog_configs:str):
             else:
                 line = f"{param}=<{section.upper()}_{param.upper()}>"
 
-            if line == f"{param}=<{section.upper()}_{param.upper()}>" or configs[section][param]['enable'] is False and param != 'NODE_TYPE':
+            if line == f"{param}=<{section.upper()}_{param.upper()}>":
                 line = f"#{line}"
             line = f"# {comment}\n{line}"
             __write_line(file_name=anylog_configs, input_line=f"\n{line}")

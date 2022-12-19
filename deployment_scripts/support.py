@@ -39,13 +39,17 @@ def clean_configs(node_type:str, configs:dict)->dict:
     configs['general']['NODE_TYPE']['value'] = node_type
     if node_type == 'master':
         configs['general']['NODE_TYPE']['value'] = 'ledger'
+        configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
     elif node_type == 'operator':
+        configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
         configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32148
         configs['networking']['ANYLOG_REST_PORT']['default'] = 32149
     elif node_type == 'publisher':
+        configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
         configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32248
         configs['networking']['ANYLOG_REST_PORT']['default'] = 32249
     elif node_type == 'query':
+        configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
         configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32348
         configs['networking']['ANYLOG_REST_PORT']['default'] = 32349
 

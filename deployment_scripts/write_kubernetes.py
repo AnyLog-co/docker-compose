@@ -2,82 +2,98 @@ import os
 from write_docker import __create_file, __write_line
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
-def __metadata_configs(build:str, node_name:str)->str:
-    """
-    Base Kubernetes (metadata) configurations
-    :args:
-        build:str - AnyLog version
-        node_name:str - node name
-    :param:
-        content:str - formatted metadata configs
-    :return:
-        content
-    """
-    content="metadata: "
-    content += "\n\tnamespace: default"
-    content += f"\n  hostname: {node_name}"
-    content += f"\n  app_name: {node_name}-app"
-    content += f"\n  pod_name: {node_name}-pod"
-    content += f"\n  deployment_name: {node_name}-deployment"
-    content += f"\n  service_name: {node_name}-svs"
-    content += f"\n  configmap_name: {node_name}-configs"
-    content += "\n\t#nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it"
-    content += '\n\t#nodeSelector: ""'
-    content += "\n\treplicas: 1"
-    content += "\n"
-    content += "\nimage: "
-    content += "\n\tsecretName: imagepullsecret"
-    content += "\n\trepository: anylogco/anylog-network"
-    content += f"\n  tag: {build}"
-    content += "\n\tpullPolicy: IfNotPresent"
-    content += "\n"
-
-    return content
-
-
-
 def configure_dir(node_type:str)->(str, str):
     """
     Configure directory & create backup of configs if exists)
     :process:
-        1. create directory path
-        2. if directory DNE create it
-           if directory exists copy anylog_configs (if exists) to bkup
-        3. create anylog_configs
+        1. create directory path if DNE
+        Iterate through configs and volume file
+            1. check if file exists
+            2. if exists then make a bakup
+            3. create file
     :args:
         node_type:str - AnyLog node type
     :params:
         status:bool
         dir_path:str - docker directory path where configs are stored
-        anylog_configs:str - configurations file (full path)
+        anylog_configs_file:str - configurations file (full path)
     :return:
-        status, anylog_configs
+        status, anylog_configs_file
     """
-    status = True
     dir_path = os.path.join(ROOT_PATH, 'helm', 'sample-configurations')
-    anylog_configs = os.path.join(dir_path, 'anylog_%s.yml' % node_type)
+    anylog_configs_file = os.path.join(dir_path, 'anylog_%s.yaml' % node_type)
+    # there's no need for creating a volume specific file as all volume info is also in `anylog_configs_file`
+    # anylog_volume_file = os.path.join(dir_path, 'anylog_%s_volume.yaml' % node_type)
 
     if not os.path.isdir(dir_path):
         os.makedirs(dir_path)
-    elif os.path.isfile(anylog_configs):
-        try:
-            os.rename(anylog_configs, anylog_configs.replace('.yml', '.yml.old'))
-        except Exception as error:
-            status = False
-            print(f'Failed to copy {anylog_configs} into a backup file (Error: {error})')
-        else:
-            status = __create_file(file_name=anylog_configs)
 
-    return status, anylog_configs
+    for file_name in [anylog_configs_file]: #, anylog_volume_file]:
+        status = True
+        if os.path.isfile(file_name):
+            try:
+                os.rename(file_name, file_name.replace('.yaml', '.yaml.old'))
+            except Exception as error:
+                print(f'Failed to copy {file_name} into a backup file (Error: {error})')
+                status = False
+
+        if status is True:
+            __create_file(file_name=file_name)
 
 
-def write_configs(build:str, configs:dict, anylog_configs:str):
+    return anylog_configs_file, anylog_volume_file
+
+
+def metadata_configs(configs:dict, anylog_configs_file:str, anylog_volume_file:str)->str:
     """
-    Write configruations for kubernetes (YAML) files
+    write Kubernetes (metadata) configurations
     :args:
-        build:str - AnyLog build/tag
         configs:dict - user defined configurations
-        anylog_configs:str - file path to store AnyLog configs
+        anylog_configs_file:str - file path to store AnyLog configs
+        anylog_volume_file:str - volumes file path
+    :param:
+        content:str - formatted metadata configs
+    :return:
+        content
+    """
+    content = ""
+    for config in configs:
+        content += f"{config}: "
+        if config != 'volume':
+            for param in configs[config]:
+                content += f"\n  # {configs[config][param]['description']}"
+                if configs[config][param]['value'] == "":
+                    content += f"\n  {param.lower()}: {configs[config][param]['default']}"
+                else:
+                    content += f"\n  {param.lower()}: {configs[config][param]['value']}"
+        else:
+            for sub_config in configs[config]:
+                if sub_config == 'enable_volume':
+                    content += f"\n  # {configs[config][sub_config]['description']}"
+                    if configs[config][sub_config]['value'] == "":
+                        content += f"\n  {sub_config}: {configs[config][sub_config]['default']}"
+                    else:
+                        content += f"\n  {sub_config}: {configs[config][sub_config]['value']}"
+                else:
+                    content += f"\n  {sub_config}:"
+                    for param in configs[config][sub_config]:
+                        content += f"\n    # {configs[config][sub_config][param]['description']}"
+                        if configs[config][sub_config][param]['value'] == "":
+                            content += f"\n    {param.lower()}: {configs[config][sub_config][param]['default']}"
+                        else:
+                            content += f"\n    {param.lower()}: {configs[config][sub_config][param]['value']}"
+        content += "\n\n"
+
+    for file_name in [anylog_configs_file, anylog_volume_file]:
+        __write_line(file_name=file_name, input_line=content)
+
+
+def write_configs(configs:dict, anylog_configs_file:str):
+    """
+    Write configuratons for kubernetes (YAML) files
+    :args:
+        configs:dict - user defined configurations
+        anylog_configs_file:str - file path to store AnyLog configs
     :params:
         content:str - content to store in config file
     """
@@ -103,5 +119,6 @@ def write_configs(build:str, configs:dict, anylog_configs:str):
                     node_name = configs[config][param]['default']
         content += "\n"
 
-    content = __metadata_configs(build=build, node_name=node_name) + content
-    __write_line(file_name=anylog_configs,  input_line=content)
+    __write_line(file_name=anylog_configs_file,  input_line=content)
+
+

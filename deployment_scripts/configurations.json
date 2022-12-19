@@ -474,7 +474,7 @@
       "question": "Table File Location",
       "description": "Location of table name within file name",
       "enable": true,
-      "default": 0,
+      "default": 1,
       "value": ""
     },
     "PUBLISHER_COMPRESS_FILE": {
@@ -485,44 +485,6 @@
       "options": [
         "true",
         "false"
-      ],
-      "value": ""
-    }
-  },
-  "authentication": {
-    "AUTHENTICATION": {
-      "question": "Enable Authentication",
-      "description": "Whether to enable authentication",
-      "enable": false,
-      "default": "false",
-      "options": [
-        "true",
-        "false"
-      ],
-      "value": ""
-    },
-    "AUTH_USER": {
-      "question": "Username",
-      "description": "authentication user",
-      "enable": false,
-      "default": "",
-      "value": ""
-    },
-    "AUTH_PASSWD": {
-      "question": "Password",
-      "description": "authentication password correlated with user",
-      "enable": false,
-      "default": "",
-      "value": ""
-    },
-    "AUTH_TYPE": {
-      "question": "Type",
-      "description": "authentication administration type",
-      "enable": false,
-      "default": "admin",
-      "options": [
-        "admin",
-        "user"
       ],
       "value": ""
     }

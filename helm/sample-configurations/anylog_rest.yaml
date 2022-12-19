@@ -1,20 +1,64 @@
-metadata:
+metadata: 
+  # Kubernetes Instance namespace
   namespace: default
+  # hostname for deployment
   hostname: anylog-node
-  app_name: anylog-node-app
+  # deployment application name
+  app_name: anylog-node-deployment
+  # Pod application name
   pod_name: anylog-node-pod
+  # Kubernetes deployment name
   deployment_name: anylog-node-deployment
+  # Kubernetes service name
   service_name: anylog-node-svs
+  # Kubernetes configuration mapping name
   configmap_name: anylog-node-configs
-  #nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
-  #nodeSelector: ""
+  # Allows running Kubernetes remotely. If commented out, code will ignore it
+  node_selector: 
+  # Number of Kubernetes replicas
   replicas: 1
 
-image:
-  secretName: imagepullsecret
+image: 
+  # Image secret naming
+  secret_name: imagepullsecret
+  # (Docker Hub) Image Path
   repository: anylogco/anylog-network
-  tag: test
-  pullPolicy: IfNotPresent
+  # Image version
+  tag: predevelop
+  # Image pulling policy
+  pull_policy: IfNotPresent
+
+volume: 
+  # Whether or not to enable volumes for AnyLog
+  enable_volume: true
+  anylog_volume:
+    # AnyLog Volume name
+    name: anylog-node-anylog-volume
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/anylog
+    # Volume access mode
+    access_mode: ReadWRiteOnce
+    # Volume storage size
+    storage_size: 1Gi
+  blockchain_volume:
+    # AnyLog Volume name
+    name: anylog-node-blockchain-volume
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/blockchain
+    # Volume access mode
+    access_mode: ReadWRiteOnce
+    # Volume storage size
+    storage_size: 1Gi
+  data_volume:
+    # AnyLog Volume name
+    name: anylog-node-data-volume
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/data
+    # Volume access mode
+    access_mode: ReadWRiteOnce
+    # Volume storage size
+    storage_size: 1Gi
+
 
 general:
   # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
@@ -108,7 +152,7 @@ operator:
   # Whether to enable partitioning
   ENABLE_PARTITIONS: false
   # Which tables to partition
-  TABLE_NAME: '*'
+  TABLE_NAME: *
   # Which timestamp column to partition by
   PARTITION_COLUMN: insert_timestamp
   # Time period to partition by
@@ -126,25 +170,16 @@ operator:
   # Compress JSON and SQL file(s) backup
   COMPRESS_FILE: true
   # How many threads to use in the operator process
+
   OPERATOR_THREADS: 1
 
 publisher:
   # Location of logical database name within file name
   DBMS_FILE_LOCATION: file_name[0]
   # Location of table name within file name
-  TABLE_FILE_LOCATION: file_name[0]
+  TABLE_FILE_LOCATION: file_name[1]
   # Compress JSON and SQL file(s) backup
-  COMPRESS_FILE: true
-
-authentication:
-  # Whether to enable authentication
-  AUTHENTICATION: false
-  # authentication user
-  AUTH_USER: ""
-  # authentication password correlated with user
-  AUTH_PASSWD: ""
-  # authentication administration type
-  AUTH_TYPE: admin
+  PUBLISHER_COMPRESS_FILE: true
 
 mqtt:
   # Whether to enable the default MQTT process
