@@ -110,6 +110,8 @@ def __enable_volume()->str:
         elif answer == "":
             answer = 'true'
             status = True
+        else:
+            status = True
 
     return answer
 

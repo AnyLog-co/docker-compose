@@ -77,7 +77,7 @@ then
     --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}_volume.yml
 
   helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz \
-    --name-template ${NODE_TYPE}-volume \
+    --name-template ${NODE_TYPE}-node \
     --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yml
 fi
 
