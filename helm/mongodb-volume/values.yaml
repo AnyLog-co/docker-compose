@@ -1,0 +1,8 @@
+general:
+  namespace: default
+  app_name: mongo
+  persistent_volume_name: mongo-volume
+  persistent_volume_calim_name: mongo-volume-pvc
+  nodeSelector: ""
+  replicas: 1
+
