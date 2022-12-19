@@ -21,8 +21,8 @@ def configure_dir(node_type:str)->(str, str):
         status, anylog_configs_file
     """
     dir_path = os.path.join(ROOT_PATH, 'helm', 'sample-configurations')
-    anylog_configs_file = os.path.join(dir_path, 'anylog_%s.yml' % node_type)
-    anylog_volume_file = os.path.join(dir_path, 'anylog_%s_volume.yml' % node_type)
+    anylog_configs_file = os.path.join(dir_path, 'anylog_%s.yaml' % node_type)
+    anylog_volume_file = os.path.join(dir_path, 'anylog_%s_volume.yaml' % node_type)
 
     if not os.path.isdir(dir_path):
         os.makedirs(dir_path)
@@ -31,7 +31,7 @@ def configure_dir(node_type:str)->(str, str):
         status = True
         if os.path.isfile(file_name):
             try:
-                os.rename(file_name, file_name.replace('.yml', '.yml.old'))
+                os.rename(file_name, file_name.replace('.yaml', '.yaml.old'))
             except Exception as error:
                 print(f'Failed to copy {file_name} into a backup file (Error: {error})')
                 status = False

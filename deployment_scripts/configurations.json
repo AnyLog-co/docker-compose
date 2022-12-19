@@ -474,7 +474,7 @@
       "question": "Table File Location",
       "description": "Location of table name within file name",
       "enable": true,
-      "default": 0,
+      "default": 1,
       "value": ""
     },
     "PUBLISHER_COMPRESS_FILE": {

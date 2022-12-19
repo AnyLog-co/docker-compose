@@ -182,6 +182,7 @@ def kubernetes_configurations(config_file:str, node_name:str='anylog-node', buil
                 else:
                     print(f'>> Subsection: {param.replace("_", " ").title()}')
                     kubernetes_configs[config][param] = __volume_questions(configs=kubernetes_configs[config][param])
+        print('\n')
 
     return kubernetes_configs
 
