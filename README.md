@@ -29,63 +29,21 @@ running in the background, but already having the default network configurations
 * Publisher - Node to distribute data coming in from different devices and sensors across the different operator nodes 
 * Query - Node dedicated to query the data, usually connected to a BI tool, such as Grafana 
 
-For a basic deployment of an AnyLog REST node, you can execute the following command: 
-```shell
-docker run --network host -it --detach-keys="ctrl-d" --name anylog-node --rm anylogco/anylog-network:develop
-```
 
-## Node Setup
-0. Install [Docker](installations/docker_install.sh) or [Kubernetes with Helm](installations/kube_install.sh)
+## Deployment
+We support both [docker](docker-compose) and [Kubernetes-Helm](helm) deployment of an AnyLog instance. To deploy AnyLog
+users could either manually set the configuration files or utilize the [deployment scripts](deployment_scripts) tool we 
+provide. 
 
-1. (Optional) Install `dotenv` for utilizing [deployment scripts](deployment_scripts)
-```bash
-# using python3-pip
-python3 -m pip install dotenv 
-
-# using apt-get if python3-pip command fails 
-sudo apt-get -y install python3-dotenv
-```
-2. Log into docker to download AnyLog - Contact [info@anylo.co](mailto:info@anylo.co) to get 
-credentials to log into Docker if you were not alreaddy provided with one.  
-    * [Docker Credentials](installations/docker_credentials.sh) 
-    ```shell
-    bash deployments/installations/docker_credentials.sh ${DOCKER_PASSWORD}
-    ```
-    * [Kubernetes Credentials](installations/kube_credentials.sh)
-    ```shell
-    bash deployments/installations/kube_credentials.sh ${DOCKER_PASSWORD}
-    ```
-3. Install relevant database(s), if using something other than _SQLite_
-    * [PostgreSQL](https://www.digitalocean.com/community/tutorials/how-to-install-postgresql-on-ubuntu-20-04-quickstart) 
-      * [Docker](docker-compose/postgres) 
-      * [Kubernetes](helm/postgres)
-    * [MongoDB](https://www.digitalocean.com/community/tutorials/install-mongodb-linux#install-mongodb-on-linux) 
-      * [Docker](docker-compose/mongodb)
-
-## Deploying AnyLog
-* **Option 1**: Manually update the configuration file(s) and deploy AnyLog
+A basic deployment of an AnyLog REST instance (ie a node with only `TCP` and `REST` communication configured) can be 
+executed using the following line:
 ```shell
 # docker 
-# 1. update .env file and anylog_configs.env
+docker run --network host -it --detach-keys="ctrl-d" --name anylog-node --rm anylogco/anylog-network:develop
 
-# 2. execute docker-compose command
-cd ~/deployments/docker-compose/${ANYLOG_NODE}
-docker-compose up -d 
-
-# Helm
-# 0. Package Helm if you change it
-helm package ~/deployments/helm/anylog-node
-
-# 1. update relevant file in $HOME/deployments/helm/sample-configurations
-
-# 2. execute helm install  
-helm install ~/deployments/helm/packages/anylog-node-1.22.3.tgz --values ~/deployments/configurations/helm/${CONFIG_FILE}.yaml --name-template ${NAME}
-```
-
-
-* **Option 2**: Utilize [deployment script](deployment_scripts/deploy_node.sh) to deploy AnyLog
-```shell
-bash $HOME/deployments/deployment_scripts/deploy_node.sh
+# Kubernetes
+helm install $HOME/helm/packages/anylog-node-volume-1.22.3.tgz --name-template anylog-node-volume 
+helm install    $HOME/helm/packages/anylog-node-1.22.3.tgz --name-template anylog-node
 ```
 
 ## Support 
