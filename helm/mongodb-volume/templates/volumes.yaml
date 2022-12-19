@@ -4,7 +4,7 @@ metadata:
   namespace: {{ .Values.general.namespace }}
   name: {{ .Values.volume.name }}-pvc
 spec:
-  storageClassName: {{ .Values.specs.storage_class }}
+  storageClassName: ""
   accessModes:
     - {{ .Values.volume.specs.access_mode }}
   volumeName: {{ .Values.volume.name }}
