@@ -1,8 +1,12 @@
 general:
   namespace: default
-  app_name: mongo
-  persistent_volume_name: mongo-volume
-  persistent_volume_calim_name: mongo-volume-pvc
-  nodeSelector: ""
-  replicas: 1
 
+volume:
+  enable_volume: true
+  name: mongo-pv
+  specs:
+    storage_class: ""
+    access_mode: ReadWriteMany
+    storage_size: 5Gi
+    reclaim_policy: Retain
+    host_path: /data/mongo

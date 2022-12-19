@@ -10,8 +10,10 @@ general:
 
 volume:
   enable_volume: true
-  name: mongo-data
+  name: mongo-pv
   path: /data/db
+  nodeSelector: ""
+  replicas: 1
 
 image:
   repository: mongo
