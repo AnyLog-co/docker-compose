@@ -22,12 +22,13 @@ def configure_dir(node_type:str)->(str, str):
     """
     dir_path = os.path.join(ROOT_PATH, 'helm', 'sample-configurations')
     anylog_configs_file = os.path.join(dir_path, 'anylog_%s.yaml' % node_type)
-    anylog_volume_file = os.path.join(dir_path, 'anylog_%s_volume.yaml' % node_type)
+    # there's no need for creating a volume specific file as all volume info is also in `anylog_configs_file`
+    # anylog_volume_file = os.path.join(dir_path, 'anylog_%s_volume.yaml' % node_type)
 
     if not os.path.isdir(dir_path):
         os.makedirs(dir_path)
 
-    for file_name in [anylog_configs_file, anylog_volume_file]:
+    for file_name in [anylog_configs_file]: #, anylog_volume_file]:
         status = True
         if os.path.isfile(file_name):
             try:
