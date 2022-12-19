@@ -37,7 +37,7 @@ volume:
     # AnyLog security directory path
     path: /app/AnyLog-Network/anylog
     # Volume access mode
-    access_mode: ReadWRiteOnce
+    access_mode: ReadWriteOnce
     # Volume storage size
     storage_size: 1Gi
   blockchain_volume:
@@ -46,7 +46,7 @@ volume:
     # AnyLog security directory path
     path: /app/AnyLog-Network/blockchain
     # Volume access mode
-    access_mode: ReadWRiteOnce
+    access_mode: ReadWriteOnce
     # Volume storage size
     storage_size: 1Gi
   data_volume:
@@ -55,7 +55,7 @@ volume:
     # AnyLog security directory path
     path: /app/AnyLog-Network/data
     # Volume access mode
-    access_mode: ReadWRiteOnce
+    access_mode: ReadWriteOnce
     # Volume storage size
     storage_size: 1Gi
 
@@ -152,7 +152,7 @@ operator:
   # Whether to enable partitioning
   ENABLE_PARTITIONS: false
   # Which tables to partition
-  TABLE_NAME: *
+  TABLE_NAME: "*"
   # Which timestamp column to partition by
   PARTITION_COLUMN: insert_timestamp
   # Time period to partition by
