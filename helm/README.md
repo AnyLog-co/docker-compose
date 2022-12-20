@@ -3,121 +3,129 @@
 The following provides general directions for installing AnyLog through _helm_ and _Kubernetes_. Detailed directions
 can be found in our [deployment documentation](https://github.com/AnyLog-co/documentation/tree/os-dev/deployments). 
 
-### Requirements 
-There are 3 [basic requirements](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Kubernetes/Prerequisites.md) 
+### Requirements  
 for deploying AnyLog and its corresponding services.
 * Docker 
 * helm
 * Kubernetes deployment tools (we use [minikube](https://minikube.sigs.k8s.io/docs/start/)) 
+* Python3 + [dotenv](https://pypi.org/project/python-dotenv/) - for utilizing [deployment scripts](../deplyoment_scripts)
 
-### Setting-up Nginx
-Due to [networking configurations](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Kubernetes/Networking.md), 
-we recommend setting-up _Nginx_ in order to have consistent IPs in policy declarations of the blockchain.    
-1. Install Nginx 
-```shell 
-sudo apt-get -y install nginx
-```
+### Prerequisites
+* [NGINX](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Networking/nginx.md) used for consistent IP address    
+* [Nebula Overlay Network](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Networking/nebula.md)
 
-2. Remove default files
+## Deployment 
+### Scripted Process 
+0. Manually deploy Postgres and/or MongoDB if planning to use in deployment
+    * [Postgres Volume](sample-configurations/postgres_volume.yaml) & [Postgres Configuration](sample-configurations/postgres.yaml)
+    * [MongoDB Volume](sample-configurations/mongodb_volume.yaml) & [MongoDB Configurations](mongodb/.env)
 ```shell
-sudo rm -rf /etc/nginx/sites-enabled/default 
-sudo rm -rf /etc/nginx/sites-available/default
-```
+# deploy PostgreSQL 
+helm install $HOME/deployments/helm/packages/postgres-volume-14.0-alpine.tgz --name-template psql-volume --values $HOME/deployments/helm/sample-configurations/postgres_volume.yaml
+helm install $HOME/deployments/helm/packages/postgres-14.0-alpine.tgz --name-template psql --values $HOME/deployments/helm/sample-configurations/postgres.yaml
 
-3. Update `/etc/nginx/nginx.conf` to support both TCP & Message broker (if set) communication 
+# Deploy MongoDB 
+helm install $HOME/deployments/helm/packages/mongodb-volume-4.tgz --name-template mongo-volume --values $HOME/deployments/helm/sample-configurations/mongodb_volume.yaml
+helm install $HOME/deployments/helm/packages/mongodb-4.tgz --name-template mongo --values $HOME/deployments/helm/sample-configurations/mongodb.yaml
+```
+1. Initiate the deployment scripts - this will prepare the configurations (based on user input) and deploy an AnyLog 
+instance.    
 ```shell
-# 1. import ngx_stream_module.so module at the top of the file.
-# With Ubuntu 20.04 this step was need. However, with later version of Ubuntu it was not. 
-include /usr/lib/nginx/modules/ngx_stream_module.so;
-
-# 2. At the bottom add stream process - each AnyLog node (on the same machine) should have its own upstream & server 
-# process(es) within the stream section
-stream {
-    # AnyLog TCP Connection - repeat the next two steps for each node
-    upstream anylog_node {
-        server ${KUBE_APISERVER_IP}:32048;
-    }
-    server {
-        listen 32048 so_keepalive=on;
-        proxy_pass anylog_node;
-    }
-    # AnyLog Message Broker Connection - repeat the next two steps for each node 
-    upstream anylog_node_broker {
-        server ${KUBE_APISERVER_IP}:32050;
-    }
-    server {
-        listen 32050 so_keepalive=on;
-        proxy_pass anylog_node_broker;
-    }
-}
+bash $HOME/deployments/deployment_scripts/deploy_node.sh 
 ```
-
-4. Create a new file called `/etc/nginx/sites-enabled/anylog.conf` for REST communication
+2. (Optional) Deploy Remote-CLI
+   * Access for Remote-CLI is [http://${LOCAL_IP_ADDRESS}:31800]() 
 ```shell
-# sudo vim /etc/nginx/sites-enabled/anylog.conf 
-# nginx default webpage - this generates the default nginx homepage 
-server {
-  listen 80;
-  server_name;
-}
-
-# Grafana 
-server {
-  listen 3000;
-  server_name _;
-  location / {
-    proxy_set_header Host            $host;
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_pass http://${KUBE_APISERVER_IP}:31000;
-  }
-}
-
-# Remote-CLI
-server {
-  listen 31800;
-  server_name _;
-  location / {
-    proxy_set_header Host            $host;
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_pass http://${KUBE_APISERVER_IP}:31800;
-  }
-}
-
-
-# AnyLog Node - make sure the IP & REST Port are correct. This section needs to repeated for each AnyLog node on the 
-# machine. 
-server {
-  listen 32049;
-  server_name _;
-  location / {
-    proxy_set_header Host            $host;
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_pass http://${KUBE_APISERVER_IP}:32049;
-  }
-}
+helm install $HOME/deployments/helm/packages/remote-cli-volume-1.0.0.tgz --name-template remote-cli-volume --values $HOME/deployments/helm/sample-configurations/remote_cli_volume.yaml
+helm install $HOME/deployments/helm/packages/remote-cli-1.0.0.tgz --name-template remote-cli --values $HOME/deployments/helm/sample-configurations/remote_cli.yaml  
 ```
-
-5. Update Nginx changes 
+3. (Optional) Deploy Grafana
+   * Access for Grafana is [http://${LOCAL_IP_ADDRESS}:3000]()
 ```shell
-sudo service nginx reload 
-sudo service nginx restart 
+helm install $HOME/deployments/helm/packages/grafana-volume-7.5.7.tgz --name-template grafana-volume --values $HOME/deployments/helm/sample-configurations/grafana_volume.yaml
+helm install $HOME/deployments/helm/packages/grafana-7.5.7.tgz --name-template grafana --values $HOME/deployments/helm/sample-configurations/grafana.yaml
 ```
 
-### Deploying Postgres
+### Manual Process
+0. Manually deploy Postgres and/or MongoDB if planning to use in deployment
+    * [Postgres Volume](sample-configurations/postgres_volume.yaml) & [Postgres Configuration](sample-configurations/postgres.yaml)
+    * [MongoDB Volume](sample-configurations/mongodb_volume.yaml) & [MongoDB Configurations](mongodb/.env)
 ```shell
-# Deploy Volume for PostgreSQL  
-helm install ~/deployments/packages/postgres-volume-14.0-alpine.tgz --values ~/deployments/configurations/helm/postgres_volume.yaml --name-template postgres-volume 
+# deploy PostgreSQL 
+helm install $HOME/deployments/helm/packages/postgres-volume-14.0-alpine.tgz --name-template psql-volume --values $HOME/deployments/helm/sample-configurations/postgres_volume.yaml
+helm install $HOME/deployments/helm/packages/postgres-14.0-alpine.tgz --name-template psql --values $HOME/deployments/helm/sample-configurations/postgres.yaml
 
-# Deploy actual PostgreSQL node 
-helm install ~/deployments/packages/postgres-14.0-alpine.tgz --values ~/deployments/configurations/helm/postgres.yaml --name-template postgres
+# Deploy MongoDB 
+helm install $HOME/deployments/helm/packages/mongodb-volume-4.tgz --name-template mongo-volume --values $HOME/deployments/helm/sample-configurations/mongodb_volume.yaml
+helm install $HOME/deployments/helm/packages/mongodb-4.tgz --name-template mongo --values $HOME/deployments/helm/sample-configurations/mongodb.yaml
 ```
-
-### Deploying AnyLog Node
-By default, AnyLog _helm_ package is configured to run as a REST node if no `--values` are set.  
+1. Update deployment configurations
 ```shell
-helm install ~/deployments/helm/packages/anylog-node-1.22.3.tgz --values ~/deployments/helm/sample-configurations/${ANYLOG_CONFIG}.yaml --name-template ${DEPLOYMENT_NAME}
+# master node
+vim $HOME/deployments/helm/sample-configurations/anylog_master.yaml
+
+# operator node
+vim $HOME/deployments/helm/sample-configurations/anylog_operator.yaml
+
+# publisher node
+vim $HOME/deployments/helm/sample-configurations/anylog_publisher.yaml
+
+# query node
+vim $HOME/deployments/helm/sample-configurations/anylog_query.yaml
 ```
 
-### Deploying Grafana 
+2. Deploy Volume
+```shell
+# master node
+helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz --name-template master-vol --values $HOME/deployments/helm/sample-configurations/anylog_master.yaml
 
-### Deploying Remote-CLI 
+# operator node
+helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz --name-template operator-vol --values $HOME/deployments/helm/sample-configurations/anylog_operator.yaml
+
+# publisher node
+helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz --name-template publisher-vol --values $HOME/deployments/helm/sample-configurations/anylog_publisher.yaml
+
+# query node
+helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz --name-template query-vol --values $HOME/deployments/helm/sample-configurations/anylog_query.yaml
+```
+
+3. Deploy Node 
+```shell
+# master node
+helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz --name-template master --values $HOME/deployments/helm/sample-configurations/anylog_master.yaml
+
+# operator node
+helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz --name-template operator --values $HOME/deployments/helm/sample-configurations/anylog_operator.yaml
+
+# publisher node
+helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz --name-template publisher --values $HOME/deployments/helm/sample-configurations/anylog_publisher.yaml
+
+# query node
+helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz --name-template query --values $HOME/deployments/helm/sample-configurations/anylog_query.yaml
+```
+
+4. (Optional) Deploy Remote-CLI
+   * Access for Remote-CLI is [http://${LOCAL_IP_ADDRESS}:31800]() 
+```shell
+helm install $HOME/deployments/helm/packages/remote-cli-volume-1.0.0.tgz --name-template remote-cli-volume --values $HOME/deployments/helm/sample-configurations/remote_cli_volume.yaml
+helm install $HOME/deployments/helm/packages/remote-cli-1.0.0.tgz --name-template remote-cli --values $HOME/deployments/helm/sample-configurations/remote_cli.yaml  
+```
+5. (Optional) Deploy Grafana
+   * Access for Grafana is [http://${LOCAL_IP_ADDRESS}:3000]()
+```shell
+helm install $HOME/deployments/helm/packages/grafana-volume-7.5.7.tgz --name-template grafana-volume --values $HOME/deployments/helm/sample-configurations/grafana_volume.yaml
+helm install $HOME/deployments/helm/packages/grafana-7.5.7.tgz --name-template grafana --values $HOME/deployments/helm/sample-configurations/grafana.yaml
+```
+
+
+### Attaching to a node
+* Attach into bash instance of node 
+```shell
+kubectl exec -it ${POD_NAME} bash
+```
+* Attach into AnyLog CLI 
+```shell
+kubectl attach -it ${POD_NAME}
+```
+
+To detach from either `crtl-p` + `ctrl-q` 
