@@ -11,7 +11,7 @@ for deploying AnyLog and its corresponding services.
 * Python3 + [dotenv](https://pypi.org/project/python-dotenv/) - for utilizing [deployment scripts](../deplyoment_scripts)
 
 ### Prerequisites
-* [NGINX](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Networking/nginx.md) used for consistent IP address    
+* [NGINX](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Networking/nginx.md) used as a proxy IP address for consistent IP address(es) stored in blockchain    
 * [Nebula Overlay Network](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Networking/nebula.md)
 
 ## Deployment 
