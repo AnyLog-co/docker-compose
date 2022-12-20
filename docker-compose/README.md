@@ -9,8 +9,18 @@ can be found in our [deployment documentation](https://github.com/AnyLog-co/docu
 * Python3 + [dotenv](https://pypi.org/project/python-dotenv/) - for utilizing [deployment scripts](../deplyoment_scripts) 
 
 ## Deployment 
-### Scripted Process 
-0. Manually deploy Postgres and/or MongoDB if planning to use in deployment
+### Setting Up Machine
+1. Clone [deployments](https://github.com/AnyLog-co/deployments)
+```shell
+cd $HOME ; git clone https://github.com/AnyLog-co/deployments
+```
+2. Log into AnyLog docker in order to download the image. If you do not have login credentials for our Docker hub, feel 
+free to <a href="mailto:info@anylog.co?subject=Request Docker access">send us a message</a>.
+```shell
+# log into docker for access to AnyLog
+bash $HOME/deployments/installations/docker_credentials.sh ${DOCKER_PASSWORD}
+```
+3. Manually deploy Postgres and/or MongoDB if planning to use in deployment -- this step is not needed for [Demo Cluster](#demo-cluster)
     * [Postgres Configuration](postgres/postgres.env)
     * [MongoDB Configurations](mongodb/.env)
 ```shell
@@ -19,6 +29,7 @@ cd $HOME/deployments/docker-compose/postgres/ ; docker-compose up -d
 # Deploy MongoDB 
 cd $HOME/deployments/docker-compose/mongodb/ ; docker-compose up -d 
 ```
+### Scripted Process 
 1. Initiate the deployment scripts - this will prepare the configurations (based on user input) and deploy an AnyLog 
 instance.    
 ```shell
@@ -35,16 +46,7 @@ cd $HOME/deployments/docker-compose/remote-cli/ ; docker-compose up -d
 cd $HOME/deployments/docker-compose/grafana/ ; docker-compose up -d 
 ```
 
-### Manual Process  
-0. Manually deploy Postgres and/or MongoDB if planning to use in deployment
-    * [Postgres Configuration](postgres/postgres.env)
-    * [MongoDB Configurations](mongodb/.env)
-```shell
-# deploy PostgreSQL 
-cd $HOME/deployments/docker-compose/postgres/ ; docker-compose up -d 
-# Deploy MongoDB 
-cd $HOME/deployments/docker-compose/mongodb/ ; docker-compose up -d 
-```
+### Manual Process
 1. cd into the desired node 
 ```shell
 # master node

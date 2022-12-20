@@ -39,12 +39,16 @@ A basic deployment of an AnyLog REST instance (ie a node with only `TCP` and `RE
 executed using the following line:
 ```shell
 # docker 
+bash $HOME/deployments/installations/docker_credentials.sh ${DOCKER_PASSWORD}
 docker run --network host -it --detach-keys="ctrl-d" --name anylog-node --rm anylogco/anylog-network:develop
 
 # Kubernetes
+bash $HOME/deployments/installations/kube_credentials.sh ${DOCKER_PASSWORD}
 helm install $HOME/helm/packages/anylog-node-volume-1.22.3.tgz --name-template anylog-node-volume 
 helm install    $HOME/helm/packages/anylog-node-1.22.3.tgz --name-template anylog-node
 ```
+If you do not have login credentials for our Docker hub, feel  free to 
+<a href="mailto:info@anylog.co?subject=Request Docker access">send us a message</a>.
 
 ## Support 
 * [AnyLog Documentation](https://github.com/AnyLog-co/documentation) - documentation for AnyLog  

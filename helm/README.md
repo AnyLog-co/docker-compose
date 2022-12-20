@@ -15,8 +15,18 @@ for deploying AnyLog and its corresponding services.
 * [Nebula Overlay Network](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Networking/nebula.md)
 
 ## Deployment 
-### Scripted Process 
-0. Manually deploy Postgres and/or MongoDB if planning to use in deployment
+### Setting Up Machine
+1. Clone [deployments](https://github.com/AnyLog-co/deployments)
+```shell
+cd $HOME ; git clone https://github.com/AnyLog-co/deployments
+```
+2. Log into AnyLog docker in order to download the image. If you do not have login credentials for our Docker hub, feel 
+free to <a href="mailto:info@anylog.co?subject=Request Docker access">send us a message</a>.
+```shell
+# log into docker for access to AnyLog
+bash $HOME/deployments/installations/kube_credentials.sh ${DOCKER_PASSWORD}
+```
+3. (optional) Manually deploy Postgres and/or MongoDB if planning to use in deployment
     * [Postgres Volume](sample-configurations/postgres_volume.yaml) & [Postgres Configuration](sample-configurations/postgres.yaml)
     * [MongoDB Volume](sample-configurations/mongodb_volume.yaml) & [MongoDB Configurations](mongodb/.env)
 ```shell
@@ -27,7 +37,8 @@ helm install $HOME/deployments/helm/packages/postgres-14.0-alpine.tgz --name-tem
 # Deploy MongoDB 
 helm install $HOME/deployments/helm/packages/mongodb-volume-4.tgz --name-template mongo-volume --values $HOME/deployments/helm/sample-configurations/mongodb_volume.yaml
 helm install $HOME/deployments/helm/packages/mongodb-4.tgz --name-template mongo --values $HOME/deployments/helm/sample-configurations/mongodb.yaml
-```
+``` 
+### Scripted Proces
 1. Initiate the deployment scripts - this will prepare the configurations (based on user input) and deploy an AnyLog 
 instance.    
 ```shell
@@ -47,18 +58,6 @@ helm install $HOME/deployments/helm/packages/grafana-7.5.7.tgz --name-template g
 ```
 
 ### Manual Process
-0. Manually deploy Postgres and/or MongoDB if planning to use in deployment
-    * [Postgres Volume](sample-configurations/postgres_volume.yaml) & [Postgres Configuration](sample-configurations/postgres.yaml)
-    * [MongoDB Volume](sample-configurations/mongodb_volume.yaml) & [MongoDB Configurations](mongodb/.env)
-```shell
-# deploy PostgreSQL 
-helm install $HOME/deployments/helm/packages/postgres-volume-14.0-alpine.tgz --name-template psql-volume --values $HOME/deployments/helm/sample-configurations/postgres_volume.yaml
-helm install $HOME/deployments/helm/packages/postgres-14.0-alpine.tgz --name-template psql --values $HOME/deployments/helm/sample-configurations/postgres.yaml
-
-# Deploy MongoDB 
-helm install $HOME/deployments/helm/packages/mongodb-volume-4.tgz --name-template mongo-volume --values $HOME/deployments/helm/sample-configurations/mongodb_volume.yaml
-helm install $HOME/deployments/helm/packages/mongodb-4.tgz --name-template mongo --values $HOME/deployments/helm/sample-configurations/mongodb.yaml
-```
 1. Update deployment configurations
 ```shell
 # master node
