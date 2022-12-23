@@ -116,6 +116,29 @@
       "value": ""
     }
   },
+  "authentication": {
+    "ENABLE": {
+      "question": "Enable Authentication",
+      "description": "Whether to enable AnyLog authentication",
+      "enable": true,
+      "default": false,
+      "value": ""
+    },
+    "ROOT_USER": {
+      "question": "Root Username",
+      "description": "Root username",
+      "enable": true,
+      "default": "admin",
+      "value": ""
+    },
+    "ROOT_PASSWD": {
+      "question": "Root user password",
+      "description": "Password associated with root",
+      "enable": true,
+      "default": "",
+      "value": ""
+    }
+  },
   "database": {
     "DB_TYPE": {
       "question": "Database Type",
