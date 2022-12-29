@@ -9,6 +9,6 @@ fi
 
 kubectl create secret docker-registry imagepullsecret \
   --docker-server=docker.io \
-  --docker-username=anyloguser \
+  --docker-username=oshadmon \
   --docker-password=${DOCKER_PASSWORD} \
-  --docker-email=anyloguser@anylog.co
+  --docker-email=ori@anylog.co

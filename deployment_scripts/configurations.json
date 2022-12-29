@@ -75,7 +75,7 @@
       "default": "",
       "value": ""
     },
-    "K8S_PROXY_IP": {
+    "PROXY_IP": {
       "question": "Proxy IP",
       "description": "Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP",
       "enable": true,
@@ -113,6 +113,62 @@
         30000,
         32767
       ],
+      "value": ""
+    },
+    "TCP_BIND": {
+      "question": "Bind TCP Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": false,
+      "default": true,
+      "value": ""
+    },
+    "TCP_THREADS": {
+      "question": "TCP Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_BIND": {
+      "question": "Bind REST Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": false,
+      "default": true,
+      "value": ""
+    },
+    "REST_TIMEOUT": {
+      "question": "REST Timeout",
+      "description": "Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.",
+      "enable": false,
+      "default": 20,
+      "value": ""
+    },
+    "REST_THREADS": {
+      "question": "REST Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_SSL": {
+      "question": "Enable REST SSL",
+      "description": "Boolean value to determine if messages are send over HTTPS with client certificates.",
+      "enable": false,
+      "default": false,
+      "value": ""
+    },
+    "BROKER_BIND": {
+      "question": "Bind Message Broker Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": false,
+      "default": true,
+      "value": ""
+    },
+    "BROKER_THREADS": {
+      "question": "Broker Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
       "value": ""
     }
   },
@@ -158,7 +214,7 @@
     },
     "AUTOCOMMIT": {
       "question": "Enable Autocommit",
-      "description": "Whether or not autocommit data",
+      "description": "Whether to set autocommit data",
       "enable": true,
       "default": "false",
       "options": [
@@ -169,7 +225,7 @@
     },
     "SYSTEM_QUERY": {
       "question": "Enable System Query Database",
-      "description": "Whether or not to start to start system_query logical database",
+      "description": "Whether to start to start system_query logical database",
       "enable": true,
       "default": "false",
       "options": [
@@ -191,7 +247,7 @@
     },
     "NOSQL_ENABLE": {
       "question": "Enable NoSQL Database",
-      "description": "Whether or not to enable NoSQL logical database",
+      "description": "Whether to enable NoSQL logical database",
       "enable": true,
       "default": "false",
       "options": [
@@ -264,7 +320,7 @@
     },
     "NOSQL_BLOBS_REUSE": {
       "question": "Reuse Blobs",
-      "description": "Whether or not (re)store a blob if already exists",
+      "description": "Whether (re)store a blob if already exists",
       "enable": true,
       "default": "true",
       "options": ["true", "false"],
@@ -357,7 +413,7 @@
     },
     "ENABLE_PARTITIONS": {
       "question": "Enable Partitions",
-      "description": "Whether or not to enable partitioning",
+      "description": "Whether to enable partitioning",
       "enable": true,
       "default": "false",
       "options": [
@@ -412,7 +468,7 @@
     },
     "CREATE_TABLE": {
       "question": "Create Table",
-      "description": "Whether or not to create a new table in the operator",
+      "description": "Whether to create a new table in the operator",
       "enable": false,
       "default": "true",
       "options": [
@@ -474,10 +530,10 @@
       "question": "Table File Location",
       "description": "Location of table name within file name",
       "enable": true,
-      "default": 0,
+      "default": 1,
       "value": ""
     },
-    "COMPRESS_FILE": {
+    "PUBLISHER_COMPRESS_FILE": {
       "question": "Compress Files",
       "description": "Compress JSON and SQL file(s) backup",
       "enable": true,
@@ -489,48 +545,10 @@
       "value": ""
     }
   },
-  "authentication": {
-    "AUTHENTICATION": {
-      "question": "Enable Authentication",
-      "description": "Whether or not to enable authentication",
-      "enable": false,
-      "default": "false",
-      "options": [
-        "true",
-        "false"
-      ],
-      "value": ""
-    },
-    "AUTH_USER": {
-      "question": "Username",
-      "description": "authentication user",
-      "enable": false,
-      "default": "",
-      "value": ""
-    },
-    "AUTH_PASSWD": {
-      "question": "Password",
-      "description": "authentication password correlated with user",
-      "enable": false,
-      "default": "",
-      "value": ""
-    },
-    "AUTH_TYPE": {
-      "question": "Type",
-      "description": "authentication administration type",
-      "enable": false,
-      "default": "admin",
-      "options": [
-        "admin",
-        "user"
-      ],
-      "value": ""
-    }
-  },
   "mqtt": {
     "ENABLE_MQTT": {
       "question": "Enable MQTT",
-      "description": "Whether or not to enable the default MQTT process",
+      "description": "Whether to enable the default MQTT process",
       "enable": true,
       "default": "false",
       "options": [
@@ -541,7 +559,7 @@
     },
     "MQTT_LOG": {
       "question": "Enable MQTT Logging",
-      "description": "Whether or not to enable MQTT logging process",
+      "description": "Whether to enable MQTT logging process",
       "enable": true,
       "default": "false",
       "options": [
@@ -578,42 +596,42 @@
       "default": "MSY4e009J7ts",
       "value": ""
     },
-    "MQTT_TOPIC_NAME": {
+    "MQTT_TOPIC": {
       "question": "Topic",
       "description": "Topic to get data for",
       "enable": true,
       "default": "anylogedgex",
       "value": ""
     },
-    "MQTT_TOPIC_DBMS": {
+    "MQTT_DBMS": {
       "question": "Database Name",
       "description": "Logical database name",
       "enable": true,
       "default": "test",
       "value": ""
     },
-    "MQTT_TOPIC_TABLE": {
+    "MQTT_TABLE": {
       "question": "Table Name",
       "description": "Table where to store data",
       "enable": true,
-      "default": "bring [table]",
+      "default": "rand_data",
       "value": ""
     },
-    "MQTT_COLUMN_TIMESTAMP": {
+    "MQTT_TIMESTAMP_COLUMN": {
       "question": "Timestamp Column",
       "description": "Timestamp column name",
       "enable": true,
       "default": "now",
       "value": ""
     },
-    "MQTT_COLUMN_VALUE": {
+    "MQTT_VALUE_COLUMN": {
       "question": "Value Column",
       "description": "Value column name",
       "enable": true,
       "default": "bring [readings][][value]",
       "value": ""
     },
-    "MQTT_COLUMN_VALUE_TYPE": {
+    "MQTT_VALUE_COLUMN_TYPE": {
       "question": "Value type",
       "description": "Column value type",
       "enable": true,
@@ -626,31 +644,10 @@
   "advanced settings": {
     "DEPLOY_LOCAL_SCRIPT": {
       "question": "Enable Local Script",
-      "description": "Whether or not to automatically run a local (or personalized) script at the end of the process",
+      "description": "Whether to automatically run a local (or personalized) script at the end of the process",
       "enable": true,
       "default": "false",
       "options": ["true", "false"],
-      "value": ""
-    },
-    "TCP_THREAD_POOL": {
-      "question": "TCP Thread Count",
-      "description": "Number of TCP threads",
-      "enable": false,
-      "default": 6,
-      "value": ""
-    },
-    "REST_TIMEOUT": {
-      "question": "REST Timeout",
-      "description": "How long to wait until REST timeout",
-      "enable": false,
-      "default": 30,
-      "value": ""
-    },
-    "REST_THREADS": {
-      "question": "REST Threads",
-      "description": "Number of REST threads",
-      "enable": false,
-      "default": 5,
       "value": ""
     },
     "QUERY_POOL": {

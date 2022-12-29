@@ -16,17 +16,6 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-volume:
-  enable_volume: true
-#  json_volume:
-#    name: remote-cli-json-data
-#    access_mode: ReadWriteOnce
-#    storage_size: 1Gi
-  blob_volume:
-    name: remote-cli-blobs-volume
-    access_mode: ReadWriteMany
-    storage_size: 1Gi
-
 networking:
   ip: 0.0.0.0
   port_name: rmt-cli-port
@@ -35,3 +24,14 @@ networking:
   # - nodePort
   # - targetPort
   port: 31800
+
+volume:
+  enable_volume: true
+  access_mode: ReadWriteOnce
+  storage_size: 1Gi
+  json_volume:
+    name: remote-cli-json
+    path: /app/Remote-CLI/anylog_query/static/json
+  blobs_volume:
+    name: remote-cli-blobs
+    path: /app/Remote-CLI/anylog_query/static/blobs/current/

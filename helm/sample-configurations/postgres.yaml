@@ -28,4 +28,4 @@ networking:
   
 credentials:
   username: admin
-  password: demo
+  password: passwd

@@ -1,118 +1,226 @@
-#----------------------------------------------------------------------------------------------------------------------
-# The following are the general values used to deploy an AnyLog instance of type: Publisher | AnyLog version: develop
-#----------------------------------------------------------------------------------------------------------------------
-general:
+metadata: 
+  # Kubernetes Instance namespace
   namespace: default
-  app_name: anylog
-  deployment_name: anylog-publisher-app
+  # hostname for deployment
+  hostname: anylog-publisher
+  # deployment application name
+  app_name: anylog-publisher-deployment
+  # Pod application name
+  pod_name: anylog-publisher-pod
+  # Kubernetes deployment name
+  deployment_name: anylog-node-deployment
+  # Kubernetes service name
   service_name: anylog-publisher-svs
+  # Kubernetes configuration mapping name
   configmap_name: anylog-publisher-configs
-  # nodeSelector - Allows running Kubernetes remotely. If commented out, code will ignore it
-  #nodeSelector: ""
+  # Allows running Kubernetes remotely. If commented out, code will ignore it
+  node_selector: ""
+  # Number of Kubernetes replicas
   replicas: 1
-  
-image:
-  secretName: imagepullsecret
-  repository: anylogco/anylog-network
-  tag: predevelop
-  pullPolicy: Always
 
-volume:
+image: 
+  # Image secret naming
+  secret_name: imagepullsecret
+  # (Docker Hub) Image Path
+  repository: anylogco/anylog-network
+  # Image version
+  tag: predevelop
+  # Image pulling policy
+  pull_policy: IfNotPresent
+
+volume: 
+  # Whether or not to enable volumes for AnyLog
   enable_volume: true
   anylog_volume:
-    name: anylog-publisher-anylog
+    # AnyLog Volume name
+    name: anylog-publisher-anylog-volume
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/anylog
+    # Volume access mode
     access_mode: ReadWriteOnce
+    # Volume storage size
     storage_size: 1Gi
   blockchain_volume:
-    name: anylog-publisher-blockchain
+    # AnyLog Volume name
+    name: anylog-publisher-blockchain-volume
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/blockchain
+    # Volume access mode
     access_mode: ReadWriteOnce
+    # Volume storage size
     storage_size: 1Gi
   data_volume:
-    name: anylog-publisher-data
+    # AnyLog Volume name
+    name: anylog-publisher-data-volume
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/data
+    # Volume access mode
     access_mode: ReadWriteOnce
+    # Volume storage size
     storage_size: 1Gi
 
-configs:
-  basic:
-    node_type: publisher
-    node_name: anylog-publisher-node
-    company_name: Company Name
-    # if location is not set, will use `https://ipinfo.io/json` to get coordinates
-    location: ""
-    country: ""
-    state: ""
-    city: ""
 
-  networking:
-    server: 32248
-    rest: 32249
-    # Optional broker port
-    broker: 32250
-    # master node is not needed for REST node
-    # Optional external & local IP instead of the default values
-    external_ip: ""
-    local_ip: ""
-    # Proxy IP used by Nginx or other loadbalancer
-    k8s_proxy_ip: 172.104.180.110
+general:
+  # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
+  NODE_TYPE: publisher
+  # Name of the AnyLog instance
+  NODE_NAME: anylog-publisher
+  # Owner of the AnyLog instance
+  COMPANY_NAME: New Company
+  # Coordinates of the machine - used by Grafana to map the network
+  LOCATION: ""
+  # Country where machine is located
+  COUNTRY: ""
+  # State where machine is located
+  STATE: ""
+  # City where machine is located
+  CITY: ""
 
-  authentication:
-    enable: false
-    type: ""
-    user: ""
-    password: ""
+networking:
+  # External IP address of the machine
+  EXTERNAL_IP: ""
+  # Local or  internal network IP address of the machine
+  LOCAL_IP: ""
+  # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
+  PROXY_IP: ""
+  # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
+  ANYLOG_SERVER_PORT: 32248
+  # Port address used by AnyLog's REST protocol
+  ANYLOG_REST_PORT: 32249
+  # Port value to be used as an MQTT borker, or some other third-party broker
+  ANYLOG_BROKER_PORT: ""
 
-  blockchain:
-    ledger_conn: 45.79.74.39:32048
-    sync_time: 30 seconds
-    source: master
-    destination: file
+database:
+  # Physical database type
+  DB_TYPE: sqlite
+  # Username for SQL database connection
+  DB_USER: ""
+  # Password correlated to database user
+  DB_PASSWD: ""
+  # Database IP address
+  DB_IP: 127.0.0.1
+  # Database port number
+  DB_PORT: 5432
+  # Whether to set autocommit data
+  AUTOCOMMIT: false
+  # Whether to start to start system_query logical database
+  SYSTEM_QUERY: false
+  # Run system_query using in-memory SQLite. If set to false, will use pre-set database type
+  MEMORY: False
+  # Whether to enable NoSQL logical database
+  NOSQL_ENABLE: false
+  # Physical database type
+  NOSQL_TYPE: mongo
+  # Username for SQL database connection
+  NOSQL_USER: ""
+  # Password correlated to database user
+  NOSQL_PASSWD: ""
+  # Database IP address
+  NOSQL_IP: 127.0.0.1
+  # Database port number
+  NOSQL_PORT: 27017
+  # Store blobs in database
+  NOSQL_BLOBS_DBMS: true
+  # Store blobs in folder
+  NOSQL_BLOBS_FOLDER: true
+  # Compress stored blobs
+  NOSQL_BLOBS_COMPRESS: false
+  # Whether (re)store a blob if already exists
+  NOSQL_BLOBS_REUSE: true
 
-  database:
-    type: sqlite
-    #ip: postgres-svs
-    #port: 5432
-    #user: admin
-    #password: demo
-    # whether to have the node support system_query (ie querying data).
-    deploy_system_query: false
-    # whether to have system_publisher database to run against memory directly
-    memory: true
+blockchain:
+  # TCP connection information for Master Node
+  LEDGER_CONN: 127.0.0.1:32048
+  # How often to sync from blockchain
+  SYNC_TIME: 30 second
+  # Source of where the data is coming from
+  BLOCKCHAIN_SOURCE: master
+  # Where will the copy of the blockchain be stored
+  BLOCKCHAIN_DESTINATION: file
 
-  publisher:
-    compress: true
-    move: true
-    db_location: file_name[0]
-    table_location: file_name[1]
+operator:
+  # Operator ID
+  MEMBER: ""
+  # Owner of the cluster
+  CLUSTER_NAME: new-company-cluster
+  # Logical database name
+  DEFAULT_DBMS: test
+  # Whether of not to enable HA against the cluster
+  ENABLE_HA: false
+  # How many days back to sync between nodes
+  START_DATE: 30
+  # Whether to enable partitioning
+  ENABLE_PARTITIONS: false
+  # Which tables to partition
+  TABLE_NAME: "*"
+  # Which timestamp column to partition by
+  PARTITION_COLUMN: insert_timestamp
+  # Time period to partition by
+  PARTITION_INTERVAL: 14 days
+  # How many partitions to keep
+  PARTITION_KEEP: 6
+  # How often to check if an old partition should be removed
+  PARTITION_SYNC: 1 day
+  # Whether to create a new table in the operator
+  CREATE_TABLE: true
+  # Record data inserted on Operator
+  UPDAE_TSD_INFO: true
+  # Archive data coming in
+  ARCHIVE: true
+  # Compress JSON and SQL file(s) backup
+  COMPRESS_FILE: true
+  # How many threads to use in the operator process
 
-  mqtt:
-    enable: true
-    broker: rest
-    port: 32249
-#    user: ibglowct
-#    password: MSY4e009J7ts
-    log: false
-    topic:
-      name: anylogrest
-      db_name: "bring [dbms]"
-      table: "bring [table]"
-      timestamp: "bring [timestamp]"
-      value_type: float
-      value: "bring [value]"
+  OPERATOR_THREADS: 1
 
-  settings:
-    # whether to deploy a local script that extends the default startup script
-    deploy_local_script: "false"
-    # An optional parameter for the number of workers threads that process requests which are send to the provided IP and Port.
-    tcp_thread_pool: 6
-    # Amount of time (in seconds) until REST timeout
-    rest_timeout: 30
-    # The number of concurrent threads supporting HTTP requests.
-    rest_threads: 5
-    # Sets the number of threads supporting queries (the default is 3).
-    publisher_pool: 3
-    write_immediate: true
-    threshold_time : 60 seconds
-    threshold_volume: 10KB
+publisher:
+  # Location of logical database name within file name
+  DBMS_FILE_LOCATION: file_name[0]
+  # Location of table name within file name
+  TABLE_FILE_LOCATION: file_name[1]
+  # Compress JSON and SQL file(s) backup
+  PUBLISHER_COMPRESS_FILE: true
 
+mqtt:
+  # Whether to enable the default MQTT process
+  ENABLE_MQTT: false
+  # Whether to enable MQTT logging process
+  MQTT_LOG: false
+  # IP address of MQTT broker
+  MQTT_BROKER: driver.cloudmqtt.com
+  # Port associated with MQTT broker
+  MQTT_PORT: 18785
+  # User associated with MQTT broker
+  MQTT_USER: ibglowct
+  # Password associated with MQTT user
+  MQTT_PASSWD: MSY4e009J7ts
+  # Topic to get data for
+  MQTT_TOPIC: anylogedgex
+  # Logical database name
+  MQTT_DBMS: ""
+  # Table where to store data
+  MQTT_TABLE: rand_data
+  # Timestamp column name
+  MQTT_TIMESTAMP_COLUMN: now
+  # Value column name
+  MQTT_VALUE_COLUMN: bring [readings][][value]
+  # Column value type
+  MQTT_VALUE_COLUMN_TYPE: float
 
-
+advanced_settings:
+  # Whether to automatically run a local (or personalized) script at the end of the process
+  DEPLOY_LOCAL_SCRIPT: false
+  # Number of TCP threads
+  TCP_THREAD_POOL: 6
+  # How long to wait until REST timeout
+  REST_TIMEOUT: 30
+  # Number of REST threads
+  REST_THREADS: 5
+  # Number of parallel queries
+  QUERY_POOL: 3
+  # When data comes in write to database immidiately, as opposed to waiting for a full buffer
+  WRITE_IMMEDIATE: true
+  # If buffer is not full, how long to wait until pushing data through
+  THRESHOLD_TIME: 60 seconds
+  # Buffer size to reach, at which point data is pushed through
+  THRESHOLD_VOLUME: 10KB

@@ -1,100 +1,192 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
-  name: '{{ .Values.general.configmap_name }}'
+  namespace: '{{ .Values.metadata.namespace }}'
+  name: '{{ .Values.metadata.configmap_name }}'
   labels:
-    app: '{{ .Values.general.deployment_name }}'
+    app: '{{ .Values.metadata.deployment_name }}'
 data:
-  # general information
-  NODE_TYPE: '{{ .Values.configs.basic.node_type }}'
-  NODE_NAME: '{{ .Values.configs.basic.node_name }}'
-  COMPANY_NAME: '{{ .Values.configs.basic.company_name }}'
-  LOCATION: '{{ .Values.configs.basic.location }}'
-  COUNTRY: '{{ .Values.configs.basic.country }}'
-  STATE: '{{ .Values.configs.basic.state }}'
-  CITY: '{{ .Values.configs.basic.city }}'
+  # -- General --
+  # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
+  NODE_TYPE: '{{ .Values.general.NODE_TYPE }}'
+  # Name of the AnyLog instance
+  NODE_NAME: '{{ .Values.general.NODE_NAME }}'
+  # Owner of the AnyLog instance
+  COMPANY_NAME: '{{ .Values.general.COMPANY_NAME }}'
+  # Coordinates of the machine - used by Grafana to map the network
+  {{ if ne .Values.general.LOCATION "" }} 
+  LOCATION: '{{ .Values.general.LOCATION }}'
+  {{ end }}
+  # Country where machine is located
+  {{ if ne .Values.general.COUNTRY "" }}
+  COUNTRY: '{{ .Values.general.COUNTRY }}'
+  {{ end }} 
+  # State where machine is located
+  {{ if ne .Values.general.STATE "" }}
+  STATE: '{{ .Values.general.STATE }}'
+  {{ end }} 
+  # City where machine is located
+  {{ if ne .Values.general.CITY "" }}
+  CITY: '{{ .Values.general.CITY }}'
+  {{ end }} 
 
-  # networking
-  ANYLOG_SERVER_PORT: '{{ .Values.configs.networking.server }}'
-  ANYLOG_REST_PORT: '{{ .Values.configs.networking.rest }}'
-  ANYLOG_BROKER_PORT: '{{ .Values.configs.networking.broker }}'
-  EXTERNAL_IP: '{{ .Values.configs.networking.external_ip }}'
-  LOCAL_IP: '{{ .Values.configs.networking.local_ip }}'
-  {{- if .Values.configs.networking.k8s_proxy_ip }}
-  K8S_PROXY_IP: '{{ .Values.configs.networking.k8s_proxy_ip }}'
-  {{ end }}
-  # authentication
-  AUTHENTICATION: '{{ .Values.configs.authentication.enable }}'
-  AUTH_TYPE: '{{ .Values.configs.authentication.type }}'
-  USERNAME: '{{ .Values.configs.authentication.user }}'
-  PASSWORD: '{{ .Values.configs.authentication.password }}'
+  # -- Networking --
+  # External IP address of the machine
+  {{ if ne .Values.networking.EXTERNAL_IP "" }}
+  EXTERNAL_IP: '{{ .Values.networking.EXTERNAL_IP }}'
+  {{ end }} 
+  # Local or  internal network IP address of the machine
+  {{ if ne .Values.networking.LOCAL_IP "" }}
+  LOCAL_IP: '{{ .Values.networking.LOCAL_IP }}'
+  {{ end }} 
+  # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
+  {{ if ne .Values.networking.PROXY_IP "" }}
+  PROXY_IP: '{{ .Values.networking.PROXY_IP }}'
+  {{ end }} 
+  # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
+  ANYLOG_SERVER_PORT: '{{ .Values.networking.ANYLOG_SERVER_PORT }}'
+  # Port address used by AnyLog's REST protocol
+  ANYLOG_REST_PORT: '{{ .Values.networking.ANYLOG_REST_PORT }}'
+  # Port value to be used as an MQTT borker, or some other third-party broker
+  {{- if  .Values.networking.ANYLOG_BROKER_PORT }} 
+  ANYLOG_BROKER_PORT: '{{ .Values.networking.ANYLOG_BROKER_PORT }}'
+  {{ end }} 
 
-  # blockchain
-  {{- if .Values.configs.blockchain }}
-  LEDGER_CONN: '{{ .Values.configs.blockchain.ledger_conn }}'
-  SYNC_TIME: '{{ .Values.configs.blockchain.sync_time }}'
-  SOURCE: '{{ .Values.configs.blockchain.source }}'
-  DESTINATION: '{{ .Values.configs.blockchain.destination }}'
-  {{ end }}
-  # database
-  {{- if .Values.configs.database }}
-  DB_TYPE: '{{ .Values.configs.database.type }}'
-  DB_IP: '{{ .Values.configs.database.ip }}'
-  DB_PORT: '{{ .Values.configs.database.port }}'
-  DB_USER: '{{ .Values.configs.database.user }}'
-  DB_PASSWD: '{{ .Values.configs.database.password }}'
-  DEPLOY_SYSTEM_QUERY: '{{ .Values.configs.database.deploy_system_query }}'
-  MEMORY: '{{ .Values.configs.database.memory }}'
-  {{ end }}
-  # operator params
-  {{- if .Values.configs.operator }}
-  MEMBER: '{{ .Values.configs.operator.memory }}'
-  CLUSTER_NAME: '{{ .Values.configs.operator.cluster_name }}'
-  # run operator params
-  CREATE_TABLE: '{{ .Values.configs.operator.create_table }}'
-  UPDATE_TSD_INFO: '{{ .Values.configs.operator.update_tsd }}'
-  ARCHIVE: '{{ .Values.configs.operator.archive }}'
-  DEFAULT_DBMS:  '{{ .Values.configs.operator.db_name }}'
-  # partitioning
-  ENABLE_PARTITION: '{{ .Values.configs.operator.partition.enable }}'
-  TABLE_NAME: '{{ .Values.configs.operator.partition.table }}'
-  PARTITION_COLUMN: '{{ .Values.configs.operator.partition.column }}'
-  PARTITION_INTERVAL: '{{ .Values.configs.operator.partition.interval }}'
-  PARTITION_KEEP: '{{ .Values.configs.operator.partition.keep }}'
-  PARTITION_SYNC: '{{ .Values.configs.operator.partition.sync }}'
-  {{ end }}
+  # -- Database --
+  # --> SQL
+  # Physical database type
+  DB_TYPE: '{{ .Values.database.DB_TYPE }}'
+  # Username for SQL database connection
+  DB_USER: '{{ .Values.database.DB_USER }}'
+  # Password correlated to database user
+  DB_PASSWD: '{{ .Values.database.DB_PASSWD }}'
+  # Database IP address
+  DB_IP: '{{ .Values.database.DB_IP }}'
+  # Database port number
+  DB_PORT: '{{ .Values.database.DB_PORT }}'
+  # Whether to set autocommit data
+  AUTOCOMMIT: '{{ .Values.database.AUTOCOMMIT }}'
+  # Whether to start to start system_query logical database
+  SYSTEM_QUERY: '{{ .Values.database.SYSTEM_QUERY }}'
+  # Run system_query using in-memory SQLite. If set to false, will use pre-set database type
+  MEMORY: '{{ .Values.database.MEMORY }}'
+  # --> NoSQL
+  # Whether to enable NoSQL logical database
+  NOSQL_ENABLE: '{{ .Values.database.NOSQL_ENABLE }}'
+  # Physical database type
+  NOSQL_TYPE: '{{ .Values.database.NOSQL_TYPE }}'
+  # Username for SQL database connection
+  NOSQL_USER: '{{ .Values.database.NOSQL_USER }}'
+  # Password correlated to database user
+  NOSQL_PASSWD: '{{ .Values.database.NOSQL_PASSWD }}'
+  # Database IP address
+  NOSQL_IP: '{{ .Values.database.NOSQL_IP }}'
+  # Database port number
+  NOSQL_PORT: '{{ .Values.database.NOSQL_PORT }}'
+  # Store blobs in database
+  NOSQL_BLOBS_DMBS: '{{ .Values.database.NOSQL_BLOBS_DMBS }}'
+  # Store blobs in folder
+  NOSQL_BLOBS_FOLDER: '{{ .Values.database.NOSQL_BLOBS_FOLDER }}'
+  # Compress stored blobs
+  NOSQL_BLOBS_COMPRESS: '{{ .Values.database.NOSQL_BLOBS_COMPRESS }}'
+  # Whether (re)store a blob if already exists
+  NOSQL_BLOBS_REUSE: '{{ .Values.database.NOSQL_BLOBS_REUSE }}'
 
-  # publisher params
-  {{- if .Values.configs.publisher }}
-  COMPRESS_JSON: '{{ .Values.configs.publisher.compress }}'
-  MOVE_JSON: '{{ .Values.configs.publisher.move }}'
-  DBMS_FILE_LOCATION: '{{ .Values.configs.publisher.db_location }}'
-  TABLE_FILE_LOCATION: '{{ .Values.configs.publisher.file_location }}'
-  {{ end }}
+  #-- BLOCKCHAIN --
+  # TCP connection information for Master Node
+  LEDGER_CONN: '{{ .Values.blockchain.LEDGER_CONN }}'
+  # How often to sync from blockchain
+  SYNC_TIME: '{{ .Values.blockchain.SYNC_TIME }}'
+  # Source of where the data is coming from
+  BLOCKCHAIN_SOURCE: '{{ .Values.blockchain.BLOCKCHAIN_SOURCE }}'
+  # Where will the copy of the blockchain be stored
+  BLOCKCHAIN_DESTINATION: '{{ .Values.blockchain.BLOCKCHAIN_DESTINATION }}'
 
-  # mqtt
-  {{- if .Values.configs.mqtt }}
-  MQTT_ENABLE: '{{ .Values.configs.mqtt.enable }}'
-  BROKER: '{{ .Values.configs.mqtt.broker }}'
-  MQTT_PORT: '{{ .Values.configs.mqtt.port }}'
-  MQTT_USER: '{{ .Values.configs.mqtt.user }}'
-  MQTT_PASSWORD: '{{ .Values.configs.mqtt.password }}'
-  MQTT_LOG: '{{ .Values.configs.mqtt.log }}'
-  MQTT_TOPIC_NAME: '{{ .Values.configs.mqtt.topic.name }}'
-  MQTT_TOPIC_DBMS: '{{ .Values.configs.mqtt.topic.db_name }}'
-  MQTT_TOPIC_TABLE: '{{ .Values.configs.mqtt.topic.table }}'
-  MQTT_COLUMN_TIMESTAMP: '{{ .Values.configs.mqtt.topic.timestamp }}'
-  MQTT_COLUMN_VALUE_TYPE: '{{ .Values.configs.mqtt.topic.value_type }}'
-  MQTT_COLUMN_VALUE: '{{ .Values.configs.mqtt.topic.value }}'
-  {{ end }}
+  #-- Operator --
+  # Operator ID
+  MEMBER: '{{ .Values.operator.Member }}'
+  # Owner of the cluster
+  CLUSTER_NAME: '{{ .Values.operator.CLUSTER_NAME }}'
+  # Logical database name
+  DEFAULT_DBMS: '{{ .Values.operator.DEFAULT_DBMS }}'
+  # Whether of not to enable HA against the cluster
+  ENABLE_HA: '{{ .Values.operator.ENABLE_HA }}'
+  # How many days back to sync between nodes
+  START_DATE: '{{ .Values.operator.START_DATE }}'
+  # Whether to enable partitioning
+  ENABLE_PARTITIONS: '{{ .Values.operator.ENABLE_PARTITIONS }}'
+  # Which tables to partition
+  TABLE_NAME: '{{ .Values.operator.TABLE_NAME }}'
+  PARTITION_COLUMN: '{{ .Values.operator.PARTITION_COLUMN }}'
+  # Time period to partition by
+  PARTITION_INTERVAL: '{{ .Values.operator.PARTITION_INTERVAL }}'
+  # How many partitions to keep
+  PARTITION_KEEP: '{{ .Values.operator.PARTITION_KEEP }}'
+  # How often to check if an old partition should be removed
+  PARTITION_SYNC: '{{ .Values.operator.PARTITION_SYNC }}'
+  # Whether to create a new table in the operator
+  CREATE_TABLE: '{{ .Values.operator.CREATE_TABLE }}'
+  # Record data inserted on Operator
+  UPDAE_TSD_INFO: '{{ .Values.operator.UPDAE_TSD_INFO }}'
+  # Archive data coming in
+  ARCHIVE: '{{ .Values.operator.ARCHIVE }}'
+  # Compress JSON and SQL file(s) backup
+  COMPRESS_FILE: '{{ .Values.operator.COMPRESS_FILE }}'
+  # How many threads to use in the operator process
+  OPERATOR_THREADS: '{{ .Values.operator.OPERATOR_THREADS }}'
 
-  # settings
-  DEPLOY_LOCAL_SCRIPT: '{{ .Values.configs.settings.deploy_local_script }}'
-  TCP_THREAD_POOL: '{{ .Values.configs.settings.tcp_thread_pool }}'
-  REST_TIMEOUT: '{{ .Values.configs.settings.rest_timeout }}'
-  REST_THREADS: '{{ .Values.configs.settings.rest_threads }}'
-  QUERY_POOL: '{{ .Values.configs.settings.query_pool }}'
-  WRITE_IMMEDIATE: '{{ .Values.configs.settings.write_immediate }}'
-  THRESHOLD_TIME: '{{ .Values.configs.settings.threshold_time }}'
-  THRESHOLD_VOLUME: '{{ .Values.configs.settings.threshold_volume }}'
+  # -- Publisher --
+  # Location of logical database name within file name
+  DBMS_FILE_LOCATION: '{{ .Values.publisher.DBMS_FILE_LOCATION }}'
+  # Location of table name within file name
+  TABLE_FILE_LOCATION: '{{ .Values.publisher.TABLE_FILE_LOCATION }}'
+  # Compress JSON and SQL file(s) backup
+  PUBLISHER_COMPRESS_FILE: '{{ .Values.publisher.PUBLISHER_COMPRESS_FILE }}'
+
+  #-- Authentication --
+
+  #-- MQTT --
+  # Whether to enable the default MQTT process
+  ENABLE_MQTT: '{{ .Values.mqtt.ENABLE_MQTT }}'
+  # Whether to enable MQTT logging process
+  MQTT_LOG: '{{ .Values.mqtt.MQTT_LOG }}'
+  # IP address of MQTT broker
+  MQTT_BROKER: '{{ .Values.mqtt.MQTT_BROKER }}'
+  # Port associated with MQTT broker
+  MQTT_PORT: '{{ .Values.mqtt.MQTT_PORT }}'
+  # User associated with MQTT broker
+  MQTT_USER: '{{ .Values.mqtt.MQTT_USER }}'
+  # Password associated with MQTT user
+  MQTT_PASSWD: '{{ .Values.mqtt.MQTT_PASSWD }}'
+  # Topic to get data for
+  MQTT_TOPIC: '{{ .Values.mqtt.MQTT_TOPIC }}'
+  # Logical database name
+  MQTT_DBMS: '{{ .Values.mqtt.MQTT_DBMS }}'
+  # Table where to store data
+  MQTT_TABLE: '{{ .Values.mqtt.MQTT_TABLE }}'
+  # Timestamp column name
+  MQTT_TIMESTAMP_COLUMN: '{{ .Values.mqtt.MQTT_TIMESTAMP_COLUMN }}'
+  # Value column name
+  MQTT_VALUE_COLUMN: '{{ .Values.mqtt.MQTT_VALUE_COLUMN }}'
+  # Column value type
+  MQTT_VALUE_COLUMN_TYPE: '{{ .Values.mqtt.MQTT_VALUE_COLUMN_TYPE }}'
+
+  #-- Advanced Settings --
+  # Whether to automatically run a local (or personalized) script at the end of the process
+  DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
+  # Number of TCP threads
+  TCP_THREAD_POOL: '{{ .Values.advanced_settings.TCP_THREAD_POOL }}'
+  # How long to wait until REST timeout
+  REST_TIMEOUT: '{{ .Values.advanced_settings.REST_TIMEOUT }}'
+  # Number of REST threads
+  REST_THREADS: '{{ .Values.advanced_settings.REST_THREADS }}'
+  # Number of parallel queries
+  QUERY_POOL: '{{ .Values.advanced_settings.QUERY_POOL }}'
+  # When data comes in write to database immidiately, as opposed to waiting for a full buffer
+  WRITE_IMMEDIATE: '{{ .Values.advanced_settings.WRITE_IMMEDIATE }}'
+  # If buffer is not full, how long to wait until pushing data through
+  THRESHOLD_TIME: '{{ .Values.advanced_settings.THRESHOLD_TIME }}'
+  # Buffer size to reach, at which point data is pushed through
+  THRESHOLD_VOLUME: '{{ .Values.advanced_settings.THRESHOLD_VOLUME }}'
+
+

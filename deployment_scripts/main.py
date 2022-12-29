@@ -3,11 +3,13 @@ import os
 
 import support
 import questionnaire
-import write_file
+import kubernetes_defaults_prep
+import write_docker
+import write_kubernetes
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 DEFAULT_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'configurations.json')
-
+KUBERNETES_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'kuberentes_configurations.json')
 
 NODE_TYPES = ['none', 'rest', 'master', 'operator', 'publisher', 'query', 'standalone', 'standalone-publisher']
 
@@ -34,6 +36,7 @@ def main():
             * develop
             * predevelop
             * test
+        --kubernetes-config-file
     :params:
         config_file:dict - content from configuration file
         configs:dict - removed un-needed configurations
@@ -46,6 +49,8 @@ def main():
                         help='Deployment type - docker generates .env file, kubernetes generates YAML file')
     parser.add_argument('--config-file', type=str, default=DEFAULT_CONFIG_FILE,
                         help='JSON file to get configurations from')
+    parser.add_argument('--kubernetes-config-file', type=str, default=KUBERNETES_CONFIG_FILE,
+                        help='JSON file with metadata, image and volume configurations for Kubernetes')
     args = parser.parse_args()
 
     # read configuration file
@@ -89,19 +94,30 @@ def main():
                 configs[section] = support.prepare_mqtt_params(configs=configs[section],
                                                                db_name=configs['operator']['DEFAULT_DBMS']['value'],
                                                                port=configs['networking']['ANYLOG_BROKER_PORT']['value'],
-                                                               user=configs['authentication']['AUTH_USER']['value'],
-                                                               password=configs['authentication']['AUTH_PASSWD']['value'])
+                                                               user=None, #configs['authentication']['AUTH_USER']['value'],
+                                                               password=None) #configs['authentication']['AUTH_PASSWD']['value'])
 
                 configs[section] = questionnaire.mqtt_questions(configs=configs[section])
             elif section == 'advanced settings':
                 configs[section] = questionnaire.advanced_settings(configs=configs[section])
             print('\n')
 
-        if args.deployment_type == 'docker':
-            write_file.write_docker_configs(node_type=args.node_type, configs=configs)
-            write_file.update_build_version(node_type=args.node_type,
-                                            container_name=configs['general']['NODE_NAME']['value'],
-                                            build=args.build)
+    if args.deployment_type == 'docker':
+        status, anylog_configs = write_docker.configure_dir(node_type=args.node_type)
+        if status is True:
+            write_docker.write_configs(configs=configs, anylog_configs=anylog_configs)
+            write_docker.update_build_version(node_type=args.node_type,
+                                                   container_name=configs['general']['NODE_NAME']['value'],
+                                                   build=args.build)
+    if args.deployment_type == 'kubernetes':
+        kubernetes_configs = kubernetes_defaults_prep.kubernetes_configurations(config_file=args.kubernetes_config_file,
+                                                                                node_name=configs['general']['NODE_NAME']['value'],
+                                                                                build=args.build)
+        anylog_configs_file, anylog_volume_file = write_kubernetes.configure_dir(node_type=args.node_type)
+        if status is True:
+            write_kubernetes.metadata_configs(configs=kubernetes_configs, anylog_configs_file=anylog_configs_file,
+                                              anylog_volume_file=anylog_volume_file)
+            write_kubernetes.write_configs(configs=configs, anylog_configs_file=anylog_configs_file)
 
 
 if __name__ == '__main__':
