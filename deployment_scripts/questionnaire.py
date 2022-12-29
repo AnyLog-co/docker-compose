@@ -571,7 +571,11 @@ def advanced_settings(configs:dict)->dict:
                         configs[param]['value'] = answer
                         status = True
                 else:
-                    configs[param]['value'] = configs[param]['default']
+                    if isinstance(configs[param]['default'], bool):
+                        configs[param]['value'] = str(configs[param]['default']).lower()
+                    else:
+                        configs[param]['value'] = configs[param]['default']
+
                     status = True
 
     return configs
