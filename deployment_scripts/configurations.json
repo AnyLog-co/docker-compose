@@ -114,28 +114,61 @@
         32767
       ],
       "value": ""
-    }
-  },
-  "authentication": {
-    "ENABLE": {
-      "question": "Enable Authentication",
-      "description": "Whether to enable AnyLog authentication",
-      "enable": true,
+    },
+    "TCP_BIND": {
+      "question": "Bind TCP Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": false,
+      "default": true,
+      "value": ""
+    },
+    "TCP_THREADS": {
+      "question": "TCP Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_BIND": {
+      "question": "Bind REST Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": false,
+      "default": true,
+      "value": ""
+    },
+    "REST_TIMEOUT": {
+      "question": "REST Timeout",
+      "description": "Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.",
+      "enable": false,
+      "default": 20,
+      "value": ""
+    },
+    "REST_THREADS": {
+      "question": "REST Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_SSL": {
+      "question": "Enable REST SSL",
+      "description": "Boolean value to determine if messages are send over HTTPS with client certificates.",
+      "enable": false,
       "default": false,
       "value": ""
     },
-    "ROOT_USER": {
-      "question": "Root Username",
-      "description": "Root username",
-      "enable": true,
-      "default": "admin",
+    "BROKER_BIND": {
+      "question": "Bind Message Broker Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": false,
+      "default": true,
       "value": ""
     },
-    "ROOT_PASSWD": {
-      "question": "Root user password",
-      "description": "Password associated with root",
-      "enable": true,
-      "default": "",
+    "BROKER_THREADS": {
+      "question": "Broker Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
       "value": ""
     }
   },
@@ -615,27 +648,6 @@
       "enable": true,
       "default": "false",
       "options": ["true", "false"],
-      "value": ""
-    },
-    "TCP_THREAD_POOL": {
-      "question": "TCP Thread Count",
-      "description": "Number of TCP threads",
-      "enable": false,
-      "default": 6,
-      "value": ""
-    },
-    "REST_TIMEOUT": {
-      "question": "REST Timeout",
-      "description": "How long to wait until REST timeout",
-      "enable": false,
-      "default": 30,
-      "value": ""
-    },
-    "REST_THREADS": {
-      "question": "REST Threads",
-      "description": "Number of REST threads",
-      "enable": false,
-      "default": 5,
       "value": ""
     },
     "QUERY_POOL": {
