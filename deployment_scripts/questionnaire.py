@@ -159,6 +159,11 @@ def generic_questions(configs:dict)->dict:
                 configs[param]['value'] = configs[param]['default']
             else:
                 configs[param]['value'] = answer
+        else:
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     return configs
 
@@ -193,7 +198,10 @@ def networking_questions(configs:dict):
                     configs[param]['value'] = configs[param]['default']
                     status = True
         else:
-            configs[param]['value'] = configs[param]['default']
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     configs['ANYLOG_REST_PORT'], configs['ANYLOG_BROKER_PORT'] = __validate_ports(tcp_port=configs['ANYLOG_SERVER_PORT']['value'],
                                                                                   rest_info=configs['ANYLOG_REST_PORT'],
@@ -245,6 +253,11 @@ def database_questions(configs:dict)->dict:
                 for prm in configs:
                     if 'NOSQL' in param:
                         configs[prm]['enable'] = False
+        else:
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     if configs['DB_TYPE']['value'] != 'sqlite': # if missing username and/or password then set DB_TYPE back to sqlite
         if configs['DB_USER']['value'] == "" or configs['DB_PASSWD']['value'] == "":
@@ -306,7 +319,10 @@ def blockchain_questions(configs:dict)->dict:
                         configs[param]['value'] = configs[param]['default']
                         status = True
         else:
-            configs[param]['value'] = configs[param]['default']
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     return configs
 
@@ -385,8 +401,10 @@ def operator_questions(configs:dict)->dict:
                     configs[param]['value'] = configs[param]['default']
                     status = True
         else:
-            configs[param]['value'] = configs[param]['default']
-            status = True
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     return configs
 
@@ -433,6 +451,12 @@ def publisher_questions(configs:dict)->dict:
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
+        else:
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
+
     return configs
 
 
@@ -476,6 +500,11 @@ def authentication_questions(configs:dict)->dict:
                 for sub_param in configs:
                     if sub_param != 'AUTHENTICATION':
                         configs[sub_param]['enable'] = False
+        else:
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     return configs
 
@@ -517,6 +546,11 @@ def mqtt_questions(configs:dict)->dict:
                 for sub_param in configs:
                     if sub_param != "ENABLE_MQTT":
                         configs[sub_param]['enable'] = False
+        else:
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     return configs
 
@@ -570,12 +604,10 @@ def advanced_settings(configs:dict)->dict:
                     else:
                         configs[param]['value'] = answer
                         status = True
-                else:
-                    if isinstance(configs[param]['default'], bool):
-                        configs[param]['value'] = str(configs[param]['default']).lower()
-                    else:
-                        configs[param]['value'] = configs[param]['default']
-
-                    status = True
+        else:
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     return configs
