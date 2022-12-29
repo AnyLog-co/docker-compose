@@ -604,6 +604,12 @@ def advanced_settings(configs:dict)->dict:
                     else:
                         configs[param]['value'] = answer
                         status = True
+                else: 
+                    if isinstance(configs[param]['default'], bool):
+                        configs[param]['value'] = str(configs[param]['default']).lower()
+                    else:
+                        configs[param]['value'] = configs[param]['default']
+                    status = True 
         else:
             if isinstance(configs[param]['default'], bool):
                 configs[param]['value'] = str(configs[param]['default']).lower()
