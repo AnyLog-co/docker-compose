@@ -121,6 +121,8 @@ def write_configs(configs:dict, anylog_configs:str):
         __write_line(file_name=anylog_configs, input_line=f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---')
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
+            if configs[section][param]['default'] != "": 
+                comment += f" [Default: {configs[section][param]['default']}]" 
             if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
                 value = str(configs[section][param]['value']).replace('\n', '')
                 if value == '':

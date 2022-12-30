@@ -118,8 +118,8 @@
     "TCP_BIND": {
       "question": "Bind TCP Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": false,
-      "default": true,
+      "enable": true,
+      "default": false,
       "value": ""
     },
     "TCP_THREADS": {
@@ -132,7 +132,7 @@
     "REST_BIND": {
       "question": "Bind REST Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": false,
+      "enable": true,
       "default": true,
       "value": ""
     },

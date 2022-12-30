@@ -104,6 +104,9 @@ def write_configs(configs:dict, anylog_configs_file:str):
         content += f"\n{config.replace(' ', '_')}:"
         for param in configs[config]:
             content += f"\n  # {configs[config][param]['description']}"
+            if configs[section][param]['default'] != "": 
+                content += f" [Default: {configs[section][param]['default']}]" 
+ 
             if configs[config][param]['value'] == '':
                 if configs[config][param]["default"] == '':
                     content += f'\n  {param}: ""'
