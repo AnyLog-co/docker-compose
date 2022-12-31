@@ -57,7 +57,7 @@ def main():
     configs_file = os.path.expandvars(os.path.expanduser(args.config_file))
     if not os.path.isfile(configs_file):
         print(f'Failed to locate file {configs_file}')
-        exit(1) 
+        exit(1)
 
     config_file = support.json_read_file(file_name=configs_file)
     if not config_file:

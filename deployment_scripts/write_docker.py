@@ -138,7 +138,7 @@ def write_configs(configs:dict, anylog_configs:str):
             else:
                 line = f"{param}=<{section.upper()}_{param.upper()}>"
 
-            if line == f"{param}=<{section.upper()}_{param.upper()}>":
+            if line == f"{param}=<{section.upper()}_{param.upper()}>" or f'{param}=""':
                 line = f"#{line}"
             line = f"# {comment}\n{line}"
             __write_line(file_name=anylog_configs, input_line=f"\n{line}")
