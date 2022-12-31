@@ -113,7 +113,7 @@ def main():
         kubernetes_configs = kubernetes_defaults_prep.kubernetes_configurations(config_file=args.kubernetes_config_file,
                                                                                 node_name=configs['general']['NODE_NAME']['value'],
                                                                                 build=args.build)
-        anylog_configs_file, = write_kubernetes.configure_dir(node_type=args.node_type)
+        anylog_configs_file = write_kubernetes.configure_dir(node_type=args.node_type)
         if status is True:
             write_kubernetes.metadata_configs(configs=kubernetes_configs, anylog_configs_file=anylog_configs_file)
             write_kubernetes.write_configs(configs=configs, anylog_configs_file=anylog_configs_file)
