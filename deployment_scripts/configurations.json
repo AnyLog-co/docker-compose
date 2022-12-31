@@ -139,7 +139,7 @@
     "REST_TIMEOUT": {
       "question": "REST Timeout",
       "description": "Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.",
-      "enable": false,
+      "enable": true,
       "default": 20,
       "value": ""
     },
@@ -160,8 +160,8 @@
     "BROKER_BIND": {
       "question": "Bind Message Broker Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": false,
-      "default": true,
+      "enable": true,
+      "default": false,
       "value": ""
     },
     "BROKER_THREADS": {

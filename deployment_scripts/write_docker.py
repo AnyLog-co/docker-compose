@@ -123,9 +123,9 @@ def write_configs(configs:dict, anylog_configs:str):
             comment = configs[section][param]['description'].replace('\n', '')
             if configs[section][param]['default'] != "": 
                 comment += f" [Default: {configs[section][param]['default']}]" 
-            if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+            if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY', 'MQTT_USER', 'MQTT_PASSWD']:
                 value = str(configs[section][param]['value']).replace('\n', '')
-                if value == '':
+                if value == '' or value == 'None':
                     line = f'{param}=<{section.upper()}_{param.upper()}>'
                 else:
                     line = f"{param}={value}"
