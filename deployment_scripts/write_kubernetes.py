@@ -113,6 +113,8 @@ def write_configs(configs:dict, anylog_configs_file:str):
                     content += f'\n  {param}: {configs[config][param]["default"]}'
                     if param == 'NODE_NAME':
                         node_name = configs[config][param]['default']
+            elif param in ['MQTT_USER', 'MQTT_PASSWD'] and configs[config][param]['value'] == 'None':
+                content += f'\n  {param}: ""'
             else:
                 content += f'\n  {param}: {configs[config][param]["value"]}'
                 if param == 'NODE_NAME':
