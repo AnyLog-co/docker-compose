@@ -3,7 +3,7 @@ from write_docker import __create_file, __write_line
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
 
-def configure_dir(node_type:str)->(str, str):
+def configure_dir(node_type:str)->str:
     """
     Configure directory & create backup of configs if exists)
     :process:
@@ -19,7 +19,7 @@ def configure_dir(node_type:str)->(str, str):
         dir_path:str - docker directory path where configs are stored
         anylog_configs_file:str - configurations file (full path)
     :return:
-        status, anylog_configs_file
+        anylog_configs_file
     """
     dir_path = os.path.join(ROOT_PATH, 'helm', 'sample-configurations')
     anylog_configs_file = os.path.join(dir_path, 'anylog_%s.yaml' % node_type)
