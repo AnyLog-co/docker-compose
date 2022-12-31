@@ -100,27 +100,28 @@ def write_configs(configs:dict, anylog_configs_file:str):
         section = config
         content += f"\n{config.replace(' ', '_')}:"
         for param in configs[config]:
+            value = None
             content += f"\n  # {configs[config][param]['description']}"
-            if configs[section][param]['default'] != "":
-                content += f" [Default: {configs[section][param]['default']}]" 
- 
-            if configs[config][param]['value'] == '':
-                if configs[config][param]["default"] == '':
-                    content += f'\n  {param}: ""'
-                elif param == 'LOCATION' or param in ['COUNTRY', 'STATE', 'CITY']:
-                    content += f'\n  {param}: ""'
-                else:
-                    content += f'\n  {param}: {configs[config][param]["default"]}'
-                    if param == 'NODE_NAME':
-                        node_name = configs[config][param]['default']
-            elif param in ['MQTT_USER', 'MQTT_PASSWD'] and configs[config][param]['value'] == 'None':
-                content += f'\n  {param}: ""'
-            else:
-                content += f'\n  {param}: {configs[config][param]["value"]}'
-                if param == 'NODE_NAME':
-                    node_name = configs[config][param]['default']
-        content += "\n"
+            if param == 'NODE_NAME':
+                node_name = configs[config][param]['default']
 
+            if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                value = str(configs[section][param]['value']).replace('\n', '')
+            elif param in ['MQTT_USER', 'MQTT_PASSWD']:
+                value = str(configs[section][param]['value']).replace('\n', '')
+            if value == '' or value == 'None':
+                value = '""'
+
+            if value is None:
+                if configs[config][param]['value'] == "" and configs[section][param]['default'] != "":
+                    value = '""'
+                elif configs[config][param]['value'] == "":
+                    value = configs[section][param]['default']
+                else:
+                    value = configs[config][param]['value']
+
+            content += f'\n  {param}: {value}'
+        content += "\n"
     __write_line(file_name=anylog_configs_file,  input_line=content)
 
 
