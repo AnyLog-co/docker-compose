@@ -60,6 +60,51 @@
       "value": ""
     }
   },
+  "authentication": {
+    "ENABLE_REST_AUTH": {
+      "question": "Enable Basic REST Authentication",
+      "description": "Whether or not to enable authentication when accessing node via REST",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
+    "NODE_PASSWORD": {
+      "question": "Node Password",
+      "description": "Provide a password to protect sensitive information that is kept on the node",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "USER_NAME": {
+      "question": "User Name",
+      "description": "user that can connect to this node",
+      "enable": false,
+      "default": "user1",
+      "default": ""
+    },
+    "USER_PASSWORD": {
+      "question": "User Password",
+      "description": "Password associated with the user",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "USER_TYPE": {
+      "question": "User Type",
+      "description": "The type of user",
+      "enable": false,
+      "options": [
+        "admin",
+        "user"
+      ],
+      "default": "admin",
+      "value": ""
+    }
+  },
   "networking": {
     "EXTERNAL_IP": {
       "question": "External IP",
