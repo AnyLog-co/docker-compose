@@ -195,6 +195,9 @@ def networking_questions(configs:dict):
         else:
             configs[param]['value'] = configs[param]['default']
 
+        if param == 'ANYLOG_BROKER_PORT' and configs[param]['value'] == '':
+            configs['BROKER_BIND']['enable'] = False
+
     configs['ANYLOG_REST_PORT'], configs['ANYLOG_BROKER_PORT'] = __validate_ports(tcp_port=configs['ANYLOG_SERVER_PORT']['value'],
                                                                                   rest_info=configs['ANYLOG_REST_PORT'],
                                                                                   broker_info=configs['ANYLOG_BROKER_PORT'])
@@ -440,8 +443,8 @@ def authentication_questions(configs:dict)->dict:
     """
     Generate questions for authentication configurations
     :notes:
-        need to write code in AnyLog deployment script to support authentication. As such, process is disabled in 
-        deployment main.  
+        need to write code in AnyLog deployment script to support authentication. As such, process is disabled in
+        deployment main.
     :args:
         configs:dict - database configurations
     :params:
@@ -452,7 +455,26 @@ def authentication_questions(configs:dict)->dict:
     :return:
         updated configs
     """
-    for param in configs:
+    for param in ['ENABLE_REST_AUTH']:
+        error_msg = ""
+        full_question = __generate_question(configs=configs[param])
+        status = False
+        while status is False:
+            answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                    param=param, error_msg=error_msg)
+            if answer not in ['true', 'false'] and answer != '':
+                error_msg = f"Invalid value {answer}. Please try again... "
+            elif answer == '':
+                configs[param]['value'] = configs[param]['default']
+                status = True
+            else:
+                configs[param]['value'] = answer
+                status = True
+            if param == 'ENABLE_REST_AUTH' and answer == 'true':
+                for key in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE']:
+                    configs[key]['enable'] = True
+
+    for param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE']:
         if configs[param]['enable'] is True:
             error_msg = ""
             full_question = __generate_question(configs=configs[param])
@@ -460,22 +482,21 @@ def authentication_questions(configs:dict)->dict:
             while status is False:
                 answer = __ask_question(question=full_question, description=configs[param]['description'],
                                         param=param, error_msg=error_msg)
-                if param in ['AUTHENTICATION', 'AUTH_TYPE']:
-                    if answer not in configs[param]['options']:
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    else:
-                        configs[param]['value'] = answer
-                        status = True
-                elif answer != '':
-                    configs[param]['value'] = answer
-                    status = True
-                else:
+                if param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD'] and answer == '':
+                    error_msg = f"Value for {param} cannot be blank, please try again. "
+                elif param == 'USER_TYPE' and answer not in configs[param]['options'] and answer != '':
+                    error_msg = f"Invalid {param} value - {answer}, please try again. "
+                elif param == 'USER_TYPE' and answer == '':
                     configs[param]['value'] = configs[param]['default']
                     status = True
-            if param == 'AUTHENTICATION' and configs[param]['value'] == 'false':
-                for sub_param in configs:
-                    if sub_param != 'AUTHENTICATION':
-                        configs[sub_param]['enable'] = False
+                else:
+                    configs[param]['value'] = answer
+                    status = True
+        else:
+            if isinstance(configs[param]['default'], bool):
+                configs[param]['value'] = str(configs[param]['default']).lower()
+            else:
+                configs[param]['value'] = configs[param]['default']
 
     return configs
 

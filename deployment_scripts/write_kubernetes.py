@@ -2,14 +2,15 @@ import os
 from write_docker import __create_file, __write_line
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
-def configure_dir(node_type:str)->(str, str):
+
+def configure_dir(node_type:str)->str:
     """
     Configure directory & create backup of configs if exists)
     :process:
         1. create directory path if DNE
         Iterate through configs and volume file
             1. check if file exists
-            2. if exists then make a bakup
+            2. if exists then make a backup
             3. create file
     :args:
         node_type:str - AnyLog node type
@@ -40,8 +41,7 @@ def configure_dir(node_type:str)->(str, str):
         if status is True:
             __create_file(file_name=file_name)
 
-
-    return anylog_configs_file, anylog_volume_file
+    return anylog_configs_file
 
 
 def metadata_configs(configs:dict, anylog_configs_file:str, anylog_volume_file:str)->str:

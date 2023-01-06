@@ -77,6 +77,8 @@ def main():
             print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
             if section == 'general':
                 configs['general'] = questionnaire.generic_questions(configs=configs[section])
+            elif section == 'authentication':
+                configs['authentication'] = questionnaire.authentication_questions(configs=configs[section])
             elif section == 'networking':
                 configs[section] = questionnaire.networking_questions(configs=configs[section])
             elif section == 'database':

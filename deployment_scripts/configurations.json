@@ -84,7 +84,7 @@
       "description": "user that can connect to this node",
       "enable": false,
       "default": "user1",
-      "default": ""
+      "value": ""
     },
     "USER_PASSWORD": {
       "question": "User Password",

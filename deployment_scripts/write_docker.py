@@ -121,26 +121,26 @@ def write_configs(configs:dict, anylog_configs:str):
         __write_line(file_name=anylog_configs, input_line=f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---')
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
-            if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
-                value = str(configs[section][param]['value']).replace('\n', '')
-                if value == '':
-                    line = f'{param}=<{section.upper()}_{param.upper()}>'
-                else:
-                    line = f"{param}={value}"
-            elif configs[section][param]['value'] != '':
-                value = str(configs[section][param]['value']).replace('\n', '')
-                line = f"{param}={value}"
-            elif configs[section][param]['default'] != '':
-                value = str(configs[section][param]['default']).replace('\n', '')
-                line = f"{param}={value}"
-            else:
-                line = f"{param}=<{section.upper()}_{param.upper()}>"
+            if configs[section][param]['default'] != "":
+                comment += f" [Default: {configs[section][param]['default']}]"
 
-            if line == f"{param}=<{section.upper()}_{param.upper()}>":
-                line = f"#{line}"
+            default = str(configs[section][param]['default']).strip().replace('\n', '')
+            value = str(configs[section][param]['value']).strip().replace('\n', '')
+
+            if value == "" and default == "":
+                line = f"#{param}=<{section.upper()}_{param.upper()}>"
+            elif value == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                line = f"#{param}=<{section.upper()}_{param.upper()}>"
+            elif value == "" and default != "":
+                line = f"{param}={default}"
+            else:
+                line = f"{param}={value}"
+
             line = f"# {comment}\n{line}"
             __write_line(file_name=anylog_configs, input_line=f"\n{line}")
+
         __write_line(file_name=anylog_configs, input_line="\n\n")
+
 
 
 def update_build_version(node_type:str, container_name:str, build:str):
