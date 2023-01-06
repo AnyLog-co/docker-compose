@@ -2,8 +2,7 @@ import os
 from write_docker import __create_file, __write_line
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
-
-def configure_dir(node_type:str)->str:
+def configure_dir(node_type:str)->(str, str):
     """
     Configure directory & create backup of configs if exists)
     :process:
@@ -19,15 +18,17 @@ def configure_dir(node_type:str)->str:
         dir_path:str - docker directory path where configs are stored
         anylog_configs_file:str - configurations file (full path)
     :return:
-        anylog_configs_file
+        status, anylog_configs_file
     """
     dir_path = os.path.join(ROOT_PATH, 'helm', 'sample-configurations')
     anylog_configs_file = os.path.join(dir_path, 'anylog_%s.yaml' % node_type)
+    # there's no need for creating a volume specific file as all volume info is also in `anylog_configs_file`
+    # anylog_volume_file = os.path.join(dir_path, 'anylog_%s_volume.yaml' % node_type)
 
     if not os.path.isdir(dir_path):
         os.makedirs(dir_path)
 
-    for file_name in [anylog_configs_file]:
+    for file_name in [anylog_configs_file]: #, anylog_volume_file]:
         status = True
         if os.path.isfile(file_name):
             try:
@@ -39,15 +40,17 @@ def configure_dir(node_type:str)->str:
         if status is True:
             __create_file(file_name=file_name)
 
-    return anylog_configs_file
+
+    return anylog_configs_file, anylog_volume_file
 
 
-def metadata_configs(configs:dict, anylog_configs_file:str)->str:
+def metadata_configs(configs:dict, anylog_configs_file:str, anylog_volume_file:str)->str:
     """
     write Kubernetes (metadata) configurations
     :args:
         configs:dict - user defined configurations
         anylog_configs_file:str - file path to store AnyLog configs
+        anylog_volume_file:str - volumes file path
     :param:
         content:str - formatted metadata configs
     :return:
@@ -81,12 +84,13 @@ def metadata_configs(configs:dict, anylog_configs_file:str)->str:
                             content += f"\n    {param.lower()}: {configs[config][sub_config][param]['value']}"
         content += "\n\n"
 
-    __write_line(file_name=anylog_configs_file, input_line=content)
+    for file_name in [anylog_configs_file, anylog_volume_file]:
+        __write_line(file_name=file_name, input_line=content)
 
 
 def write_configs(configs:dict, anylog_configs_file:str):
     """
-    Write configurations for kubernetes (YAML) files
+    Write configuratons for kubernetes (YAML) files
     :args:
         configs:dict - user defined configurations
         anylog_configs_file:str - file path to store AnyLog configs
@@ -97,31 +101,24 @@ def write_configs(configs:dict, anylog_configs_file:str):
     node_name = 'anylog'
 
     for config in configs:
-        section = config
         content += f"\n{config.replace(' ', '_')}:"
         for param in configs[config]:
-            value = None
             content += f"\n  # {configs[config][param]['description']}"
-            if param == 'NODE_NAME':
-                node_name = configs[config][param]['default']
-
-            if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
-                value = str(configs[section][param]['value']).replace('\n', '')
-            elif param in ['MQTT_USER', 'MQTT_PASSWD']:
-                value = str(configs[section][param]['value']).replace('\n', '')
-            if value == '' or value == 'None':
-                value = '""'
-
-            if value is None:
-                if configs[config][param]['value'] == "" and configs[section][param]['default'] != "":
-                    value = '""'
-                elif configs[config][param]['value'] == "":
-                    value = configs[section][param]['default']
+            if configs[config][param]['value'] == '':
+                if configs[config][param]["default"] == '':
+                    content += f'\n  {param}: ""'
+                elif param == 'LOCATION' or param in ['COUNTRY', 'STATE', 'CITY']:
+                    content += f'\n  {param}: ""'
                 else:
-                    value = configs[config][param]['value']
-
-            content += f'\n  {param}: {value}'
+                    content += f'\n  {param}: {configs[config][param]["default"]}'
+                    if param == 'NODE_NAME':
+                        node_name = configs[config][param]['default']
+            else:
+                content += f'\n  {param}: {configs[config][param]["value"]}'
+                if param == 'NODE_NAME':
+                    node_name = configs[config][param]['default']
         content += "\n"
+
     __write_line(file_name=anylog_configs_file,  input_line=content)
 
 

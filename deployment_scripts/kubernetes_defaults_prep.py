@@ -24,6 +24,7 @@ def __metadata_questions(configs:dict, node_name:str='anylog-node')->dict:
     configs['service_name']['default'] = f'{node_name}-svs'
     configs['configmap_name']['default'] = f'{node_name}-configs'
 
+
     for param in configs:
         status = False
         error_msg = ""
