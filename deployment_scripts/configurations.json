@@ -7,7 +7,7 @@
       "options": [
         "none",
         "rest",
-        "master",
+        "ledger",
         "operator",
         "query",
         "publisher",
@@ -60,6 +60,51 @@
       "value": ""
     }
   },
+  "authentication": {
+    "ENABLE_REST_AUTH": {
+      "question": "Enable Basic REST Authentication",
+      "description": "Whether or not to enable authentication when accessing node via REST",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
+    "NODE_PASSWORD": {
+      "question": "Node Password",
+      "description": "Provide a password to protect sensitive information that is kept on the node",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "USER_NAME": {
+      "question": "User Name",
+      "description": "user that can connect to this node",
+      "enable": false,
+      "default": "user1",
+      "default": ""
+    },
+    "USER_PASSWORD": {
+      "question": "User Password",
+      "description": "Password associated with the user",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "USER_TYPE": {
+      "question": "User Type",
+      "description": "The type of user",
+      "enable": false,
+      "options": [
+        "admin",
+        "user"
+      ],
+      "default": "admin",
+      "value": ""
+    }
+  },
   "networking": {
     "EXTERNAL_IP": {
       "question": "External IP",
@@ -106,13 +151,69 @@
     },
     "ANYLOG_BROKER_PORT": {
       "question": "Local Broker Port",
-      "description": "Port value to be used as an MQTT borker, or some other third-party broker",
+      "description": "Port value to be used as an MQTT broker, or some other third-party broker",
       "enable": true,
       "default": "",
       "range": [
         30000,
         32767
       ],
+      "value": ""
+    },
+    "TCP_BIND": {
+      "question": "Bind TCP Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": true,
+      "default": false,
+      "value": ""
+    },
+    "TCP_THREADS": {
+      "question": "TCP Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_BIND": {
+      "question": "Bind REST Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": true,
+      "default": true,
+      "value": ""
+    },
+    "REST_TIMEOUT": {
+      "question": "REST Timeout",
+      "description": "Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.",
+      "enable": true,
+      "default": 20,
+      "value": ""
+    },
+    "REST_THREADS": {
+      "question": "REST Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_SSL": {
+      "question": "Enable REST SSL",
+      "description": "Boolean value to determine if messages are send over HTTPS with client certificates.",
+      "enable": false,
+      "default": false,
+      "value": ""
+    },
+    "BROKER_BIND": {
+      "question": "Bind Message Broker Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": true,
+      "default": false,
+      "value": ""
+    },
+    "BROKER_THREADS": {
+      "question": "Broker Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
       "value": ""
     }
   },
@@ -592,27 +693,6 @@
       "enable": true,
       "default": "false",
       "options": ["true", "false"],
-      "value": ""
-    },
-    "TCP_THREAD_POOL": {
-      "question": "TCP Thread Count",
-      "description": "Number of TCP threads",
-      "enable": false,
-      "default": 6,
-      "value": ""
-    },
-    "REST_TIMEOUT": {
-      "question": "REST Timeout",
-      "description": "How long to wait until REST timeout",
-      "enable": false,
-      "default": 30,
-      "value": ""
-    },
-    "REST_THREADS": {
-      "question": "REST Threads",
-      "description": "Number of REST threads",
-      "enable": false,
-      "default": 5,
       "value": ""
     },
     "QUERY_POOL": {
