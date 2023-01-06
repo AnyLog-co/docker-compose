@@ -7,7 +7,7 @@
       "options": [
         "none",
         "rest",
-        "master",
+        "ledger",
         "operator",
         "query",
         "publisher",
@@ -151,7 +151,7 @@
     },
     "ANYLOG_BROKER_PORT": {
       "question": "Local Broker Port",
-      "description": "Port value to be used as an MQTT borker, or some other third-party broker",
+      "description": "Port value to be used as an MQTT broker, or some other third-party broker",
       "enable": true,
       "default": "",
       "range": [

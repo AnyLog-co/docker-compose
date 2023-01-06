@@ -483,8 +483,11 @@ def authentication_questions(configs:dict)->dict:
         while status is False:
             answer = __ask_question(question=full_question, description=configs[param]['description'],
                                     param=param, error_msg=error_msg)
-            if answer not in ['true', 'false']:
+            if answer not in ['true', 'false'] and answer != '':
                 error_msg = f"Invalid value {answer}. Please try again... "
+            elif answer == '':
+                configs[param]['value'] = configs[param]['default']
+                status = True
             else:
                 configs[param]['value'] = answer
                 status = True
@@ -501,10 +504,10 @@ def authentication_questions(configs:dict)->dict:
                 answer = __ask_question(question=full_question, description=configs[param]['description'],
                                         param=param, error_msg=error_msg)
                 if param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD'] and answer == '':
-                    error_msg = f"Value for {param} cannot be blank, please try again."
-                elif param =='USER_TYPE' and answer not in configs[param]['options']:
-                    error_msg = f"Invalid {param} value - {answer}, please try again."
-                elif param =='USER_TYPE' and answer == '':
+                    error_msg = f"Value for {param} cannot be blank, please try again. "
+                elif param == 'USER_TYPE' and answer not in configs[param]['options'] and answer != '':
+                    error_msg = f"Invalid {param} value - {answer}, please try again. "
+                elif param == 'USER_TYPE' and answer == '':
                     configs[param]['value'] = configs[param]['default']
                     status = True
                 else:

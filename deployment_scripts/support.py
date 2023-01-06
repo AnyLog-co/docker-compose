@@ -56,6 +56,7 @@ def clean_configs(node_type:str, configs:dict)->dict:
     for section in configs:
         if section == 'networking' and node_type in ['master', 'query']:
             configs[section]['ANYLOG_BROKER_PORT']['enable'] = False
+            configs[section]['BROKER_BIND']['enable'] = False
         elif section == 'database' and node_type in ['master', 'publisher', 'query', 'standalone-publisher']:
             for param in configs[section]:
                 if param == 'SYSTEM_QUERY' and node_type == 'query':
