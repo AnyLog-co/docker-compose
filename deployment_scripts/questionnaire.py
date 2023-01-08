@@ -399,6 +399,8 @@ def publisher_questions(configs:dict)->dict:
     Generate questions for publisher configurations
     :args:
         configs:dict - database configurations
+    :note:
+        for  ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION'] convert int value to file_name[X]
     :params:
         status:bool
         error_msg:str - error message
@@ -436,6 +438,9 @@ def publisher_questions(configs:dict)->dict:
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
+            if param in ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION']:
+                configs[param]['value'] = f"file_name[[configs[param]['value']}]"
+
     return configs
 
 
@@ -455,7 +460,7 @@ def authentication_questions(configs:dict)->dict:
     :return:
         updated configs
     """
-    for param in ['ENABLE_REST_AUTH']:
+    for param in ['ENABLE_REST_AUTH', 'ENABLE_NODE_AUTH', 'ENABLE_AUTH']:
         error_msg = ""
         full_question = __generate_question(configs=configs[param])
         status = False
@@ -474,7 +479,7 @@ def authentication_questions(configs:dict)->dict:
                 for key in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE']:
                     configs[key]['enable'] = True
 
-    for param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE']:
+    for param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE', 'ROOT_PASSWORD']:
         if configs[param]['enable'] is True:
             error_msg = ""
             full_question = __generate_question(configs=configs[param])

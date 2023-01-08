@@ -61,6 +61,17 @@
     }
   },
   "authentication": {
+    "ENABLE_AUTH": {
+      "question": "Enable Authentication",
+      "description": "When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
     "ENABLE_REST_AUTH": {
       "question": "Enable Basic REST Authentication",
       "description": "Whether or not to enable authentication when accessing node via REST",
@@ -72,36 +83,54 @@
       "default": "false",
       "value": ""
     },
+    "ENABLE_NODE_AUTH": {
+      "question": "Enable Node-based Authentication",
+      "description": "Whether or not to enable certificate authentication for node(s)",
+      "enable": false,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
     "NODE_PASSWORD": {
       "question": "Node Password",
       "description": "Provide a password to protect sensitive information that is kept on the node",
-      "enable": false,
+      "enable": true,
       "default": "",
       "value": ""
     },
     "USER_NAME": {
       "question": "User Name",
       "description": "user that can connect to this node",
-      "enable": false,
+      "enable": true,
       "default": "user1",
       "value": ""
     },
     "USER_PASSWORD": {
       "question": "User Password",
       "description": "Password associated with the user",
-      "enable": false,
+      "enable": true,
       "default": "",
       "value": ""
     },
     "USER_TYPE": {
       "question": "User Type",
       "description": "The type of user",
-      "enable": false,
+      "enable": true,
       "options": [
         "admin",
         "user"
       ],
       "default": "admin",
+      "value": ""
+    },
+    "ROOT_PASSWORD": {
+      "question": "Root User Password",
+      "description": "Password used by the ROOT member in authentication",
+      "enable": true,
+      "default": "",
       "value": ""
     }
   },
