@@ -156,6 +156,17 @@
       "default": "",
       "value": ""
     },
+    "OVERWRITE_IP": {
+      "question": "Overwrite Local IP",
+      "description": "Overwrite internal/local IP address with proxy IP address",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
     "ANYLOG_SERVER_PORT": {
       "question": "TCP Port",
       "description": "Port address used by AnyLog's TCP protocol to communicate with other nodes in the network",

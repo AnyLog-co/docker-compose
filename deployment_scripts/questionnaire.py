@@ -189,9 +189,20 @@ def networking_questions(configs:dict):
                     if error_msg == "":
                         configs[param]['value'] = answer
                         status = True
+                elif param == 'OVERWRITE_IP':
+                    if answer not in ['true', 'false'] and answer != '':
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    elif answer == 'true':
+                        configs['LOCAL_IP']['value'] = configs['PROXY_IP']['value']
+                        configs['PROXY_IP']['value'] = ""
+                        configs[param]['value'] = ""
+                        status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
+
+                if param == 'PROXY_IP' and answer == "":
+                    configs['OVERWRITE_IP']['enable'] = False
         else:
             configs[param]['value'] = configs[param]['default']
 
