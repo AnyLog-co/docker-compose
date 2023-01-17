@@ -64,7 +64,7 @@ general:
   # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
   NODE_TYPE: rest
   # Name of the AnyLog instance
-  NODE_NAME: anylog-node
+  NODE_NAME: anylog-node2
   # Owner of the AnyLog instance
   COMPANY_NAME: New Company
   # Coordinates of the machine - used by Grafana to map the network

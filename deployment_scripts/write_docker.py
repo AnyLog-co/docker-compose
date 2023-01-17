@@ -1,4 +1,3 @@
-# import dotenv
 import os
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
