@@ -450,7 +450,7 @@ def publisher_questions(configs:dict)->dict:
                     configs[param]['value'] = configs[param]['default']
                     status = True
             if param in ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION']:
-                configs[param]['value'] = f"file_name[[configs[param]['value']}]"
+                configs[param]['value'] = f"file_name[{configs[param]['value']}]"
 
     return configs
 
