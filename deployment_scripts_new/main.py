@@ -103,7 +103,11 @@ def main():
             print('\n')
 
     if args.deployment_type == 'docker':
-        file_io.write_configs(file_path='~/deployments/docker-compose/anylog-master/anylog_configs.env', configs=node_configs)
+        file_io.write_configs(file_path='~/deployments/docker-compose/anylog-master/anylog_configs.env',
+                              configs=node_configs, kubernetes_configs=None, exception=args.exception)
+    elif args.deployment_type == 'kubernetes':
+        file_io.write_configs(file_path='~/deployments/helm/sample-configurations/anylog_master.yaml',
+                              configs=node_configs, kubernetes_configs=kubernetes_configs, exception=args.exception)
 
 
 if __name__ == '__main__':

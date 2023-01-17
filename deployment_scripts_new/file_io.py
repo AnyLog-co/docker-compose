@@ -3,6 +3,7 @@ import json
 import os
 import yaml
 
+import support
 
 def __create_file(file_path:str, exception:bool=False)->(str, bool):
     """
@@ -105,36 +106,6 @@ def __read_yaml(config_file:str, exception:bool=False)->dict:
     return configs
 
 
-def __create_env_configs(configs:dict)->str:
-    """
-
-    """
-    content = ""
-    for section in configs:
-        content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---'
-        for param in configs[section]:
-            comment = configs[section][param]['description'].replace('\n', '')
-            if configs[section][param]['default'] != "":
-                comment += f" [Default: {configs[section][param]['default']}]"
-
-            default = str(configs[section][param]['default']).strip().replace('\n', '')
-            value = str(configs[section][param]['value']).strip().replace('\n', '')
-
-            if value == "" and default == "":
-                line = f"#{param}=<{section.upper()}_{param.upper()}>"
-            elif value == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
-                line = f"#{param}=<{section.upper()}_{param.upper()}>"
-            elif value == "" and default != "":
-                line = f"{param}={default}"
-            else:
-                line = f"{param}={value}"
-            content += f"\n# {comment}\n{line}"
-
-        content += '\n\n'
-
-    print(content)
-
-
 def read_configs(config_file:str, exception:bool=False)->dict:
     """
     Given a configuration file, extract configurations
@@ -170,7 +141,7 @@ def read_configs(config_file:str, exception:bool=False)->dict:
     return configs
 
 
-def write_configs(file_path:str, configs:dict, exception:bool=False)->bool:
+def write_configs(file_path:str, configs:dict, kubernetes_configs:dict=None, exception:bool=False)->bool:
     status = True
     config_file = os.path.expanduser(os.path.expandvars(file_path))
 
@@ -178,11 +149,10 @@ def write_configs(file_path:str, configs:dict, exception:bool=False)->bool:
         file_extension = config_file.rsplit('.', 1)[-1]
 
         if file_extension == 'env':
-            content = __create_env_configs(configs=configs)
+            content = support.create_env_configs(configs=configs)
         elif file_extension in ['yml', 'yaml']:
-            pass
-        elif file_extension == 'json':
-            pass
+            metadata_content = support.create_kubernetes_metadata(configs=kubernetes_configs)
+            content = support.create_kubernetes_configs(configs=configs)
         else:
             status = False
             print(f'Invalid extension type: {file_extension}')

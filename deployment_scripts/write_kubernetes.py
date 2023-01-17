@@ -90,7 +90,7 @@ def metadata_configs(configs:dict, anylog_configs_file:str, anylog_volume_file:s
 
 def write_configs(configs:dict, anylog_configs_file:str):
     """
-    Write configuratons for kubernetes (YAML) files
+    Write configurations for kubernetes (YAML) files
     :args:
         configs:dict - user defined configurations
         anylog_configs_file:str - file path to store AnyLog configs
