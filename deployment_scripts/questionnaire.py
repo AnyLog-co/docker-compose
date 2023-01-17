@@ -471,48 +471,26 @@ def authentication_questions(configs:dict)->dict:
     :return:
         updated configs
     """
-    for param in ['ENABLE_REST_AUTH', 'ENABLE_NODE_AUTH', 'ENABLE_AUTH']:
-        error_msg = ""
-        full_question = __generate_question(configs=configs[param])
-        status = False
-        while status is False:
-            answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                    param=param, error_msg=error_msg)
-            if answer not in ['true', 'false'] and answer != '':
-                error_msg = f"Invalid value {answer}. Please try again... "
-            elif answer == '':
-                configs[param]['value'] = configs[param]['default']
-                status = True
-            else:
-                configs[param]['value'] = answer
-                status = True
-            if param == 'ENABLE_REST_AUTH' and answer == 'true':
-                for key in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE']:
-                    configs[key]['enable'] = True
-
-    for param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE', 'ROOT_PASSWORD']:
+    for param in configs:
         if configs[param]['enable'] is True:
-            error_msg = ""
-            full_question = __generate_question(configs=configs[param])
             status = False
+            full_question = __generate_question(configs=configs[param])
+            error_msg = ""
             while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                        param=param, error_msg=error_msg)
-                if param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD'] and answer == '':
-                    error_msg = f"Value for {param} cannot be blank, please try again. "
-                elif param == 'USER_TYPE' and answer not in configs[param]['options'] and answer != '':
-                    error_msg = f"Invalid {param} value - {answer}, please try again. "
-                elif param == 'USER_TYPE' and answer == '':
+                answer = __ask_question(question=full_question, description=configs[param]['description'], param=param,
+                                        error_msg=error_msg)
+                if answer == '':
                     configs[param]['value'] = configs[param]['default']
                     status = True
-                else:
+                elif ('options' in configs[param] and answer in configs[param]['options']) or ('options' not in configs[param] and answer != ''):
                     configs[param]['value'] = answer
                     status = True
-        else:
-            if isinstance(configs[param]['default'], bool):
-                configs[param]['value'] = str(configs[param]['default']).lower()
-            else:
-                configs[param]['value'] = configs[param]['default']
+                else:
+                    error_msg = f"Invalid value {answer}. Please try again... "
+
+                if param in ['ENABLE_REST_AUTH'] and configs[param]['value'] == 'false':
+                    for sub_param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE', 'ROOT_PASSWORD']:
+                        configs[sub_param]['enable'] = False
 
     return configs
 

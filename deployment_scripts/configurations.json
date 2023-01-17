@@ -64,7 +64,7 @@
     "ENABLE_AUTH": {
       "question": "Enable Authentication",
       "description": "When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain",
-      "enable": true,
+      "enable": false,
       "options": [
         "true",
         "false"
@@ -76,17 +76,6 @@
       "question": "Enable Basic REST Authentication",
       "description": "Whether or not to enable authentication when accessing node via REST",
       "enable": true,
-      "options": [
-        "true",
-        "false"
-      ],
-      "default": "false",
-      "value": ""
-    },
-    "ENABLE_NODE_AUTH": {
-      "question": "Enable Node-based Authentication",
-      "description": "Whether or not to enable certificate authentication for node(s)",
-      "enable": false,
       "options": [
         "true",
         "false"
