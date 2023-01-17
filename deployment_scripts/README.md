@@ -56,7 +56,7 @@ bash $HOME/deployments/deployment_scripts/deploy_node.sh
 }
 ```
 
-2. In [questionnaire.py](questionnaire.py), create a method that asks user(s) to fill in the new configuration
+2. In [questionnaire.py](../deployment_scripts/questionnaire.py), create a method that asks user(s) to fill in the new configuration
 ```python
 def section_questions(configs:dict)->dict: 
     """
@@ -107,6 +107,6 @@ def section_questions(configs:dict)->dict:
     return configs
 ```
 
-3. In [main.py](main.py), add an `elif` condition to process the new configurations
+3. In [main.py](../deployment_scripts/main.py), add an `elif` condition to process the new configurations
 
 4. Make sure the new configuration(s)  are supported by AnyLog

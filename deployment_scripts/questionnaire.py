@@ -163,7 +163,7 @@ def generic_questions(configs:dict)->dict:
     return configs
 
 
-def networking_questions(configs:dict):
+def networking_questions(configs:dict)->dict:
     """
     Networking configurations questionnaire
     :args:
