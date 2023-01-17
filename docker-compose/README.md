@@ -90,7 +90,7 @@ cd $HOME/deployments/docker-compose/grafana/ ; docker-compose up -d
 
 
 ### Demo Cluster 
-The [Demo Cluster Deployment](demo-cluster-deployment) is a standalone package that deploys the demo network on a single
+The [Demo Cluster Deployment](anylog-demo-network) is a standalone package that deploys the demo network on a single
 AnyLog physical machine. This includes:
    * 1 Master 
    * 2 Operators (1 with SQLite and one with Postgres)
@@ -99,9 +99,9 @@ AnyLog physical machine. This includes:
    * Grafana 
    * Remote-CLI
 
-1. cd into [demo-cluster-deployment](demo-cluster-deployment)
+1. cd into [demo-cluster-deployment](anylog-demo-network)
 ```shell
-cd $HOME/deployments/docker-compose/demo-cluster-deployment/
+cd $HOME/deployments/docker-compose/anylog-demo-network/
 ```
 2. (Optional) Update configurations
 ```shell

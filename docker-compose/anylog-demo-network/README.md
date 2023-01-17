@@ -30,7 +30,7 @@ The following docker-compose package deploys the following services on a single 
 
 2. Start Cluster
 ```shell
-cd deployments/docker-compose/demo-cluster-deployment
+cd deployments/docker-compose/anylog-demo-network
 docker-compose up -d
 ```
 
