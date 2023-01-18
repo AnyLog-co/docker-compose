@@ -6,6 +6,7 @@ docker-compose/anylog-operator/
 docker-compose/anylog-query/
 docker-compose/anylog-publisher/
 docker-compose/anylog-rest/
+
 .DS_Store
 *.tgz
 
