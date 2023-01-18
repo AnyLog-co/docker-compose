@@ -1,4 +1,4 @@
-metadata:
+metadata: 
   # Kubernetes Instance namespace [Default: default]
   namespace: default
   # hostname for deployment [Default: anylog-node]

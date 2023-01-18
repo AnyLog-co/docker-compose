@@ -105,8 +105,8 @@ networking:
   ANYLOG_SERVER_PORT: 32048
   # Port address used by AnyLog's REST protocol [Default: 32049]
   ANYLOG_REST_PORT: 32049
-  # Port value to be used as an MQTT broker, or some other third-party broker
-  ANYLOG_BROKER_PORT: ""
+  # Port value to be used as an MQTT broker, or some other third-party broker [Default: 32050]
+  ANYLOG_BROKER_PORT: 32050
   # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs) [Default: false]
   TCP_BIND: false
   # The number of concurrent threads supporting HTTP requests.	 [Default: 6]
@@ -139,19 +139,19 @@ database:
   # Whether to set autocommit data [Default: false]
   AUTOCOMMIT: false
   # Whether to start to start system_query logical database [Default: false]
-  SYSTEM_QUERY: false
+  SYSTEM_QUERY: true
   # Run system_query using in-memory SQLite. If set to false, will use pre-set database type [Default: true]
-  MEMORY: False
+  MEMORY: true
   # Whether to enable NoSQL logical database [Default: false]
-  NOSQL_ENABLE: false
+  NOSQL_ENABLE: true
   # Physical database type [Default: mongo]
   NOSQL_TYPE: mongo
   # Username for SQL database connection
-  NOSQL_USER: ""
+  NOSQL_USER: admin
   # Password correlated to database user
-  NOSQL_PASSWD: ""
+  NOSQL_PASSWD: passwd
   # Database IP address [Default: 127.0.0.1]
-  NOSQL_IP: 127.0.0.1
+  NOSQL_IP: mongo-svs
   # Database port number [Default: 27017]
   NOSQL_PORT: 27017
   # Store blobs in database [Default: true]
@@ -221,16 +221,16 @@ publisher:
 
 mqtt:
   # Whether to enable the default MQTT process [Default: false]
-  ENABLE_MQTT: false
+  ENABLE_MQTT: true
   # Whether to enable MQTT logging process [Default: false]
   MQTT_LOG: false
-  # IP address of MQTT broker [Default: driver.cloudmqtt.com]
+  # IP address of MQTT broker [Default: local]
   MQTT_BROKER: driver.cloudmqtt.com
-  # Port associated with MQTT broker [Default: 18785]
+  # Port associated with MQTT broker [Default: 32050]
   MQTT_PORT: 18785
-  # User associated with MQTT broker [Default: ibglowct]
+  # User associated with MQTT broker [Default: None]
   MQTT_USER: ibglowct
-  # Password associated with MQTT user [Default: MSY4e009J7ts]
+  # Password associated with MQTT user [Default: None]
   MQTT_PASSWD: MSY4e009J7ts
   # Topic to get data for [Default: anylogedgex]
   MQTT_TOPIC: anylogedgex
