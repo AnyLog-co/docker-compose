@@ -141,7 +141,7 @@
           "ReadOnlyMany",
           "ReadWriteOncePod"
         ],
-        "default": "ReadWRiteOnce",
+        "default": "ReadWriteOnce",
         "value": ""
       },
       "storage_size": {
@@ -157,7 +157,7 @@
         "question": "Name",
         "description": "AnyLog Volume name",
         "enable": true,
-        "default": "anylog-node-anylog-volume",
+        "default": "anylog-node-blockchain-volume",
         "value": ""
       },
       "path": {
@@ -177,7 +177,7 @@
           "ReadOnlyMany",
           "ReadWriteOncePod"
         ],
-        "default": "ReadWRiteOnce",
+        "default": "ReadWriteOnce",
         "value": ""
       },
       "storage_size": {
@@ -193,7 +193,7 @@
         "question": "Name",
         "description": "AnyLog Volume name",
         "enable": true,
-        "default": "anylog-node-anylog-volume",
+        "default": "anylog-node-data-volume",
         "value": ""
       },
       "path": {
@@ -213,7 +213,7 @@
           "ReadOnlyMany",
           "ReadWriteOncePod"
         ],
-        "default": "ReadWRiteOnce",
+        "default": "ReadWriteOnce",
         "value": ""
       },
       "storage_size": {

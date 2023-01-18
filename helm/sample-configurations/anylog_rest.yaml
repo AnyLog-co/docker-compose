@@ -36,26 +36,26 @@ volume:
     name: anylog-node-anylog-volume
     # AnyLog security directory path[Default: /app/AnyLog-Network/anylog]
     path: /app/AnyLog-Network/anylog
-    # Volume access mode[Default: ReadWRiteOnce]
-    access_mode: ReadWRiteOnce
+    # Volume access mode[Default: ReadWriteOnce]
+    access_mode: ReadWriteOnce
     # Volume storage size[Default: 1Gi]
     storage_size: 1Gi
   blockchain_volume:
-    # AnyLog Volume name[Default: anylog-node-anylog-volume]
-    name: anylog-node-anylog-volume
+    # AnyLog Volume name[Default: anylog-node-blockchain-volume]
+    name: anylog-node-blockchain-volume
     # AnyLog security directory path[Default: /app/AnyLog-Network/blockchain]
     path: /app/AnyLog-Network/blockchain
-    # Volume access mode[Default: ReadWRiteOnce]
-    access_mode: ReadWRiteOnce
+    # Volume access mode[Default: ReadWriteOnce]
+    access_mode: ReadWriteOnce
     # Volume storage size[Default: 1Gi]
     storage_size: 1Gi
   data_volume:
-    # AnyLog Volume name[Default: anylog-node-anylog-volume]
-    name: anylog-node-anylog-volume
+    # AnyLog Volume name[Default: anylog-node-data-volume]
+    name: anylog-node-data-volume
     # AnyLog security directory path[Default: /app/AnyLog-Network/data]
     path: /app/AnyLog-Network/data
-    # Volume access mode[Default: ReadWRiteOnce]
-    access_mode: ReadWRiteOnce
+    # Volume access mode[Default: ReadWriteOnce]
+    access_mode: ReadWriteOnce
     # Volume storage size[Default: 1Gi]
     storage_size: 1Gi
 
@@ -80,7 +80,7 @@ general:
 authentication:
   # When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain [Default: false]
   ENABLE_AUTH: false
-  # Whether to enable authentication when accessing node via REST [Default: false]
+  # Whether or not to enable authentication when accessing node via REST [Default: false]
   ENABLE_REST_AUTH: false
   # Provide a password to protect sensitive information that is kept on the node
   NODE_PASSWORD: ""
@@ -106,7 +106,7 @@ networking:
   # Port address used by AnyLog's REST protocol [Default: 32049]
   ANYLOG_REST_PORT: 32049
   # Port value to be used as an MQTT broker, or some other third-party broker
-  ANYLOG_BROKER_PORT: 32050
+  ANYLOG_BROKER_PORT: ""
   # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs) [Default: false]
   TCP_BIND: false
   # The number of concurrent threads supporting HTTP requests.	 [Default: 6]
@@ -133,23 +133,23 @@ database:
   # Password correlated to database user
   DB_PASSWD: passwd
   # Database IP address [Default: 127.0.0.1]
-  DB_IP: 127.0.0.1
+  DB_IP: postgres-svs
   # Database port number [Default: 5432]
   DB_PORT: 5432
   # Whether to set autocommit data [Default: false]
   AUTOCOMMIT: false
   # Whether to start to start system_query logical database [Default: false]
-  SYSTEM_QUERY: true
+  SYSTEM_QUERY: false
   # Run system_query using in-memory SQLite. If set to false, will use pre-set database type [Default: true]
-  MEMORY: true
+  MEMORY: False
   # Whether to enable NoSQL logical database [Default: false]
-  NOSQL_ENABLE: true
+  NOSQL_ENABLE: false
   # Physical database type [Default: mongo]
   NOSQL_TYPE: mongo
   # Username for SQL database connection
-  NOSQL_USER: admin
+  NOSQL_USER: ""
   # Password correlated to database user
-  NOSQL_PASSWD: passwd
+  NOSQL_PASSWD: ""
   # Database IP address [Default: 127.0.0.1]
   NOSQL_IP: 127.0.0.1
   # Database port number [Default: 27017]
@@ -189,7 +189,7 @@ operator:
   # Whether to enable partitioning [Default: false]
   ENABLE_PARTITIONS: false
   # Which tables to partition [Default: *]
-  TABLE_NAME: *
+  TABLE_NAME: "*"
   # Which timestamp column to partition by [Default: insert_timestamp]
   PARTITION_COLUMN: insert_timestamp
   # Time period to partition by [Default: 14 days]

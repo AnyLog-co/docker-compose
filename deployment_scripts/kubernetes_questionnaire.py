@@ -103,7 +103,7 @@ def __question(configs:dict)->dict:
 
 
 def questionnaire(node_name:str, configs:dict)->dict:
-    __kubernetes_prep(node_name=node_name, configs=configs)
+    configs = __kubernetes_prep(node_name=node_name, configs=configs)
     print('--- Kubernetes Metadata Configurations ---')
     for section in configs:
         status = support.print_questions(configs[section])
@@ -120,6 +120,7 @@ def questionnaire(node_name:str, configs:dict)->dict:
                         output = __question(configs=sub_configs)
                         configs[section]['enable_volume'] = output['enable_volume']
                     else:
+                        print(f'\t--> Volume: {sub_section}')
                         configs[section][sub_section] = __question(configs=configs[section][sub_section])
 
     return configs

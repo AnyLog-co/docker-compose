@@ -16,7 +16,7 @@ import questionnaire
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 DEFAULT_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'configurations.json')
-KUBERNETES_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'kuberentes_configurations.json')
+KUBERNETES_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'kubernetes_configurations.json')
 
 NODE_TYPES = ['none', 'rest', 'master', 'operator', 'publisher', 'query', 'standalone', 'standalone-publisher']
 
@@ -78,8 +78,7 @@ def main():
     for section in node_configs:
         status = support.print_questions(node_configs[section])
         if status is True:
-            if section not in [
-                'operator', 'publisher', 'mqtt']:
+            if section not in ['operator', 'publisher', 'mqtt']:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
             if section == 'general':
                 node_configs['general'] = questionnaire.generic_questions(configs=node_configs[section])

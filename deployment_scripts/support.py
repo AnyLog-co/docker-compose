@@ -25,6 +25,7 @@ def merge_configs(default_configs:dict, updated_configs:dict)->dict:
 
     return default_configs
 
+
 def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_configs:dict={})->(dict, dict):
     """
     prepare configurations
@@ -39,8 +40,12 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
     node_configs['general']['NODE_TYPE']['default'] = node_type
     if node_configs['general']['NODE_TYPE']['enable'] is False:
         node_configs['general']['NODE_TYPE']['value'] = node_type
-    if kubernetes_configs != {} and build is not None:
-        kubernetes_configs['image']['tag']['default'] = build
+    if kubernetes_configs != {}:
+        if build is not None:
+            kubernetes_configs['image']['tag']['default'] = build
+        kubernetes_configs['volume']['anylog_volume']['default'] = f'anylog-{node_type}-anylog-data'
+        kubernetes_configs['volume']['blockchain_volume']['default'] = f'anylog-{node_type}-blockchain-data'
+        kubernetes_configs['volume']['data_volume']['default'] = f'anylog-{node_type}-data-data'
 
     if node_type != 'rest':
         node_configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
@@ -180,7 +185,6 @@ def create_kubernetes_metadata(node_name:str, configs:dict)->str:
                 else:
                     content += f"\n  {sub_section}:"
                     for param in configs[section][sub_section]:
-                        print(section, sub_section, param)
                         if param != 'default':
                             comment = configs[section][sub_section][param]['description']
                             if configs[section][sub_section][param]['default'] != "":
