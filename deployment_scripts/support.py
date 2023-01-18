@@ -225,7 +225,9 @@ def create_kubernetes_configs(configs:dict)->dict:
             default = str(configs[section][param]['default']).strip().replace('\n', '')
             value = str(configs[section][param]['value']).strip().replace('\n', '')
             line = f"{param}: %s"
-            if value != '':
+            if value == '*':
+                line = f'{param}: "{value}"'
+            elif value != '':
                 line = line % value
             elif default != '':
                 line = line % default
