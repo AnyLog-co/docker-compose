@@ -5,6 +5,7 @@ import yaml
 
 import support
 
+ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
 def __create_file(file_path:str, exception:bool=False)->(str, bool):
     """
@@ -106,6 +107,92 @@ def __read_yaml(config_file:str, exception:bool=False)->dict:
 
     return configs
 
+def __create_file_docker(node_type:str, exception:bool=False)->str:
+    """
+    Create file path  based on node_type
+    :note:
+        query is stored in query-remote-cli
+    :args:
+        node_type;str - node type
+            - rest
+            - master
+            - operator
+            - publisher
+            - query
+        exception:bool - whether to print exception
+    :params:
+        file_name:str - file to store data in
+    :return:
+        file_name
+    """
+    if node_type != 'query':
+        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+    else:
+        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'query-remote-cli' % node_type.lower())
+
+    # if file exists make a backup
+    if os.path.isfile(file_name):
+        try:
+            os.rename(file_name, file_name.replace('.env', '.env.old'))
+        except Exception as error:
+            file_name = ''
+            if  exception is True:
+                print(f'Failed to rename {file_name} (Error: {error})')
+
+    return file_name
+
+
+def __create_file_kubernetes(node_type:str, exception:bool=False)->str:
+    """
+    Create file path  based on node_type
+    :note:
+        query is stored in query-remote-cli
+    :args:
+        node_type;str - node type
+            - rest
+            - master
+            - operator
+            - publisher
+            - query
+        exception:bool - whether to print exception
+    :params:
+        file_name:str - file to store data in
+    :return:
+        file_name
+    """
+    file_name = os.path.join(ROOT_PATH, 'helm', 'sample-configurations', 'anylog_%s' % node_type.lower())
+
+    # if file exists make a backup
+    if os.path.isfile(file_name):
+        try:
+            os.rename(file_name, file_name.replace('.env', '.env.old'))
+        except Exception as error:
+            file_name = ''
+            if  exception is True:
+                print(f'Failed to rename {file_name} (Error: {error})')
+
+    return file_name
+
+
+def __write_file(file_path:str, content:str, exception:bool=False):
+    """
+    Write content to file
+    :args:
+        file_path:str - file to write content into
+        content:str - content to write
+        exception:bool - whether to print exceptions
+    """
+    try:
+        with open(file_path, 'w') as f:
+            try:
+                f.write(content)
+            except Exception as error:
+                if exception is True:
+                    print(f'Failed to write content into {file_path} (Error: {error})')
+    except Exception as error:
+        if exception is True:
+            print(f'Failed to open file {file_path} (Error: {error})')
+
 
 def read_configs(config_file:str, exception:bool=False)->dict:
     """
@@ -142,27 +229,24 @@ def read_configs(config_file:str, exception:bool=False)->dict:
     return configs
 
 
-def write_configs(file_path:str, configs:dict, kubernetes_configs:dict=None, exception:bool=False)->bool:
+def write_configs(deployment_type:str, configs:dict, kubernetes_configs:dict=None, exception:bool=False)->bool:
     """
     Given a configuration file,
     """
     status = True
-    config_file = os.path.expanduser(os.path.expandvars(file_path))
+    metadata_content = ""
 
-    if os.path.isfile(config_file):
-        file_extension = config_file.rsplit('.', 1)[-1]
+    node_type = configs['general']['NODE_TYPE']['value']
+    node_name = configs['general']['NODE_NAME']['value'].replace(' ', '-').repacel('_', '-').lower()
 
-        if file_extension == 'env':
-            content = support.create_env_configs(configs=configs)
-        elif file_extension in ['yml', 'yaml']:
-            node_name = configs['general']['NODE_NAME']['value'].replace(' ','-').repacel('_','-').lower()
-            metadata_content = support.create_kubernetes_metadata(node_name=node_name, configs=kubernetes_configs)
-            content = support.create_kubernetes_configs(configs=configs)
-        else:
-            status = False
-            print(f'Invalid extension type: {file_extension}')
-    else:
-        status = False
-        print(f'Failed to locate config file {config_file}')
+    if deployment_type == 'docker':
+        content = support.create_env_configs(configs=configs)
+        file_path  = __create_file_docker(node_type=node_type, exception=exception)
+    elif deployment_type == 'kubernetes':
+        metadata_content = support.create_kubernetes_metadata(node_name=node_name, configs=kubernetes_configs)
+        content = support.create_kubernetes_configs(configs=configs)
+        file_name = __create_file_kubernetes(node_type=node_type, exception=exception)
+
+    __write_file(file_path=file_path, content=content, exception=exception)
 
     return status
