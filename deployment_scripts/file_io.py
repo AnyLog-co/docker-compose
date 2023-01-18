@@ -1,20 +1,4 @@
 import os
-try:
-    import dotenv
-except Exception as error:
-    print(f'Failed to find dotenv import package (Error: {error})')
-
-try:
-    import json
-except Exception as error:
-    print(f'Failed to find json import package (Error: {error})')
-
-try:
-    import yaml
-except Exception as error:
-    print(f'Failed to find yaml import package (Error: {error})')
-
-
 import support
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
@@ -57,6 +41,11 @@ def __read_dotenv(config_file:str, exception:bool=False)->dict:
         configs
     """
     configs = {}
+    try:
+        import dotenv
+    except Exception as error:
+        print(f'Failed to find dotenv import package (Error: {error})')
+        return configs
 
     try:
         configs = dict(dotenv.dotenv_values(config_file))
@@ -79,6 +68,11 @@ def __read_json(config_file:str, exception:bool=False)->dict:
         configs
     """
     configs = {}
+    try:
+        import json
+    except Exception as error:
+        print(f'Failed to find json import package (Error: {error})')
+        return configs
 
     try:
         with open(config_file) as f:
@@ -106,6 +100,11 @@ def __read_yaml(config_file:str, exception:bool=False)->dict:
         configs
     """
     configs = {}
+    try:
+        import yaml
+    except Exception as error:
+        print(f'Failed to find yaml import package (Error: {error})')
+        return configs
 
     try:
         with open(config_file) as f:
@@ -285,10 +284,7 @@ def update_dotenv_tag(file_path:str, build:str, node_name:str, excepton:bool=Fal
         if excepton is True:
             print(f'Failed to open file {dotenv_file} to write content into (Error: {error})')
 
-
-
     return status
-
 
 
 def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_configs:dict=None,
