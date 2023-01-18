@@ -1,7 +1,11 @@
 .idea/
 __pycache__
-docker-compose/anylog-node/envs/anylog_node.env
-helm/values/values.yaml
+docker-compose/anylog-demo-network/
+docker-compose/anylog-master/
+docker-compose/anylog-operator/
+docker-compose/anylog-query/
+docker-compose/anylog-publisher/
+docker-compose/anylog-rest/
 .DS_Store
 *.tgz
-docker-compose/
+
