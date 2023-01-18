@@ -101,7 +101,7 @@ def create_env_configs(configs:dict)->str:
     return content
 
 
-def create_kubernetes_metadata(configs:dict)->str:
+def create_kubernetes_metadata(node_name:str, configs:dict)->str:
     """
 
     """

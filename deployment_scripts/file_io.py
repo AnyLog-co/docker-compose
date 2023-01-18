@@ -5,6 +5,7 @@ import yaml
 
 import support
 
+
 def __create_file(file_path:str, exception:bool=False)->(str, bool):
     """
     create a new file if DNE
@@ -136,12 +137,15 @@ def read_configs(config_file:str, exception:bool=False)->dict:
         else:
             print(f'Invalid extension type: {file_extension}')
     else:
-            print(f'Failed to locate config file {config_file}')
+        print(f'Failed to locate config file {config_file}')
 
     return configs
 
 
 def write_configs(file_path:str, configs:dict, kubernetes_configs:dict=None, exception:bool=False)->bool:
+    """
+    Given a configuration file,
+    """
     status = True
     config_file = os.path.expanduser(os.path.expandvars(file_path))
 
@@ -151,7 +155,8 @@ def write_configs(file_path:str, configs:dict, kubernetes_configs:dict=None, exc
         if file_extension == 'env':
             content = support.create_env_configs(configs=configs)
         elif file_extension in ['yml', 'yaml']:
-            metadata_content = support.create_kubernetes_metadata(configs=kubernetes_configs)
+            node_name = configs['general']['NODE_NAME']['value'].replace(' ','-').repacel('_','-').lower()
+            metadata_content = support.create_kubernetes_metadata(node_name=node_name, configs=kubernetes_configs)
             content = support.create_kubernetes_configs(configs=configs)
         else:
             status = False

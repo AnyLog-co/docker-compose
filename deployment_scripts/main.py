@@ -3,6 +3,7 @@ import os
 
 import file_io
 import support
+import kubernetes_questionnaire
 import questionnaire
 
 
@@ -56,7 +57,9 @@ def main():
     parser.add_argument('-e', '--exception', type=bool, default=False, nargs='?', const=True, help='Whether to print exceptions')
     args = parser.parse_args()
 
+    node_configs = {}
     config_file = {}
+    kubernetes_configs = {}
 
     # read configurations +
     node_configs = file_io.read_configs(config_file=DEFAULT_CONFIG_FILE, exception=args.exception)
@@ -106,6 +109,9 @@ def main():
         file_io.write_configs(file_path='~/deployments/docker-compose/anylog-master/anylog_configs.env',
                               configs=node_configs, kubernetes_configs=None, exception=args.exception)
     elif args.deployment_type == 'kubernetes':
+        kubernetes_configs = kubernetes_questionnaire.questionnaire(node_name=node_configs['general']['NODE_NAME']['value'],
+                                                                    configs=kubernetes_configs)
+
         file_io.write_configs(file_path='~/deployments/helm/sample-configurations/anylog_master.yaml',
                               configs=node_configs, kubernetes_configs=kubernetes_configs, exception=args.exception)
 
