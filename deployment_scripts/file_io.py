@@ -149,8 +149,16 @@ def __create_file_docker(node_type:str, exception:bool=False)->str:
             os.rename(file_name, file_name.replace('.env', '.env.old'))
         except Exception as error:
             file_name = ''
-            if  exception is True:
+            if exception is True:
                 print(f'Failed to rename {file_name} (Error: {error})')
+
+    if file_name != '' and not os.path.isfile(file_name):
+        try:
+            open(file_name, 'w').close()
+        except exception as error:
+            file_name = ''
+            if exception is True:
+                print(f'Failed to create file {file_name} (Error: {error})')
 
     return file_name
 
@@ -196,7 +204,7 @@ def __write_file(file_path:str, content:str, exception:bool=False):
         exception:bool - whether to print exceptions
     """
     try:
-        with open(file_path, 'w') as f:
+        with open(file_path, 'a') as f:
             try:
                 f.write(content)
             except Exception as error:

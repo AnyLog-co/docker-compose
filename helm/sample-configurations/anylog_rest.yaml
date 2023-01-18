@@ -1,4 +1,4 @@
-metadata:
+metadata: 
   # Kubernetes Instance namespace [Default: default]
   namespace: default
   # hostname for deployment [Default: anylog-node]
@@ -18,7 +18,7 @@ metadata:
   # Number of Kubernetes replicas [Default: 1]
   replicas: 1
 
-image:
+image: 
   # Image secret naming [Default: imagepullsecret]
   secret_name: imagepullsecret
   # (Docker Hub) Image Path [Default: anylogco/anylog-network]
@@ -28,7 +28,7 @@ image:
   # Image pulling policy [Default: IfNotPresent]
   pull_policy: IfNotPresent
 
-volume:
+volume: 
   # Whether or not to enable volumes for AnyLog [Default: true]
   enable_volume: true
   anylog_volume:
