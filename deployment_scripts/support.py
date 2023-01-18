@@ -25,6 +25,25 @@ def merge_configs(default_configs:dict, updated_configs:dict)->dict:
 
     return default_configs
 
+def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_configs:dict={})->(dict, dict):
+    """
+    prepare configurations
+    :args:
+        node_type:str - node type
+        node_configs:dict - AnyLog general configs
+        build:str = AnyLog deployment version
+        kubernetes_configs:dict - metadata for Kubernetes
+    :return:
+        node_configs, kubernetes_configs
+    """
+    node_configs['general']['NODE_TYPE']['default'] = node_type
+    if node_configs['general']['NODE_TYPE']['enable'] is False:
+        node_configs['general']['NODE_TYPE']['value'] = node_type
+    if kubernetes_configs != {} and build is not None:
+        kubernetes_configs['image']['tag']['default'] = build
+
+    return node_configs, kubernetes_configs
+
 
 def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:str)->dict:
     """

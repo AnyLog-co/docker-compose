@@ -3,17 +3,17 @@ try:
     import dotenv
 except Exception as error:
     print(f'Failed to find dotenv import package (Error: {error})')
-    status = False
+
 try:
     import json
 except Exception as error:
     print(f'Failed to find json import package (Error: {error})')
-    status = False
+
 try:
     import yaml
 except Exception as error:
     print(f'Failed to find yaml import package (Error: {error})')
-    status = False
+
 
 import support
 
@@ -139,9 +139,9 @@ def __create_file_docker(node_type:str, exception:bool=False)->str:
         file_name
     """
     if node_type != 'query':
-        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower())
+        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), 'anylog_configs.env')
     else:
-        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'query-remote-cli' % node_type.lower())
+        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'query-remote-cli', 'anylog_configs.env')
 
     # if file exists make a backup
     if os.path.isfile(file_name):
@@ -173,7 +173,7 @@ def __create_file_kubernetes(node_type:str, exception:bool=False)->str:
     :return:
         file_name
     """
-    file_name = os.path.join(ROOT_PATH, 'helm', 'sample-configurations', 'anylog_%s' % node_type.lower())
+    file_name = os.path.join(ROOT_PATH, 'helm', 'sample-configurations', 'anylog_%s.yaml' % node_type.lower())
 
     # if file exists make a backup
     if os.path.isfile(file_name):
@@ -242,9 +242,71 @@ def read_configs(config_file:str, exception:bool=False)->dict:
     return configs
 
 
-def write_configs(deployment_type:str, configs:dict, kubernetes_configs:dict=None, exception:bool=False)->bool:
+def update_dotenv_tag(file_path:str, build:str, node_name:str, excepton:bool=False)->bool:
     """
-    Given a configuration file,
+    For Docker deployment, update .env file
+    :args:
+        file_path:str - `anylog_configs.env` file path
+        build:str - docker version
+        node_name:str - node name
+        exception:bool - whether to print exceptions
+    :params:
+        status:bool
+        file_path:str - directory path
+        dotenv_file - full path of dotenv file
+    :return:
+        status
+    """
+    content = {
+        'BUILD': build,
+        'ENV_FILE': 'anylog_configs.env',
+        'CONTAINER_NAME': node_name,
+        'NETWORK': 'host'
+    }
+
+    status = True
+    dotenv_file = os.path.join(file_path, '.env')
+
+    if os.path.isfile(dotenv_file):
+        content = __read_dotenv(config_file=dotenv_file, exception=excepton)
+        content['BUILD'] = build
+        content['CONTAINER_NAME'] = node_name
+
+    try:
+        with open(dotenv_file, 'w') as f:
+            for key in content:
+                line = f'{key}={content[key]}\n'
+                try:
+                    f.write(line)
+                except Exception as error:
+                    if excepton is True:
+                        print(f'Failed to write line "{line}" into {dotenv_file} (Error: {error})')
+    except Exception as error:
+        if excepton is True:
+            print(f'Failed to open file {dotenv_file} to write content into (Error: {error})')
+
+
+
+    return status
+
+
+
+def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_configs:dict=None,
+                  exception:bool=False)->bool:
+    """
+    given the information provided, store into the correct file
+    :args:
+        deployment_type:str - deployment type
+            - docker
+            - kubernetes
+        configs:dict - AnyLog configurations
+        kubernetes_configs:dict - Kubernetes configurations
+        exception:bool - whether to print exceptions
+    :params:
+        status:bool
+        metadata_content:str - Kubernetes metadata
+        node_type:str - node type
+        node_name:str - none name
     """
     status = True
     metadata_content = ""
@@ -254,11 +316,14 @@ def write_configs(deployment_type:str, configs:dict, kubernetes_configs:dict=Non
 
     if deployment_type == 'docker':
         content = support.create_env_configs(configs=configs)
-        file_path  = __create_file_docker(node_type=node_type, exception=exception)
+        file_path = __create_file_docker(node_type=node_type, exception=exception)
+        update_dotenv_tag(file_path=file_path.split('anylog_configs.env')[0], build=build, node_name=node_name,
+                          excepton=exception)
     elif deployment_type == 'kubernetes':
         metadata_content = support.create_kubernetes_metadata(node_name=node_name, configs=kubernetes_configs)
         content = support.create_kubernetes_configs(configs=configs)
-        file_name = __create_file_kubernetes(node_type=node_type, exception=exception)
+        file_path = __create_file_kubernetes(node_type=node_type, exception=exception)
+        __write_file(file_path=file_path, content=metadata_content, exception=exception)
 
     __write_file(file_path=file_path, content=content, exception=exception)
 

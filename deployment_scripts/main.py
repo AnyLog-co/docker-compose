@@ -72,6 +72,9 @@ def main():
         if args.deployment_type == 'kubernetes':
             kubernetes_configs = support.merge_configs(default_configs=kubernetes_configs, updated_configs=config_file)
 
+    node_configs, kubernetes_configs = support.prep_configs(node_type=args.node_type, node_configs=node_configs,
+                                                            build=args.build, kubernetes_configs=kubernetes_configs)
+
     for section in node_configs:
         status = support.print_questions(node_configs[section])
         if status is True:
@@ -107,11 +110,13 @@ def main():
             print('\n')
 
     if args.deployment_type == 'docker':
-        file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, kubernetes_configs=None, exception=args.exception)
+        file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
+                              kubernetes_configs=None, exception=args.exception)
     elif args.deployment_type == 'kubernetes':
         kubernetes_configs = kubernetes_questionnaire.questionnaire(node_name=node_configs['general']['NODE_NAME']['value'],
                                                                     configs=kubernetes_configs)
-        file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, kubernetes_configs=kubernetes_configs, exception=args.exception)
+        file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
+                              kubernetes_configs=kubernetes_configs, exception=args.exception)
 
 
 if __name__ == '__main__':
