@@ -1,4 +1,5 @@
 import argparse
+import json
 import os
 
 import file_io
@@ -38,11 +39,11 @@ def main():
         --deployment-type     DEPLOYMENT_TYPE     Deployment type - docker generates .env file, kubernetes generates YAML file
             * docker
             * kubernetes
-        --config-file   CONFIG_FILE     JSON file to get configurations from
+        --config-file   CONFIG_FILE               Configuration file to use for default values
             * develop
             * predevelop
             * test
-        --kubernetes-config-file
+        -e, --exception  [EXCEPTION]              Whether to print exception
     :params:
         config_file:dict - content from configuration file
         configs:dict - removed un-needed configurations

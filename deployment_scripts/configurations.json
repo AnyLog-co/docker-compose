@@ -193,7 +193,11 @@
       "question": "Bind TCP Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
       "enable": true,
-      "default": false,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
       "value": ""
     },
     "TCP_THREADS": {
@@ -207,7 +211,11 @@
       "question": "Bind REST Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
       "enable": true,
-      "default": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "true",
       "value": ""
     },
     "REST_TIMEOUT": {
@@ -235,7 +243,11 @@
       "question": "Bind Message Broker Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
       "enable": true,
-      "default": false,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
       "value": ""
     },
     "BROKER_THREADS": {

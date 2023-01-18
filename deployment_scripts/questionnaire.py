@@ -34,6 +34,7 @@ def __generate_question(configs:dict)->str:
         question = f"{configs['question']} {params}]: "
     else:
         question = f"{configs['question']}: "
+
     return question
 
 
@@ -181,37 +182,43 @@ def networking_questions(configs:dict)->dict:
             error_msg = ""
             full_question = __generate_question(configs=configs[param])
             status = False
-            while status is False: # iterate through options if type PORT then convert to int
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
+            while status is False:
+                answer = __ask_question(question=full_question, description=configs[param]['default'],
                                         param=param, error_msg=error_msg)
-                if param in ['ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'ANYLOG_BROKER_PORT'] and answer != "":
+                if param in 'PORT' and answer != '':
                     port, error_msg = __validate_port(port=answer)
                     if error_msg == "":
                         configs[param]['value'] = answer
                         status = True
-                elif param == 'OVERWRITE_IP':
-                    if answer not in ['true', 'false'] and answer != '':
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    elif answer == 'true':
-                        configs['LOCAL_IP']['value'] = configs['PROXY_IP']['value']
-                        configs['PROXY_IP']['value'] = ""
-                        configs[param]['value'] = ""
+                elif param in 'BIND' or param == 'OVERWRITE_IP' and answer != '':
+                    if answer in configs[param]['options']:
+                        configs[param]['value'] = answer
                         status = True
+                    else:
+                        print(f'Invalid value {answer}. Please try again')
+                elif answer != '':
+                    configs[param]['value'] = answer
+                    status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
 
-                if param == 'PROXY_IP' and answer == "":
+                if param == 'PROXY_IP' and configs[param]['value'] == '':
                     configs['OVERWRITE_IP']['enable'] = False
         else:
             configs[param]['value'] = configs[param]['default']
 
-        if param == 'ANYLOG_BROKER_PORT' and configs[param]['value'] == '':
-            configs['BROKER_BIND']['enable'] = False
-
+    # validate consistent ports
     configs['ANYLOG_REST_PORT'], configs['ANYLOG_BROKER_PORT'] = __validate_ports(tcp_port=configs['ANYLOG_SERVER_PORT']['value'],
                                                                                   rest_info=configs['ANYLOG_REST_PORT'],
                                                                                   broker_info=configs['ANYLOG_BROKER_PORT'])
+
+    if configs['OVERWRITE_IP']['value'] == 'true':
+        configs['LOCAL_IP']['value'] = configs['PROXY_IP']['value']
+        configs['PROXY_IP']['value'] = ''
+
+    del configs['OVERWRITE_IP']
+
     return configs
 
 

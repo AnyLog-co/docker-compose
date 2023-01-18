@@ -1,11 +1,24 @@
-import dotenv
-import json
 import os
-import yaml
+try:
+    import dotenv
+except Exception as error:
+    print(f'Failed to find dotenv import package (Error: {error})')
+    status = False
+try:
+    import json
+except Exception as error:
+    print(f'Failed to find json import package (Error: {error})')
+    status = False
+try:
+    import yaml
+except Exception as error:
+    print(f'Failed to find yaml import package (Error: {error})')
+    status = False
 
 import support
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
+
 
 def __create_file(file_path:str, exception:bool=False)->(str, bool):
     """
@@ -237,7 +250,7 @@ def write_configs(deployment_type:str, configs:dict, kubernetes_configs:dict=Non
     metadata_content = ""
 
     node_type = configs['general']['NODE_TYPE']['value']
-    node_name = configs['general']['NODE_NAME']['value'].replace(' ', '-').repacel('_', '-').lower()
+    node_name = configs['general']['NODE_NAME']['value'].replace(' ', '-').replace('_', '-').lower()
 
     if deployment_type == 'docker':
         content = support.create_env_configs(configs=configs)

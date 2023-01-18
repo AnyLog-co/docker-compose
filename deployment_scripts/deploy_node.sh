@@ -50,10 +50,7 @@ then
   if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=develop ; fi
   printf "\n"
 
-  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
-    --build ${BUILD_TYPE} \
-    --deployment-type ${DEPLOYMENT_TYPE} \
-    --config-file $HOME/deployments/deployment_scripts/configurations.json
+  python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} --deployment-type ${DEPLOYMENT_TYPE}
 fi
 
 while [[ ! ${DEPLOY_NODE} == y ]] && [[ ! ${DEPLOY_NODE} == n ]] ;
