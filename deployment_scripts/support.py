@@ -42,6 +42,20 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
     if kubernetes_configs != {} and build is not None:
         kubernetes_configs['image']['tag']['default'] = build
 
+    if node_type != 'rest':
+        node_configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
+    if node_type == 'operator':
+        node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32148
+        node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32149
+    if node_type == 'publisher':
+        node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32248
+        node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32249
+    if node_type == 'query':
+        node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32348
+        node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32349
+        node_configs['database']['SYSTEM_QUERY']['default'] = 'true'
+        node_configs['database']['MEMORY']['default'] = 'true'
+
     return node_configs, kubernetes_configs
 
 

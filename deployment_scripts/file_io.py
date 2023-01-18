@@ -119,11 +119,12 @@ def __read_yaml(config_file:str, exception:bool=False)->dict:
 
     return configs
 
+
 def __create_file_docker(node_type:str, exception:bool=False)->str:
     """
     Create file path  based on node_type
     :note:
-        query is stored in query-remote-cli
+        query is stored in anylog-query-remote-cli
     :args:
         node_type;str - node type
             - rest
@@ -140,7 +141,7 @@ def __create_file_docker(node_type:str, exception:bool=False)->str:
     if node_type != 'query':
         file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), 'anylog_configs.env')
     else:
-        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'query-remote-cli', 'anylog_configs.env')
+        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-query-remote-cli', 'anylog_configs.env')
 
     # if file exists make a backup
     if os.path.isfile(file_name):
@@ -158,7 +159,7 @@ def __create_file_kubernetes(node_type:str, exception:bool=False)->str:
     """
     Create file path  based on node_type
     :note:
-        query is stored in query-remote-cli
+        query is stored in anylog-query-remote-cli
     :args:
         node_type;str - node type
             - rest

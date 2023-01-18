@@ -6,7 +6,8 @@ can be found in our [deployment documentation](https://github.com/AnyLog-co/docu
 ### Requirements
 * Docker
 * docker-compose
-* Python3 + [dotenv](https://pypi.org/project/python-dotenv/) - for utilizing [deployment scripts](../deplyoment_scripts) 
+* Python3 
+  * [dotenv](https://pypi.org/project/python-dotenv/)  
 
 ## Deployment 
 ### Setting Up Machine
@@ -59,7 +60,7 @@ cd $HOME/deployments/docker-compose/anylog-operator/
 cd $HOME/deployments/docker-compose/anylog-publisher/
 
 # query with Remote-CLI node 
-cd $HOME/deployments/docker-compose/query-remote-cli/
+cd $HOME/deployments/docker-compose/anylog-query-remote-cli/
 ```
 2. Update deployment configurations
 ```shell

@@ -49,8 +49,9 @@ then
   done
   if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=develop ; fi
   printf "\n"
-
-  python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} --deployment-type ${DEPLOYMENT_TYPE}
+  python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    --build ${BUILD_TYPE} \
+    --deployment-type ${DEPLOYMENT_TYPE}
 fi
 
 while [[ ! ${DEPLOY_NODE} == y ]] && [[ ! ${DEPLOY_NODE} == n ]] ;
@@ -63,7 +64,7 @@ then
   cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
   if [[ ${NODE_TYPE} == query ]] ;
   then
-    cd $HOME/deployments/docker-compose/query-remote-cli/
+    cd $HOME/deployments/docker-compose/anylog-query-remote-cli/
   fi
   docker-compose up -d
 elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]]

@@ -442,7 +442,7 @@ def publisher_questions(configs:dict)->dict:
                         except:
                             error_msg = f"Invalid value {answer}. Please try again... "
                         else:
-                            configs[param]['value'] = f"dbms_file_location[{answer}]" 
+                            configs[param]['value'] = f"file_name[{answer}]"
                             status = True
                     else:
                         configs[param]['value'] = f"file_name[{configs[param]['default']}]"
@@ -456,8 +456,6 @@ def publisher_questions(configs:dict)->dict:
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
-            if param in ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION']:
-                configs[param]['value'] = f"file_name[{configs[param]['value']}]"
 
     return configs
 

@@ -78,7 +78,9 @@ def main():
     for section in node_configs:
         status = support.print_questions(node_configs[section])
         if status is True:
-            print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+            if section not in [
+                'operator', 'publisher', 'mqtt']:
+                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
             if section == 'general':
                 node_configs['general'] = questionnaire.generic_questions(configs=node_configs[section])
             elif section == 'authentication':
@@ -89,11 +91,14 @@ def main():
                 node_configs[section] = questionnaire.database_questions(configs=node_configs[section])
             elif section == 'blockchain':
                 node_configs[section] = questionnaire.blockchain_questions(configs=node_configs[section])
-            elif section == 'operator':
+            elif section == 'operator' and args.node_type in ['rest', 'operator', 'standalone']:
+                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
                 node_configs[section] = questionnaire.operator_questions(configs=node_configs[section])
-            elif section == 'publisher':
+            elif section == 'publisher' and args.node_type in ['rest', 'publisher', 'standalone-publisher']:
+                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
                 node_configs[section] = questionnaire.publisher_questions(configs=node_configs[section])
-            elif section == 'mqtt':
+            elif section == 'mqtt' and (args.node_type in ['rest', 'operator', 'publisher', 'standalone', 'standalone-publisher'] or node_configs['networking']['ANYLOG_BROKER_PORT']['value'] != ''):
+                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
                 user = None
                 password = None
                 if 'AUTH_USER' in node_configs['authentication'] and node_configs['authentication']['AUTH_USER']['value'] != '':
