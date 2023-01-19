@@ -100,12 +100,3 @@ then
     --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yml
 fi
 
-
-#  exit 1
-
-#elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]];
-#then
-#  break
-
-
-
