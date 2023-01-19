@@ -1,14 +1,14 @@
 version: "2.2"
 services:
   anylog-query-node:
-    image: anylogco/anylog-network:${BUILD}
-    restart: always
+    image: anylogco/anylog-network:develop
     env_file:
-      - ${ENV_FILE}
-    container_name: ${CONTAINER_NAME}
+      - anylog_configs.env
+    container_name: anylog-query-node
+    restart: always
     stdin_open: true
     tty: true
-    network_mode: "${NETWORK}"
+    network_mode: "host" 
     volumes:
       - anylog-query-node-anylog:/app/AnyLog-Network/anylog
       - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain

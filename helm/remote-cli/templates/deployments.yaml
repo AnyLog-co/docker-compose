@@ -15,6 +15,10 @@ spec:
       labels:
         app: {{ .Values.general.app_name }}
     spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
       containers:
       - name: '{{ .Values.general.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
@@ -25,3 +29,20 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
+
+        {{- if eq .Values.volume.enable_volume true }}
+        volumeMounts:
+#          - name: '{{ .Values.volume.json_volume.name }}'
+#            mountPath: '{{ .Values.volume.json_volume.path }}'
+          - name: '{{ .Values.volume.blobs_volume.name }}'
+            mountPath: '{{ .Values.volume.blobs_volume.path }}'
+        {{ end }}
+      {{- if eq .Values.volume.enable_volume true }}
+      volumes:
+#        - name: '{{ .Values.volume.json_volume.name }}'
+#          persistentVolumeClaim:
+#            claimName: '{{ .Values.volume.json_volume.name }}-pvc'
+        - name: '{{ .Values.volume.blobs_volume.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.blobs_volume.name }}-pvc'
+      {{ end }}

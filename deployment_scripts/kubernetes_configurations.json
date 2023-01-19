@@ -1,0 +1,228 @@
+{
+  "metadata": {
+    "namespace": {
+      "question": "Namespace",
+      "description": "Kubernetes Instance namespace",
+      "enable": true,
+      "default": "default",
+      "value": ""
+    },
+    "hostname": {
+      "question": "Kubernetes pod hostname",
+      "description": "hostname for deployment",
+      "enable": true,
+      "default": "anylog-node",
+      "value": ""
+    },
+    "app_name": {
+      "question": "App Name",
+      "description": "deployment application name",
+      "enable": true,
+      "default": "anylog-node-app",
+      "value": ""
+    },
+    "pod_name": {
+      "question": "Pod Name",
+      "description": "Pod application name",
+      "enable": true,
+      "default": "anylog-node-pod",
+      "value": ""
+    },
+    "deployment_name": {
+      "question": "Deployment Name",
+      "description": "Kubernetes deployment name",
+      "enable": true,
+      "default": "anylog-node-deployment",
+      "value": ""
+    },
+    "service_name": {
+      "question": "Service Name",
+      "description": "Kubernetes service name",
+      "enable": true,
+      "default": "anylog-node-svs",
+      "value": ""
+    },
+    "configmap_name": {
+      "question": "Configuration Name",
+      "description": "Kubernetes configuration mapping name",
+      "enable": true,
+      "default": "anylog-node-configs",
+      "value": ""
+    },
+    "node_selector": {
+      "question": "Node Selector",
+      "description": "Allows running Kubernetes remotely. If commented out, code will ignore it",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "replicas": {
+      "question": "Replicas",
+      "description": "Number of Kubernetes replicas",
+      "enable": true,
+      "default": 1,
+      "value": ""
+    }
+  },
+  "image": {
+    "secret_name": {
+      "question": "Secret Name",
+      "description": "Image secret naming",
+      "enable": true,
+      "default": "imagepullsecret",
+      "value": ""
+    },
+    "repository": {
+      "question": "Repository",
+      "description": "(Docker Hub) Image Path",
+      "enable": true,
+      "default": "anylogco/anylog-network",
+      "value": ""
+    },
+    "tag": {
+      "question": "Deployment Version",
+      "description": "Image version",
+      "enable": true,
+      "options": [
+        "develop",
+        "predevelop",
+        "test"
+      ],
+      "default": "develop",
+      "value": ""
+    },
+    "pull_policy": {
+      "question": "Pull Policy",
+      "description": "Image pulling policy",
+      "enable": true,
+      "options": [
+        "Always",
+        "IfNotPresent",
+        "Never"
+      ],
+      "default": "IfNotPresent",
+      "value": ""
+    }
+  },
+  "volume": {
+    "enable_volume": {
+      "question": "Enable Volumes",
+      "description": "Whether or not to enable volumes for AnyLog",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "true",
+      "value": ""
+    },
+    "anylog_volume": {
+      "name": {
+        "question": "Name",
+        "description": "AnyLog Volume name",
+        "enable": true,
+        "default": "anylog-node-anylog-volume",
+        "value": ""
+      },
+      "path": {
+        "question": "Path",
+        "description": "AnyLog security directory path",
+        "enable": false,
+        "default": "/app/AnyLog-Network/anylog",
+        "value": ""
+      },
+      "access_mode": {
+        "question": "Access Mode",
+        "description": "Volume access mode",
+        "enable": true,
+        "options": [
+          "ReadWriteOnce",
+          "ReadWriteMany",
+          "ReadOnlyMany",
+          "ReadWriteOncePod"
+        ],
+        "default": "ReadWriteOnce",
+        "value": ""
+      },
+      "storage_size": {
+        "question": "Storage Size",
+        "description": "Volume storage size",
+        "enable": true,
+        "default": "1Gi",
+        "value": ""
+      }
+    },
+    "blockchain_volume": {
+      "name": {
+        "question": "Name",
+        "description": "AnyLog Volume name",
+        "enable": true,
+        "default": "anylog-node-blockchain-volume",
+        "value": ""
+      },
+      "path": {
+        "question": "Path",
+        "description": "AnyLog security directory path",
+        "enable": false,
+        "default": "/app/AnyLog-Network/blockchain",
+        "value": ""
+      },
+      "access_mode": {
+        "question": "Access Mode",
+        "description": "Volume access mode",
+        "enable": true,
+        "options": [
+          "ReadWriteOnce",
+          "ReadWriteMany",
+          "ReadOnlyMany",
+          "ReadWriteOncePod"
+        ],
+        "default": "ReadWriteOnce",
+        "value": ""
+      },
+      "storage_size": {
+        "question": "Storage Size",
+        "description": "Volume storage size",
+        "enable": true,
+        "default": "1Gi",
+        "value": ""
+      }
+    },
+    "data_volume": {
+      "name": {
+        "question": "Name",
+        "description": "AnyLog Volume name",
+        "enable": true,
+        "default": "anylog-node-data-volume",
+        "value": ""
+      },
+      "path": {
+        "question": "Path",
+        "description": "AnyLog security directory path",
+        "enable": false,
+        "default": "/app/AnyLog-Network/data",
+        "value": ""
+      },
+      "access_mode": {
+        "question": "Access Mode",
+        "description": "Volume access mode",
+        "enable": true,
+        "options": [
+          "ReadWriteOnce",
+          "ReadWriteMany",
+          "ReadOnlyMany",
+          "ReadWriteOncePod"
+        ],
+        "default": "ReadWriteOnce",
+        "value": ""
+      },
+      "storage_size": {
+        "question": "Storage Size",
+        "description": "Volume storage size",
+        "enable": true,
+        "default": "1Gi",
+        "value": ""
+      }
+    }
+  }
+}

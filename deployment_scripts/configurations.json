@@ -7,7 +7,7 @@
       "options": [
         "none",
         "rest",
-        "master",
+        "ledger",
         "operator",
         "query",
         "publisher",
@@ -60,6 +60,69 @@
       "value": ""
     }
   },
+  "authentication": {
+    "ENABLE_AUTH": {
+      "question": "Enable Authentication",
+      "description": "When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain",
+      "enable": false,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
+    "ENABLE_REST_AUTH": {
+      "question": "Enable Basic REST Authentication",
+      "description": "Whether or not to enable authentication when accessing node via REST",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
+    "NODE_PASSWORD": {
+      "question": "Node Password",
+      "description": "Provide a password to protect sensitive information that is kept on the node",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "USER_NAME": {
+      "question": "User Name",
+      "description": "user that can connect to this node",
+      "enable": true,
+      "default": "user1",
+      "value": ""
+    },
+    "USER_PASSWORD": {
+      "question": "User Password",
+      "description": "Password associated with the user",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
+    "USER_TYPE": {
+      "question": "User Type",
+      "description": "The type of user",
+      "enable": true,
+      "options": [
+        "admin",
+        "user"
+      ],
+      "default": "admin",
+      "value": ""
+    },
+    "ROOT_PASSWORD": {
+      "question": "Root User Password",
+      "description": "Password used by the ROOT member in authentication",
+      "enable": true,
+      "default": "",
+      "value": ""
+    }
+  },
   "networking": {
     "EXTERNAL_IP": {
       "question": "External IP",
@@ -75,11 +138,22 @@
       "default": "",
       "value": ""
     },
-    "K8S_PROXY_IP": {
+    "PROXY_IP": {
       "question": "Proxy IP",
       "description": "Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP",
       "enable": true,
       "default": "",
+      "value": ""
+    },
+    "OVERWRITE_IP": {
+      "question": "Overwrite Local IP",
+      "description": "Overwrite internal/local IP address with proxy IP address",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
       "value": ""
     },
     "ANYLOG_SERVER_PORT": {
@@ -106,13 +180,81 @@
     },
     "ANYLOG_BROKER_PORT": {
       "question": "Local Broker Port",
-      "description": "Port value to be used as an MQTT borker, or some other third-party broker",
+      "description": "Port value to be used as an MQTT broker, or some other third-party broker",
       "enable": true,
       "default": "",
       "range": [
         30000,
         32767
       ],
+      "value": ""
+    },
+    "TCP_BIND": {
+      "question": "Bind TCP Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
+    "TCP_THREADS": {
+      "question": "TCP Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_BIND": {
+      "question": "Bind REST Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "true",
+      "value": ""
+    },
+    "REST_TIMEOUT": {
+      "question": "REST Timeout",
+      "description": "Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.",
+      "enable": true,
+      "default": 20,
+      "value": ""
+    },
+    "REST_THREADS": {
+      "question": "REST Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
+      "value": ""
+    },
+    "REST_SSL": {
+      "question": "Enable REST SSL",
+      "description": "Boolean value to determine if messages are send over HTTPS with client certificates.",
+      "enable": false,
+      "default": false,
+      "value": ""
+    },
+    "BROKER_BIND": {
+      "question": "Bind Message Broker Connection",
+      "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
+    "BROKER_THREADS": {
+      "question": "Broker Thread Count",
+      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "enable": false,
+      "default": 6,
       "value": ""
     }
   },
@@ -158,7 +300,7 @@
     },
     "AUTOCOMMIT": {
       "question": "Enable Autocommit",
-      "description": "Whether or not autocommit data",
+      "description": "Whether to set autocommit data",
       "enable": true,
       "default": "false",
       "options": [
@@ -169,7 +311,7 @@
     },
     "SYSTEM_QUERY": {
       "question": "Enable System Query Database",
-      "description": "Whether or not to start to start system_query logical database",
+      "description": "Whether to start to start system_query logical database",
       "enable": true,
       "default": "false",
       "options": [
@@ -191,7 +333,7 @@
     },
     "NOSQL_ENABLE": {
       "question": "Enable NoSQL Database",
-      "description": "Whether or not to enable NoSQL logical database",
+      "description": "Whether to enable NoSQL logical database",
       "enable": true,
       "default": "false",
       "options": [
@@ -264,7 +406,7 @@
     },
     "NOSQL_BLOBS_REUSE": {
       "question": "Reuse Blobs",
-      "description": "Whether or not (re)store a blob if already exists",
+      "description": "Whether (re)store a blob if already exists",
       "enable": true,
       "default": "true",
       "options": ["true", "false"],
@@ -357,7 +499,7 @@
     },
     "ENABLE_PARTITIONS": {
       "question": "Enable Partitions",
-      "description": "Whether or not to enable partitioning",
+      "description": "Whether to enable partitioning",
       "enable": true,
       "default": "false",
       "options": [
@@ -412,7 +554,7 @@
     },
     "CREATE_TABLE": {
       "question": "Create Table",
-      "description": "Whether or not to create a new table in the operator",
+      "description": "Whether to create a new table in the operator",
       "enable": false,
       "default": "true",
       "options": [
@@ -474,10 +616,10 @@
       "question": "Table File Location",
       "description": "Location of table name within file name",
       "enable": true,
-      "default": 0,
+      "default": 1,
       "value": ""
     },
-    "COMPRESS_FILE": {
+    "PUBLISHER_COMPRESS_FILE": {
       "question": "Compress Files",
       "description": "Compress JSON and SQL file(s) backup",
       "enable": true,
@@ -489,48 +631,10 @@
       "value": ""
     }
   },
-  "authentication": {
-    "AUTHENTICATION": {
-      "question": "Enable Authentication",
-      "description": "Whether or not to enable authentication",
-      "enable": false,
-      "default": "false",
-      "options": [
-        "true",
-        "false"
-      ],
-      "value": ""
-    },
-    "AUTH_USER": {
-      "question": "Username",
-      "description": "authentication user",
-      "enable": false,
-      "default": "",
-      "value": ""
-    },
-    "AUTH_PASSWD": {
-      "question": "Password",
-      "description": "authentication password correlated with user",
-      "enable": false,
-      "default": "",
-      "value": ""
-    },
-    "AUTH_TYPE": {
-      "question": "Type",
-      "description": "authentication administration type",
-      "enable": false,
-      "default": "admin",
-      "options": [
-        "admin",
-        "user"
-      ],
-      "value": ""
-    }
-  },
   "mqtt": {
     "ENABLE_MQTT": {
       "question": "Enable MQTT",
-      "description": "Whether or not to enable the default MQTT process",
+      "description": "Whether to enable the default MQTT process",
       "enable": true,
       "default": "false",
       "options": [
@@ -541,7 +645,7 @@
     },
     "MQTT_LOG": {
       "question": "Enable MQTT Logging",
-      "description": "Whether or not to enable MQTT logging process",
+      "description": "Whether to enable MQTT logging process",
       "enable": true,
       "default": "false",
       "options": [
@@ -626,31 +730,10 @@
   "advanced settings": {
     "DEPLOY_LOCAL_SCRIPT": {
       "question": "Enable Local Script",
-      "description": "Whether or not to automatically run a local (or personalized) script at the end of the process",
+      "description": "Whether to automatically run a local (or personalized) script at the end of the process",
       "enable": true,
       "default": "false",
       "options": ["true", "false"],
-      "value": ""
-    },
-    "TCP_THREAD_POOL": {
-      "question": "TCP Thread Count",
-      "description": "Number of TCP threads",
-      "enable": false,
-      "default": 6,
-      "value": ""
-    },
-    "REST_TIMEOUT": {
-      "question": "REST Timeout",
-      "description": "How long to wait until REST timeout",
-      "enable": false,
-      "default": 30,
-      "value": ""
-    },
-    "REST_THREADS": {
-      "question": "REST Threads",
-      "description": "Number of REST threads",
-      "enable": false,
-      "default": 5,
       "value": ""
     },
     "QUERY_POOL": {

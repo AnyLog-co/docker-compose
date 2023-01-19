@@ -6,6 +6,12 @@ general:
   configmap_name: grafana-configs
   replicas: 1
 
+volume:
+  enable_volume: true
+  name: grafana-data
+  access_mode: ReadWriteOnce
+  storage_size: 1Gi
+
 image:
   repository: grafana/grafana
   tag: 7.5.7
@@ -25,4 +31,8 @@ configs:
       simpod-json-datasource,
       grafana-worldmap-panel
   ]
+  ini_file:
+    disable_login_form: false
+    enabled: true
+    allow_embedding: true
 

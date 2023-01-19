@@ -1,44 +1,65 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
-  name: '{{ .Values.general.deployment_name }}'
+  namespace: '{{ .Values.metadata.namespace }}'
+  name: '{{ .Values.metadata.deployment_name }}'
   labels:
-    app: '{{ .Values.general.deployment_name }}'
+    app: '{{ .Values.metadata.deployment_name }}'
 spec:
-  replicas: {{ .Values.general.replicas }}
+  replicas: {{ .Values.metadata.replicas }}
   selector:
     matchLabels:
-      app: '{{ .Values.general.deployment_name }}'
+      app: '{{ .Values.metadata.deployment_name }}'
   template:
     metadata:
       labels:
-        app: '{{ .Values.general.deployment_name }}'
+        app: '{{ .Values.metadata.deployment_name }}'
     spec:
-      hostname: {{ .Values.general.pod_name }}
-      {{- if .Values.configs.nodeSelector }}
+      hostname: {{ .Values.metadata.pod_name }}
+      {{- if ne .Values.metadata.node_selector "" }}
       nodeSelector:
-        kubernetes.io/hostname: {{ .Values.configs.nodeSelector }}
+        kubernetes.io/hostname: {{ .Values.metadata.node_selector }}
       {{ end }}
-      {{- if ne .Values.image.secretName "" }}
+      {{- if ne .Values.image.secret_name "" }}
       imagePullSecrets:
-        - name: {{ .Values.image.secretName }}
+        - name: {{ .Values.image.secret_name }}
       {{ end }}
       containers:
-      - name: '{{ .Values.general.deployment_name }}'
+      - name: '{{ .Values.metadata.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        imagePullPolicy: {{ .Values.image.pull_policy }}
         envFrom:
         - configMapRef:
-            name: '{{ .Values.general.configmap_name }}'
+            name: '{{ .Values.metadata.configmap_name }}'
         tty: true
         stdin: true
         ports:
         - name: server
-          containerPort: {{ .Values.configs.networking.server }}
+          containerPort: {{ .Values.networking.ANYLOG_SERVER_PORT }}
         - name: rest
-          containerPort: {{ .Values.configs.networking.rest }}
-        {{- if .Values.configs.networking.broker }}
+          containerPort: {{ .Values.networking.ANYLOG_REST_PORT }}
+        {{- if .Values.networking.ANYLOG_BROKER_PORT }}
         - name: broker
-          containerPort: {{ .Values.configs.networking.broker }}
+          containerPort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
         {{ end }}
+        {{- if eq .Values.volume.enable_volume true }}
+        volumeMounts:
+          - name: '{{ .Values.volume.anylog_volume.name }}'
+            mountPath: {{ .Values.volume.anylog_volume.path }}
+          - name: '{{ .Values.volume.blockchain_volume.name }}'
+            mountPath: {{ .Values.volume.blockchain_volume.path }}
+          - name: '{{ .Values.volume.data_volume.name }}'
+            mountPath: {{ .Values.volume.data_volume.path }}
+        {{ end }}
+      {{- if eq .Values.volume.enable_volume true }}
+      volumes:
+        - name: '{{ .Values.volume.anylog_volume.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.anylog_volume.name }}-pvc'
+        - name: '{{ .Values.volume.blockchain_volume.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.blockchain_volume.name }}-pvc'
+        - name: '{{ .Values.volume.data_volume.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.data_volume.name }}-pvc'
+      {{ end }}
