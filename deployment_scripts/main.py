@@ -72,8 +72,9 @@ def main():
         if args.deployment_type == 'kubernetes':
             kubernetes_configs = support.merge_configs(default_configs=kubernetes_configs, updated_configs=config_file)
 
-    node_configs, kubernetes_configs = support.prep_configs(node_type=args.node_type, node_configs=node_configs,
-                                                            build=args.build, kubernetes_configs=kubernetes_configs)
+    if args.config_file is None:
+        node_configs, kubernetes_configs = support.prep_configs(node_type=args.node_type, node_configs=node_configs,
+                                                                build=args.build, kubernetes_configs=kubernetes_configs)
 
     for section in node_configs:
         status = support.print_questions(node_configs[section])
@@ -96,18 +97,21 @@ def main():
             elif section == 'publisher' and args.node_type in ['rest', 'publisher', 'standalone-publisher']:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
                 node_configs[section] = questionnaire.publisher_questions(configs=node_configs[section])
-            elif section == 'mqtt' and (args.node_type in ['rest', 'operator', 'publisher', 'standalone', 'standalone-publisher'] or node_configs['networking']['ANYLOG_BROKER_PORT']['value'] != ''):
+            elif section == 'mqtt' and (args.node_type in ['rest', 'operator', 'publisher', 'standalone',
+                                                           'standalone-publisher'] or
+                                        node_configs['networking']['ANYLOG_BROKER_PORT']['value'] != ''):
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-                user = None
-                password = None
-                if 'AUTH_USER' in node_configs['authentication'] and node_configs['authentication']['AUTH_USER']['value'] != '':
-                    user = node_configs['authentication']['AUTH_USER']['value'],
-                if 'AUTH_PASSWD' in node_configs['authentication'] and node_configs['authentication']['AUTH_PASSWD']['value'] != '':
-                    password = node_configs['authentication']['AUTH_PASSWD']['value']
-                node_configs[section] = support.prepare_mqtt_params(configs=node_configs[section],
-                                                                    db_name=node_configs['operator']['DEFAULT_DBMS']['value'],
-                                                                    port=node_configs['networking']['ANYLOG_BROKER_PORT']['value'],
-                                                                    user=user, password=password)
+                if args.config_file is None:
+                    user = None
+                    password = None
+                    if 'AUTH_USER' in node_configs['authentication'] and node_configs['authentication']['AUTH_USER']['value'] != '':
+                        user = node_configs['authentication']['AUTH_USER']['value'],
+                    if 'AUTH_PASSWD' in node_configs['authentication'] and node_configs['authentication']['AUTH_PASSWD']['value'] != '':
+                        password = node_configs['authentication']['AUTH_PASSWD']['value']
+                    node_configs[section] = support.prepare_mqtt_params(configs=node_configs[section],
+                                                                        db_name=node_configs['operator']['DEFAULT_DBMS']['value'],
+                                                                        port=node_configs['networking']['ANYLOG_BROKER_PORT']['value'],
+                                                                        user=user, password=password)
                 node_configs[section] = questionnaire.mqtt_questions(configs=node_configs[section])
             elif section == 'advanced settings':
                 node_configs[section] = questionnaire.advanced_settings(configs=node_configs[section])

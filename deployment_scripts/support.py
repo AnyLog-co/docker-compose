@@ -46,6 +46,8 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
         kubernetes_configs['volume']['anylog_volume']['default'] = f'anylog-{node_type}-anylog-data'
         kubernetes_configs['volume']['blockchain_volume']['default'] = f'anylog-{node_type}-blockchain-data'
         kubernetes_configs['volume']['data_volume']['default'] = f'anylog-{node_type}-data-data'
+        node_configs['database']['DB_IP']['default'] = 'postgres-svs'
+        node_configs['database']['NOSQL_IP']['default'] = 'mongo-svs'
 
     if node_type != 'rest':
         node_configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
@@ -62,6 +64,29 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
         node_configs['database']['MEMORY']['default'] = 'true'
 
     return node_configs, kubernetes_configs
+
+
+def prep_imported_kubernetes(configs:dict)->dict:
+    """
+    Given Kubernetes configurations, update boolean values to match proper formatting
+    for geolocation, if the value is default ("0.0, 0.0" or "Unknown") then reset to empty
+    :args:
+        configs:dict - AnyLog configurations from file to review
+    :return:
+         updated configs
+    """
+    for section in configs:
+        for param in configs[section]:
+            if isinstance(configs[section][param], bool):
+                configs[section][param] = 'false'
+                if configs[section][param] is True:
+                    configs[section][param] = 'true'
+            elif param == 'LOCATION' and configs[section][param] == '0.0, 0.0':
+                configs[section][param] = ""
+            elif param in ['COUNTRY', 'STATE', 'CITY'] and configs[section][param] == 'Unknown':
+                configs[section][param] = ""
+
+    return configs
 
 
 def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:str)->dict:
@@ -81,8 +106,13 @@ def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:
     if port != "":
         configs['MQTT_PORT']['default'] = port
         configs['MQTT_BROKER']['default'] = 'local'
-        configs['MQTT_USER']['default'] = user
-        configs['MQTT_PASSWD']['default'] = password
+        configs['MQTT_USER']['default'] = ""
+        configs['MQTT_PASSWD']['default'] = ""
+
+        if user is not None:
+            configs['MQTT_USER']['default'] = user
+        if password is not None:
+            configs['MQTT_PASSWD']['default'] = password
 
     return configs
 

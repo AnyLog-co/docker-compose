@@ -240,6 +240,7 @@ def read_configs(config_file:str, exception:bool=False)->dict:
             configs = __read_dotenv(config_file=config_file, exception=exception)
         elif file_extension in ['yml', 'yaml']:
             configs = __read_yaml(config_file=config_file, exception=exception)
+            configs = support.prep_imported_kubernetes(configs=configs)
         elif file_extension == 'json':
             configs = __read_json(config_file=config_file, exception=exception)
         else:

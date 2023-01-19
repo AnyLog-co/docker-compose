@@ -72,7 +72,7 @@ then
     --config-file $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
 fi
 
-read -p  "Would you like to deploy AnyLog now (y/n)?" DEPLOY_NODE
+read -p  "Would you like to deploy AnyLog now (y/n)? " DEPLOY_NODE
 while [[ ! ${DEPLOY_NODE} == y ]] && [[ ! ${DEPLOY_NODE} == n ]] ;
 do
   read -p  "Would you like to deploy AnyLog now (y/n)? " DEPLOY_NODE
