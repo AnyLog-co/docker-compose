@@ -43,9 +43,9 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
     if kubernetes_configs != {}:
         if build is not None:
             kubernetes_configs['image']['tag']['default'] = build
-        kubernetes_configs['volume']['anylog_volume']['default'] = f'anylog-{node_type}-anylog-data'
-        kubernetes_configs['volume']['blockchain_volume']['default'] = f'anylog-{node_type}-blockchain-data'
-        kubernetes_configs['volume']['data_volume']['default'] = f'anylog-{node_type}-data-data'
+        kubernetes_configs['volume']['anylog_volume']['name']['default'] = f'anylog-{node_type}-anylog-data'
+        kubernetes_configs['volume']['blockchain_volume']['name']['default'] = f'anylog-{node_type}-blockchain-data'
+        kubernetes_configs['volume']['data_volume']['name']['default'] = f'anylog-{node_type}-data-data'
         node_configs['database']['DB_IP']['default'] = 'postgres-svs'
         node_configs['database']['NOSQL_IP']['default'] = 'mongo-svs'
 
