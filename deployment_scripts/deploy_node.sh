@@ -38,22 +38,41 @@ do
   read -p "Invalid option: ${EXISTING_CONFIGS}. Deploy Existing Configs [y / n]: " EXISTING_CONFIGS
 done
 
+read -p "AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
+while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
+do
+  read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
+done
+if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=develop ; fi
+printf "\n"
 
 # if user decides not to use existing configs, then ask questions to help fill-out the configurations.
 if [[ ${EXISTING_CONFIGS} == n ]] ;
 then
-  read -p "AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
-  while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
-  do
-    read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
-  done
-  if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=develop ; fi
-  printf "\n"
   python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE}
+elif [[ ${DEPLOYMENT_TYPE}  == docker ]] && [[ ! ${NODE_TYPE} == query ]];
+then
+    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    --build ${BUILD_TYPE} \
+    --deployment-type ${DEPLOYMENT_TYPE} \
+    --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}/anylog_configs.env
+elif [[ ${DEPLOYMENT_TYPE}  == docker ]] && [[ ${NODE_TYPE} == query ]];
+then
+    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    --build ${BUILD_TYPE} \
+    --deployment-type ${DEPLOYMENT_TYPE} \
+    --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}-remote-cli/anylog_configs.env
+elif [[ ${DEPLOYMENT_TYPE}  == kubernetes ]] && [[ ${NODE_TYPE} != query ]];
+then
+    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    --build ${BUILD_TYPE} \
+    --deployment-type ${DEPLOYMENT_TYPE} \
+    --config-file $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
 fi
 
+read -p  "Would you like to deploy AnyLog now (y/n)?" DEPLOY_NODE
 while [[ ! ${DEPLOY_NODE} == y ]] && [[ ! ${DEPLOY_NODE} == n ]] ;
 do
   read -p  "Would you like to deploy AnyLog now (y/n)? " DEPLOY_NODE
@@ -70,10 +89,12 @@ then
 elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]]
 then
   cd $HOME/deployments/helm/packages/
+  # setup volumes
   helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz \
     --name-template ${NODE_TYPE}-volume
     --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yml
 
+  # setup node
   helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz \
     --name-template ${NODE_TYPE}-node \
     --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yml
