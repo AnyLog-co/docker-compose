@@ -1,6 +1,6 @@
 NETWORKING_CONFIGS_COMNMENT = ("\n# By default, a node will connect to the network (TCP, REST and Message Broker) based on "
                                "its assoicated policy. \n# If a user either disables ths option or conncts to a REST node, "
-                               "then connectivity will be based on default values and/or network configurations each time "
+                               "then connectivity will be based on default values \n# and/or network configurations each time "
                                "a node comes up. "
                                "\n# For policy-based configurations netwoking will be set as follows: "
                                "\n#\t1. When binding is set to True, AnyLog will bind against the local or overlay IP "

@@ -212,12 +212,6 @@ def networking_questions(configs:dict)->dict:
                                                                                   rest_info=configs['ANYLOG_REST_PORT'],
                                                                                   broker_info=configs['ANYLOG_BROKER_PORT'])
 
-    if configs['OVERWRITE_IP']['value'] == 'true':
-        configs['LOCAL_IP']['value'] = configs['PROXY_IP']['value']
-        configs['PROXY_IP']['value'] = ''
-
-    del configs['OVERWRITE_IP']
-
     return configs
 
 
