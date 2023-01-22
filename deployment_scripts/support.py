@@ -1,3 +1,15 @@
+NETWORKING_CONFIGS_COMNMENT = ("\n# By default, a node will connect to the network (TCP, REST and Message Broker) based on "
+                               "its assoicated policy. \n# If a user either disables ths option or conncts to a REST node, "
+                               "then connectivity will be based on default values and/or network configurations each time "
+                               "a node comes up. "
+                               "\n# For policy-based configurations netwoking will be set as follows: "
+                               "\n#\t1. When binding is set to True, AnyLog will bind against the local or overlay IP "
+                               "\n#\t   address for TCP. However, by default AnyLog does not bind on either REST or Message Broker;"
+                               "\n#\t   because data and/or GET requests against those port"
+                               "\n#\t2. If the `proxy_ip` is declared, it will not used, but rather more of an FYI "
+                               "\n#\t   regarding network configuration. of the actual machine\n")
+
+
 def merge_configs(default_configs:dict, updated_configs:dict)->dict:
     """
     Given 2 sets of configurations merge them into a single dictionary
@@ -51,6 +63,12 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
 
     if node_type != 'rest':
         node_configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
+    else:
+        # for REST node we allow users to manually change their configurations
+        node_configs['networking']['POLICY_BASED_NETWORKING']['enable'] = False
+        node_configs['networking']['POLICY_BASED_NETWORKING']['default'] = 'false'
+        node_configs['networking']['REST_BIND']['enable'] = True
+        node_configs['networking']['BROKER_BIND']['enable'] = True
     if node_type == 'operator':
         node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32148
         node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32149
@@ -146,6 +164,8 @@ def create_env_configs(configs:dict)->str:
     content = ""
     for section in configs:
         content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---'
+        if section == 'networking':
+            content += NETWORKING_CONFIGS_COMNMENT
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
             if configs[section][param]['default'] != "":
@@ -176,6 +196,8 @@ def create_kubernetes_metadata(node_name:str, configs:dict)->str:
     content = ""
     for section in configs:
         content += f"{section}: "
+        if section == 'networking':
+            content += NETWORKING_CONFIGS_COMNMENT
         if section != 'volume':
             for param in configs[section]:
                 comment = configs[section][param]['description']
