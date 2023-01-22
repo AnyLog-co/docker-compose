@@ -203,8 +203,7 @@ def networking_questions(configs:dict)->dict:
 
         # if disable network based on policy, provide params for user to configure their network with
         if configs['POLICY_BASED_NETWORKING']['value'] == "false":
-            for param in ['TCP_BIND', 'TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT',
-                          'REST_THREADS', 'BROKER_BIND', 'BROKER_THREADS']:
+            for param in ['TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT', 'REST_THREADS', 'BROKER_BIND', 'BROKER_THREADS']:
                 configs[param]['enable'] = True
 
     # validate consistent ports

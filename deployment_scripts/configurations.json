@@ -199,7 +199,7 @@
     "TCP_BIND": {
       "question": "Bind TCP Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": false,
+      "enable": true,
       "options": [
         "true",
         "false"
