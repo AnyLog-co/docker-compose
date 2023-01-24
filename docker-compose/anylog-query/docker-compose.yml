@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   anylog-query-node:
-    image: anylogco/anylog-network:develop
+    image: anylogco/anylog-network:${BUILD}
     env_file:
       - anylog_configs.env
     container_name: anylog-query-node
