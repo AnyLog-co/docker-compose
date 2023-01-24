@@ -1,14 +1,4 @@
-NETWORKING_CONFIGS_COMNMENT = ("\n# By default, a node will connect to the network (TCP, REST and Message Broker) based on "
-                               "its assoicated policy. \n# If a user either disables ths option or conncts to a REST node, "
-                               "then connectivity will be based on default values \n# and/or network configurations each time "
-                               "a node comes up. "
-                               "\n# For policy-based configurations netwoking will be set as follows: "
-                               "\n#\t1. When binding is set to True, AnyLog will bind against the local or overlay IP "
-                               "\n#\t   address for TCP. However, by default AnyLog does not bind on either REST or Message Broker;"
-                               "\n#\t   because data and/or GET requests against those port"
-                               "\n#\t2. If the `proxy_ip` is declared, it will not used, but rather more of an FYI "
-                               "\n#\t   regarding network configuration. of the actual machine\n")
-
+import file_io
 
 def merge_configs(default_configs:dict, updated_configs:dict)->dict:
     """
@@ -69,6 +59,8 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
         node_configs['networking']['POLICY_BASED_NETWORKING']['default'] = 'false'
         node_configs['networking']['REST_BIND']['enable'] = True
         node_configs['networking']['BROKER_BIND']['enable'] = True
+        node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32548
+        node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32549
     if node_type == 'operator':
         node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32148
         node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32149
@@ -137,7 +129,7 @@ def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:
 
 def print_questions(configs:dict)->bool:
     """
-    Whether or not to print question
+    Whether to print question
     :args:
         configs:dict - configuration
     :param:
@@ -165,7 +157,7 @@ def create_env_configs(configs:dict)->str:
     for section in configs:
         content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---'
         if section == 'networking':
-            content += NETWORKING_CONFIGS_COMNMENT
+            content += file_io.read_notes()
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
             if configs[section][param]['default'] != "":
@@ -189,15 +181,21 @@ def create_env_configs(configs:dict)->str:
     return content
 
 
-def create_kubernetes_metadata(node_name:str, configs:dict)->str:
+def create_kubernetes_metadata(configs:dict)->str:
     """
-
+    create metadata for kubernetes
+    :args:
+        configs:dict - metadata configurations
+    :params:
+        content:str - configs converted into content to be stored in YAML
+    :return:
+        content
     """
     content = ""
     for section in configs:
         content += f"{section}: "
         if section == 'networking':
-            content += NETWORKING_CONFIGS_COMNMENT
+            content += file_io.read_notes()
         if section != 'volume':
             for param in configs[section]:
                 comment = configs[section][param]['description']
@@ -272,7 +270,7 @@ def create_kubernetes_configs(configs:dict)->dict:
 
     content = ""
     for section in configs:
-        content += f"\n{section.replace(' ', '_')}:"
+        content += f"\n{section.replace(' ', '_')}:\n"
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
             if configs[section][param]['default'] != "":
