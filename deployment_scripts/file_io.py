@@ -215,6 +215,37 @@ def __write_file(file_path:str, content:str, exception:bool=False):
             print(f'Failed to open file {file_path} (Error: {error})')
 
 
+def read_notes(exception:bool=False)->str:
+    """
+    Read comments in network_comment.txt
+    :args:
+        exception:bool - whether to print exceptions
+    :params:
+        file_path:str - file path form network_comment.txt
+        content:str - content from file
+    :return:
+        content
+    """
+    file_path = os.path.join(ROOT_PATH, 'deployment_scripts', 'network_comment.txt')
+    content = ""
+    if os.path.isfile(file_path):
+        try:
+            with open(file_path, 'r') as f:
+                try:
+                    content = "\n#" +  f.read() + "#"
+                except Exception as error:
+                    if exception is True:
+                        print(f'Failed to read comments in {file_path} (Error: {error})')
+        except Exception as error:
+            if exception is True:
+                print(f'Failed to open comments file {file_path} (Error: {error})')
+    elif exception is True:
+        print(f'Failed to locate comments file {file_path}')
+
+    return content
+
+
+
 def read_configs(config_file:str, exception:bool=False)->dict:
     """
     Given a configuration file, extract configurations
@@ -326,7 +357,7 @@ def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_
         update_dotenv_tag(file_path=file_path.split('anylog_configs.env')[0], build=build, node_name=node_name,
                           excepton=exception)
     elif deployment_type == 'kubernetes':
-        metadata_content = support.create_kubernetes_metadata(node_name=node_name, configs=kubernetes_configs)
+        metadata_content = support.create_kubernetes_metadata(configs=kubernetes_configs)
         content = support.create_kubernetes_configs(configs=configs)
         file_path = __create_file_kubernetes(node_type=node_type, exception=exception)
         __write_file(file_path=file_path, content=metadata_content, exception=exception)

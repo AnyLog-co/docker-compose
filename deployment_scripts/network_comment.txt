@@ -1,18 +1,19 @@
-By default, a node will connect to the (TCP, REST and Message Broker - if declared) based on its associated policy.
-
-If a user disables policy-based option (`POLICY_BASED_NETWORKING=false`) then network connectivity is based on information in the configuration file.
-
-For policy-based configuration networking will be set as follows:
-    1. A user is able to decide whether the TCP connectivity is set to bind or not. If bind is enabled - then AnyLog
-       will use either the local or overlay IP address.
-        * If an overlay is declared, then the overlay IP address will replace the local IP address
-        * If binding is enabled, then AnyLog will only utilize the local or overlay IP address. Whereas if
-          binding is disabled, the blockchain will use both the external and local (or overlay) IP addresses of the
-          physical machine.
-
-    2. For REST and Message Broker, the (default) binding value is False. This is because data and/or GET requests
-       coming-in may come from machines/devices outside the network.
-
-    3. Regarding the relation between blockchain policy and AnyLog networking - AnyLog only cares about policy keys `ip`,
-       `local_ip` and port values. All other networking information, such as `proxy_ip` and `external_ip` (if binding is
-       True), are more of an FYI regarding the network configurations of the actual machine.
+# By default, a node will connect to the (TCP, REST and Message Broker - if declared) based on its associated policy.
+#
+# If a user disables policy-based option (`POLICY_BASED_NETWORKING=false`) then network connectivity is based on information
+# in the configuration file.
+#
+# For policy-based configuration networking will be set as follows:
+#   1. A user is able to decide whether the TCP connectivity is set to bind or not. If bind is enabled - then AnyLog
+#       will use either the local or overlay IP address.
+#        * If an overlay is declared, then the overlay IP address will replace the local IP address
+#        * If binding is enabled, then AnyLog will only utilize the local or overlay IP address. Whereas if
+#          binding is disabled, the blockchain will use both the external and local (or overlay) IP addresses of the
+#          physical machine.
+#
+#    2. For REST and Message Broker, the (default) binding value is False. This is because data and/or GET requests
+#       coming-in may come from machines/devices outside the network.#
+#
+#    3. Regarding the relation between blockchain policy and AnyLog networking - AnyLog only cares about policy keys `ip`,
+#       `local_ip` and port values. All other networking information, such as `proxy_ip` and `external_ip` (if binding is
+#       True), are more of an FYI regarding the network configurations of the actual machine.
