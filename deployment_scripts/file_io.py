@@ -155,7 +155,7 @@ def __create_file_docker(node_type:str, exception:bool=False)->str:
     if file_name != '' and not os.path.isfile(file_name):
         try:
             open(file_name, 'w').close()
-        except exception as error:
+        except Exception as error:
             file_name = ''
             if exception is True:
                 print(f'Failed to create file {file_name} (Error: {error})')
