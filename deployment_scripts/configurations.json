@@ -270,7 +270,7 @@
     },
     "BROKER_THREADS": {
       "question": "Broker Thread Count",
-      "description": "The number of concurrent threads supporting HTTP requests.\t",
+      "description": "The number of concurrent threads supporting broker requests.\t",
       "enable": false,
       "default": 6,
       "value": ""

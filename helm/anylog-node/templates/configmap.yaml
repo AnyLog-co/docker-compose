@@ -31,26 +31,55 @@ data:
   {{ end }} 
 
   # -- Networking --
+  # Connect to TCP, REST and Message Broker (if configured) based on correlating node policy
+  POLICY_BASED_NETWORKING: '{{ .Values.networking.POLICY_BASED_NETWORKING }}'
+  # whether to setup networking based on a (generic) configuration policy - good for both REST and other nodes
+  CONFIG_POLICY: '{{ .Values.networking.CONFIG_POLICY }}'
+
   # External IP address of the machine
-  {{ if ne .Values.networking.EXTERNAL_IP "" }}
+  {{- if ne .Values.networking.EXTERNAL_IP "" }}
   EXTERNAL_IP: '{{ .Values.networking.EXTERNAL_IP }}'
-  {{ end }} 
+  {{ end }}
   # Local or  internal network IP address of the machine
-  {{ if ne .Values.networking.LOCAL_IP "" }}
+  {{- if ne .Values.networking.LOCAL_IP "" }}
   LOCAL_IP: '{{ .Values.networking.LOCAL_IP }}'
-  {{ end }} 
+  {{ end }}
+  # Overlay IP address - if set, will replace local IP address when connecting to network
+  {{- if new .Values.networking.OVERLAY_IP "" }}
+  OVERLAY_IP: '{{ .Values.networking.OVERLAY_IP }}'
+  {{ end }}
   # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
-  {{ if ne .Values.networking.PROXY_IP "" }}
+  {{- if ne .Values.networking.PROXY_IP "" }}
   PROXY_IP: '{{ .Values.networking.PROXY_IP }}'
-  {{ end }} 
+  {{ end }}
+
   # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
   ANYLOG_SERVER_PORT: '{{ .Values.networking.ANYLOG_SERVER_PORT }}'
+  # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+  TCP_BIND: '{{ .Values.networking.TCP_BIND }}'
+  # The number of concurrent threads supporting HTTP requests.
+  TCP_THREADS: '{{ .Values.networking.TCP_THREADS }}'
+
   # Port address used by AnyLog's REST protocol
   ANYLOG_REST_PORT: '{{ .Values.networking.ANYLOG_REST_PORT }}'
-  # Port value to be used as an MQTT borker, or some other third-party broker
-  {{- if  .Values.networking.ANYLOG_BROKER_PORT }} 
+  # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+  REST_BIND: '{{ .Values.networking.REST_BIND }}'
+  # Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.
+  REST_TIMEOUT: '{{ .Values.networking.REST_TIMEOUT }}'
+  # Number of REST threads
+  REST_THREADS: '{{ .Values.networking.REST_THREADS }}'
+  # Boolean value to determine if messages are send over HTTPS with client certificates.
+  REST_SSL: '{{ .Values.networking.REST_SSL }}'
+
+  {{- if  .Values.networking.ANYLOG_BROKER_PORT }}
+  # Port value to be used as an MQTT broker, or some other third-party broker
   ANYLOG_BROKER_PORT: '{{ .Values.networking.ANYLOG_BROKER_PORT }}'
-  {{ end }} 
+  # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+  BROKER_BIND: '{{ .Values.networking.BROKER_BIND }}'
+  # The number of concurrent threads supporting broker requests.
+  BROKER_THREADS: '{{ .Values.networking.BROKER_THREADS }}'
+  {{ end }}
+
 
   # -- Database --
   # --> SQL
@@ -176,10 +205,7 @@ data:
   DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
   # Number of TCP threads
   TCP_THREAD_POOL: '{{ .Values.advanced_settings.TCP_THREAD_POOL }}'
-  # How long to wait until REST timeout
-  REST_TIMEOUT: '{{ .Values.advanced_settings.REST_TIMEOUT }}'
-  # Number of REST threads
-  REST_THREADS: '{{ .Values.advanced_settings.REST_THREADS }}'
+
   # Number of parallel queries
   QUERY_POOL: '{{ .Values.advanced_settings.QUERY_POOL }}'
   # When data comes in write to database immidiately, as opposed to waiting for a full buffer
