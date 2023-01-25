@@ -55,7 +55,6 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
         node_configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
     else:
         # for REST node we allow users to manually change their configurations
-        node_configs['networking']['POLICY_BASED_NETWORKING']['enable'] = False
         node_configs['networking']['POLICY_BASED_NETWORKING']['default'] = 'false'
         node_configs['networking']['REST_BIND']['enable'] = True
         node_configs['networking']['BROKER_BIND']['enable'] = True
