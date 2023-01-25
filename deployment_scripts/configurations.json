@@ -144,7 +144,7 @@
     },
     "LOCAL_IP": {
       "question": "Local IP",
-      "description": "Internal network IP address of the machine",
+      "description": "Local network IP address of the machine",
       "enable": false,
       "default": "",
       "value": ""
