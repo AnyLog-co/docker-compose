@@ -90,6 +90,8 @@ def main():
             elif section == 'database':
                 node_configs[section] = questionnaire.database_questions(configs=node_configs[section])
             elif section == 'blockchain':
+                if args.node_type in ['master', 'standalone', 'standalone-publisher', 'rest']:
+                    node_configs['blockchain']['LEDGER_CONN']['default'] = f"127.0.0.1:{['networking']['ANYLOG_SERVER_PORT']['value']}"
                 node_configs[section] = questionnaire.blockchain_questions(configs=node_configs[section])
             elif section == 'operator' and args.node_type in ['rest', 'operator', 'standalone']:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
