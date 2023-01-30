@@ -1,3 +1,5 @@
+import file_io
+
 def merge_configs(default_configs:dict, updated_configs:dict)->dict:
     """
     Given 2 sets of configurations merge them into a single dictionary
@@ -51,6 +53,13 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
 
     if node_type != 'rest':
         node_configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
+    else:
+        # for REST node we allow users to manually change their configurations
+        node_configs['networking']['POLICY_BASED_NETWORKING']['default'] = 'false'
+        node_configs['networking']['REST_BIND']['enable'] = True
+        node_configs['networking']['BROKER_BIND']['enable'] = True
+        node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32548
+        node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32549
     if node_type == 'operator':
         node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32148
         node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32149
@@ -119,7 +128,7 @@ def prepare_mqtt_params(configs:dict, db_name:str, port:int, user:str, password:
 
 def print_questions(configs:dict)->bool:
     """
-    Whether or not to print question
+    Whether to print question
     :args:
         configs:dict - configuration
     :param:
@@ -146,6 +155,8 @@ def create_env_configs(configs:dict)->str:
     content = ""
     for section in configs:
         content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---'
+        if section == 'networking':
+            content += file_io.read_notes()
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
             if configs[section][param]['default'] != "":
@@ -169,13 +180,21 @@ def create_env_configs(configs:dict)->str:
     return content
 
 
-def create_kubernetes_metadata(node_name:str, configs:dict)->str:
+def create_kubernetes_metadata(configs:dict)->str:
     """
-
+    create metadata for kubernetes
+    :args:
+        configs:dict - metadata configurations
+    :params:
+        content:str - configs converted into content to be stored in YAML
+    :return:
+        content
     """
     content = ""
     for section in configs:
         content += f"{section}: "
+        if section == 'networking':
+            content += file_io.read_notes()
         if section != 'volume':
             for param in configs[section]:
                 comment = configs[section][param]['description']
@@ -250,7 +269,7 @@ def create_kubernetes_configs(configs:dict)->dict:
 
     content = ""
     for section in configs:
-        content += f"\n{section.replace(' ', '_')}:"
+        content += f"\n{section.replace(' ', '_')}:\n"
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
             if configs[section][param]['default'] != "":

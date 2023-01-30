@@ -190,34 +190,27 @@ def networking_questions(configs:dict)->dict:
                     if error_msg == "":
                         configs[param]['value'] = answer
                         status = True
-                elif param in 'BIND' or param == 'OVERWRITE_IP' and answer != '':
-                    if answer in configs[param]['options']:
-                        configs[param]['value'] = answer
-                        status = True
-                    else:
-                        print(f'Invalid value {answer}. Please try again')
-                elif answer != '':
+                elif 'options' in configs[param] and answer != ''  and answer not in configs[param]['options']:
+                    error_msg = f'Invalid option {answer}. Please try again... '
+                elif answer != "":
                     configs[param]['value'] = answer
                     status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
-
-                if param == 'PROXY_IP' and configs[param]['value'] == '':
-                    configs['OVERWRITE_IP']['enable'] = False
         else:
             configs[param]['value'] = configs[param]['default']
+
+        # if disable network based on policy, provide params for user to configure their network with
+        if configs['POLICY_BASED_NETWORKING']['value'] == "false":
+            for param in ['TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT', 'REST_THREADS', 'BROKER_BIND',
+                          'BROKER_THREADS', 'CONFIG_POLICY']:
+                configs[param]['enable'] = True
 
     # validate consistent ports
     configs['ANYLOG_REST_PORT'], configs['ANYLOG_BROKER_PORT'] = __validate_ports(tcp_port=configs['ANYLOG_SERVER_PORT']['value'],
                                                                                   rest_info=configs['ANYLOG_REST_PORT'],
                                                                                   broker_info=configs['ANYLOG_BROKER_PORT'])
-
-    if configs['OVERWRITE_IP']['value'] == 'true':
-        configs['LOCAL_IP']['value'] = configs['PROXY_IP']['value']
-        configs['PROXY_IP']['value'] = ''
-
-    del configs['OVERWRITE_IP']
 
     return configs
 

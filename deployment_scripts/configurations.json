@@ -124,6 +124,28 @@
     }
   },
   "networking": {
+    "POLICY_BASED_NETWORKING": {
+      "question": "Connect to Networking based on Blockchain Policy",
+      "description": "Connect to TCP, REST and Message Broker (if configured) based on correlating node policy",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "true",
+      "value": ""
+    },
+    "CONFIG_POLICY": {
+      "question": "Configuration Policy",
+      "description": "whether to setup networking based on a (generic) configuration policy - good for both REST and other nodes",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
     "EXTERNAL_IP": {
       "question": "External IP",
       "description": "External IP address of the machine",
@@ -133,8 +155,15 @@
     },
     "LOCAL_IP": {
       "question": "Local IP",
-      "description": "Local or  internal network IP address of the machine",
+      "description": "Local network IP address of the machine",
       "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "OVERLAY_IP": {
+      "question": "Overlay IP",
+      "description": "Overlay IP address - if set, will replace local IP address when connecting to network",
+      "enable": true,
       "default": "",
       "value": ""
     },
@@ -143,17 +172,6 @@
       "description": "Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP",
       "enable": true,
       "default": "",
-      "value": ""
-    },
-    "OVERWRITE_IP": {
-      "question": "Overwrite Local IP",
-      "description": "Overwrite internal/local IP address with proxy IP address",
-      "enable": true,
-      "options": [
-        "true",
-        "false"
-      ],
-      "default": "false",
       "value": ""
     },
     "ANYLOG_SERVER_PORT": {
@@ -197,7 +215,7 @@
         "true",
         "false"
       ],
-      "default": "false",
+      "default": "true",
       "value": ""
     },
     "TCP_THREADS": {
@@ -210,18 +228,18 @@
     "REST_BIND": {
       "question": "Bind REST Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": true,
+      "enable": false,
       "options": [
         "true",
         "false"
       ],
-      "default": "true",
+      "default": "false",
       "value": ""
     },
     "REST_TIMEOUT": {
       "question": "REST Timeout",
       "description": "Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.",
-      "enable": true,
+      "enable": false,
       "default": 20,
       "value": ""
     },
@@ -242,7 +260,7 @@
     "BROKER_BIND": {
       "question": "Bind Message Broker Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": true,
+      "enable": false,
       "options": [
         "true",
         "false"
