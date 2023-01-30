@@ -143,18 +143,14 @@
         "true",
         "false"
       ],
-      "default": "false",
+      "default": "true",
       "value": ""
     },
     "CONFIG_POLICY_NAME": {
       "question": "Config Policy Name",
       "description": "Configuration Policy name",
       "enable": true,
-      "options": [
-        "true",
-        "false"
-      ],
-      "default": "false",
+      "default": "",
       "value": ""
     },
     "EXTERNAL_IP": {
