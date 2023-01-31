@@ -128,7 +128,7 @@ def main():
 
         # for local IP address use the service name rather than the generated IP
         if node_configs['networking']['LOCAL_IP']['value'] == "":
-            node_configs['networking']['K8S_LOCAL_IP']['value'] = kubernetes_configs['metadata']['service_name']['value']
+            node_configs['networking']['KUBERNETES_SERVICE_IP']['value'] = kubernetes_configs['metadata']['service_name']['value']
 
         file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
                               kubernetes_configs=kubernetes_configs, exception=args.exception)
