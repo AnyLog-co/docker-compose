@@ -83,6 +83,9 @@ def main():
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
             if section == 'general':
                 node_configs['general'] = questionnaire.generic_questions(configs=node_configs[section])
+                for param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                    if node_configs['general'][param]['value'] == node_configs['general'][param]['default']:
+                        node_configs['general'][param]['value'] = ""
             elif section == 'authentication':
                 node_configs['authentication'] = questionnaire.authentication_questions(configs=node_configs[section])
             elif section == 'networking':
