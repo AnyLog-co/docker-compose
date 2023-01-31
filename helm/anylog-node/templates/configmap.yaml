@@ -37,7 +37,7 @@ data:
   CONFIG_POLICY: '{{ .Values.networking.CONFIG_POLICY }}'
   # Declare Policy name
   CONFIG_POLICY_NAME: '{{ .Values.networking.CONFIG_POLICY_NAME }}'
-  K8S_LOCAL_IP: '{{ .Values.networking.K8S_LOCAL_IP }}'
+  KUBERNETES_SERVICE_IP: '{{ .Values.networking.KUBERNETES_SERVICE_IP }}'
   # External IP address of the machine
   {{ if ne .Values.networking.EXTERNAL_IP "" }}
   EXTERNAL_IP: '{{ .Values.networking.EXTERNAL_IP }}'
