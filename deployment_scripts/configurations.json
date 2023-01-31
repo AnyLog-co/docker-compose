@@ -143,7 +143,14 @@
         "true",
         "false"
       ],
-      "default": "false",
+      "default": "true",
+      "value": ""
+    },
+    "CONFIG_POLICY_NAME": {
+      "question": "Config Policy Name",
+      "description": "Configuration Policy name",
+      "enable": true,
+      "default": "",
       "value": ""
     },
     "EXTERNAL_IP": {
@@ -228,7 +235,7 @@
     "REST_BIND": {
       "question": "Bind REST Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": false,
+      "enable": true,
       "options": [
         "true",
         "false"
@@ -260,7 +267,7 @@
     "BROKER_BIND": {
       "question": "Bind Message Broker Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": false,
+      "enable": true,
       "options": [
         "true",
         "false"

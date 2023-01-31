@@ -90,6 +90,8 @@ def main():
             elif section == 'database':
                 node_configs[section] = questionnaire.database_questions(configs=node_configs[section])
             elif section == 'blockchain':
+                if args.node_type in ['master', 'standalone', 'standalone-publisher', 'rest']:
+                    node_configs['blockchain']['LEDGER_CONN']['default'] = f"127.0.0.1:{node_configs['networking']['ANYLOG_SERVER_PORT']['value']}"
                 node_configs[section] = questionnaire.blockchain_questions(configs=node_configs[section])
             elif section == 'operator' and args.node_type in ['rest', 'operator', 'standalone']:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
@@ -123,6 +125,11 @@ def main():
     elif args.deployment_type == 'kubernetes':
         kubernetes_configs = kubernetes_questionnaire.questionnaire(node_name=node_configs['general']['NODE_NAME']['value'],
                                                                     configs=kubernetes_configs)
+
+        # for local IP address use the service name rather than the generated IP
+        if node_configs['networking']['LOCAL_IP']['value'] == "":
+            node_configs['networking']['LOCAL_IP']['value'] = kubernetes_configs['metadata']['service_name']['value']
+
         file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
                               kubernetes_configs=kubernetes_configs, exception=args.exception)
 
