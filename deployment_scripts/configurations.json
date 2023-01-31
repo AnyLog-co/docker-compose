@@ -148,7 +148,7 @@
     },
     "CONFIG_POLICY_NAME": {
       "question": "Config Policy Name",
-      "description": "Configuration Policy name",
+      "description": "Declare Policy name",
       "enable": true,
       "default": "",
       "value": ""

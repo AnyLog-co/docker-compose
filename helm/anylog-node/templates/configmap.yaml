@@ -35,6 +35,8 @@ data:
   POLICY_BASED_NETWORKING: '{{ .Values.networking.POLICY_BASED_NETWORKING }}'
   # whether to setup networking based on a (generic) configuration policy - good for both REST and other nodes
   CONFIG_POLICY: '{{ .Values.networking.CONFIG_POLICY }}'
+  # Declare Policy name
+  CONFIG_POLICY_NAME: '{{ .Values.networking.CONFIG_POLICY_NAME }}'
 
   # External IP address of the machine
   {{ if ne .Values.networking.EXTERNAL_IP "" }}
