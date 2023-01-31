@@ -37,7 +37,7 @@ data:
   CONFIG_POLICY: '{{ .Values.networking.CONFIG_POLICY }}'
   # Declare Policy name
   CONFIG_POLICY_NAME: '{{ .Values.networking.CONFIG_POLICY_NAME }}'
-
+  K8S_LOCAL_IP: '{{ .Values.networking.K8S_LOCAL_IP }}'
   # External IP address of the machine
   {{ if ne .Values.networking.EXTERNAL_IP "" }}
   EXTERNAL_IP: '{{ .Values.networking.EXTERNAL_IP }}'
@@ -46,6 +46,7 @@ data:
   {{ if ne .Values.networking.LOCAL_IP "" }}
   LOCAL_IP: '{{ .Values.networking.LOCAL_IP }}'
   {{ end }}
+
   # Overlay IP address - if set, will replace local IP address when connecting to network
   {{ if ne .Values.networking.OVERLAY_IP "" }}
   OVERLAY_IP: '{{ .Values.networking.OVERLAY_IP }}'
