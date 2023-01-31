@@ -37,19 +37,19 @@ data:
   CONFIG_POLICY: '{{ .Values.networking.CONFIG_POLICY }}'
 
   # External IP address of the machine
-  {{- if ne .Values.networking.EXTERNAL_IP "" }}
+  {{ if ne .Values.networking.EXTERNAL_IP "" }}
   EXTERNAL_IP: '{{ .Values.networking.EXTERNAL_IP }}'
   {{ end }}
   # Local or  internal network IP address of the machine
-  {{- if ne .Values.networking.LOCAL_IP "" }}
+  {{ if ne .Values.networking.LOCAL_IP "" }}
   LOCAL_IP: '{{ .Values.networking.LOCAL_IP }}'
   {{ end }}
   # Overlay IP address - if set, will replace local IP address when connecting to network
-  {{- if new .Values.networking.OVERLAY_IP "" }}
+  {{ if ne .Values.networking.OVERLAY_IP "" }}
   OVERLAY_IP: '{{ .Values.networking.OVERLAY_IP }}'
   {{ end }}
   # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
-  {{- if ne .Values.networking.PROXY_IP "" }}
+  {{ if ne .Values.networking.PROXY_IP "" }}
   PROXY_IP: '{{ .Values.networking.PROXY_IP }}'
   {{ end }}
 
@@ -71,7 +71,7 @@ data:
   # Boolean value to determine if messages are send over HTTPS with client certificates.
   REST_SSL: '{{ .Values.networking.REST_SSL }}'
 
-  {{- if  .Values.networking.ANYLOG_BROKER_PORT }}
+  {{- if .Values.networking.ANYLOG_BROKER_PORT }}
   # Port value to be used as an MQTT broker, or some other third-party broker
   ANYLOG_BROKER_PORT: '{{ .Values.networking.ANYLOG_BROKER_PORT }}'
   # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)

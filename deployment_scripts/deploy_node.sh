@@ -49,24 +49,24 @@ printf "\n"
 # if user decides not to use existing configs, then ask questions to help fill-out the configurations.
 if [[ ${EXISTING_CONFIGS} == n ]] ;
 then
-  python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE}
 elif [[ ${DEPLOYMENT_TYPE}  == docker ]] && [[ ! ${NODE_TYPE} == query ]];
 then
-    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}/anylog_configs.env
 elif [[ ${DEPLOYMENT_TYPE}  == docker ]] && [[ ${NODE_TYPE} == query ]];
 then
-    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}-remote-cli/anylog_configs.env
 elif [[ ${DEPLOYMENT_TYPE}  == kubernetes ]] && [[ ${NODE_TYPE} != query ]];
 then
-    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
