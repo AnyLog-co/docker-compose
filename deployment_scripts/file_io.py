@@ -189,8 +189,8 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
         content += f"{section}:\n"
         for param in metadata_configs[section]:
             if param not in ['anylog_volume', 'blockchain_volume', 'data_volume']:
-                comment = f"\t# {metadata_configs[section][param]['description']}\n"
-                line = f"\t{param}: %s\n"
+                comment = f"  # {metadata_configs[section][param]['description']}\n"
+                line = f"  {param}: %s\n"
                 if metadata_configs[section][param]['value'] != "":
                     line = line % metadata_configs[section][param]['value']
                 elif metadata_configs[section][param]['default'] != '':
@@ -200,11 +200,11 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
                 content += comment + line
 
     for section in ['anylog_volume', 'blockchain_volume', 'data_volume']:
-        content += f"\t{section}: "
+        content += f"  {section}: "
         for param in metadata_configs['volume'][section]:
             if param != 'default':
-                comment = f"\t\t# {metadata_configs['volume'][section][param]['description']}\n"
-                line = f"\t\t{param}: %s\n"
+                comment = f"    # {metadata_configs['volume'][section][param]['description']}\n"
+                line = f"    {param}: %s\n"
                 if metadata_configs['volume'][section][param]['value'] != "":
                     line = line % metadata_configs['volume'][section][param]['value']
                 elif metadata_configs['volume'][section][param]['default'] != "":
@@ -219,17 +219,15 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
         if section == 'networking':
             content += file_support.read_notes()
         for param in configs[section]:
-            if param == 'LOCATION' and configs[section][param]['value'] == '0.0, 0.0':
+            if section == 'general' and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY'] and configs[section][param]['value'] in ['0.0, 0.0', 'Unknown']:
                 configs[section][param]['value'] = ""
                 configs[section][param]['default'] = ""
-            if param in ['COUNTRY', 'STATE', 'CITY'] and configs[section][param]['value'] == 'Unknown':
-                configs[section][param]['value'] = ""
-                configs[section][param]['default'] = ""
-            if param == 'TABLE_NAME' and configs[section][param]['value'] == "*":
-                configs[section][param]['value'] = '"*"'
-
-            comment = f"\t# {configs[section][param]['description']}\n"
-            line = f"\t{param}: %s\n"
+            if section == 'operator' and param == 'TABLE_NAME':
+                if not configs[section][param]['value'] or configs[section][param]['value'] == '*':
+                    configs[section][param]['value'] = '"*"'
+                
+            comment = f"  # {configs[section][param]['description']}\n"
+            line = f"  {param}: %s\n"
             if configs[section][param]['value'] != "":
                 line = line % configs[section][param]['value']
             elif configs[section][param]['default'] != '':

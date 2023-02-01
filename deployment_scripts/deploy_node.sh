@@ -91,7 +91,7 @@ then
     cd $HOME/deployments/docker-compose/anylog-query-remote-cli/
   fi
   docker-compose up -d
-elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]] ;
+elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]] ;
 then
   if [[ ${REMOTE_CLI} == y ]] ;
   then

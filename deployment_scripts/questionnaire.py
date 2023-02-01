@@ -291,14 +291,16 @@ def blockchain_questions(configs:dict)->dict:
                                         param=param, error_msg=error_msg)
                 if param == 'LEDGER_CONN':
                     # need to change to support etherium blockchain
-                    if re.search(r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\:[30000-32767]', answer):
-                       configs[param]['value'] = answer
-                       status = True
-                    elif answer == "":
+                    #if re.search(r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\:[30000-32767]', answer):
+                    #   configs[param]['value'] = answer
+                    #   status = True
+                    if answer == "":
                         configs[param]['value'] = configs[param]['default']
                         status = True
                     else:
-                        error_msg = f"Invalid LEDGER_CONN information value {answer}. Please try again... "
+                       configs[param]['value'] = answer
+                       status = True
+                        #error_msg = f"Invalid LEDGER_CONN information value {answer}. Please try again... "
                 elif param == 'SYNC_TIME':
                     if answer == "":
                         configs[param]['value'] = configs[param]['default']
