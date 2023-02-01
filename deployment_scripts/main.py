@@ -58,8 +58,6 @@ def main():
     parser.add_argument('-e', '--exception', type=bool, default=False, nargs='?', const=True, help='Whether to print exceptions')
     args = parser.parse_args()
 
-    node_configs = {}
-    config_file = {}
     kubernetes_configs = {}
 
     # read configurations +
@@ -125,16 +123,16 @@ def main():
     if args.deployment_type == 'docker':
         file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
                               kubernetes_configs=None, exception=args.exception)
-    elif args.deployment_type == 'kubernetes':
-        kubernetes_configs = kubernetes_questionnaire.questionnaire(node_name=node_configs['general']['NODE_NAME']['value'],
-                                                                    configs=kubernetes_configs)
-
-        # for local IP address use the service name rather than the generated IP
-        if node_configs['networking']['LOCAL_IP']['value'] == "":
-            node_configs['networking']['KUBERNETES_SERVICE_IP']['value'] = kubernetes_configs['metadata']['service_name']['value']
-
-        file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
-                              kubernetes_configs=kubernetes_configs, exception=args.exception)
+    # elif args.deployment_type == 'kubernetes':
+    #     kubernetes_configs = kubernetes_questionnaire.questionnaire(node_name=node_configs['general']['NODE_NAME']['value'],
+    #                                                                 configs=kubernetes_configs)
+    #
+    #     # for local IP address use the service name rather than the generated IP
+    #     if node_configs['networking']['LOCAL_IP']['value'] == "":
+    #         node_configs['networking']['KUBERNETES_SERVICE_IP']['value'] = kubernetes_configs['metadata']['service_name']['value']
+    #
+    #     file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
+    #                           kubernetes_configs=kubernetes_configs, exception=args.exception)
 
 
 if __name__ == '__main__':

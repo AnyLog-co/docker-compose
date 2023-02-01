@@ -1,4 +1,4 @@
-import file_io
+import file_support
 
 def merge_configs(default_configs:dict, updated_configs:dict)->dict:
     """
@@ -156,7 +156,7 @@ def create_env_configs(configs:dict)->str:
     for section in configs:
         content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---'
         if section == 'networking':
-            content += file_io.read_notes()
+            content += file_support.read_notes()
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
             if configs[section][param]['default'] != "":

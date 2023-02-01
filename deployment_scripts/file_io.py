@@ -1,126 +1,11 @@
 import os
+import file_support
 import support
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
 
-def __create_file(file_path:str, exception:bool=False)->(str, bool):
-    """
-    create a new file if DNE
-    :args:
-        file_path:str - file path
-        exception:bool - whether to print exceptions
-    :params:
-        status:bool
-        full_path:str - full path of file_path
-    :return:
-        full_path, status
-    """
-    status = True
-    full_path = os.path.expanduser(os.path.expandvars(file_path))
-    if not os.path.isfile(full_path):
-        try:
-            open(full_path, 'w').close()
-        except Exception as error:
-            status = False
-            if exception is True:
-                print(f'Failed to create file {file_path} (Error: {error})')
-
-    return full_path, status
-
-
-def __read_dotenv(config_file:str, exception:bool=False)->dict:
-    """
-    Read configs from .env file
-    :args:
-        config_file:str - .env file to read configs from
-        exception:bool - whether to print exceptions
-    :params:
-        configs:dict - configs read from .env file
-    :return:
-        configs
-    """
-    configs = {}
-    try:
-        import dotenv
-    except Exception as error:
-        print(f'Failed to find dotenv import package (Error: {error})')
-        return configs
-
-    try:
-        configs = dict(dotenv.dotenv_values(config_file))
-    except Exception as error:
-        if exception is True:
-            print(f'Failed to read configs from {config_file} (Error: {error})')
-
-    return configs
-
-
-def __read_json(config_file:str, exception:bool=False)->dict:
-    """
-    Read configs from .env file
-    :args:
-        config_file:str - .json file to read configs from
-        exception:bool - whether to print exceptions
-    :params:
-        configs:dict - configs read from .env file
-    :return:
-        configs
-    """
-    configs = {}
-    try:
-        import json
-    except Exception as error:
-        print(f'Failed to find json import package (Error: {error})')
-        return configs
-
-    try:
-        with open(config_file) as f:
-            try:
-                configs = json.load(f)
-            except Exception as error:
-                if exception is True:
-                    print(f'Failed read content in {config_file} (Error: {error})')
-    except Exception as error:
-        if exception is True:
-            print(f'Failed to read configs from {config_file} (Error: {error})')
-
-    return configs
-
-
-def __read_yaml(config_file:str, exception:bool=False)->dict:
-    """
-    Read configs from .env file
-    :args:
-        config_file:str - .json file to read configs from
-        exception:bool - whether to print exceptions
-    :params:
-        configs:dict - configs read from .env file
-    :return:
-        configs
-    """
-    configs = {}
-    try:
-        import yaml
-    except Exception as error:
-        print(f'Failed to find yaml import package (Error: {error})')
-        return configs
-
-    try:
-        with open(config_file) as f:
-            try:
-                configs = yaml.load(f, Loader=yaml.FullLoader)
-            except Exception as error:
-                if exception is True:
-                    print(f'Failed read content in {config_file} (Error: {error})')
-    except Exception as error:
-        if exception is True:
-            print(f'Failed to read configs from {config_file} (Error: {error})')
-
-    return configs
-
-
-def __create_file_docker(node_type:str, exception:bool=False)->str:
+def __create_file_docker(node_type:str)->str:
     """
     Create file path  based on node_type
     :note:
@@ -132,7 +17,6 @@ def __create_file_docker(node_type:str, exception:bool=False)->str:
             - operator
             - publisher
             - query
-        exception:bool - whether to print exception
     :params:
         file_name:str - file to store data in
     :return:
@@ -142,30 +26,12 @@ def __create_file_docker(node_type:str, exception:bool=False)->str:
         file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), 'anylog_configs.env')
     else:
         file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-query-remote-cli', 'anylog_configs.env')
-
-    # if file exists make a backup
-    if os.path.isfile(file_name):
-        try:
-            os.rename(file_name, file_name.replace('.env', '.env.old'))
-        except Exception as error:
-            file_name = ''
-            if exception is True:
-                print(f'Failed to rename {file_name} (Error: {error})')
-
-    if file_name != '' and not os.path.isfile(file_name):
-        try:
-            open(file_name, 'w').close()
-        except Exception as error:
-            file_name = ''
-            if exception is True:
-                print(f'Failed to create file {file_name} (Error: {error})')
-
     return file_name
 
 
-def __create_file_kubernetes(node_type:str, exception:bool=False)->str:
+def __create_file_kubernetes(node_type:str)->str:
     """
-    Create file path  based on node_type
+    Create file path  based on node_type for Kubernetes nodes
     :note:
         query is stored in anylog-query-remote-cli
     :args:
@@ -175,7 +41,6 @@ def __create_file_kubernetes(node_type:str, exception:bool=False)->str:
             - operator
             - publisher
             - query
-        exception:bool - whether to print exception
     :params:
         file_name:str - file to store data in
     :return:
@@ -183,72 +48,12 @@ def __create_file_kubernetes(node_type:str, exception:bool=False)->str:
     """
     file_name = os.path.join(ROOT_PATH, 'helm', 'sample-configurations', 'anylog_%s.yaml' % node_type.lower())
 
-    # if file exists make a backup
-    if os.path.isfile(file_name):
-        try:
-            os.rename(file_name, file_name.replace('.env', '.env.old'))
-        except Exception as error:
-            file_name = ''
-            if  exception is True:
-                print(f'Failed to rename {file_name} (Error: {error})')
-
     return file_name
-
-
-def __write_file(file_path:str, content:str, exception:bool=False):
-    """
-    Write content to file
-    :args:
-        file_path:str - file to write content into
-        content:str - content to write
-        exception:bool - whether to print exceptions
-    """
-    try:
-        with open(file_path, 'a') as f:
-            try:
-                f.write(content)
-            except Exception as error:
-                if exception is True:
-                    print(f'Failed to write content into {file_path} (Error: {error})')
-    except Exception as error:
-        if exception is True:
-            print(f'Failed to open file {file_path} (Error: {error})')
-
-
-def read_notes(exception:bool=False)->str:
-    """
-    Read comments in network_comment.txt
-    :args:
-        exception:bool - whether to print exceptions
-    :params:
-        file_path:str - file path form network_comment.txt
-        content:str - content from file
-    :return:
-        content
-    """
-    file_path = os.path.join(ROOT_PATH, 'deployment_scripts', 'network_comment.txt')
-    content = ""
-    if os.path.isfile(file_path):
-        try:
-            with open(file_path, 'r') as f:
-                try:
-                    content = "\n#" +  f.read() + "#"
-                except Exception as error:
-                    if exception is True:
-                        print(f'Failed to read comments in {file_path} (Error: {error})')
-        except Exception as error:
-            if exception is True:
-                print(f'Failed to open comments file {file_path} (Error: {error})')
-    elif exception is True:
-        print(f'Failed to locate comments file {file_path}')
-
-    return content
-
 
 
 def read_configs(config_file:str, exception:bool=False)->dict:
     """
-    Given a configuration file, extract configurations
+    Given a configuration file, extract configuration values
     :supports:
         - .env
         - .yml (to be developed)
@@ -268,12 +73,12 @@ def read_configs(config_file:str, exception:bool=False)->dict:
         file_extension = config_file.rsplit('.', 1)[-1]
 
         if file_extension == 'env':
-            configs = __read_dotenv(config_file=config_file, exception=exception)
+            configs = file_support.read_dotenv(config_file=config_file, exception=exception)
         elif file_extension in ['yml', 'yaml']:
-            configs = __read_yaml(config_file=config_file, exception=exception)
+            configs = file_support.read_yaml(config_file=config_file, exception=exception)
             configs = support.prep_imported_kubernetes(configs=configs)
         elif file_extension == 'json':
-            configs = __read_json(config_file=config_file, exception=exception)
+            configs = file_support.read_json(config_file=config_file, exception=exception)
         else:
             print(f'Invalid extension type: {file_extension}')
     else:
@@ -282,7 +87,7 @@ def read_configs(config_file:str, exception:bool=False)->dict:
     return configs
 
 
-def update_dotenv_tag(file_path:str, build:str, node_name:str, excepton:bool=False)->bool:
+def update_dotenv_tag(file_path:str, build:str, node_name:str, exception:bool=False)->bool:
     """
     For Docker deployment, update .env file
     :args:
@@ -297,6 +102,7 @@ def update_dotenv_tag(file_path:str, build:str, node_name:str, excepton:bool=Fal
     :return:
         status
     """
+    status = True
     content = {
         'BUILD': build,
         'ENV_FILE': 'anylog_configs.env',
@@ -304,28 +110,54 @@ def update_dotenv_tag(file_path:str, build:str, node_name:str, excepton:bool=Fal
         'NETWORK': 'host'
     }
 
-    status = True
     dotenv_file = os.path.join(file_path, '.env')
-
     if os.path.isfile(dotenv_file):
-        content = __read_dotenv(config_file=dotenv_file, exception=excepton)
+        content = file_support.read_dotenv(config_file=dotenv_file, exception=exception)
         content['BUILD'] = build
         content['CONTAINER_NAME'] = node_name
 
-    try:
-        with open(dotenv_file, 'w') as f:
-            for key in content:
-                line = f'{key}={content[key]}\n'
-                try:
-                    f.write(line)
-                except Exception as error:
-                    if excepton is True:
-                        print(f'Failed to write line "{line}" into {dotenv_file} (Error: {error})')
-    except Exception as error:
-        if excepton is True:
-            print(f'Failed to open file {dotenv_file} to write content into (Error: {error})')
+    dotenv_file = file_support.create_file(file_path=dotenv_file, exception=exception)
+    for key in content:
+        line = f"{key}={content[key]}\n"
+        status = file_support.append_content(content=line, file_path=dotenv_file, exception=exception)
+        if status is False:
+            print(f"Failed to insert '{line}' into {dotenv_file}")
 
-    return status
+
+def write_docker_configs(file_path:str, configs:dict, exception:bool=False)->bool:
+    """
+
+    """
+    content = ""
+    for section in configs:
+        content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---\n'
+        if section == 'networking':
+            content += file_support.read_notes() + "\n"
+        for param in configs[section]:
+            comment = configs[section][param]['description'].replace('\n', '')
+            if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                value = str(configs[section][param]['value']).replace('\n', '')
+                if value == '':
+                    line = f'{param}=<{section.upper()}_{param.upper()}>'
+                else:
+                    line = f"{param}={value}"
+            elif configs[section][param]['value'] != '':
+                value = str(configs[section][param]['value']).replace('\n', '')
+                line = f"{param}={value}"
+            elif configs[section][param]['default'] != '':
+                value = str(configs[section][param]['default']).replace('\n', '')
+                line = f"{param}={value}"
+            else:
+                line = f"{param}=<{section.upper()}_{param.upper()}>"
+
+            if line == f"{param}=<{section.upper()}_{param.upper()}>" or configs[section][param]['enable'] is False and param != 'NODE_TYPE':
+                line = f"#{line}"
+            line = f"# {comment}\n{line}\n"
+            content += line
+
+        content += "\n"
+
+    return file_support.append_content(content=content, file_path=file_path, exception=exception)
 
 
 def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_configs:dict=None,
@@ -353,15 +185,23 @@ def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_
 
     if deployment_type == 'docker':
         content = support.create_env_configs(configs=configs)
-        file_path = __create_file_docker(node_type=node_type, exception=exception)
-        update_dotenv_tag(file_path=file_path.split('anylog_configs.env')[0], build=build, node_name=node_name,
-                          excepton=exception)
-    elif deployment_type == 'kubernetes':
-        metadata_content = support.create_kubernetes_metadata(configs=kubernetes_configs)
-        content = support.create_kubernetes_configs(configs=configs)
-        file_path = __create_file_kubernetes(node_type=node_type, exception=exception)
-        __write_file(file_path=file_path, content=metadata_content, exception=exception)
-
-    __write_file(file_path=file_path, content=content, exception=exception)
+        file_path = __create_file_docker(node_type=node_type)
+        file_path = file_support.create_file(file_path=file_path, exception=exception)
+        if file_path != "":
+            status = update_dotenv_tag(file_path=file_path.split('anylog_configs.env')[0], build=build,
+                              node_name=node_name, exception=exception)
+            status = write_docker_configs(file_path=file_path, configs=configs, exception=exception)
+    # elif deployment_type == 'kubernetes':
+    #     metadata_content = support.create_kubernetes_metadata(configs=kubernetes_configs)
+    #     content = support.create_kubernetes_configs(configs=configs)
+    #     file_path = __create_file_kubernetes(node_type=node_type, exception=exception)
+    #     file_path = file_support.create_file(file_path=file_path, exception=exception)
+    #     if file_path != "":
+    #         file_support.write_file(file_path=file_path, content=metadata_content, exception=exception)
+    # if file_path != "":
+    #     file_support.write_file(file_path=file_path, content=content, exception=exception)
+    # else:
+    #     print(f"Failed to create file path to store configurations")
 
     return status
+
