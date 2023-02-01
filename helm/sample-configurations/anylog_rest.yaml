@@ -62,13 +62,13 @@ general:
   # Owner of the AnyLog instance
   COMPANY_NAME: New Company
   # Coordinates of the machine - used by Grafana to map the network
-  LOCATION: 0.0, 0.0
+  LOCATION: ""
   # Country where machine is located
-  COUNTRY: Unknown
+  COUNTRY: ""
   # State where machine is located
-  STATE: Unknown
+  STATE: ""
   # City where machine is located
-  CITY: Unknown
+  CITY: ""
 authentication: 
   # When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain
   ENABLE_AUTH: false

@@ -219,9 +219,9 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
         if section == 'networking':
             content += file_support.read_notes()
         for param in configs[section]:
-            if section == 'general' and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY'] and configs[section][param]['value'] in ['0.0, 0.0', 'Unknown']:
-                configs[section][param]['value'] = ""
-                configs[section][param]['default'] = ""
+            if section == 'general' and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                if configs[section][param]['value'] == "":
+                    configs[section][param]['default'] = ''
             if section == 'operator' and param == 'TABLE_NAME':
                 if not configs[section][param]['value'] or configs[section][param]['value'] == '*':
                     configs[section][param]['value'] = '"*"'
