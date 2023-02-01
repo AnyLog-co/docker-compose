@@ -69,6 +69,7 @@ general:
 	STATE: Unknown
 	# City where machine is located
 	CITY: Unknown
+
 authentication: 
 	# When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain
 	ENABLE_AUTH: false
@@ -84,6 +85,7 @@ authentication:
 	USER_TYPE: admin
 	# Password used by the ROOT member in authentication
 	ROOT_PASSWORD: ""
+
 networking: 
 # By default, a node will connect to the (TCP, REST and Message Broker - if declared) based on its associated policy.
 #
@@ -142,6 +144,7 @@ networking:
 	BROKER_BIND: false
 	# The number of concurrent threads supporting broker requests.	
 	BROKER_THREADS: 6
+
 database: 
 	# Physical database type
 	DB_TYPE: sqlite
@@ -179,6 +182,7 @@ database:
 	NOSQL_BLOBS_COMPRESS: false
 	# Whether (re)store a blob if already exists
 	NOSQL_BLOBS_REUSE: true
+
 blockchain: 
 	# TCP connection information for Master Node
 	LEDGER_CONN: 127.0.0.1:32048
@@ -188,6 +192,7 @@ blockchain:
 	BLOCKCHAIN_SOURCE: master
 	# Where will the copy of the blockchain be stored
 	BLOCKCHAIN_DESTINATION: file
+
 operator: 
 	# Operator ID
 	MEMBER: ""
@@ -222,6 +227,7 @@ operator:
 	# How many threads to use in the operator process
 
 	OPERATOR_THREADS: 1
+
 publisher: 
 	# Location of logical database name within file name
 	DBMS_FILE_LOCATION: 0
@@ -229,6 +235,7 @@ publisher:
 	TABLE_FILE_LOCATION: 1
 	# Compress JSON and SQL file(s) backup
 	PUBLISHER_COMPRESS_FILE: true
+
 mqtt: 
 	# Whether to enable the default MQTT process
 	ENABLE_MQTT: false
@@ -254,6 +261,7 @@ mqtt:
 	MQTT_VALUE_COLUMN: bring [readings][][value]
 	# Column value type
 	MQTT_VALUE_COLUMN_TYPE: float
+
 advanced settings: 
 	# Whether to automatically run a local (or personalized) script at the end of the process
 	DEPLOY_LOCAL_SCRIPT: false
@@ -265,3 +273,4 @@ advanced settings:
 	THRESHOLD_TIME: 60 seconds
 	# Buffer size to reach, at which point data is pushed through
 	THRESHOLD_VOLUME: 10KB
+

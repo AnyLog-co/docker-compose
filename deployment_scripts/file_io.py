@@ -5,7 +5,7 @@ import support
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
 
-def __create_file_docker(node_type:str)->str:
+def __create_file_name_docker(node_type:str)->str:
     """
     Create file path  based on node_type
     :note:
@@ -29,7 +29,7 @@ def __create_file_docker(node_type:str)->str:
     return file_name
 
 
-def __create_file_kubernetes(node_type:str)->str:
+def __create_file_name_kubernetes(node_type:str)->str:
     """
     Create file path  based on node_type for Kubernetes nodes
     :note:
@@ -126,9 +126,20 @@ def update_dotenv_tag(file_path:str, build:str, node_name:str, exception:bool=Fa
 
 def write_docker_configs(file_path:str, configs:dict, exception:bool=False)->bool:
     """
-
+    Write content into Docker configuration file (anylog_configs.env)
+    :args:
+        file_path:str - full path for anylog_configs.env
+        configs:dict - configuration to store in file
+        exception:bool - whether to print exception messages
+    :params:
+        content:str - generated content to store in file based on configs
+    :return:
+        True if stored in file
+        False if fails
     """
     content = ""
+
+    # generate content
     for section in configs:
         content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---\n'
         if section == 'networking':
@@ -157,6 +168,80 @@ def write_docker_configs(file_path:str, configs:dict, exception:bool=False)->boo
 
         content += "\n"
 
+    # store content to file
+    return file_support.append_content(content=content, file_path=file_path, exception=exception)
+
+
+def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict, exception:bool=False)->bool:
+    """
+    Write content into Kubernetes
+    :args:
+        file_path:str - full path for anylog_${NODE_TYPE}.yaml
+        metadata_configs:dict - configuration regarding metadata of kubernetes instance
+        configs:dict - configuration to store in file
+        exception:bool - whether to print exception messages
+    :params:
+        content:str - generated content to store in file based on configs
+    :return:
+        True if stored in file
+        False if fails
+    """
+    content = ""
+
+    # metadata set configurations
+    for section in metadata_configs:
+        content += f"{section}:\n"
+        for param in metadata_configs[section]:
+            if param not in ['anylog_volume', 'blockchain_volume', 'data_volume']:
+                comment = f"\t# {metadata_configs[section][param]['description']}\n"
+                line = f"\t{param}: %s\n"
+                if metadata_configs[section][param]['value'] != "":
+                    line = line % metadata_configs[section][param]['value']
+                elif metadata_configs[section][param]['default'] != '':
+                    line = line % metadata_configs[section][param]['default']
+                else:
+                    line = line % '""'
+                content += comment + line
+
+    for section in ['anylog_volume', 'blockchain_volume', 'data_volume']:
+        content += f"\t{section}: "
+        for param in metadata_configs['volume'][section]:
+            if param != 'default':
+                comment = f"\t\t# {metadata_configs['volume'][section][param]['description']}\n"
+                line = f"\t\t{param}: %s\n"
+                if metadata_configs['volume'][section][param]['value'] != "":
+                    line = line % metadata_configs['volume'][section][param]['value']
+                elif metadata_configs['volume'][section][param]['default'] != "":
+                    line = line % metadata_configs['volume'][section][param]['default']
+                else:
+                    line = line % '""'
+                content += comment + line
+    content += '\n'
+
+    for section in configs:
+        content += f"{section}: \n"
+        if section == 'networking':
+            content += file_support.read_notes()
+        for param in configs[section]:
+            if param == 'LOCATION' and configs[section][param]['value'] == '0.0, 0.0':
+                configs[section][param]['value'] = ""
+                configs[section][param]['default'] = ""
+            if param in ['COUNTRY', 'STATE', 'CITY'] and configs[section][param]['value'] == 'Unknown':
+                configs[section][param]['value'] = ""
+                configs[section][param]['default'] = ""
+            if param == 'TABLE_NAME' and configs[section][param]['value'] == "*":
+                configs[section][param]['value'] = '"*"'
+
+            comment = f"\t# {configs[section][param]['description']}\n"
+            line = f"\t{param}: %s\n"
+            if configs[section][param]['value'] != "":
+                line = line % configs[section][param]['value']
+            elif configs[section][param]['default'] != '':
+                line = line % configs[section][param]['default']
+            else:
+                line = line % '""'
+            content += comment + line
+
     return file_support.append_content(content=content, file_path=file_path, exception=exception)
 
 
@@ -184,24 +269,19 @@ def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_
     node_name = configs['general']['NODE_NAME']['value'].replace(' ', '-').replace('_', '-').lower()
 
     if deployment_type == 'docker':
-        content = support.create_env_configs(configs=configs)
-        file_path = __create_file_docker(node_type=node_type)
+        file_path = __create_file_name_docker(node_type=node_type)
         file_path = file_support.create_file(file_path=file_path, exception=exception)
         if file_path != "":
-            status = update_dotenv_tag(file_path=file_path.split('anylog_configs.env')[0], build=build,
-                              node_name=node_name, exception=exception)
             status = write_docker_configs(file_path=file_path, configs=configs, exception=exception)
-    # elif deployment_type == 'kubernetes':
-    #     metadata_content = support.create_kubernetes_metadata(configs=kubernetes_configs)
-    #     content = support.create_kubernetes_configs(configs=configs)
-    #     file_path = __create_file_kubernetes(node_type=node_type, exception=exception)
-    #     file_path = file_support.create_file(file_path=file_path, exception=exception)
-    #     if file_path != "":
-    #         file_support.write_file(file_path=file_path, content=metadata_content, exception=exception)
-    # if file_path != "":
-    #     file_support.write_file(file_path=file_path, content=content, exception=exception)
-    # else:
-    #     print(f"Failed to create file path to store configurations")
+            if status is True:
+                status = update_dotenv_tag(file_path=file_path.split('anylog_configs.env')[0], build=build,
+                                           node_name=node_name, exception=exception)
+    elif deployment_type == 'kubernetes':
+        file_path = __create_file_name_kubernetes(node_type=node_type)
+        file_path = file_support.create_file(file_path=file_path, exception=exception)
+        write_kubernetes_configs(file_path=file_path, metadata_configs=kubernetes_configs, configs=configs,
+                                 exception=exception)
+
 
     return status
 
