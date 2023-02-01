@@ -7,9 +7,7 @@ ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_s
 
 def __create_file_name_docker(node_type:str)->str:
     """
-    Create file path  based on node_type
-    :note:
-        query is stored in anylog-query-remote-cli
+    Create file path  based on node_type for Docker nodes
     :args:
         node_type;str - node type
             - rest
@@ -22,10 +20,8 @@ def __create_file_name_docker(node_type:str)->str:
     :return:
         file_name
     """
-    if node_type != 'query':
-        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), 'anylog_configs.env')
-    else:
-        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-query-remote-cli', 'anylog_configs.env')
+    file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), 'anylog_configs.env')
+
     return file_name
 
 
