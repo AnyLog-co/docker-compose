@@ -254,7 +254,7 @@ mqtt:
   MQTT_VALUE_COLUMN: bring [readings][][value]
   # Column value type
   MQTT_VALUE_COLUMN_TYPE: float
-advanced settings: 
+advanced_settings: 
   # Whether to automatically run a local (or personalized) script at the end of the process
   DEPLOY_LOCAL_SCRIPT: false
   # Number of parallel queries
