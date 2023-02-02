@@ -205,8 +205,8 @@ data:
 
   #-- Advanced Settings --
   # Whether to automatically run a local (or personalized) script at the end of the process
-  {{- if .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}
-  DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
+  {{ if .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}
+    DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
   {{ end }}
   # Number of TCP threads
   TCP_THREAD_POOL: '{{ .Values.advanced_settings.TCP_THREAD_POOL }}'
