@@ -4,16 +4,16 @@ metadata:
   namespace: '{{ .Values.general.namespace }}'
   name: remote-cli
   labels:
-    app: '{{ .Values.general.app_name }}'
+    app: anylog-node-remote-cli
 spec:
   replicas: {{ .Values.general.replicas }}
   selector:
     matchLabels:
-      app: '{{ .Values.general.app_name }}'
+      app: anylog-node-remote-cli
   template:
     metadata:
       labels:
-        app: {{ .Values.general.app_name }}
+        app: anylog-node-remote-cli
     spec:
       securityContext:
         fsGroup: 472

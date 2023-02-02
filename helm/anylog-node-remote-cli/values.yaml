@@ -4,7 +4,7 @@ metadata:
   # hostname for deployment
   hostname: anylog-query
   # deployment application name
-  app_name: anylog-query-app
+  app_name: anylog-node-remote-cli
   # Pod application name
   pod_name: anylog-query-pod
   # Kubernetes deployment name

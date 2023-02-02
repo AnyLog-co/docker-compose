@@ -4,7 +4,7 @@ metadata:
   namespace: '{{ .Values.general.namespace }}'
   name: remote-cli-configs
   labels:
-    app: '{{ .Values.general.app_name }}'
+    app: anylog-node-remote-cli
 data:
   CONN_IP: 0.0.0.0
   CLI_PORT: 31800

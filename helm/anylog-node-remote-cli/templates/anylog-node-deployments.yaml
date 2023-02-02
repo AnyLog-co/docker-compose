@@ -4,16 +4,16 @@ metadata:
   namespace: '{{ .Values.metadata.namespace }}'
   name: '{{ .Values.metadata.deployment_name }}'
   labels:
-    app: '{{ .Values.metadata.deployment_name }}'
+    app: anylog-node-remote-cli
 spec:
   replicas: {{ .Values.metadata.replicas }}
   selector:
     matchLabels:
-      app: '{{ .Values.metadata.deployment_name }}'
+      app: anylog-node-remote-cli
   template:
     metadata:
       labels:
-        app: '{{ .Values.metadata.deployment_name }}'
+        app: anylog-node-remote-cli
     spec:
       hostname: {{ .Values.metadata.pod_name }}
       {{- if ne .Values.metadata.node_selector "" }}
