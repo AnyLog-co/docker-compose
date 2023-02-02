@@ -200,7 +200,7 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
                 content += comment + line
 
     for section in ['anylog_volume', 'blockchain_volume', 'data_volume']:
-        content += f"  {section}: "
+        content += f"  {section.replace(' ', '_')}: "
         for param in metadata_configs['volume'][section]:
             if param != 'default':
                 comment = f"    # {metadata_configs['volume'][section][param]['description']}\n"
@@ -215,7 +215,7 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
     content += '\n'
 
     for section in configs:
-        content += f"{section}: \n"
+        content += f"{section.replace(' ', '_')}: \n"
         if section == 'networking':
             content += file_support.read_notes()
         for param in configs[section]:
