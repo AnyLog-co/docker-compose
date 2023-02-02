@@ -20,7 +20,7 @@ spec:
         supplementalGroups:
           - 0
       containers:
-      - name: '{{ .Values.general.deployment_name }}'
+      - name: remote-cli
         image: anylogco/remote-cli:latest
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         envFrom:
