@@ -1,31 +1,10 @@
-# Remote-CLI
-apiVersion: v1
-kind: Service
-metadata:
-  namespace: '{{ .Values.general.namespace }}'
-  name: remove-cli-svs
-  labels:
-    app: '{{ .Values.general.app_name }}'
-spec:
-  type: NodePort
-  ports:
-  - name: remote-cli-port
-    protocol: TCP
-    appProtocol: http
-    port: 31800
-    targetPort: 31800
-    nodePort: 31800
-  selector:
-    app: '{{ .Values.general.app_name }}'
----
-# AnyLog Query Node
 apiVersion: v1
 kind: Service
 metadata:
   namespace: '{{ .Values.metadata.namespace }}'
   name: '{{ .Values.metadata.service_name }}'
   labels:
-    app: '{{ .Values.metadata.deployment_name }}'
+    app: anylog-node-remote-cli
 spec:
   type: NodePort
   ports:
@@ -40,12 +19,12 @@ spec:
     port: {{ .Values.networking.ANYLOG_REST_PORT }}
     targetPort: {{ .Values.networking.ANYLOG_REST_PORT }}
     nodePort: {{ .Values.networking.ANYLOG_REST_PORT }}
-  {{ if ne .Values.networking.ANYLOG_BROKER_PORT "" }}
+  {{- if .Values.networking.ANYLOG_BROKER_PORT }}
   - name: broker
     protocol: TCP
     port: {{ .Values.networking.ANYLOG_BROKER_PORT }}
     targetPort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
     nodePort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
-  {{ end }}
+  {{ end }} 
   selector:
-    app: '{{ .Values.metadata.deployment_name }}'
+    app: anylog-node-remote-cli

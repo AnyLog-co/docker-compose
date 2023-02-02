@@ -4,7 +4,7 @@ metadata:
   # hostname for deployment
   hostname: anylog-query
   # deployment application name
-  app_name: anylog-query-app
+  app_name: anylog-node-remote-cli
   # Pod application name
   pod_name: anylog-query-pod
   # Kubernetes deployment name
@@ -254,7 +254,7 @@ mqtt:
   MQTT_VALUE_COLUMN: bring [readings][][value]
   # Column value type
   MQTT_VALUE_COLUMN_TYPE: float
-advanced_settings: 
+advanced_settings:
   # Whether to automatically run a local (or personalized) script at the end of the process
   DEPLOY_LOCAL_SCRIPT: false
   # Number of parallel queries

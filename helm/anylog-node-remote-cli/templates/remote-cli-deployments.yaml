@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: remote-cli
+  labels:
+    app: anylog-node-remote-cli
+spec:
+  replicas: {{ .Values.general.replicas }}
+  selector:
+    matchLabels:
+      app: anylog-node-remote-cli
+  template:
+    metadata:
+      labels:
+        app: anylog-node-remote-cli
+    spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+      - name: remote-cli
+        image: anylogco/remote-cli:latest
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+        - configMapRef:
+            name: remote-cli-configs
+        ports:
+        - name: remote-cli-port
+          containerPort: 31800

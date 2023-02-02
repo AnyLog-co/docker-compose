@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: remote-cli-configs
+  labels:
+    app: anylog-node-remote-cli
+data:
+  CONN_IP: 0.0.0.0
+  CLI_PORT: '31800'
