@@ -2,13 +2,13 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: '{{ .Values.general.namespace }}'
-  name: remote-cli-svs
+  name: remove-cli-svs
   labels:
     app: '{{ .Values.general.app_name }}'
 spec:
   type: NodePort
   ports:
-  - name: '{{ .Values.networking.port_name }}'
+  - name: remote-cli-port
     protocol: TCP
     appProtocol: http
     port: 31800
