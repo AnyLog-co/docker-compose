@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: remote-cli-deployment
+  labels:
+    app: '{{ .Values.general.app_name }}'
+spec:
+  replicas: {{ .Values.general.replicas }}
+  selector:
+    matchLabels:
+      app: '{{ .Values.general.app_name }}'
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.general.app_name }}
+    spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+      - name: remote-cli-deployment
+        image:
+        imagePullPolicy: {{ .Values.image.pull_policy }}
+        envFrom:
+        - configMapRef:
+            name: remote-cli-configs
+        ports:
+        - name: rmt-cli-port
+          containerPort: 31800
+        {{- if eq .Values.volume.enable_volume true }}
+        volumeMounts:
+#          - name: '{{ .Values.volume.json_volume.name }}'
+#            mountPath: '{{ .Values.volume.json_volume.path }}'
+          - name: remote-cli-blobs
+            mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
+        {{ end }}
+      {{- if eq .Values.volume.enable_volume true }}
+      volumes:
+#        - name: '{{ .Values.volume.json_volume.name }}'
+#          persistentVolumeClaim:
+#            claimName: '{{ .Values.volume.json_volume.name }}-pvc'
+        - name: remote-cli-blobs
+          persistentVolumeClaim:
+            claimName: 'remote-cli-blobs-pvc'
+      {{ end }}
