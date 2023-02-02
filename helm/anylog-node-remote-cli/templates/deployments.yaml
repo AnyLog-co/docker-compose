@@ -1,3 +1,37 @@
+# Remote-CLI
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: remote-cli
+  labels:
+    app: '{{ .Values.general.app_name }}'
+spec:
+  replicas: {{ .Values.general.replicas }}
+  selector:
+    matchLabels:
+      app: '{{ .Values.general.app_name }}'
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.general.app_name }}
+    spec:
+      securityContext:
+        fsGroup: 472
+        supplementalGroups:
+          - 0
+      containers:
+      - name: remote-cli
+        image: anylogco/remote-cli:latest
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+        - configMapRef:
+            name: remote-cli-configs
+        ports:
+        - name: remote-cli-port
+          containerPort: 31800
+---
+# AnyLog Query Node
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,7 +72,7 @@ spec:
           containerPort: {{ .Values.networking.ANYLOG_SERVER_PORT }}
         - name: rest
           containerPort: {{ .Values.networking.ANYLOG_REST_PORT }}
-        {{- if .Values.networking.ANYLOG_BROKER_PORT }}
+        {{ if ne .Values.networking.ANYLOG_BROKER_PORT "" }}
         - name: broker
           containerPort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
         {{ end }}

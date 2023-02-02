@@ -1,3 +1,16 @@
+# Remote-CLI
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: '{{ .Values.general.namespace }}'
+  name: remote-cli-configs
+  labels:
+    app: '{{ .Values.general.app_name }}'
+data:
+  CONN_IP: 0.0.0.0
+  CLI_PORT: 31800
+---
+# AnyLog Query Node
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,21 +27,21 @@ data:
   # Owner of the AnyLog instance
   COMPANY_NAME: '{{ .Values.general.COMPANY_NAME }}'
   # Coordinates of the machine - used by Grafana to map the network
-  {{ if ne .Values.general.LOCATION "" }} 
+  {{ if ne .Values.general.LOCATION "" }}
   LOCATION: '{{ .Values.general.LOCATION }}'
   {{ end }}
   # Country where machine is located
   {{ if ne .Values.general.COUNTRY "" }}
   COUNTRY: '{{ .Values.general.COUNTRY }}'
-  {{ end }} 
+  {{ end }}
   # State where machine is located
   {{ if ne .Values.general.STATE "" }}
   STATE: '{{ .Values.general.STATE }}'
-  {{ end }} 
+  {{ end }}
   # City where machine is located
   {{ if ne .Values.general.CITY "" }}
   CITY: '{{ .Values.general.CITY }}'
-  {{ end }} 
+  {{ end }}
 
   # -- Networking --
   # Connect to TCP, REST and Message Broker (if configured) based on correlating node policy
@@ -205,7 +218,7 @@ data:
 
   #-- Advanced Settings --
   # Whether to automatically run a local (or personalized) script at the end of the process
-#  DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
+  DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
 
   # Number of TCP threads
   TCP_THREAD_POOL: '{{ .Values.advanced_settings.TCP_THREAD_POOL }}'
@@ -218,5 +231,3 @@ data:
   THRESHOLD_TIME: '{{ .Values.advanced_settings.THRESHOLD_TIME }}'
   # Buffer size to reach, at which point data is pushed through
   THRESHOLD_VOLUME: '{{ .Values.advanced_settings.THRESHOLD_VOLUME }}'
-
-
