@@ -12,14 +12,13 @@ volume:
   enable_volume: true
   name: mongo-pv
   path: /data/db
-  nodeSelector: ""
-  replicas: 1
   specs:
     storage_class: ""
     access_mode: ReadWriteMany
     storage_size: 5Gi
     reclaim_policy: Retain
     host_path: /data/mongo
+
 
 image:
   repository: mongo
@@ -30,7 +29,7 @@ networking:
   name: mongo-port
   port: 27017
   nodePort: 32717
-  
+
 credentials:
   username: YWRtaW4K # echo admin | base64
   password: cGFzc3dkCg== # echo passwd | base64
