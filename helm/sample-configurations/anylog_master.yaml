@@ -23,7 +23,7 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: test
+  tag: predevelop
   # Image pulling policy
   pull_policy: IfNotPresent
 volume:
@@ -119,7 +119,7 @@ networking:
   # Overlay IP address - if set, will replace local IP address when connecting to network
   OVERLAY_IP: ""
   # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
-  PROXY_IP: 10.0.0.183
+  PROXY_IP: ""
   # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
   ANYLOG_SERVER_PORT: 32048
   # Port address used by AnyLog's REST protocol
@@ -254,7 +254,7 @@ mqtt:
   MQTT_VALUE_COLUMN: bring [readings][][value]
   # Column value type
   MQTT_VALUE_COLUMN_TYPE: float
-advanced settings: 
+advanced_settings: 
   # Whether to automatically run a local (or personalized) script at the end of the process
   DEPLOY_LOCAL_SCRIPT: false
   # Number of parallel queries
