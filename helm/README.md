@@ -1,130 +1,215 @@
-# Installing AnyLog using Kubernetes 
+# Installing AnyLog using Kubernetes
 
-The following provides general directions for installing AnyLog through _helm_ and _Kubernetes_. Detailed directions
-can be found in our [deployment documentation](https://github.com/AnyLog-co/documentation/tree/os-dev/deployments). 
+There are 4 main types of AnyLog instance (_Master_, _Operator_, _Query_ and _Publisher_), as-well-as an option to 
+deploy a _Generic_ instance - which includes only TCP, REST and an optional Message Broker connection. 
 
-### Requirements  
-for deploying AnyLog and its corresponding services.
-* Docker 
-* helm
-* Kubernetes deployment tools (we use [minikube](https://minikube.sigs.k8s.io/docs/start/)) 
-* Python3 + [dotenv](https://pypi.org/project/python-dotenv/) - for utilizing [deployment scripts](../deplyoment_scripts)
+An AnyLog deployment type is based on **system variables**, which users can assign values to different keys. These keys  
+are referenced in the node configuration process to apply a configuration option or a configuration value.
 
-### Prerequisites
-* [NGINX](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Networking/nginx.md) used as a proxy IP address for consistent IP address(es) stored in blockchain    
-* [Nebula Overlay Network](https://github.com/AnyLog-co/documentation/blob/os-dev/deployments/Networking/nebula.md)
+## Basic Deployment
+Our basic deployment is a _Generic_ node (nicknamed REST) that automatically connects to TCP and REST, without any user-defined 
+configurations.
 
-## Deployment 
-### Setting Up Machine
-1. Clone [deployments](https://github.com/AnyLog-co/deployments)
-```shell
-cd $HOME ; git clone https://github.com/AnyLog-co/deployments
-```
-2. Log into AnyLog docker in order to download the image. If you do not have login credentials for our Docker hub, feel 
-free to <a href="mailto:info@anylog.co?subject=Request Docker access">send us a message</a>.
-```shell
-# log into docker for access to AnyLog
-bash $HOME/deployments/installations/kube_credentials.sh ${DOCKER_PASSWORD}
-```
-3. (optional) Manually deploy Postgres and/or MongoDB if planning to use in deployment
-    * [Postgres Volume](sample-configurations/postgres_volume.yaml) & [Postgres Configuration](sample-configurations/postgres.yaml)
-    * [MongoDB Volume](sample-configurations/mongodb_volume.yaml) & [MongoDB Configurations](mongodb/.env)
-```shell
-# deploy PostgreSQL 
-helm install $HOME/deployments/helm/packages/postgres-volume-14.0-alpine.tgz --name-template psql-volume --values $HOME/deployments/helm/sample-configurations/postgres_volume.yaml
-helm install $HOME/deployments/helm/packages/postgres-14.0-alpine.tgz --name-template psql --values $HOME/deployments/helm/sample-configurations/postgres.yaml
+By default, the _Generic_ node connect to port 32148 for _TCP_ and 32149 for _REST_. 
 
-# Deploy MongoDB 
-helm install $HOME/deployments/helm/packages/mongodb-volume-4.tgz --name-template mongo-volume --values $HOME/deployments/helm/sample-configurations/mongodb_volume.yaml
-helm install $HOME/deployments/helm/packages/mongodb-4.tgz --name-template mongo --values $HOME/deployments/helm/sample-configurations/mongodb.yaml
-``` 
-### Scripted Proces
-1. Initiate the deployment scripts - this will prepare the configurations (based on user input) and deploy an AnyLog 
-instance.    
 ```shell
-bash $HOME/deployments/deployment_scripts/deploy_node.sh 
-```
-2. (Optional) Deploy Remote-CLI
-   * Access for Remote-CLI is [http://${LOCAL_IP_ADDRESS}:31800]() 
-```shell
-helm install $HOME/deployments/helm/packages/remote-cli-volume-1.0.0.tgz --name-template remote-cli-volume --values $HOME/deployments/helm/sample-configurations/remote_cli_volume.yaml
-helm install $HOME/deployments/helm/packages/remote-cli-1.0.0.tgz --name-template remote-cli --values $HOME/deployments/helm/sample-configurations/remote_cli.yaml  
-```
-3. (Optional) Deploy Grafana
-   * Access for Grafana is [http://${LOCAL_IP_ADDRESS}:3000]()
-```shell
-helm install $HOME/deployments/helm/packages/grafana-volume-7.5.7.tgz --name-template grafana-volume --values $HOME/deployments/helm/sample-configurations/grafana_volume.yaml
-helm install $HOME/deployments/helm/packages/grafana-7.5.7.tgz --name-template grafana --values $HOME/deployments/helm/sample-configurations/grafana.yaml
+# install volumes 
+helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz
+
+# install node 
+helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz
 ```
 
-### Manual Process
-1. Update deployment configurations
+## Configuration Based Deployment
+AnyLog's [deployment scripts](../) provides users with a series of questions to 
+assist with deployment of an AnyLog instance of either _Kubernetes_ or _Docker_.
+
+**Disclaimer**: The deployment scripts do not [deploy physical database](https://github.com/AnyLog-co/documentation/blob/os-dev/master/Kubernetes/database_configuration.md). Make sure your 
+non-SQLite database(s) is deployed prior to starting your AnyLog instance.   
+
+0. Requirements
+    * [Kubernetes Orchestrator](https://kubernetes.io/docs/tasks/tools/)  
+    * [Helm](https://helm.sh/docs/)
+    * Python3
+      * [yaml](https://pypi.org/project/PyYAML/) - Python3 package utilized in the deployment scripts 
+
+1. Download [deployment scripts](../../)
 ```shell
-# master node
-vim $HOME/deployments/helm/sample-configurations/anylog_master.yaml
-
-# operator node
-vim $HOME/deployments/helm/sample-configurations/anylog_operator.yaml
-
-# publisher node
-vim $HOME/deployments/helm/sample-configurations/anylog_publisher.yaml
-
-# query node
-vim $HOME/deployments/helm/sample-configurations/anylog_query.yaml
+cd $HOME
+git clone https://github.com/AnyLog-co/deployments
+cd $HOME/deployments/
 ```
 
-2. Deploy Volume
+2. Log into AnyLog's Dockerhub - [contact us](mailto:info@anylog.co) if you do not have login credentials
 ```shell
-# master node
-helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz --name-template master-vol --values $HOME/deployments/helm/sample-configurations/anylog_master.yaml
-
-# operator node
-helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz --name-template operator-vol --values $HOME/deployments/helm/sample-configurations/anylog_operator.yaml
-
-# publisher node
-helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz --name-template publisher-vol --values $HOME/deployments/helm/sample-configurations/anylog_publisher.yaml
-
-# query node
-helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz --name-template query-vol --values $HOME/deployments/helm/sample-configurations/anylog_query.yaml
+bash $HOME/deployments/installations/docker_credentials.sh ${YOUR_ANYLOG_DOCKER_CREDENTIALS}
 ```
 
-3. Deploy Node 
+3. Deploy AnyLog 
 ```shell
-# master node
-helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz --name-template master --values $HOME/deployments/helm/sample-configurations/anylog_master.yaml
-
-# operator node
-helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz --name-template operator --values $HOME/deployments/helm/sample-configurations/anylog_operator.yaml
-
-# publisher node
-helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz --name-template publisher --values $HOME/deployments/helm/sample-configurations/anylog_publisher.yaml
-
-# query node
-helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz --name-template query --values $HOME/deployments/helm/sample-configurations/anylog_query.yaml
+bash $HOME/deployments/deployment_scripts/deploy_node.sh
 ```
 
-4. (Optional) Deploy Remote-CLI
-   * Access for Remote-CLI is [http://${LOCAL_IP_ADDRESS}:31800]() 
+If a user already has a configuration file and does not want to go through the questionnaire, they can utilize the basic
+`helm` commands. 
+
 ```shell
-helm install $HOME/deployments/helm/packages/remote-cli-volume-1.0.0.tgz --name-template remote-cli-volume --values $HOME/deployments/helm/sample-configurations/remote_cli_volume.yaml
-helm install $HOME/deployments/helm/packages/remote-cli-1.0.0.tgz --name-template remote-cli --values $HOME/deployments/helm/sample-configurations/remote_cli.yaml  
-```
-5. (Optional) Deploy Grafana
-   * Access for Grafana is [http://${LOCAL_IP_ADDRESS}:3000]()
-```shell
-helm install $HOME/deployments/helm/packages/grafana-volume-7.5.7.tgz --name-template grafana-volume --values $HOME/deployments/helm/sample-configurations/grafana_volume.yaml
-helm install $HOME/deployments/helm/packages/grafana-7.5.7.tgz --name-template grafana --values $HOME/deployments/helm/sample-configurations/grafana.yaml
+# install volumes 
+helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz \
+  --name-template ${NODE_NAME}-volume
+  --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml \
+
+# install node 
+helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz \
+  --name-template ${NODE_NAME}-volume
+  --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml \
+  
+# to attach
+kubectel get pod # get pod name 
+kubectl attach -it pod/${POD_NAME}
+
+# to detach ctrl-p + ctrl-pq
 ```
 
+### Sample Questionare 
+Below is a sample questionnaire for a _Generic_ (nicknamed REST) node. The node will set the environment variables as 
+well as connect to TCP and REST. 
 
-### Attaching to a node
-* Attach into bash instance of node 
-```shell
-kubectl exec -it ${POD_NAME} bash
-```
-* Attach into AnyLog CLI 
-```shell
-kubectl attach -it ${POD_NAME}
-```
+Since AnyLog is a distributed network, each (data) node can be replicated across different machines / instances. As such, 
+while deployment with Kubernetes allows for [Kubernernaties replication](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/),
+we recommend our [High-Availability](https://github.com/AnyLog-co/documentation/blob/os-dev/high%20availability.md) alternative. 
 
-To detach from either `crtl-p` + `ctrl-q` 
+```editorconfig
+anylog@anylog-builder:~$ bash $HOME/deployments/deployment_scripts/deploy_node.sh 
+Node Type [default: rest | options: rest, master, operator, publisher, query, info]: rest
+Deployment Type [default: docker | options: docker, kubernetes]: docker
+Deploy Existing Configs [y / n]: n
+AnyLog Build Version [default: predevelop | options: develop, predevelop, test]: predevelop
+
+Section: General
+        Node Name [default: anylog-node]: 
+        Company Name [default: New Company]: 
+        Location [default: 0.0, 0.0]: 
+        Country [default: Unknown]: 
+        State [default: Unknown]: 
+        City [default: Unknown]: 
+
+
+Section: Authentication
+        Enable Basic REST Authentication [default: false | options: true, false]: 
+
+
+Section: Networking
+        Connect to Networking based on Blockchain Policy [default: false | options: true, false]: true
+        Configuration Policy [default: true | options: true, false]: 
+        Config Policy Name: 
+        Overlay IP: 
+        Proxy IP: 
+        TCP Port [default: 32548 | range: 30000-32767]: 
+        REST Port [default: 32549 | range: 30000-32767]: 
+        Local Broker Port [range: 30000-32767]: 
+        Bind TCP Connection [default: true | options: true, false]: 
+        Bind REST Connection [default: false | options: true, false]: 
+        Bind Message Broker Connection [default: false | options: true, false]: 
+
+
+Section: Database
+        Database Type [default: sqlite | options: sqlite, psql]: psql
+        Database User: admin
+        Database Password: passwd
+        Database IP Address [default: psql-svs]: 
+        Database Port [default: 5432]: 
+        Enable Autocommit [default: false | options: true, false]: 
+        Enable System Query Database [default: false | options: true, false]: true
+        Set System Query in-memory [default: true | options: true, false]: 
+        Enable NoSQL Database [default: false | options: true, false]: true
+        Database Type [default: mongo | options: mongo]: 
+        Database User: admin
+        Database Password: passwd
+        Database IP Address [default: mongo-svs]: 
+        Database Port [default: 27017]: 
+        Blobs DBMS [default: true | options: true, false]: 
+        Blobs Folder [default: true | options: true, false]: 
+        Compress Blobs [default: false | options: true, false]: 
+        Reuse Blobs [default: true | options: true, false]: 
+
+
+Section: Blockchain
+        Master Node TCP Connection [default: 127.0.0.1:32548]: 
+        Sync Time [default: 30 second | options: second, minute, hour, day]: 
+        Blockchain Source [default: master | options: master, blockchain]: 
+        Blockchain Destination [default: file | options: file, dbms]: 
+
+
+Section: Operator
+        Cluster Name [default: new-company-cluster]: 
+        Database Name [default: test]: 
+        Enable HA [default: false | options: true, false]: 
+        Enable Partitions [default: false | options: true, false]: 
+        Track JSON Files [default: true | options: true, false]: 
+        Archive Files [default: true | options: true, false]: 
+        Compress Files [default: true | options: true, false]: 
+        Operator Threads [default: 1]: 
+
+
+Section: Publisher
+        DB File Location [default: 0]: 
+        Table File Location [default: 1]: 
+        Compress Files [default: true | options: true, false]: 
+
+
+Section: MQTT
+        Enable MQTT [default: false | options: true, false]: true
+        Enable MQTT Logging [default: false | options: true, false]: 
+        Broker [default: driver.cloudmqtt.com]: 
+        Port [default: 18785]: 
+        MQTT User [default: ibglowct]: 
+        MQTT Password [default: MSY4e009J7ts]: 
+        Topic [default: anylogedgex]: 
+        Database Name [default: test]: 
+        Table Name [default: rand_data]: 
+        Timestamp Column [default: now]: 
+        Value Column [default: bring [readings][][value]]: 
+        Value type [default: float | options: str, int, float, timestamp, bool]: 
+
+
+Section: Advanced Settings
+        Enable Local Script [default: false | options: true, false]: 
+        Write Data Immediate [default: true | options: true, false]: 
+        Threshold Time [default: 60 seconds | options: second, minute, hour, day]: 
+        Threshold Volume [default: 10KB | options: KB, MB, GB]: 
+
+--- Kubernetes Metadata Configurations ---
+Section: Metadata
+        Namespace [default: default]: 
+        Kubernetes pod hostname [default: anylog-node]: 
+        App Name [default: anylog-node-app]: 
+        Pod Name [default: anylog-node-pod]: 
+        Deployment Name [default: anylog-node-deployment]: 
+        Service Name [default: anylog-node-service]: 
+        Configuration Name [default: anylog-node-configmap]: 
+        Node Selector: 
+        Replicas [default: 1]: 
+Section: Image
+        Secret Name [default: imagepullsecret]: 
+        Repository [default: anylogco/anylog-network]: 
+        Deployment Version [default: predevelop | options: develop, predevelop, test]: 
+        Pull Policy [default: IfNotPresent | options: Always, IfNotPresent, Never]: 
+Section: Volume
+        Enable Volumes [default: true | options: true, false]: 
+        --> Volume: anylog_volume
+        Name [default: anylog-rest-anylog-data]: 
+        Path [default: /app/AnyLog-Network/anylog]: 
+        Access Mode [default: ReadWriteOnce | options: ReadWriteOnce, ReadWriteMany, ReadOnlyMany, ReadWriteOncePod]: 
+        Storage Size [default: 1Gi]: 
+        --> Volume: blockchain_volume
+        Name [default: anylog-rest-blockchain-data]: 
+        Path [default: /app/AnyLog-Network/blockchain]: 
+        Access Mode [default: ReadWriteOnce | options: ReadWriteOnce, ReadWriteMany, ReadOnlyMany, ReadWriteOncePod]: 
+        Storage Size [default: 1Gi]: 
+        --> Volume: data_volume
+        Name [default: anylog-rest-data-data]: 
+        Path [default: /app/AnyLog-Network/data]: 
+        Access Mode [default: ReadWriteOnce | options: ReadWriteOnce, ReadWriteMany, ReadOnlyMany, ReadWriteOncePod]: 
+        Storage Size [default: 1Gi]: 
+```
