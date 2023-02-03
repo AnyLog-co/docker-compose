@@ -1,0 +1,17 @@
+general:
+  namespace: default
+
+volume:
+  enable_volume: true
+  access_mode: ReadWriteOnce
+  storage_size: 1Gi
+  json_volume:
+    name: remote-cli-json
+    path: /app/Remote-CLI/anylog_query/static/json
+
+  blobs_volume:
+    name: remote-cli-blobs
+    path: /app/Remote-CLI/anylog_query/static/blobs/current/
+
+
+

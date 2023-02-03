@@ -1,0 +1,267 @@
+metadata:
+  # Kubernetes Instance namespace
+  namespace: default
+  # hostname for deployment
+  hostname: anylog-query
+  # deployment application name
+  app_name: anylog-query-app
+  # Pod application name
+  pod_name: anylog-query-pod
+  # Kubernetes deployment name
+  deployment_name: anylog-query-deployment
+  # Kubernetes service name
+  service_name: anylog-query-service
+  # Kubernetes configuration mapping name
+  configmap_name: anylog-query-configmap
+  # Allows running Kubernetes remotely. If commented out, code will ignore it
+  node_selector: ""
+  # Number of Kubernetes replicas
+  replicas: 1
+image:
+  # Image secret naming
+  secret_name: imagepullsecret
+  # (Docker Hub) Image Path
+  repository: anylogco/anylog-network
+  # Image version
+  tag: predevelop
+  # Image pulling policy
+  pull_policy: IfNotPresent
+volume:
+  # Whether or not to enable volumes for AnyLog
+  enable_volume: true
+  anylog_volume:     # AnyLog Volume name
+    name: anylog-query-anylog-data
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/anylog
+    # Volume access mode
+    access_mode: ReadWriteOnce
+    # Volume storage size
+    storage_size: 1Gi
+  blockchain_volume:     # AnyLog Volume name
+    name: anylog-query-blockchain-data
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/blockchain
+    # Volume access mode
+    access_mode: ReadWriteOnce
+    # Volume storage size
+    storage_size: 1Gi
+  data_volume:     # AnyLog Volume name
+    name: anylog-query-data-data
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/data
+    # Volume access mode
+    access_mode: ReadWriteOnce
+    # Volume storage size
+    storage_size: 1Gi
+
+general: 
+  # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
+  NODE_TYPE: query
+  # Name of the AnyLog instance
+  NODE_NAME: anylog-query
+  # Owner of the AnyLog instance
+  COMPANY_NAME: New Company
+  # Coordinates of the machine - used by Grafana to map the network
+  LOCATION: ""
+  # Country where machine is located
+  COUNTRY: ""
+  # State where machine is located
+  STATE: ""
+  # City where machine is located
+  CITY: ""
+authentication: 
+  # When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain
+  ENABLE_AUTH: false
+  # Whether or not to enable authentication when accessing node via REST
+  ENABLE_REST_AUTH: false
+  # Provide a password to protect sensitive information that is kept on the node
+  NODE_PASSWORD: ""
+  # user that can connect to this node
+  USER_NAME: user1
+  # Password associated with the user
+  USER_PASSWORD: ""
+  # The type of user
+  USER_TYPE: admin
+  # Password used by the ROOT member in authentication
+  ROOT_PASSWORD: ""
+networking: 
+# By default, a node will connect to the (TCP, REST and Message Broker - if declared) based on its associated policy.
+#
+# If a user disables policy-based option (`POLICY_BASED_NETWORKING=false`) then network connectivity is based on information
+# in the configuration file.
+#
+# For policy-based configuration networking will be set as follows:
+#   1. A user is able to decide whether the TCP connectivity is set to bind or not. If bind is enabled - then AnyLog
+#       will use either the local or overlay IP address.
+#        * If an overlay is declared, then the overlay IP address will replace the local IP address
+#        * If binding is enabled, then AnyLog will only utilize the local or overlay IP address. Whereas if
+#          binding is disabled, the blockchain will use both the external and local (or overlay) IP addresses of the
+#          physical machine.
+#
+#    2. For REST and Message Broker, the (default) binding value is False. This is because data and/or GET requests
+#       coming-in may come from machines/devices outside the network.#
+#
+#    3. Regarding the relation between blockchain policy and AnyLog networking - AnyLog only cares about policy keys `ip`,
+#       `local_ip` and port values. All other networking information, such as `proxy_ip` and `external_ip` (if binding is
+#       True), are more of an FYI regarding the network configurations of the actual machine.
+  # Connect to TCP, REST and Message Broker (if configured) based on correlating node policy
+  POLICY_BASED_NETWORKING: true
+  # whether to setup networking based on a (generic) configuration policy - good for both REST and other nodes
+  CONFIG_POLICY: true
+  # Declare Policy name
+  CONFIG_POLICY_NAME: ""
+  # External IP address of the machine
+  EXTERNAL_IP: ""
+  # Local network IP address of the machine
+  LOCAL_IP: ""
+  # Kubernetes service name - used in stead of local IP on the blockchain if overlay IP is not declared
+  KUBERNETES_SERVICE_IP: anylog-query-service
+  # Overlay IP address - if set, will replace local IP address when connecting to network
+  OVERLAY_IP: ""
+  # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
+  PROXY_IP: ""
+  # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
+  ANYLOG_SERVER_PORT: 32348
+  # Port address used by AnyLog's REST protocol
+  ANYLOG_REST_PORT: 32349
+  # Port value to be used as an MQTT broker, or some other third-party broker
+  ANYLOG_BROKER_PORT: ""
+  # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+  TCP_BIND: true
+  # The number of concurrent threads supporting HTTP requests.	
+  TCP_THREADS: 6
+  # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+  REST_BIND: false
+  # Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.
+  REST_TIMEOUT: 20
+  # The number of concurrent threads supporting HTTP requests.	
+  REST_THREADS: 6
+  # Boolean value to determine if messages are send over HTTPS with client certificates.
+  REST_SSL: False
+  # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+  BROKER_BIND: false
+  # The number of concurrent threads supporting broker requests.	
+  BROKER_THREADS: 6
+database: 
+  # Physical database type
+  DB_TYPE: sqlite
+  # Username for SQL database connection
+  DB_USER: ""
+  # Password correlated to database user
+  DB_PASSWD: ""
+  # Database IP address
+  DB_IP: postgres-svs
+  # Database port number
+  DB_PORT: 5432
+  # Whether to set autocommit data
+  AUTOCOMMIT: false
+  # Whether to start to start system_query logical database
+  SYSTEM_QUERY: true
+  # Run system_query using in-memory SQLite. If set to false, will use pre-set database type
+  MEMORY: true
+  # Whether to enable NoSQL logical database
+  NOSQL_ENABLE: false
+  # Physical database type
+  NOSQL_TYPE: mongo
+  # Username for SQL database connection
+  NOSQL_USER: ""
+  # Password correlated to database user
+  NOSQL_PASSWD: ""
+  # Database IP address
+  NOSQL_IP: mongo-svs
+  # Database port number
+  NOSQL_PORT: 27017
+  # Store blobs in database
+  NOSQL_BLOBS_DBMS: true
+  # Store blobs in folder
+  NOSQL_BLOBS_FOLDER: true
+  # Compress stored blobs
+  NOSQL_BLOBS_COMPRESS: false
+  # Whether (re)store a blob if already exists
+  NOSQL_BLOBS_REUSE: true
+blockchain: 
+  # TCP connection information for Master Node
+  LEDGER_CONN: 127.0.0.1:32048
+  # How often to sync from blockchain
+  SYNC_TIME: 30 second
+  # Source of where the data is coming from
+  BLOCKCHAIN_SOURCE: master
+  # Where will the copy of the blockchain be stored
+  BLOCKCHAIN_DESTINATION: file
+operator: 
+  # Operator ID
+  MEMBER: ""
+  # Owner of the cluster
+  CLUSTER_NAME: new-company-cluster
+  # Logical database name
+  DEFAULT_DBMS: test
+  # Whether of not to enable HA against the cluster
+  ENABLE_HA: false
+  # How many days back to sync between nodes
+  START_DATE: 30
+  # Whether to enable partitioning
+  ENABLE_PARTITIONS: false
+  # Which tables to partition
+  TABLE_NAME: "*"
+  # Which timestamp column to partition by
+  PARTITION_COLUMN: insert_timestamp
+  # Time period to partition by
+  PARTITION_INTERVAL: 14 days
+  # How many partitions to keep
+  PARTITION_KEEP: 6
+  # How often to check if an old partition should be removed
+  PARTITION_SYNC: 1 day
+  # Whether to create a new table in the operator
+  CREATE_TABLE: true
+  # Record data inserted on Operator
+  UPDAE_TSD_INFO: true
+  # Archive data coming in
+  ARCHIVE: true
+  # Compress JSON and SQL file(s) backup
+  COMPRESS_FILE: true
+  # How many threads to use in the operator process
+
+  OPERATOR_THREADS: 1
+publisher: 
+  # Location of logical database name within file name
+  DBMS_FILE_LOCATION: 0
+  # Location of table name within file name
+  TABLE_FILE_LOCATION: 1
+  # Compress JSON and SQL file(s) backup
+  PUBLISHER_COMPRESS_FILE: true
+mqtt: 
+  # Whether to enable the default MQTT process
+  ENABLE_MQTT: false
+  # Whether to enable MQTT logging process
+  MQTT_LOG: false
+  # IP address of MQTT broker
+  MQTT_BROKER: driver.cloudmqtt.com
+  # Port associated with MQTT broker
+  MQTT_PORT: 18785
+  # User associated with MQTT broker
+  MQTT_USER: ibglowct
+  # Password associated with MQTT user
+  MQTT_PASSWD: MSY4e009J7ts
+  # Topic to get data for
+  MQTT_TOPIC: anylogedgex
+  # Logical database name
+  MQTT_DBMS: test
+  # Table where to store data
+  MQTT_TABLE: rand_data
+  # Timestamp column name
+  MQTT_TIMESTAMP_COLUMN: now
+  # Value column name
+  MQTT_VALUE_COLUMN: bring [readings][][value]
+  # Column value type
+  MQTT_VALUE_COLUMN_TYPE: float
+advanced_settings: 
+  # Whether to automatically run a local (or personalized) script at the end of the process
+  DEPLOY_LOCAL_SCRIPT: false
+  # Number of parallel queries
+  QUERY_POOL: 3
+  # When data comes in write to database immidiately, as opposed to waiting for a full buffer
+  WRITE_IMMEDIATE: true
+  # If buffer is not full, how long to wait until pushing data through
+  THRESHOLD_TIME: 60 seconds
+  # Buffer size to reach, at which point data is pushed through
+  THRESHOLD_VOLUME: 10KB
