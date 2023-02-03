@@ -91,26 +91,28 @@ then
     cd $HOME/deployments/docker-compose/anylog-query-remote-cli/
   fi
   docker-compose up -d
-elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]] ;
+elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]] ;
 then
-  if [[ ${REMOTE_CLI} == y ]] ;
-  then
-    helm install $HOME/deployments/helm/packages/anylog-node-remote-cli-volume-1.22.3.tgz \
-    --name-template ${NODE_TYPE}-volume
-    --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yml
+   NODE_NAME=`grep "NODE_NAME: " deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml | awk -F ": " '{print $2}' | awk '{$1=$1;print}'`
+   NODE_NAME=${NODE_NAME/ /-}
 
-    helm install $HOME/deployments/helm/packages/anylog-node-remote-cli-1.22.3.tgz \
-    --name-template ${NODE_TYPE}-volume
-    --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yml
+   if [[ ${REMOTE_CLI} == y ]] ;
+   then
+      helm install $HOME/deployments/helm/packages/anylog-node-remote-cli-volume-1.22.3.tgz \
+        --name-template ${NODE_NAME}-cli-vol \
+        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
+
+      helm install $HOME/deployments/helm/packages/anylog-node-remote-cli-1.22.3.tgz \
+        --name-template ${NODE_NAME}-cli \
+        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
   else
-    helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz \
-    --name-template ${NODE_TYPE}-volume
-    --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yml
+      helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz \
+        --name-template ${NODE_NAME}-vol \
+        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
 
-  # setup node
-  helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz \
-    --name-template ${NODE_TYPE}-node \
-    --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yml
+      helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz \
+        --name-template ${NODE_NAME} \
+        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
   fi
 fi
 

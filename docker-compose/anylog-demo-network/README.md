@@ -1,72 +1,60 @@
 # Demo Cluster Deployment 
 
-The following docker-compose package deploys the following services on a single machine:  
+The following provides directions into deploying AnyLog and its supported tools as a single docker-compos deployment. 
+The docker-compose will deploy the following services:
 * PostgreSQL 
 * AnyLog Master 
 * AnyLog Operator I  - receive data through a local [EdgeX deployment](https://github.com/AnyLog-co/lfedge-code) 
 * AnyLog Operator II - receive EdgeX data through a third-party MQTT broker 
 * AnyLog Query 
-* Remote-CLI 
-* Grafana 
+* [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/northbound%20connectors/remote_cli.md) 
+* [Grafana](https://github.com/AnyLog-co/documentation/tree/master/northbound%20connectors/using%20grafana.md) 
 
 ## Deployment Process
+Download [deployments](../../) and [lfedge-code](https://github.com/AnyLog-co/lfedge-code). 
+In addition, install [Docker and docker-compose](../../installations/docker_install.sh)
+```shell
+git clone https://github.com/AnyLog-co/deployments
+
+git clone https://github.com/AnyLog-co/lfedge-code
+
+bash deployments/docker-compose/docker_install.sh
+```
+
 ### AnyLog Network
-0. [Install Docker](../docker_install.sh) & docker-compose
+The following provides directions for deploying AnyLog using the demo cluster deployment 
 1. (Optional) Update the configurations before deployment 
    1. In [postgres.env](envs/postgres.env) update _POSTGRES_USER_ & _POSTGRES_PASSWORD_
    2. In [anylog_master.env](envs/anylog_master.env) & [anylog_query.env](envs/anylog_query.env) update
       * NODE_NAME
       * COMPANY_NAME
-      * _DB_USER_ & _DB_PASSWORD_ if using PostgreSQL & changed its credentials
-   3. In [anylog_operator1.env](envs/anylog_operator1.env) & [anyolog_operator2.env](envs/anylog_operator2.env) update
+      * _DB_USER_ & _DB_PASSWORD_ if using PostgresSQL & changed its credentials
+   3. In [anylog_operator1.env](envs/anylog_operator1.env) & [anylog_operator2.env](envs/anylog_operator2.env) update
       * NODE_NAME
       * COMPANY_NAME
       * _DB_USER_ & _DB_PASSWORD_ if using PostgreSQL & changed its credentials
       * logical database name (_DEFAULT_DBMS_ and _MQTT_TOPIC_DBMS_)
-      * CLUSTER_NAME
-   4. By default, the deployment is set to download anylog-network version: `demo`. To use a different version 
+      * _CLUSTER_NAME_
+   4. By default, the deployment is set to download anylog-network version: `predevelop`. To use a different version 
 (such as `predevelop`) change the _tag_ value in [.env](.env) file. 
+```dotenv
+# current config: 
+tag=predevelop
 
+# update to predevelop
+tag=develop
+```
 
 2. Start Cluster
 ```shell
-cd deployments/docker-compose/anylog-demo-network
 docker-compose up -d
 ```
 
-### Install EdgeX 
-1. Clone [lfedge-code](https://github.com/AnyLog-co/lfedge-code)
-```shell
-git clone https://github.com/AnyLog-co/lfedge-code 
-cd lfedge-code/edgex 
-```
+### Install EdgeX
+_Operator1_ utilizes a local MQTT client. In our demonstration, we utilize a local EdgeX instance.  
+Directions for deploying a local EdgeX instance can be found [here](https://github.com/AnyLog-co/documentation/blob/master/using%20edgex.md)  
 
-2. Update configurations in [.env](https://github.com/AnyLog-co/lfedge-code/blob/main/edgex/.env) file
-   1. Update the MQTT params to match the credentials in _anylgo-operator-node1_
-   ```dotenv
-    MQTT_TOPIC=anylogedgex
-    MQTT_IP_ADDRESS=139.162.200.15
-    MQTT_PORT=32150
-    MQTT_USER=""
-    MQTT_PASSWORD=""
-    ```
-   2. If you're using a machine with CPU type other than _amd64_ update the `ARCH` value in _line 27_. 
-   Sample ARCH value for ARM64: `ARCH=-arm64`
-   ```dotenv
-    # default amd64 machine 
-   ARCH=""
-   
-    # update to arm64 machine 
-   ARCH=-arm64
-   ```
-3. Start EdgeX instance 
-```shell 
-cd lfedge-code/edgex
-docker-compose up -ds 
-```
-
-## Validate Deployment 
-### AnyLog & Postgres
+## Validate Deployment
 * Attaching to an AnyLog node 
 ```shell
 # master 
@@ -240,14 +228,6 @@ row_id insert_timestamp           tsd_name tsd_id timestamp                  val
                 "Nodes": 2}]}
 # detach from AnyLog node - ctrl-d
 ```
-### EdgeX
-Once EdgeX is up and running give it about a minute and then check the folliwing: 
-1. Make sure nothing crashed: `docker ps -a | grep edgex`
-2. Data is coming in: `curl http://127.0.0.1:48080/api/v1/reading 2> /dev/null`
-
-### Other
-* [Remote-CLI](https://github.com/AnyLog-co/documentation/blob/os-dev/northbound%20connectors/remote_cli.md)
-* [Grafana](https://github.com/AnyLog-co/documentation/blob/os-dev/northbound%20connectors/using%20grafana.md)
 
 
 

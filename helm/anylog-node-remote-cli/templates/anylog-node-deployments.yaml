@@ -50,6 +50,8 @@ spec:
             mountPath: {{ .Values.volume.blockchain_volume.path }}
           - name: '{{ .Values.volume.data_volume.name }}'
             mountPath: {{ .Values.volume.data_volume.path }}
+          - name: remote-cli-blobs
+            mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
         {{ end }}
       {{- if eq .Values.volume.enable_volume true }}
       volumes:
@@ -62,4 +64,7 @@ spec:
         - name: '{{ .Values.volume.data_volume.name }}'
           persistentVolumeClaim:
             claimName: '{{ .Values.volume.data_volume.name }}-pvc'
+        - name: remote-cli-blobs
+          persistentVolumeClaim:
+            claimName: remote-cli-blobs-pvc
       {{ end }}
