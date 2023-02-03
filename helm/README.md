@@ -24,7 +24,7 @@ helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz
 AnyLog's [deployment scripts](../) provides users with a series of questions to 
 assist with deployment of an AnyLog instance of either _Kubernetes_ or _Docker_.
 
-**Disclaimer**: The deployment scripts do not [deploy physical database](https://github.com/AnyLog-co/documentation/blob/os-dev/master/Kubernetes/database_configuration.md). Make sure your 
+**Disclaimer**: The deployment scripts do not [deploy physical database](https://github.com/AnyLog-co/documentation/blob/master/master/Kubernetes/database_configuration.md). Make sure your 
 non-SQLite database(s) is deployed prior to starting your AnyLog instance.   
 
 0. Requirements
@@ -76,8 +76,8 @@ Below is a sample questionnaire for a _Generic_ (nicknamed REST) node. The node 
 well as connect to TCP and REST. 
 
 Since AnyLog is a distributed network, each (data) node can be replicated across different machines / instances. As such, 
-while deployment with Kubernetes allows for [Kubernernaties replication](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/),
-we recommend our [High-Availability](https://github.com/AnyLog-co/documentation/blob/os-dev/high%20availability.md) alternative. 
+while deployment with Kubernetes allows for [Kubernetes replication](https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/),
+we recommend our [High-Availability](https://github.com/AnyLog-co/documentation/blob/master/high%20availability.md) alternative. 
 
 ```editorconfig
 anylog@anylog-builder:~$ bash $HOME/deployments/deployment_scripts/deploy_node.sh 
