@@ -62,7 +62,7 @@ spec:
             secretKeyRef:
               name: {{ .Values.general.credentials_name }}
               key: password
-        {{- if eq.Values.volume.enable_volume true }}
+        {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
         - name: {{ .Values.volume.name }}
           mountPath: {{ .Values.volume.path }}
