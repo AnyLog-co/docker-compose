@@ -1,5 +1,6 @@
 import file_support
 
+
 def merge_configs(default_configs:dict, updated_configs:dict)->dict:
     """
     Given 2 sets of configurations merge them into a single dictionary
