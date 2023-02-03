@@ -7,4 +7,4 @@ metadata:
     app: '{{ .Values.metadata.app_name }}'
 data:
   CONN_IP: 0.0.0.0
-  CLI_PORT: 31800
+  CLI_PORT: '31800'
