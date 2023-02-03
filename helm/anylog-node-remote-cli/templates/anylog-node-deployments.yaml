@@ -4,16 +4,16 @@ metadata:
   namespace: '{{ .Values.metadata.namespace }}'
   name: '{{ .Values.metadata.deployment_name }}'
   labels:
-    app: anylog-node-remote-cli
+    app: '{{ .Values.metadata.deployment_name }}'
 spec:
   replicas: {{ .Values.metadata.replicas }}
   selector:
     matchLabels:
-      app: anylog-node-remote-cli
+      app: '{{ .Values.metadata.deployment_name }}'
   template:
     metadata:
       labels:
-        app: anylog-node-remote-cli
+        app: '{{ .Values.metadata.deployment_name }}'
     spec:
       hostname: {{ .Values.metadata.pod_name }}
       {{- if ne .Values.metadata.node_selector "" }}
@@ -42,3 +42,24 @@ spec:
         - name: broker
           containerPort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
         {{ end }}
+        {{- if eq .Values.volume.enable_volume true }}
+        volumeMounts:
+          - name: '{{ .Values.volume.anylog_volume.name }}'
+            mountPath: {{ .Values.volume.anylog_volume.path }}
+          - name: '{{ .Values.volume.blockchain_volume.name }}'
+            mountPath: {{ .Values.volume.blockchain_volume.path }}
+          - name: '{{ .Values.volume.data_volume.name }}'
+            mountPath: {{ .Values.volume.data_volume.path }}
+        {{ end }}
+      {{- if eq .Values.volume.enable_volume true }}
+      volumes:
+        - name: '{{ .Values.volume.anylog_volume.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.anylog_volume.name }}-pvc'
+        - name: '{{ .Values.volume.blockchain_volume.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.blockchain_volume.name }}-pvc'
+        - name: '{{ .Values.volume.data_volume.name }}'
+          persistentVolumeClaim:
+            claimName: '{{ .Values.volume.data_volume.name }}-pvc'
+      {{ end }}

@@ -4,7 +4,7 @@ metadata:
   namespace: '{{ .Values.metadata.namespace }}'
   name: '{{ .Values.metadata.configmap_name }}'
   labels:
-    app: anylog-node-remote-cli
+    app: '{{ .Values.metadata.deployment_name }}'
 data:
   # -- General --
   # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
@@ -205,8 +205,7 @@ data:
 
   #-- Advanced Settings --
   # Whether to automatically run a local (or personalized) script at the end of the process
-#  DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
-
+  DEPLOY_LOCAL_SCRIPT: '{{ .Values.advanced_settings.DEPLOY_LOCAL_SCRIPT }}'
   # Number of TCP threads
   TCP_THREAD_POOL: '{{ .Values.advanced_settings.TCP_THREAD_POOL }}'
 

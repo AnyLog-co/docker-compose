@@ -4,7 +4,7 @@ metadata:
   namespace: '{{ .Values.metadata.namespace }}'
   name: '{{ .Values.metadata.service_name }}'
   labels:
-    app: anylog-node-remote-cli
+    app: '{{ .Values.metadata.deployment_name }}'
 spec:
   type: NodePort
   ports:
@@ -27,4 +27,4 @@ spec:
     nodePort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
   {{ end }} 
   selector:
-    app: anylog-node-remote-cli
+    app: '{{ .Values.metadata.deployment_name }}'

@@ -2,9 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: '{{ .Values.general.namespace }}'
-  name: remove-cli-svs
+  name: remote-cli-svs
   labels:
-    app: anylog-node-remote-cli
+    app: '{{ .Values.general.app_name }}'
 spec:
   type: NodePort
   ports:
@@ -15,4 +15,4 @@ spec:
     targetPort: 31800
     nodePort: 31800
   selector:
-    app: anylog-node-remote-cli
+    app: '{{ .Values.general.app_name }}'
