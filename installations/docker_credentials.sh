@@ -7,4 +7,4 @@ else
   exit 1
 fi
 
-docker login -u oshadmon -p ${DOCKER_PASSWORD}
+docker login -u anyloguser -p ${DOCKER_PASSWORD}
