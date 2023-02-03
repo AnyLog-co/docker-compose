@@ -5,8 +5,8 @@ metadata:
   name: remote-cli-blobs-pvc
 spec:
   accessModes:
-    - {{ .Values.volume.access_mode }}
+    - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.volume.storage_size }}
+      storage: 1Gi
 

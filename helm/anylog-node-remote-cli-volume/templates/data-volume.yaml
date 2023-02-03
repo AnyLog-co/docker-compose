@@ -2,10 +2,10 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   namespace: {{ .Values.general.namespace }}
-  name: {{ .Values.volume.data_volume.name }}-pvc
+  name: remote-cli-json-pvc
 spec:
   accessModes:
-    - {{ .Values.volume.data_volume.access_mode }}
+    - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.volume.data_volume.storage_size }}
+      storage: 1Gi
