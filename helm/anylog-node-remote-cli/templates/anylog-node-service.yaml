@@ -4,7 +4,7 @@ metadata:
   namespace: '{{ .Values.metadata.namespace }}'
   name: '{{ .Values.metadata.service_name }}'
   labels:
-    app: '{{ .Values.metadata.deployment_name }}'
+    app: '{{ .Values.metadata.app_name }}'
 spec:
   type: NodePort
   ports:
@@ -27,4 +27,4 @@ spec:
     nodePort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
   {{ end }} 
   selector:
-    app: '{{ .Values.metadata.deployment_name }}'
+    app: '{{ .Values.metadata.app_name }}'

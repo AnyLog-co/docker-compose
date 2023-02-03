@@ -4,7 +4,7 @@ metadata:
   namespace: '{{ .Values.metadata.namespace }}'
   name: '{{ .Values.metadata.configmap_name }}'
   labels:
-    app: '{{ .Values.metadata.deployment_name }}'
+    app: '{{ .Values.metadata.app_name }}'
 data:
   # -- General --
   # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
