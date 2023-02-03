@@ -14,6 +14,12 @@ volume:
   path: /data/db
   nodeSelector: ""
   replicas: 1
+  specs:
+    storage_class: ""
+    access_mode: ReadWriteMany
+    storage_size: 5Gi
+    reclaim_policy: Retain
+    host_path: /data/mongo
 
 image:
   repository: mongo
