@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
+  namespace: '{{ .Values.metadata.namespace }}'
   name: remote-cli-svs
   labels:
-    app: '{{ .Values.general.app_name }}'
+    app: '{{ .Values.metadata.app_name }}'
 spec:
   type: NodePort
   ports:
@@ -15,4 +15,4 @@ spec:
     targetPort: 31800
     nodePort: 31800
   selector:
-    app: '{{ .Values.general.app_name }}'
+    app: '{{ .Values.metadata.app_name }}'

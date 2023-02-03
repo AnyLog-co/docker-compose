@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  namespace: '{{ .Values.general.namespace }}'
+  namespace: '{{ .Values.metadata.namespace }}'
   name: remote-cli
   labels:
-    app: '{{ .Values.general.app_name }}'
+    app: '{{ .Values.metadata.app_name }}'
 spec:
-  replicas: {{ .Values.general.replicas }}
+  replicas: {{ .Values.metadata.replicas }}
   selector:
     matchLabels:
-      app: '{{ .Values.general.app_name }}'
+      app: '{{ .Values.metadata.app_name }}'
   template:
     metadata:
       labels:
-        app: {{ .Values.general.app_name }}
+        app: '{{ .Values.metadata.app_name }}'
     spec:
       securityContext:
         fsGroup: 472
