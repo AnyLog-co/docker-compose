@@ -17,3 +17,8 @@ USER=`whoami`
 sudo usermod -a -G microk8s ${USER}
 newgrp microk8s
 
+# update / upgrade env
+for CMD in update upgrade update
+do
+    sudo apt-get -y ${CMD}
+done

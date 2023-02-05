@@ -9,3 +9,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.volume.anylog_volume.storage_size }}
+  {{ if ne .Values.volume.storage_classname: microk8s-hostpath "" }}
+  storageClassName: '{{ .Values.volume.storage_classname }}'
+  {{ end }}
+

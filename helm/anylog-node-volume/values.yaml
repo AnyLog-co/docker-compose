@@ -31,6 +31,7 @@ image:
 volume: 
   # Whether or not to enable volumes for AnyLog [Default: true]
   enable_volume: true
+  storage_classname: ""
   anylog_volume:
     # AnyLog Volume name[Default: anylog-node-anylog-volume]
     name: anylog-node-anylog-volume
@@ -58,5 +59,6 @@ volume:
     access_mode: ReadWriteOnce
     # Volume storage size[Default: 1Gi]
     storage_size: 1Gi
+
 
 
