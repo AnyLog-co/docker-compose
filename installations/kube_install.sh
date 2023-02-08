@@ -29,6 +29,7 @@ newgrp microk8s
 
 # enable storage
 microk8s enable storage
+microk8s enable dns
 
 
 # update / upgrade env

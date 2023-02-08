@@ -125,7 +125,7 @@ def main():
             print('\n')
 
     if args.deployment_type == 'docker':
-        del node_configs['networking']['KUBERNETES_SERVICE_IP']
+        # del node_configs['networking']['KUBERNETES_SERVICE_IP']
         file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
                               kubernetes_configs=None, exception=args.exception)
     elif args.deployment_type == 'kubernetes':
