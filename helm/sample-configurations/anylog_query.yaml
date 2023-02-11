@@ -23,7 +23,7 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: test
+  tag: predevelop
   # Image pulling policy
   pull_policy: IfNotPresent
 volume:
@@ -62,13 +62,13 @@ general:
   # Owner of the AnyLog instance
   COMPANY_NAME: New Company
   # Coordinates of the machine - used by Grafana to map the network
-  LOCATION: 0.0, 0.0
+  LOCATION: ""
   # Country where machine is located
-  COUNTRY: Unknown
+  COUNTRY: ""
   # State where machine is located
-  STATE: Unknown
+  STATE: ""
   # City where machine is located
-  CITY: Unknown
+  CITY: ""
 authentication: 
   # When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain
   ENABLE_AUTH: false
@@ -181,7 +181,7 @@ database:
   NOSQL_BLOBS_REUSE: true
 blockchain: 
   # TCP connection information for Master Node
-  LEDGER_CONN: anylog-master-service:32048
+  LEDGER_CONN: 127.0.0.1:32048
   # How often to sync from blockchain
   SYNC_TIME: 30 second
   # Source of where the data is coming from

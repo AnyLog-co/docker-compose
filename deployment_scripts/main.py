@@ -18,7 +18,7 @@ ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_s
 DEFAULT_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'configurations.json')
 KUBERNETES_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'kubernetes_configurations.json')
 
-NODE_TYPES = ['none', 'rest', 'master', 'operator', 'publisher', 'query', 'standalone', 'standalone-publisher']
+NODE_TYPES = ['none', 'generic', 'master', 'operator', 'publisher', 'query', 'standalone', 'standalone-publisher']
 
 
 def main():
@@ -26,7 +26,7 @@ def main():
     :positional arguments:
         node_type   Node type to deploy
             * none
-            * rest
+            * generic
             * master
             * operator
             * publisher
@@ -49,7 +49,7 @@ def main():
         configs:dict - removed un-needed configurations
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('node_type', type=str, choices=NODE_TYPES, default='rest', help='Node type to deploy')
+    parser.add_argument('node_type', type=str, choices=NODE_TYPES, default='generic', help='Node type to deploy')
     parser.add_argument('--build', type=str, choices=['develop', 'predevelop', 'test'], default='predevelop',
                         help='Which AnyLog version to run')
     parser.add_argument('--deployment-type', type=str, choices=['docker', 'kubernetes'], default='docker',
@@ -57,6 +57,10 @@ def main():
     parser.add_argument('--config-file', type=str, default=None, help='Configuration file to use for default values')
     parser.add_argument('-e', '--exception', type=bool, default=False, nargs='?', const=True, help='Whether to print exceptions')
     args = parser.parse_args()
+
+    # if user declares "generic" node type then we'll deploy a REST node
+    if args.node_type == "generic":
+        args.node_type = "rest"
 
     kubernetes_configs = {}
 
@@ -121,7 +125,7 @@ def main():
             print('\n')
 
     if args.deployment_type == 'docker':
-        del node_configs['networking']['KUBERNETES_SERVICE_IP']
+        # del node_configs['networking']['KUBERNETES_SERVICE_IP']
         file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
                               kubernetes_configs=None, exception=args.exception)
     elif args.deployment_type == 'kubernetes':

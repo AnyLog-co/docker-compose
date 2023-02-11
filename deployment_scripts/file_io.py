@@ -93,12 +93,14 @@ def update_dotenv_tag(file_path:str, build:str, node_name:str, exception:bool=Fa
         exception:bool - whether to print exceptions
     :params:
         status:bool
+        line:str - content to store in file
+        content:dict - preset default content
         file_path:str - directory path
         dotenv_file - full path of dotenv file
     :return:
         status
     """
-    status = True
+    line = ""
     content = {
         'BUILD': build,
         'ENV_FILE': 'anylog_configs.env',
@@ -108,16 +110,25 @@ def update_dotenv_tag(file_path:str, build:str, node_name:str, exception:bool=Fa
 
     dotenv_file = os.path.join(file_path, '.env')
     if os.path.isfile(dotenv_file):
-        content = file_support.read_dotenv(config_file=dotenv_file, exception=exception)
-        content['BUILD'] = build
-        content['CONTAINER_NAME'] = node_name
+        file_content = file_support.read_dotenv(config_file=dotenv_file, exception=exception)
+        for key in content:
+            if key not in file_content:
+                line += f"{key}={content[key]}\n"
+            elif key in ['BUILD', 'CONTAINER_NAME'] and file_content[key] != content[key]:
+                line += f"{key}={content[key]}\n"
+            else:
+                line += f"{key}={file_content[key]}\n"
+    else:
+        for key in content:
+            line += f"{key}={content[key]}\n"
 
     dotenv_file = file_support.create_file(file_path=dotenv_file, exception=exception)
-    for key in content:
-        line = f"{key}={content[key]}\n"
-        status = file_support.append_content(content=line, file_path=dotenv_file, exception=exception)
-        if status is False:
-            print(f"Failed to insert '{line}' into {dotenv_file}")
+
+    status = file_support.append_content(content=line, file_path=dotenv_file, exception=exception)
+    if status is False and exception is True:
+        print(f"Failed to insert '{line}' into {dotenv_file}")
+
+    return status
 
 
 def write_docker_configs(file_path:str, configs:dict, exception:bool=False)->bool:
@@ -156,8 +167,9 @@ def write_docker_configs(file_path:str, configs:dict, exception:bool=False)->boo
                 line = f"{param}={value}"
             else:
                 line = f"{param}=<{section.upper()}_{param.upper()}>"
-
-            if line == f"{param}=<{section.upper()}_{param.upper()}>" or configs[section][param]['enable'] is False and param != 'NODE_TYPE':
+            if param == "DB_TYPE":
+                pass
+            if line == f"{param}=<{section.upper()}_{param.upper()}>":
                 line = f"#{line}"
             line = f"# {comment}\n{line}\n"
             content += line

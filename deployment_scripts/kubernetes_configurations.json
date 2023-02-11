@@ -116,6 +116,13 @@
       "default": "true",
       "value": ""
     },
+    "storage_classname": {
+      "question": "Storge Class",
+      "description": "A way for administrators to describe the 'classes' of storage they offer",
+      "enable": true,
+      "default": "",
+      "value": ""
+    },
     "anylog_volume": {
       "name": {
         "question": "Name",
