@@ -1,10 +1,7 @@
+# Based on: https://github.com/DrSnowbird/mongo-compass-docker/blob/master/docker-compose.yml
+# Mongo Express URL: http://${YOUR_URL}:28081/
+
 version: '3.3'
-
-# Usage:
-#   docker stack deploy -c stack.yml mongo
-# or 
-#   docker-compose -f stack.yml up
-
 services:
   mongo:
     image: mongo:latest
