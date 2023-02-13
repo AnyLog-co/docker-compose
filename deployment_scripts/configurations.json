@@ -167,10 +167,11 @@
       "default": "",
       "value": ""
     },
-    "KUBERNETES_SERVICE_IP": {
-       "description": "Kubernetes service name - used in stead of local IP on the blockchain if overlay IP is not declared",
-       "enable": false, 
-       "default": "anylog-node-svs", 
+    "Domain Name": {
+      "Question": "Domain Name",
+       "description": "Domain name used in stead of local IP on the blockchain. For Kubernetes, the value is set to the service-name",
+       "enable": true,
+       "default": "",
        "value": "" 
     },
     "OVERLAY_IP": {
