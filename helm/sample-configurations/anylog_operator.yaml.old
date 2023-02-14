@@ -2,17 +2,17 @@ metadata:
   # Kubernetes Instance namespace
   namespace: default
   # hostname for deployment
-  hostname: lsl-operator1-k8s
+  hostname: anylog-operator
   # deployment application name
-  app_name: lsl-operator1-k8s-app
+  app_name: anylog-operator-app
   # Pod application name
-  pod_name: lsl-operator1-k8s-pod
+  pod_name: anylog-operator-pod
   # Kubernetes deployment name
-  deployment_name: lsl-operator1-k8s-deployment
+  deployment_name: anylog-operator-deployment
   # Kubernetes service name
-  service_name: lsl-operator1-k8s-service
+  service_name: anylog-operator-service
   # Kubernetes configuration mapping name
-  configmap_name: lsl-operator1-k8s-configmap
+  configmap_name: anylog-operator-configmap
   # Allows running Kubernetes remotely. If commented out, code will ignore it
   node_selector: ""
   # Number of Kubernetes replicas
@@ -23,14 +23,12 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: predevelop-rdht
+  tag: predevelop
   # Image pulling policy
   pull_policy: IfNotPresent
 volume:
   # Whether or not to enable volumes for AnyLog
   enable_volume: true
-  # A way for administrators to describe the 'classes' of storage they offer
-  storage_classname: ""
   anylog_volume:     # AnyLog Volume name
     name: anylog-operator-anylog-data
     # AnyLog security directory path
@@ -60,9 +58,9 @@ general:
   # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
   NODE_TYPE: operator
   # Name of the AnyLog instance
-  NODE_NAME: lsl-operator1-k8s
+  NODE_NAME: anylog-operator
   # Owner of the AnyLog instance
-  COMPANY_NAME: Lit San Leandro
+  COMPANY_NAME: New Company
   # Coordinates of the machine - used by Grafana to map the network
   LOCATION: ""
   # Country where machine is located
@@ -117,7 +115,7 @@ networking:
   # Local network IP address of the machine
   LOCAL_IP: ""
   # Kubernetes service name - used in stead of local IP on the blockchain if overlay IP is not declared
-  KUBERNETES_SERVICE_IP: lsl-operator1-k8s-service
+  KUBERNETES_SERVICE_IP: anylog-operator-service
   # Overlay IP address - if set, will replace local IP address when connecting to network
   OVERLAY_IP: ""
   # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
@@ -129,7 +127,7 @@ networking:
   # Port value to be used as an MQTT broker, or some other third-party broker
   ANYLOG_BROKER_PORT: ""
   # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-  TCP_BIND: false
+  TCP_BIND: true
   # The number of concurrent threads supporting HTTP requests.	
   TCP_THREADS: 6
   # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
@@ -146,13 +144,13 @@ networking:
   BROKER_THREADS: 6
 database: 
   # Physical database type
-  DB_TYPE: psql
+  DB_TYPE: sqlite
   # Username for SQL database connection
-  DB_USER: admin
+  DB_USER: ""
   # Password correlated to database user
-  DB_PASSWD: passwd
+  DB_PASSWD: ""
   # Database IP address
-  DB_IP: 139.177.192.209
+  DB_IP: postgres-svs
   # Database port number
   DB_PORT: 5432
   # Whether to set autocommit data
@@ -183,7 +181,7 @@ database:
   NOSQL_BLOBS_REUSE: true
 blockchain: 
   # TCP connection information for Master Node
-  LEDGER_CONN: 45.79.74.39:32048
+  LEDGER_CONN: 127.0.0.1:32048
   # How often to sync from blockchain
   SYNC_TIME: 30 second
   # Source of where the data is coming from
@@ -194,21 +192,21 @@ operator:
   # Operator ID
   MEMBER: ""
   # Owner of the cluster
-  CLUSTER_NAME: lsl-cluster1
+  CLUSTER_NAME: new-company-cluster
   # Logical database name
-  DEFAULT_DBMS: litsanleandro
+  DEFAULT_DBMS: test
   # Whether of not to enable HA against the cluster
-  ENABLE_HA: true
+  ENABLE_HA: false
   # How many days back to sync between nodes
-  START_DATE: -30d
+  START_DATE: 30
   # Whether to enable partitioning
-  ENABLE_PARTITIONS: true
+  ENABLE_PARTITIONS: false
   # Which tables to partition
   TABLE_NAME: "*"
   # Which timestamp column to partition by
-  PARTITION_COLUMN: timestamp
+  PARTITION_COLUMN: insert_timestamp
   # Time period to partition by
-  PARTITION_INTERVAL: 14 day
+  PARTITION_INTERVAL: 14 days
   # How many partitions to keep
   PARTITION_KEEP: 6
   # How often to check if an old partition should be removed
@@ -247,7 +245,7 @@ mqtt:
   # Topic to get data for
   MQTT_TOPIC: anylogedgex
   # Logical database name
-  MQTT_DBMS: litsanleandro
+  MQTT_DBMS: test
   # Table where to store data
   MQTT_TABLE: rand_data
   # Timestamp column name
