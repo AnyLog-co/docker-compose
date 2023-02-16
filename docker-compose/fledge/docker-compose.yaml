@@ -1,0 +1,20 @@
+# the following is based on https://hub.docker.com/u/robraesemann
+version: "2.2"
+services:
+  fledge:
+    image: robraesemann/fledge:latest
+    restart: always
+    container_name: fledge
+    network_mode: host
+    working_dir: /app
+    volumes:
+      - fledge-data:/usr/local/fledge
+  fledge-gui:
+    image: robraesemann/fledge-gui:latest
+    restart: always
+    container_name: fledge-gui
+    network_mode: host
+    depends_on:
+      - fledge
+volumes:
+  fledge-data:
