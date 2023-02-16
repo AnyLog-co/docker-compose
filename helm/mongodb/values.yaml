@@ -1,7 +1,7 @@
 general:
   namespace: default
-  app_name: mongo
-  deployment_name: mongo-app
+  app_name: mongodb
+  deployment_name: mongo-deployment
   service_name: mongo-svs
   configmap_name: mongo-configs
   credentials_name: mongo-secret
@@ -24,7 +24,8 @@ networking:
   name: mongo-port
   port: 27017
   nodePort: 32717
-  
+  express_port: 8081
+  express_nodeport: 30881
 credentials:
   username: YWRtaW4K # echo admin | base64
   password: cGFzc3dkCg== # echo passwd | base64

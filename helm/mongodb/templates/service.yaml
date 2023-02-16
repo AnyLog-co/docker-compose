@@ -11,5 +11,9 @@ spec:
   - name: '{{ .Values.networking.name }}'
     port: {{ .Values.networking.port }}
     targetPort: {{ .Values.networking.port }}
+  - protocol: '{{ .Values.networking.name }}-express'
+    port: {{ .Values.networking.express_port }}
+    targetPort: {{ .Values.networking.express_port }}
   selector:
     app: '{{ .Values.general.app_name }}'
+
