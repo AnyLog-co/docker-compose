@@ -1,5 +1,12 @@
 {
   "general": {
+    "LICENSE_KEY": {
+      "question": "License Key",
+      "description": "AnyLog License Key",
+      "enable": "true",
+      "default": "",
+      "value": ""
+    },
     "NODE_TYPE": {
       "question": "Node Type",
       "description": "Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols",

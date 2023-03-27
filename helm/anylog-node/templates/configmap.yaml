@@ -7,6 +7,9 @@ metadata:
     app: '{{ .Values.metadata.app_name }}'
 data:
   # -- General --
+  {{- if .Values.general.LICENSE_KEY }}
+  LICENSE_KEY: {{ .Values.general.LICENSE_KEY }}
+  {{ end }}
   # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
   NODE_TYPE: '{{ .Values.general.NODE_TYPE }}'
   # Name of the AnyLog instance
@@ -14,19 +17,19 @@ data:
   # Owner of the AnyLog instance
   COMPANY_NAME: '{{ .Values.general.COMPANY_NAME }}'
   # Coordinates of the machine - used by Grafana to map the network
-  {{ if ne .Values.general.LOCATION "" }} 
+  {{- if  .Values.general.LOCATION }}
   LOCATION: '{{ .Values.general.LOCATION }}'
   {{ end }}
   # Country where machine is located
-  {{ if ne .Values.general.COUNTRY "" }}
+  {{- if .Values.general.COUNTRY }}
   COUNTRY: '{{ .Values.general.COUNTRY }}'
   {{ end }} 
   # State where machine is located
-  {{ if ne .Values.general.STATE "" }}
+  {{- if .Values.general.STATE "" }}
   STATE: '{{ .Values.general.STATE }}'
   {{ end }} 
   # City where machine is located
-  {{ if ne .Values.general.CITY "" }}
+  {{- if .Values.general.CITY "" }}
   CITY: '{{ .Values.general.CITY }}'
   {{ end }} 
 

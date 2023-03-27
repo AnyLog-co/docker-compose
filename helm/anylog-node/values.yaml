@@ -61,6 +61,7 @@ volume:
 
 
 general:
+  LICENSE_KEY: ""
   # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols [Default: rest]
   NODE_TYPE: rest
   # Name of the AnyLog instance [Default: anylog-node]

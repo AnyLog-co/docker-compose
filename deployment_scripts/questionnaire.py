@@ -75,7 +75,7 @@ def __validate_port(port:str, check_range:bool=True)->(int, str):
     try:
         port = int(port)
     except Exception as error:
-        error_msg=f'Port value {answer} is invalid. Please try again... '
+        error_msg=f'Port value {port} is invalid. Please try again... '
     else:
         if check_range is True and not (30000 <= port <= 32767):
             error_msg=f'Value {port} out of range. Please try again... '
@@ -150,18 +150,24 @@ def generic_questions(configs:dict)->dict:
     """
     for param in configs:
         error_msg = ""
+        status = False
         if configs[param]['enable'] is True:
-            full_question = __generate_question(configs=configs[param])
-            answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                    param=param, error_msg=error_msg).strip()
-            if answer == "''" or answer == '""':
-                answer = ''
-            if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
-                configs[param]['value'] = ''
-            elif answer == "":
-                configs[param]['value'] = configs[param]['default']
-            else:
-                configs[param]['value'] = answer
+            while status is False:
+                full_question = __generate_question(configs=configs[param])
+                answer = __ask_question(question=full_question, description=configs[param]['description'],
+                                        param=param, error_msg=error_msg).strip()
+                if answer == "''" or answer == '""':
+                    answer = ''
+                    status = True
+                if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                    configs[param]['value'] = ''
+                    status = True
+                elif answer == "":
+                    configs[param]['value'] = configs[param]['default']
+                    status = True
+                else:
+                    configs[param]['value'] = answer
+                    status = True
 
     return configs
 
