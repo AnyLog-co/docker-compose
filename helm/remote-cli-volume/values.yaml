@@ -7,11 +7,11 @@ volume:
   storage_size: 1Gi
   json_volume:
     name: remote-cli-json
-    path: /app/Remote-CLI/anylog_query/static/json
+    path: /app/Remote-CLI/djangoProject/static/json
 
   blobs_volume:
     name: remote-cli-blobs
-    path: /app/Remote-CLI/anylog_query/static/blobs/current/
+    path: /app/Remote-CLI/djangoProject/static/blobs/current/
 
 
 
