@@ -3,7 +3,7 @@
     "LICENSE_KEY": {
       "question": "License Key",
       "description": "AnyLog License Key",
-      "enable": "true",
+      "enable": true,
       "default": "",
       "value": ""
     },
