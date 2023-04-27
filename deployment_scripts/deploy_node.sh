@@ -50,21 +50,21 @@ printf "\n"
 # if user decides not to use existing configs, then ask questions to help fill-out the configurations.
 if [[ ${EXISTING_CONFIGS} == n ]] ;
 then
-  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+  python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE}
+elif [[ ${DEPLOYMENT_TYPE}  == docker ]] && [[ ${NODE_TYPE} == generic ]] ;
+then
+    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    --build ${BUILD_TYPE} \
+    --deployment-type ${DEPLOYMENT_TYPE} \
+    --config-file $HOME/deployments/docker-compose/anylog-rest/anylog_configs.env
 elif [[ ${DEPLOYMENT_TYPE}  == docker ]] ;
 then
-    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}/anylog_configs.env
-elif [[ ${DEPLOYMENT_TYPE}  == kubernetes ]] ;
-then
-    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
-    --build ${BUILD_TYPE} \
-    --deployment-type ${DEPLOYMENT_TYPE} \
-    --config-file $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
 fi
 
 read -p  "Would you like to deploy AnyLog now (y/n)? " DEPLOY_NODE
