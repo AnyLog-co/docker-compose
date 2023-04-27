@@ -39,10 +39,10 @@ do
 done
 
 
-read -p "AnyLog Build Version [default: predevelop | options: develop, predevelop, test]: " BUILD_TYPE
-while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
+read -p "AnyLog Build Version [default: predevelop | options: latest, predevelop, test]: " BUILD_TYPE
+while [[ ! ${BUILD_TYPE} == *"latest"* ]] && [[ ! ${BUILD_TYPE} == *"predevelop"* ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
 do
-  read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
+  read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: predevelop | options: latest, predevelop, test]: " BUILD_TYPE
 done
 if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=predevelop ; fi
 printf "\n"
@@ -50,18 +50,18 @@ printf "\n"
 # if user decides not to use existing configs, then ask questions to help fill-out the configurations.
 if [[ ${EXISTING_CONFIGS} == n ]] ;
 then
-  python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE}
 elif [[ ${DEPLOYMENT_TYPE}  == docker ]] && [[ ${NODE_TYPE} == generic ]] ;
 then
-    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/docker-compose/anylog-rest/anylog_configs.env
 elif [[ ${DEPLOYMENT_TYPE}  == docker ]] ;
 then
-    python3.9 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}/anylog_configs.env
