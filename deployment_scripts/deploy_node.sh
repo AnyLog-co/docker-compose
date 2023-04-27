@@ -25,11 +25,11 @@ done
 if [[ -z ${NODE_TYPE} ]] ; then NODE_TYPE=generic ; fi
 
 
-read -p "Deployment Type [default: docker | options: docker, kubernetes]: " DEPLOYMENT_TYPE
-while [[ ! ${DEPLOYMENT_TYPE} == docker ]] && [[ ! ${DEPLOYMENT_TYPE} == kubernetes ]] && [[ ! -z ${DEPLOYMENT_TYPE} ]] ;
-do
-  read -p "Invalid deployment type '${DEPLOYMENT_TYPE}'. Deployment Type [default: docker | options: docker, kubernetes]: " DEPLOYMENT_TYPE
-done
+#read -p "Deployment Type [default: docker | options: docker, kubernetes]: " DEPLOYMENT_TYPE
+#while [[ ! ${DEPLOYMENT_TYPE} == docker ]] && [[ ! ${DEPLOYMENT_TYPE} == kubernetes ]] && [[ ! -z ${DEPLOYMENT_TYPE} ]] ;
+#do
+#  read -p "Invalid deployment type '${DEPLOYMENT_TYPE}'. Deployment Type [default: docker | options: docker, kubernetes]: " DEPLOYMENT_TYPE
+#done
 if [[ -z ${DEPLOYMENT_TYPE} ]] ; then DEPLOYMENT_TYPE=docker ; fi
 
 read -p "Deploy Existing Configs [y / n]: " EXISTING_CONFIGS
@@ -84,35 +84,38 @@ fi
 
 if [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]] ;
 then
-  cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
-  if [[ ${REMOTE_CLI} == y ]] ;
-  then
+  if [[ ${NODE_TYPE} == generic ]] ; then
+    cd $HOME/deployments/docker-compose/anylog-rest
+  elif [[ ${REMOTE_CLI} == y ]] ; then
     cp  $HOME/deployments/docker-compose/anylog-query/anylog_configs.env $HOME/deployments/docker-compose/anylog-query-remote-cli/anylog_configs.env
     cd $HOME/deployments/docker-compose/anylog-query-remote-cli/
+  else
+    cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
   fi
   docker-compose up -d
-elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]] ;
-then
-   NODE_NAME=`grep "NODE_NAME: " deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml | awk -F ": " '{print $2}' | awk '{$1=$1;print}'`
-   NODE_NAME=${NODE_NAME/ /-}
-
-   if [[ ${REMOTE_CLI} == y ]] ;
-   then
-      helm install $HOME/deployments/helm/packages/anylog-node-remote-cli-volume-1.22.3.tgz \
-        --name-template ${NODE_NAME}-cli-vol \
-        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
-
-      helm install $HOME/deployments/helm/packages/anylog-node-remote-cli-1.22.3.tgz \
-        --name-template ${NODE_NAME}-cli \
-        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
-  else
-      helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz \
-        --name-template ${NODE_NAME}-vol \
-        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
-
-      helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz \
-        --name-template ${NODE_NAME} \
-        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
-  fi
 fi
+#elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]] ;
+#then
+#   NODE_NAME=`grep "NODE_NAME: " deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml | awk -F ": " '{print $2}' | awk '{$1=$1;print}'`
+#   NODE_NAME=${NODE_NAME/ /-}
+#
+#   if [[ ${REMOTE_CLI} == y ]] ;
+#   then
+#      helm install $HOME/deployments/helm/packages/anylog-node-remote-cli-volume-1.22.3.tgz \
+#        --name-template ${NODE_NAME}-cli-vol \
+#        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
+#
+#      helm install $HOME/deployments/helm/packages/anylog-node-remote-cli-1.22.3.tgz \
+#        --name-template ${NODE_NAME}-cli \
+#        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
+#  else
+#      helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz \
+#        --name-template ${NODE_NAME}-vol \
+#        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
+#
+#      helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz \
+#        --name-template ${NODE_NAME} \
+#        --values $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
+#  fi
+#fi
 
