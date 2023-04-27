@@ -21,6 +21,8 @@ def __create_file_name_docker(node_type:str)->str:
         file_name
     """
     file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), 'anylog_configs.env')
+    if node_type == "generic":
+        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-rest', 'anylog_configs.env')
 
     return file_name
 
