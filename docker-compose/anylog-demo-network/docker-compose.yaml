@@ -92,8 +92,9 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    ports:
-      - "${CLI_PORT}:${CLI_PORT}"
+    network_mode: "host" 
+    #ports:
+    #  - "${CLI_PORT}:${CLI_PORT}"
     environment:
       - CONN_IP=${CONN_IP}
       - CLI_PORT=${CLI_PORT}
