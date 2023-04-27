@@ -12,8 +12,8 @@ services:
       - CONN_IP=${CONN_IP}
       - CLI_PORT=${CLI_PORT}
     volumes:
-      - remote-cli:/app/Remote-CLI/djangoProject/static/json
-      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+      - remote-cli:/app/Remote-CLI/anylog_query/static/json
+      - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
   anylog-query-node:
     image: anylogco/anylog-network:${BUILD}
     env_file:
@@ -28,7 +28,7 @@ services:
       - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-query-node-data:/app/AnyLog-Network/data
       - anylog-query-node-local-scripts:/app/AnyLog-Network/scripts
-      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+      - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
 volumes:
   remote-cli:
   remote-cli-current:

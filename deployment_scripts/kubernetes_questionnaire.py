@@ -113,12 +113,12 @@ def questionnaire(node_name:str, configs:dict)->dict:
                 configs[section] = __question(configs=configs[section])
             else:
                 for sub_section in configs[section]:
-                    if sub_section == 'enable_volume':
+                    if sub_section in ['enable_volume', 'storage_classname']:
                         sub_configs = {
-                            'enable_volume': configs[section]['enable_volume']
+                            sub_section: configs[section][sub_section]
                         }
                         output = __question(configs=sub_configs)
-                        configs[section]['enable_volume'] = output['enable_volume']
+                        configs[section][sub_section] = output[sub_section]
                     else:
                         print(f'\t--> Volume: {sub_section}')
                         configs[section][sub_section] = __question(configs=configs[section][sub_section])

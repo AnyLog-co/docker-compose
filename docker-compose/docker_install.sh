@@ -7,7 +7,7 @@ do
 done
 
 # install docker & docker-compose
-sudo snap install docker
+sudo apt-get -y install docker.io docker-compose
 
 # Grant user permission to docker
 USER=`whoami`
