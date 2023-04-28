@@ -13,6 +13,6 @@ services:
       - CONN_IP=${CONN_IP}
       - CLI_PORT=${CLI_PORT}
     volumes:
-      - remote-cli:/app/Remote-CLI/anylog_query/static/json
+      - remote-cli:/app/Remote-CLI/djangoProject/static/json
 volumes:
   remote-cli:
