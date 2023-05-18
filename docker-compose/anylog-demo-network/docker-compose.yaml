@@ -47,7 +47,7 @@ services:
     tty: true
     network_mode: "host"
     volumes:
-      - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
       - anylog-query-node-anylog:/app/AnyLog-Network/anylog
       - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-query-node-data:/app/AnyLog-Network/data
@@ -92,14 +92,15 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    ports:
-      - "${CLI_PORT}:${CLI_PORT}"
+    network_mode: "host" 
+    #ports:
+    #  - "${CLI_PORT}:${CLI_PORT}"
     environment:
       - CONN_IP=${CONN_IP}
       - CLI_PORT=${CLI_PORT}
     volumes:
-      - remote-cli:/app/Remote-CLI/anylog_query/static/json
-      - remote-cli-current:/app/Remote-CLI/anylog_query/static/blobs/current/
+      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
   grafana:
     image: grafana/grafana:7.5.7
     env_file:
