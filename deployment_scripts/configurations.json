@@ -142,17 +142,6 @@
       "default": "true",
       "value": ""
     },
-    "CONFIG_POLICY": {
-      "question": "Configuration Policy",
-      "description": "whether to setup networking based on a (generic) configuration policy - good for both REST and other nodes",
-      "enable": true,
-      "options": [
-        "true",
-        "false"
-      ],
-      "default": "true",
-      "value": ""
-    },
     "CONFIG_POLICY_NAME": {
       "question": "Config Policy Name",
       "description": "Declare Policy name",
@@ -176,9 +165,9 @@
     },
     "KUBERNETES_SERVICE_IP": {
        "description": "Kubernetes service name - used in stead of local IP on the blockchain if overlay IP is not declared",
-       "enable": false,
-       "default": "",
-       "value": ""
+       "enable": false, 
+       "default": "anylog-node-svs", 
+       "value": "" 
     },
     "OVERLAY_IP": {
       "question": "Overlay IP",

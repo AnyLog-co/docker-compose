@@ -21,27 +21,6 @@ KUBERNETES_CONFIG_FILE = os.path.join(ROOT_PATH, 'deployment_scripts', 'kubernet
 NODE_TYPES = ['none', 'generic', 'master', 'operator', 'publisher', 'query', 'standalone', 'standalone-publisher']
 
 
-
-def __validate_build(build)->str:
-    status = True 
-    front = build 
-    back = None
-
-    if "-" in build:
-        front, back = build.split("-") 
-
-    if front not in ["latest", "predevelop", "test"]: 
-        status = False 
-    
-    if back not in [None, "suse", "rdht", "alpine"] and status is True: 
-        status = False 
-
-    if status is False: 
-        raise argparse.ArgumentTypeError(f"Invalid build {build} - valide base choices: latest, predevelop, test") 
-
-    return build 
-
-
 def main():
     """
     :positional arguments:
@@ -71,7 +50,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('node_type', type=str, choices=NODE_TYPES, default='generic', help='Node type to deploy')
-    parser.add_argument('--build', type=__validate_build, default='predevelop',
+    parser.add_argument('--build', type=str, choices=['develop', 'predevelop', 'test'], default='predevelop',
                         help='Which AnyLog version to run')
     parser.add_argument('--deployment-type', type=str, choices=['docker', 'kubernetes'], default='docker',
                         help='Deployment type - docker generates .env file, kubernetes generates YAML file')

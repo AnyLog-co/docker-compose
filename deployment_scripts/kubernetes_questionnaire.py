@@ -90,7 +90,7 @@ def __question(configs:dict)->dict:
             while status is False:
                 answer = __ask_question(question=full_question, description=configs[param]['description'], param=param,
                                         error_msg=error_msg)
-                if 'options' in configs[param] and answer not in configs[param] and answer != '':
+                if 'options' in configs[param] and answer not in configs[param]["options"] and answer != '':
                     print(f'Invalid answer {answer}. Please try again... ')
                 elif answer != '':
                     configs[param]['value'] = answer

@@ -216,8 +216,6 @@ def networking_questions(configs:dict)->dict:
         if configs['POLICY_BASED_NETWORKING']['value'] == "false":
             for param in ['TCP_THREADS','REST_TIMEOUT', 'REST_THREADS', 'BROKER_THREADS']:
                 configs[param]['enable'] = True
-        if configs['CONFIG_POLICY']['value'] == 'false':
-            configs['CONFIG_POLICY_NAME']['enable'] = False
 
     # validate consistent ports
     configs['ANYLOG_REST_PORT'], configs['ANYLOG_BROKER_PORT'] = __validate_ports(tcp_port=configs['ANYLOG_SERVER_PORT']['value'],
