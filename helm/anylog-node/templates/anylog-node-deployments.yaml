@@ -27,7 +27,7 @@ spec:
       containers:
       - name: '{{ .Values.metadata.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
-        imagePullPolicy: {{ .Values.image.pull_policy }}
+        imagePullPolicy: '{{ .Values.image.pull_policy }}'
         envFrom:
         - configMapRef:
             name: '{{ .Values.metadata.configmap_name }}'
@@ -42,3 +42,5 @@ spec:
         - name: broker
           containerPort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
         {{ end }}
+
+
