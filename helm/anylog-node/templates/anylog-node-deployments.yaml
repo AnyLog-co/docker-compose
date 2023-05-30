@@ -28,15 +28,17 @@ spec:
       - name: '{{ .Values.metadata.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pull_policy }}'
+        {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
-        - name: anylog-node-data
+        - name: '{{ .Values.metadata.deployment_name }}-data'
           mountPath: /app/AnyLog-Network/data
-        - name: anylog-node-anylog
+        - name: '{{ .Values.metadata.deployment_name }}-anylog'
           mountPath: /app/AnyLog-Network/anylog
-        - name: anylog-node-blockchain
+        - name: '{{ .Values.metadata.deployment_name }}-blockchain'
           mountPath: /app/AnyLog-Network/blockchain
-#        - name: anylog-node-tests
-#          mountPath: /app/AnyLog-Network/tests
+#        - name: '{{ .Values.metadata.deployment_name }}-local-scripts'
+#          mountPath: /app/deployment-scripts
+        {{ end }}
         envFrom:
         - configMapRef:
             name: '{{ .Values.metadata.configmap_name }}'
@@ -51,16 +53,18 @@ spec:
         - name: broker
           containerPort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
         {{ end }}
+      {{- if eq .Values.volume.enable_volume true }}
       volumes:
-      - name: anylog-node-data
+      - name: '{{ .Values.metadata.deployment_name }}-data'
         persistentVolumeClaim:
-          claimName: data-pvc
-      - name: anylog-node-anylog
+          claimName: '{{ .Values.metadata.deployment_name }}-data-pvc'
+      - name: '{{ .Values.metadata.deployment_name }}-anylog'
         persistentVolumeClaim:
-          claimName: anylog-pvc
-      - name: anylog-node-blockchain
+          claimName: '{{ .Values.metadata.deployment_name }}-anylog-pvc'
+      - name: '{{ .Values.metadata.deployment_name }}-blockchain'
         persistentVolumeClaim:
-          claimName: blockchain-pvc
-      - name: anylog-node-tests
+          claimName: '{{ .Values.metadata.deployment_name }}-blockchain-pvc'
+#      - name: {{ .Values.metadata.deployment_name }}-local-scripts
 #        persistentVolumeClaim:
-#          claimName: tests-pvc
+#          claimName: '{{ .Values.metadata.deployment_name }}-local-scrpts-pvc'
+      {{ end }}

@@ -1,7 +1,10 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: data-pvc
+  namespace: '{{ .Values.metadata.namespace }}'
+  name: { { .Values.metadata.deployment_name } }-data-pvc
+  labels:
+    app: '{{ .Values.metadata.app_name }}'
 spec:
   accessModes:
     - ReadWriteOnce
