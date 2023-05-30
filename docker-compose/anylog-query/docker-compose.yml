@@ -13,7 +13,7 @@ services:
       - anylog-query-node-anylog:/app/AnyLog-Network/anylog
       - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-query-node-data:/app/AnyLog-Network/data
-      - anylog-query-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-query-node-local-scripts:/app/deployment-scripts
 volumes:
   anylog-query-node-anylog:
   anylog-query-node-blockchain:

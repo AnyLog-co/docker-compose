@@ -13,7 +13,7 @@ services:
       - anylog-rest-node-anylog:/app/AnyLog-Network/anylog
       - anylog-rest-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-rest-node-data:/app/AnyLog-Network/data
-      - anylog-rest-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-rest-node-local-scripts:/app/deployment-scripts
 volumes:
   anylog-rest-node-anylog:
   anylog-rest-node-blockchain:

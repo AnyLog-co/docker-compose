@@ -13,7 +13,7 @@ services:
       - anylog-operator-node-anylog:/app/AnyLog-Network/anylog
       - anylog-operator-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-operator-node-data:/app/AnyLog-Network/data
-      - anylog-operator-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-operator-node-local-scripts:/app/deployment-scripts
 volumes:
   anylog-operator-node-anylog:
   anylog-operator-node-blockchain:

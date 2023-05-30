@@ -27,7 +27,7 @@ services:
       - anylog-query-node-anylog:/app/AnyLog-Network/anylog
       - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-query-node-data:/app/AnyLog-Network/data
-      - anylog-query-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-query-node-local-scripts:/app/deployment-scripts
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
   remote-cli:

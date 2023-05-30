@@ -33,7 +33,7 @@ services:
       - anylog-master-node-anylog:/app/AnyLog-Network/anylog
       - anylog-master-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-master-node-data:/app/AnyLog-Network/data
-      - anylog-master-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-master-node-local-scripts:/app/deployment-scripts
   anylog-query-node:
     depends_on:
       postgres:
@@ -51,7 +51,7 @@ services:
       - anylog-query-node-anylog:/app/AnyLog-Network/anylog
       - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-query-node-data:/app/AnyLog-Network/data
-      - anylog-query-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-query-node-local-scripts:/app/deployment-scripts
   anylog-operator-node1:
     depends_on:
       postgres:
@@ -68,7 +68,7 @@ services:
       - anylog-operator-node1-anylog:/app/AnyLog-Network/anylog
       - anylog-operator-node1-blockchain:/app/AnyLog-Network/blockchain
       - anylog-operator-node1-data:/app/AnyLog-Network/data
-      - anylog-operator-node1-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-operator-node1-local-scripts:/app/deployment-scripts
   anylog-operator-node2:
     depends_on:
       postgres:
@@ -85,7 +85,7 @@ services:
       - anylog-operator-node2-anylog:/app/AnyLog-Network/anylog
       - anylog-operator-node2-blockchain:/app/AnyLog-Network/blockchain
       - anylog-operator-node2-data:/app/AnyLog-Network/data
-      - anylog-operator-node2-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-operator-node2-local-scripts:/app/deployment-scripts
   remote-cli:
     image: anylogco/remote-cli:latest
     container_name: remote-cli
