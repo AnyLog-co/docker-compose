@@ -104,17 +104,13 @@
       "value": ""
     }
   },
-  "volume": {
-    "enable_volume": {
-      "question": "Enable Volumes",
-      "description": "Whether or not to enable volumes for AnyLog",
-      "enable": true,
-      "options": [
-        "true",
-        "false"
-      ],
-      "default": "true",
-      "value": ""
+  "other": {
+    "remote_cli": {
+      "question": "Enable Remote CLI",
+      "description": "Enable Remote CLI",
+      "enable": false,
+      "default": "false",
+      "value": "false"
     }
   }
 }

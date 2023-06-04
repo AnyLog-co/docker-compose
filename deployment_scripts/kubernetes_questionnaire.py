@@ -75,8 +75,8 @@ def __kubernetes_prep(node_name:str, configs:dict)->dict:
     configs['metadata']['hostname']['default'] = node_name
     for param in ['app', 'pod', 'deployment', 'service', 'configmap']:
         configs['metadata'][f'{param}_name']['default'] = f"{node_name}-{param}"
-    for param in ['anylog', 'blockchain', 'data']:
-        configs['volume'][f'{param}_volume']['default'] = f'{node_name}-{param}-volume'
+    # for param in ['anylog', 'blockchain', 'data']:
+    #     configs['volume'][f'{param}_volume']['default'] = f'{node_name}-{param}-volume'
 
     return configs
 
