@@ -101,7 +101,11 @@ then
   docker-compose up -d
 elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]] ;
 then
-   NODE_NAME=`grep "NODE_NAME: " deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml | awk -F ": " '{print $2}' | awk '{$1=$1;print}'`
-   NODE_NAME=${NODE_NAME/ /-}
+  if [[ ${REMOTE_CLI} == y ]] ; then
+    helm install $HOME/deployments/helm/packages/remote-cli-volume-1.0.0.tgz -f $HOME/deployments/helm/sample-configurations/remote_cli.yaml --generate-name
+    helm install $HOME/deployments/helm/packages/remote-cli-1.0.0.tgz -f $HOME/deployments/helm/sample-configurations/remote_cli.yaml --generate-name
+  [[ end ]]
+  helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz -f $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml --generate-name
+  helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz -f $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml --generate-name
 fi
 

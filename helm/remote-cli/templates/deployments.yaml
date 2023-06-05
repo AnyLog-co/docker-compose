@@ -29,20 +29,15 @@ spec:
         ports:
         - name: '{{ .Values.networking.port_name }}'
           containerPort: {{ .Values.networking.port }}
-
-        {{- if eq .Values.volume.enable_volume true }}
         volumeMounts:
-#          - name: '{{ .Values.volume.json_volume.name }}'
-#            mountPath: '{{ .Values.volume.json_volume.path }}'
-          - name: '{{ .Values.volume.blobs_volume.name }}'
-            mountPath: '{{ .Values.volume.blobs_volume.path }}'
-        {{ end }}
-      {{- if eq .Values.volume.enable_volume true }}
+#          - name: remote-cli-json
+#            mountPath: /app/Remote-CLI/anylog_query/static/json
+          - name: remote-cli-blobs
+            mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
       volumes:
-#        - name: '{{ .Values.volume.json_volume.name }}'
+#        - name: remote-cli-json
 #          persistentVolumeClaim:
-#            claimName: '{{ .Values.volume.json_volume.name }}-pvc'
-        - name: '{{ .Values.volume.blobs_volume.name }}'
+#            claimName: remote-cli-json-pvc
+        - name: remote-cli-blobs
           persistentVolumeClaim:
-            claimName: '{{ .Values.volume.blobs_volume.name }}-pvc'
-      {{ end }}
+            claimName: remote-cli-blobs-pvc
