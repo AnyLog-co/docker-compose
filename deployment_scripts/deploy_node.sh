@@ -39,12 +39,12 @@ do
 done
 
 
-read -p "AnyLog Build Version [default: predevelop | options: develop, predevelop, test]: " BUILD_TYPE
-while [[ ! ${BUILD_TYPE} == develop ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
+read -p "AnyLog Build Version [default: latest | options: latest, predevelop, test]: " BUILD_TYPE
+while [[ ! ${BUILD_TYPE} == latest ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
 do
   read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
 done
-if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=predevelop ; fi
+if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=latest ; fi
 printf "\n"
 
 # if user decides not to use existing configs, then ask questions to help fill-out the configurations.
@@ -104,7 +104,7 @@ then
   if [[ ${REMOTE_CLI} == y ]] ; then
     helm install $HOME/deployments/helm/packages/remote-cli-volume-1.0.0.tgz -f $HOME/deployments/helm/sample-configurations/remote_cli.yaml --generate-name
     helm install $HOME/deployments/helm/packages/remote-cli-1.0.0.tgz -f $HOME/deployments/helm/sample-configurations/remote_cli.yaml --generate-name
-  [[ end ]]
+  fi 
   helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz -f $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml --generate-name
   helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz -f $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml --generate-name
 fi
