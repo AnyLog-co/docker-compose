@@ -21,8 +21,6 @@ def __create_file_name_docker(node_type:str)->str:
         file_name
     """
     file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), 'anylog_configs.env')
-    if node_type == "generic":
-        file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-rest', 'anylog_configs.env')
 
     return file_name
 
@@ -213,19 +211,19 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
                     line = line % '""'
                 content += comment + line
 
-    for section in ['anylog_volume', 'blockchain_volume', 'data_volume']:
-        content += f"  {section.replace(' ', '_')}: "
-        for param in metadata_configs['volume'][section]:
-            if param != 'default':
-                comment = f"    # {metadata_configs['volume'][section][param]['description']}\n"
-                line = f"    {param}: %s\n"
-                if metadata_configs['volume'][section][param]['value'] != "":
-                    line = line % metadata_configs['volume'][section][param]['value']
-                elif metadata_configs['volume'][section][param]['default'] != "":
-                    line = line % metadata_configs['volume'][section][param]['default']
-                else:
-                    line = line % '""'
-                content += comment + line
+    # for section in ['anylog_volume', 'blockchain_volume', 'data_volume']:
+    #     content += f"  {section.replace(' ', '_')}: "
+    #     for param in metadata_configs['volume'][section]:
+    #         if param != 'default':
+    #             comment = f"    # {metadata_configs['volume'][section][param]['description']}\n"
+    #             line = f"    {param}: %s\n"
+    #             if metadata_configs['volume'][section][param]['value'] != "":
+    #                 line = line % metadata_configs['volume'][section][param]['value']
+    #             elif metadata_configs['volume'][section][param]['default'] != "":
+    #                 line = line % metadata_configs['volume'][section][param]['default']
+    #             else:
+    #                 line = line % '""'
+    #             content += comment + line
     content += '\n'
 
     for section in configs:

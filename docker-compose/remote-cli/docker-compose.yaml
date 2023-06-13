@@ -14,5 +14,6 @@ services:
       - CLI_PORT=${CLI_PORT}
     volumes:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
   remote-cli:

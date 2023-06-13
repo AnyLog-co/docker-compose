@@ -13,7 +13,7 @@ services:
       - anylog-publisher-node-anylog:/app/AnyLog-Network/anylog
       - anylog-publisher-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-publisher-node-data:/app/AnyLog-Network/data
-      - anylog-publisher-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-publisher-node-local-scripts:/app/deployment-scripts
 volumes:
   anylog-publisher-node-anylog:
   anylog-publisher-node-blockchain:

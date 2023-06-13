@@ -1,0 +1,31 @@
+general:
+  namespace: default
+  app_name: postgres
+  deployment_name: postgres-app
+  service_name: postgres-svs
+  configmap_name: postgres-configs
+  nodeSelector: ""
+  replicas: 1
+
+volume:
+  enable_volume: true
+  name: postgres-pv
+  specs:
+    storage_class: manual
+    access_mode: ReadWriteMany
+    storage_size: 5Gi
+    reclaim_policy: Retain
+    host_path: /opt/postgres-data
+
+image:
+  repository: postgres
+  tag: 14.0-alpine
+  pullPolicy: IfNotPresent
+
+networking:
+  port_name: psql-port
+  port: 5432
+  
+credentials:
+  username: admin
+  password: passwd

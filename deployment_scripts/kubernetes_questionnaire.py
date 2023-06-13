@@ -75,8 +75,8 @@ def __kubernetes_prep(node_name:str, configs:dict)->dict:
     configs['metadata']['hostname']['default'] = node_name
     for param in ['app', 'pod', 'deployment', 'service', 'configmap']:
         configs['metadata'][f'{param}_name']['default'] = f"{node_name}-{param}"
-    for param in ['anylog', 'blockchain', 'data']:
-        configs['volume'][f'{param}_volume']['default'] = f'{node_name}-{param}-volume'
+    # for param in ['anylog', 'blockchain', 'data']:
+    #     configs['volume'][f'{param}_volume']['default'] = f'{node_name}-{param}-volume'
 
     return configs
 
@@ -90,7 +90,7 @@ def __question(configs:dict)->dict:
             while status is False:
                 answer = __ask_question(question=full_question, description=configs[param]['description'], param=param,
                                         error_msg=error_msg)
-                if 'options' in configs[param] and answer not in configs[param] and answer != '':
+                if 'options' in configs[param] and answer not in configs[param]["options"] and answer != '':
                     print(f'Invalid answer {answer}. Please try again... ')
                 elif answer != '':
                     configs[param]['value'] = answer

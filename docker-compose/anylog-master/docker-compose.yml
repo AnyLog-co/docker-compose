@@ -13,7 +13,7 @@ services:
       - anylog-master-node-anylog:/app/AnyLog-Network/anylog
       - anylog-master-node-blockchain:/app/AnyLog-Network/blockchain
       - anylog-master-node-data:/app/AnyLog-Network/data
-      - anylog-master-node-local-scripts:/app/AnyLog-Network/scripts
+      - anylog-master-node-local-scripts:/app/deployment-scripts
 volumes:
   anylog-master-node-anylog:
   anylog-master-node-blockchain:
