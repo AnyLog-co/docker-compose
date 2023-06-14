@@ -101,7 +101,7 @@
       "question": "User Name",
       "description": "user that can connect to this node",
       "enable": true,
-      "default": "user1",
+      "default": "",
       "value": ""
     },
     "USER_PASSWORD": {
@@ -798,6 +798,27 @@
       "default": "10KB",
       "options": ["KB", "MB", "GB"],
       "value": ""
+    },
+    "MONITOR_NODES": {
+      "question": "Monitor Node",
+      "description": "Whether to monitor the node or not",
+      "enable": true,
+      "default": "false",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "MONITOR_NODE": {
+      "question": "Monitoring Node",
+      "description": "Which node type to send monitoring information to",
+      "enable": true,
+      "default": "query",
+      "value": ""
+    },
+    "MONITOR_NODE_COMPANY": {
+      "question": "Company Name",
+      "description": "Company node is associated with the monitor node",
+      "enable": true,
+      "default": "New Company"
     }
   }
 }

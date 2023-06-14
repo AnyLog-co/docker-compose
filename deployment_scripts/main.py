@@ -121,6 +121,7 @@ def main():
                                                                         user=user, password=password)
                 node_configs[section] = questionnaire.mqtt_questions(configs=node_configs[section])
             elif section == 'advanced settings':
+                node_configs[section]["MONITOR_NODE_COMPANY"]["default"] = node_configs["general"]["COMPANY_NAME"]["value"]
                 node_configs[section] = questionnaire.advanced_settings(configs=node_configs[section])
             print('\n')
 
