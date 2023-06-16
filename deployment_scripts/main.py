@@ -40,7 +40,7 @@ def main():
             * docker
             * kubernetes
         --config-file   CONFIG_FILE               Configuration file to use for default values
-            * develop
+            * latest
             * predevelop
             * test
         -e, --exception  [EXCEPTION]              Whether to print exception
@@ -50,7 +50,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('node_type', type=str, choices=NODE_TYPES, default='generic', help='Node type to deploy')
-    parser.add_argument('--build', type=str, choices=['develop', 'predevelop', 'test'], default='predevelop',
+    parser.add_argument('--build', type=str, choices=['latest', 'predevelop', 'test'], default='latest',
                         help='Which AnyLog version to run')
     parser.add_argument('--deployment-type', type=str, choices=['docker', 'kubernetes'], default='docker',
                         help='Deployment type - docker generates .env file, kubernetes generates YAML file')
@@ -83,6 +83,8 @@ def main():
         if status is True:
             if section not in ['operator', 'publisher', 'mqtt']:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+            if section == 'directories':
+                node_configs['directories'] = questionnaire.directories_questions(configs=node_configs[section])
             if section == 'general':
                 node_configs['general'] = questionnaire.generic_questions(configs=node_configs[section])
                 for param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:

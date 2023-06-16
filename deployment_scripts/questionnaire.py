@@ -139,6 +139,11 @@ def __validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dic
     return rest_info, broker_info
 
 
+def directories_questions(configs:dict)->dict:
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+    return configs
+
 def generic_questions(configs:dict)->dict:
     """
     Generic configuration questionnaire
@@ -589,22 +594,19 @@ def advanced_settings(configs:dict)->dict:
                 if answer == "''" or answer == '""':
                     answer = ''
 
-                if param == 'MONITOR_NODES':
-                    if answer not in configs[param]['options'] and answer != '':
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    elif answer != "true":
-                        for key in ['MONITOR_NODE', 'MONITOR_NODE_COMPANY']:
-                            configs[key]['enable'] = False
-                            configs[key]['value'] = configs[key]['default']
-                    elif answer == '':
+                if param in ['MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY']:
+                    if param in ['MONITOR_NODE', 'MONITOR_NODE_COMPANY']:
                         configs[param]['value'] = configs[param]['default']
+                        if answer != '':
+                            configs[param]['value'] = answer
                         status = True
+                    elif answer not in configs[param]['options'] and answer != '':
+                        error_msg = f"Invalid value {answer}. Please try again... "
                     else:
-                        configs[param]['value'] = answer
+                        configs[param]['value'] = configs[param]['default']
+                        if answer != '':
+                            configs[param]['value'] = answer
                         status = True
-                elif param in ['MONITOR_NODE', 'MONITOR_NODE_COMPANY'] and answer != '':
-                    configs[param]['value'] = answer
-                    status = True
                 elif param in ['DEPLOY_LOCAL_SCRIPT', 'WRITE_IMMEDIATE'] and answer != "":
                     if answer not in configs[param]['options']:
                         error_msg = f"Invalid value {answer}. Please try again... "
