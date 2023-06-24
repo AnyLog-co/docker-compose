@@ -382,15 +382,18 @@ def operator_questions(configs:dict)->dict:
                             configs[param]['value'] = f"-{answer}d"
                             status = True
                     else:
-                        configs[param]['value'] = configs[param]['default']
+                        configs[param]['value'] = "-30d"
                         status = True
                 elif answer != "":
-                    if answer != "" and "options" in configs[param]:
+                    if "options" in configs[param]:
                         if answer not in configs[param]['options'] and answer != "":
                             error_msg = f"Invalid value {answer}. Please try again.."
                         elif answer in configs[param]['options']:
                             configs[param]['value'] = answer
                             status = True
+                    else: 
+                        configs[param]['value'] = answer
+                        status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
