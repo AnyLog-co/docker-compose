@@ -372,61 +372,35 @@ def operator_questions(configs:dict)->dict:
                 if answer == "''" or answer == '""':
                     answer = ''
 
-                if param in ['ENABLE_HA', 'ENABLE_PARTITIONS', 'CREATE_TABLE', 'UPDAE_TSD_INFO', 'ARCHIVE', 'COMPRESS_FILE']:
-                    if answer not in configs[param]['options'] and answer != "":
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    elif answer in configs[param]['options']:
-                        configs[param]['value'] = answer
-                        status = True
-                    if answer == "" or answer == 'false':
-                        configs[param]['value'] = configs[param]['default']
-                        if param == 'ENABLE_HA':
-                            configs['START_DATE']['enable'] = False
-                        elif param == 'ENABLE_PARTITIONS':
-                            for config in ['TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP',
-                                           'PARTITION_SYNC']:
-                                configs[config]['enable'] = False
-                        status = True
-                elif param == 'START_DATE':
+                if param == 'START_DATE':
                     if answer != "":
                         try:
-                            answer = int(answer)
+                            int(answer)
                         except:
                             error_msg = f"Invalid value {answer}. Please try again... "
                         else:
                             configs[param]['value'] = f"-{answer}d"
-                            status=True
-                    else:
-                        configs[param]['value'] = f"-{configs[param]['default']}d"
-                        status = True
-                elif param in ["PARTITION_INTERVAL", "PARTITION_SYNC"] and answer != "":
-                    for option in configs[param]['options']:
-                        if 's' == answer[-1]:
-                            answer = answer[:-1]
-                        if option in answer:
-                            configs[param]['value'] = answer
                             status = True
-                    if status is False:
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                elif param in ['PARTITION_KEEP', 'OPERATOR_THREADS'] and answer != "":
-                    try:
-                        answer = int(answer)
-                    except:
-                        error_msg = f"Invalid value {answer}. Please try again... "
                     else:
-                        if answer < configs[param]['default']:
-                            answer = configs[param]['default']
-                        configs[param]['value'] = answer
+                        configs[param]['value'] = configs[param]['default']
                         status = True
                 elif answer != "":
-                    configs[param]['value'] = answer
-                    status = True
+                    if answer != "" and "options" in configs[param]:
+                        if answer not in configs[param]['options'] and answer != "":
+                            error_msg = f"Invalid value {answer}. Please try again.."
+                        elif answer in configs[param]['options']:
+                            configs[param]['value'] = answer
+                            status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
-        else:
-            configs[param]['value'] = configs[param]['default']
-            status = True
+
+                if param in ["ENABLE_PARTITIONS", "START_DATE"] and configs[param]["value"] == "false":
+                    if param == "ENABLE_HA" and configs[param]["value"] == "false":
+                        configs["START_DATE"]["enable"] = False
+                    else:
+                        for key in ["TABLE_NAME", "PARTITION_COLUMN", "PARTITION_INTERVAL", "PARTITION_KEEP", "PARTITION_SYNC"]:
+                            configs[key]["enable"] = False
 
     return configs
 

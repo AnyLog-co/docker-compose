@@ -69,7 +69,7 @@ def main():
     if args.deployment_type == 'kubernetes':
         kubernetes_configs = file_io.read_configs(config_file=KUBERNETES_CONFIG_FILE, exception=args.exception)
     else:
-        del node_configs['networking']['KUBERNETES_SERVICE_IP']
+        node_configs['networking'].pop('KUBERNETES_SERVICE_IP')
     if args.config_file is not None:
         config_file = file_io.read_configs(config_file=args.config_file, exception=args.exception)
         node_configs = support.merge_configs(default_configs=node_configs, updated_configs=config_file)
