@@ -40,7 +40,7 @@ def main():
             * docker
             * kubernetes
         --config-file   CONFIG_FILE               Configuration file to use for default values
-            * develop
+            * latest
             * predevelop
             * test
         -e, --exception  [EXCEPTION]              Whether to print exception
@@ -50,7 +50,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('node_type', type=str, choices=NODE_TYPES, default='generic', help='Node type to deploy')
-    parser.add_argument('--build', type=str, choices=['develop', 'predevelop', 'test'], default='predevelop',
+    parser.add_argument('--build', type=str, choices=['latest', 'predevelop', 'test'], default='latest',
                         help='Which AnyLog version to run')
     parser.add_argument('--deployment-type', type=str, choices=['docker', 'kubernetes'], default='docker',
                         help='Deployment type - docker generates .env file, kubernetes generates YAML file')
@@ -68,6 +68,8 @@ def main():
     node_configs = file_io.read_configs(config_file=DEFAULT_CONFIG_FILE, exception=args.exception)
     if args.deployment_type == 'kubernetes':
         kubernetes_configs = file_io.read_configs(config_file=KUBERNETES_CONFIG_FILE, exception=args.exception)
+    else:
+        node_configs['networking'].pop('KUBERNETES_SERVICE_IP')
     if args.config_file is not None:
         config_file = file_io.read_configs(config_file=args.config_file, exception=args.exception)
         node_configs = support.merge_configs(default_configs=node_configs, updated_configs=config_file)
@@ -83,6 +85,8 @@ def main():
         if status is True:
             if section not in ['operator', 'publisher', 'mqtt']:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+            if section == 'directories':
+                node_configs['directories'] = questionnaire.directories_questions(configs=node_configs[section])
             if section == 'general':
                 node_configs['general'] = questionnaire.generic_questions(configs=node_configs[section])
                 for param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
@@ -121,6 +125,7 @@ def main():
                                                                         user=user, password=password)
                 node_configs[section] = questionnaire.mqtt_questions(configs=node_configs[section])
             elif section == 'advanced settings':
+                node_configs[section]["MONITOR_NODE_COMPANY"]["default"] = node_configs["general"]["COMPANY_NAME"]["value"]
                 node_configs[section] = questionnaire.advanced_settings(configs=node_configs[section])
             print('\n')
 

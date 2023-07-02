@@ -139,6 +139,11 @@ def __validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dic
     return rest_info, broker_info
 
 
+def directories_questions(configs:dict)->dict:
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+    return configs
+
 def generic_questions(configs:dict)->dict:
     """
     Generic configuration questionnaire
@@ -367,61 +372,48 @@ def operator_questions(configs:dict)->dict:
                 if answer == "''" or answer == '""':
                     answer = ''
 
-                if param in ['ENABLE_HA', 'ENABLE_PARTITIONS', 'CREATE_TABLE', 'UPDAE_TSD_INFO', 'ARCHIVE', 'COMPRESS_FILE']:
-                    if answer not in configs[param]['options'] and answer != "":
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    elif answer in configs[param]['options']:
+                if param in ['ENABLE_HA', 'ENABLE_PARTITIONS'] and answer != '':
+                    if answer not in configs[param]['options']:
+                        error_msg = f"Invalid value {answer}. Please try again.."
+                    else:
                         configs[param]['value'] = answer
                         status = True
-                    if answer == "" or answer == 'false':
-                        configs[param]['value'] = configs[param]['default']
-                        if param == 'ENABLE_HA':
-                            configs['START_DATE']['enable'] = False
-                        elif param == 'ENABLE_PARTITIONS':
-                            for config in ['TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP',
-                                           'PARTITION_SYNC']:
-                                configs[config]['enable'] = False
+                elif param in ['PARTITION_INTERVAL', 'PARTITION_SYNC'] and answer != "":
+                    if " " not in answer or answer.split(" ")[-1] in ['hour', 'hours', 'day', 'days', 'month', 'months']:
+                        error_msg = f"Invalid value {answer}. Please try again"
+                    else:
+                        configs[param]['value'] = answer
                         status = True
-                elif param == 'START_DATE':
+                elif param == "OPERATOR_THREADS" and answer != "":
+                    try:
+                        int(answer)
+                    except Exception as error:
+                        error_msg = f"Invalid value for {answer}. Please try again"
+                    else:
+                        if int(answer) <= 0:
+                            error_msg = f"Thread count is too low. Please try again..."
+                        else:
+                            configs[param]['value'] = answer
+                            status = True
+                elif param == 'START_DATE' and answer != "":
                     if answer != "":
                         try:
-                            answer = int(answer)
+                            int(answer)
                         except:
                             error_msg = f"Invalid value {answer}. Please try again... "
                         else:
                             configs[param]['value'] = f"-{answer}d"
-                            status=True
-                    else:
-                        configs[param]['value'] = f"-{configs[param]['default']}d"
-                        status = True
-                elif param in ["PARTITION_INTERVAL", "PARTITION_SYNC"] and answer != "":
-                    for option in configs[param]['options']:
-                        if 's' == answer[-1]:
-                            answer = answer[:-1]
-                        if option in answer:
-                            configs[param]['value'] = answer
                             status = True
-                    if status is False:
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                elif param in ['PARTITION_KEEP', 'OPERATOR_THREADS'] and answer != "":
-                    try:
-                        answer = int(answer)
-                    except:
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    else:
-                        if answer < configs[param]['default']:
-                            answer = configs[param]['default']
-                        configs[param]['value'] = answer
-                        status = True
-                elif answer != "":
-                    configs[param]['value'] = answer
-                    status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True
-        else:
-            configs[param]['value'] = configs[param]['default']
-            status = True
+
+                if param in ["ENABLE_PARTITIONS", "START_DATE"] and configs[param]["value"] == "false":
+                    if param == "ENABLE_HA" and configs[param]["value"] == "false":
+                        configs["START_DATE"]["enable"] = False
+                    else:
+                        for key in ["TABLE_NAME", "PARTITION_COLUMN", "PARTITION_INTERVAL", "PARTITION_KEEP", "PARTITION_SYNC"]:
+                            configs[key]["enable"] = False
 
     return configs
 
@@ -589,7 +581,20 @@ def advanced_settings(configs:dict)->dict:
                 if answer == "''" or answer == '""':
                     answer = ''
 
-                if param in ['DEPLOY_LOCAL_SCRIPT', 'WRITE_IMMEDIATE'] and answer != "":
+                if param in ['MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY']:
+                    if param in ['MONITOR_NODE', 'MONITOR_NODE_COMPANY']:
+                        configs[param]['value'] = configs[param]['default']
+                        if answer != '':
+                            configs[param]['value'] = answer
+                        status = True
+                    elif answer not in configs[param]['options'] and answer != '':
+                        error_msg = f"Invalid value {answer}. Please try again... "
+                    else:
+                        configs[param]['value'] = configs[param]['default']
+                        if answer != '':
+                            configs[param]['value'] = answer
+                        status = True
+                elif param in ['DEPLOY_LOCAL_SCRIPT', 'WRITE_IMMEDIATE'] and answer != "":
                     if answer not in configs[param]['options']:
                         error_msg = f"Invalid value {answer}. Please try again... "
                     else:

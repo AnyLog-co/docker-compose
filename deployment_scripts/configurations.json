@@ -1,4 +1,62 @@
 {
+  "directories": {
+    "ANYLOG_PATH": {
+      "question": "AnyLog Root Path",
+      "description": "AnyLog Root Path",
+      "enable": false,
+      "default": "/app",
+      "value": ""
+    },
+    "ANYLOG_LIB": {
+      "question": "AnyLog Library Path",
+      "description": "AnyLog Library Path",
+      "enable": false,
+      "default": "/app/AnyLog-Network",
+      "value": ""
+    },
+    "ANYLOG_HOME_PATH": {
+      "question": "AnyLog Home Path",
+      "description": "AnyLog Home Path",
+      "enable": false,
+      "default": "/app/AnyLog-Network",
+      "value": ""
+    },
+    "ANYLOG_ID_DIR": {
+      "question": "AnyLog IDs Dir",
+      "description": "!id_dir: ${ANYLOG_HOME}/anylog",
+      "enable": false,
+      "default": "/app/AnyLog-Network/anylog",
+      "value": ""
+    },
+    "BLOCKCHAIN_DIR": {
+      "question": "AnyLog Blockchain Dir",
+      "description": "!blockchain_dir: ${ANYLOG_HOME}/blockchain",
+      "enable": false,
+      "default": "/app/AnyLog-Network/blockchain",
+      "value": ""
+    },
+    "DATA_DIR": {
+      "question": "AnyLog Data Dir",
+      "description": "!data_dir: ${ANYLOG_HOME}/data",
+      "enable": false,
+      "default": "/app/AnyLog-Network/data",
+      "value": ""
+    },
+    "LOCAL_SCRIPTS": {
+      "question": "AnyLog Local Scripts Dir",
+      "description": "!local_scripts: ${ANYLOG_HOME}/deployment-scripts/scripts",
+      "enable": false,
+      "default": "/app/deployment-scripts/scripts",
+      "value": ""
+    },
+    "TEST_DIR": {
+      "question": "AnyLog Test Dir",
+      "description": "!test_dir: ${ANYLOG_HOME}/deployment-scripts/test",
+      "enable": false,
+      "default": "/app/deployment-scripts/test",
+      "value": ""
+    }
+  },
   "general": {
     "LICENSE_KEY": {
       "question": "License Key",
@@ -101,7 +159,7 @@
       "question": "User Name",
       "description": "user that can connect to this node",
       "enable": true,
-      "default": "user1",
+      "default": "",
       "value": ""
     },
     "USER_PASSWORD": {
@@ -593,7 +651,7 @@
     "UPDAE_TSD_INFO": {
       "question": "Track JSON Files",
       "description": "Record data inserted on Operator",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
@@ -604,7 +662,7 @@
     "ARCHIVE": {
       "question": "Archive Files",
       "description": "Archive data coming in",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
@@ -615,7 +673,7 @@
     "COMPRESS_FILE": {
       "question": "Compress Files",
       "description": "Compress JSON and SQL file(s) backup",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
@@ -798,6 +856,27 @@
       "default": "10KB",
       "options": ["KB", "MB", "GB"],
       "value": ""
+    },
+    "MONITOR_NODES": {
+      "question": "Monitor Node",
+      "description": "Whether to monitor the node or not",
+      "enable": true,
+      "default": "false",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "MONITOR_NODE": {
+      "question": "Monitoring Node",
+      "description": "Which node type to send monitoring information to",
+      "enable": true,
+      "default": "query",
+      "value": ""
+    },
+    "MONITOR_NODE_COMPANY": {
+      "question": "Company Name",
+      "description": "Company node is associated with the monitor node",
+      "enable": true,
+      "default": "New Company"
     }
   }
 }

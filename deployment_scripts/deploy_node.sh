@@ -3,80 +3,88 @@
 The following code initiates a Python3 script that helps setup configurations for an AnyLog instance.
 COMMENT
 
+# Function to display node type options
+function display_node_type_options() {
+  printf 'Node type options to deploy:'
+  printf '\n\tgeneric - sandbox for understanding AnyLog as only TCP & REST are configured'
+  printf '\n\tmaster - a database node replacing an actual blockchain'
+  printf '\n\toperator - node where data will be stored'
+  printf '\n\tpublisher - node to distribute data among operators'
+  printf '\n\tquery - node dedicated to master node (installed with Remote-CLI)'
+  printf '\n\tinfo - display node type options\n'
+}
+
+# Function to validate yes/no options
+function validate_yes_no_option() {
+  local input
+  read -p "$1: " input
+  while [[ ! ${input} =~ ^(y|n)$ ]]; do
+    read -p "Invalid option: ${input}. $1: " input
+  done
+  echo "${input}"
+}
+
 read -p "Node Type [default: generic | options: generic, master, operator, publisher, query, info]: " NODE_TYPE
-while [[ ! ${NODE_TYPE}  == generic ]] && [[ ! ${NODE_TYPE}  == master ]] && [[ ! ${NODE_TYPE}  == operator ]] && [[ ! ${NODE_TYPE}  == publisher ]] && [[ ! ${NODE_TYPE}  == query ]] && [[ ! -z ${NODE_TYPE} ]] ;
-do
-  if [[ ${NODE_TYPE}  == info ]] ;
-  then
-    printf 'Node type options to deploy: '
-#    printf '\n\none - an AnyLog instance with literally nothing configured'
-    printf '\n\generic - sandbox for understanding AnyLog as only TCP & REST are configured'
-    printf '\n\tmaster - a database node replacing an actual blockchain'
-    printf '\n\toperator - node where data will be stored'
-    printf '\n\tpublisher - node to distribute data among operators'
-    printf '\n\tquery - node dedicated to master node (installed with Remote-CLI)\n'
-#    printf "\n\tstandalone - node that consists of both master and operator deployment configurations"
-#    printf "\n\tstandalone-publisher - node that consists of both master and publisher deployment configurations"
+
+while [[ ! ${NODE_TYPE} =~ ^(generic|master|operator|publisher|query)$ ]] || [[ -z ${NODE_TYPE} ]]; do
+  if [[ ${NODE_TYPE} == info ]]; then
+    display_node_type_options
+  elif [[ -z ${NODE_TYPE} ]]; then
+    NODE_TYPE=generic
+  else
+    read -p "Invalid node type '${NODE_TYPE}'. Node Type [default: generic | options: generic, master, operator, publisher, query, info]: " NODE_TYPE
   fi
-
-  read -p "Invalid node type '${NODE_TYPE}'. Node Type [default: generic | options: generic, master, operator, publisher, query, info]: " NODE_TYPE
-
 done
-if [[ -z ${NODE_TYPE} ]] ; then NODE_TYPE=generic ; fi
-
 
 read -p "Deployment Type [default: docker | options: docker, kubernetes]: " DEPLOYMENT_TYPE
-while [[ ! ${DEPLOYMENT_TYPE} == docker ]] && [[ ! ${DEPLOYMENT_TYPE} == kubernetes ]] && [[ ! -z ${DEPLOYMENT_TYPE} ]] ;
-do
-  read -p "Invalid deployment type '${DEPLOYMENT_TYPE}'. Deployment Type [default: docker | options: docker, kubernetes]: " DEPLOYMENT_TYPE
-done
-if [[ -z ${DEPLOYMENT_TYPE} ]] ; then DEPLOYMENT_TYPE=docker ; fi
 
-read -p "Deploy Existing Configs [y / n]: " EXISTING_CONFIGS
-while [[ ! ${EXISTING_CONFIGS} == y ]] && [[ ! ${EXISTING_CONFIGS} == n ]] ;
-do
-  read -p "Invalid option: ${EXISTING_CONFIGS}. Deploy Existing Configs [y / n]: " EXISTING_CONFIGS
+while [[ ! ${DEPLOYMENT_TYPE} =~ ^(docker|kubernetes)$ ]] || [[ -z ${DEPLOYMENT_TYPE} ]]; do
+  if [[ -z ${DEPLOYMENT_TYPE} ]]; then
+    DEPLOYMENT_TYPE=docker
+  else
+    read -p "Invalid deployment type '${DEPLOYMENT_TYPE}'. Deployment Type [default: docker | options: docker, kubernetes]: " DEPLOYMENT_TYPE
+  fi
 done
 
+EXISTING_CONFIGS=$(validate_yes_no_option "Deploy Existing Configs [y/n]")
 
 read -p "AnyLog Build Version [default: latest | options: latest, predevelop, test]: " BUILD_TYPE
-while [[ ! ${BUILD_TYPE} == latest ]] && [[ ! ${BUILD_TYPE} == predevelop ]] && [[ ! ${BUILD_TYPE} == test ]]  && [[ ! -z ${BUILD_TYPE} ]] ;
-do
-  read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: develop | options: develop, predevelop, test]: " BUILD_TYPE
+# Loop until a valid build type is provided
+while [[ ! ${BUILD_TYPE} =~ ^(latest|predevelop|test)$ ]] || [[ -z ${BUILD_TYPE} ]]; do
+  # Set a default value if input is empty
+  if [[ -z ${BUILD_TYPE} ]]; then
+    BUILD_TYPE=latest
+  else
+    read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: latest | options: latest, predevelop, test]: " BUILD_TYPE
+  fi
 done
-if [[ -z ${BUILD_TYPE} ]] ; then BUILD_TYPE=latest ; fi
+
 printf "\n"
 
-# if user decides not to use existing configs, then ask questions to help fill-out the configurations.
-if [[ ${EXISTING_CONFIGS} == n ]] ;
-then
+# If user decides not to use existing configs, then ask questions to help fill out the configurations.
+if [[ ${EXISTING_CONFIGS} == n ]]; then
   python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE}
-elif [[ ${DEPLOYMENT_TYPE}  == docker ]] ;
-then
-    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+elif [[ ${DEPLOYMENT_TYPE} == docker ]]; then
+  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}/anylog_configs.env
-elif [[ ${DEPLOYMENT_TYPE}  == kubernetes ]] ;
-then
-    python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+elif [[ ${DEPLOYMENT_TYPE} == kubernetes ]]; then
+  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml
 fi
 
-if [[ ${NODE_TYPE} == query ]] ; then
-  read -p "Deploy Remote-CLI with Query Node (y/n)? " REMOTE_CLI
-  while [[ ! ${REMOTE_CLI} == y ]] && [[ ! ${REMOTE_CLI} == n ]] ;
-  do
-    read -p "Deploy Remote-CLI with Query Node (y/n)? " REMOTE_CLI
-  done
-  if [[ ${REMOTE_CLI} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]] ; then
-    cp  $HOME/deployments/docker-compose/anylog-query/anylog_configs.env $HOME/deployments/docker-compose/anylog-query-remote-cli/anylog_configs.env
-  elif [[ ${REMOTE_CLI} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]] ; then
-    if [[ `uname` == "Darwin" ]]; then
+if [[ ${NODE_TYPE} == query ]]; then
+  REMOTE_CLI=$(validate_yes_no_option "Deploy Remote-CLI with Query Node (y/n)?")
+  if [[ ${REMOTE_CLI} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]]; then
+    cp $HOME/deployments/docker-compose/anylog-query/anylog_configs.env $HOME/deployments/docker-compose/anylog-query-remote-cli/anylog_configs.env
+    cp $HOME/deployments/docker-compose/anylog-query/.env $HOME/deployments/docker-compose/anylog-query-remote-cli/.env
+  elif [[ ${REMOTE_CLI} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]]; then
+    if [[ $(uname) == "Darwin" ]]; then
       sed -i '' 's/remote_cli false/remote_cli true/' "$HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml"
     elif [[ "$(expr substr $(uname -s) 1 5)" == "Linux" ]]; then
       sed -i 's/remote_cli false/remote_cli true/' "$HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml"
@@ -84,28 +92,21 @@ if [[ ${NODE_TYPE} == query ]] ; then
   fi
 fi
 
+DEPLOY_NODE=$(validate_yes_no_option "Would you like to deploy AnyLog now (y/n)?")
 
-read -p  "Would you like to deploy AnyLog now (y/n)? " DEPLOY_NODE
-while [[ ! ${DEPLOY_NODE} == y ]] && [[ ! ${DEPLOY_NODE} == n ]] ;
-do
-  read -p  "Would you like to deploy AnyLog now (y/n)? " DEPLOY_NODE
-done
-
-if [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]] ;
-then
-  cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
-  if [[ ${REMOTE_CLI} == y ]] ;
-  then
-    cd $HOME/deployments/docker-compose/anylog-query-remote-cli/
+if [[ ${DEPLOY_NODE} == y ]]; then
+  if [[ ${DEPLOYMENT_TYPE} == docker ]]; then
+    cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
+    if [[ ${REMOTE_CLI} == y ]]; then
+      cd $HOME/deployments/docker-compose/anylog-query-remote-cli/
+    fi
+    docker-compose up -d
+  elif [[ ${DEPLOYMENT_TYPE} == kubernetes ]]; then
+    if [[ ${REMOTE_CLI} == y ]]; then
+      helm install $HOME/deployments/helm/packages/remote-cli-volume-1.0.0.tgz -f $HOME/deployments/helm/sample-configurations/remote_cli.yaml --generate-name
+      helm install $HOME/deployments/helm/packages/remote-cli-1.0.0.tgz -f $HOME/deployments/helm/sample-configurations/remote_cli.yaml --generate-name
+    fi
+    helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz -f $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml --generate-name
+    helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz -f $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml --generate-name
   fi
-  docker-compose up -d
-elif [[ ${DEPLOY_NODE} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]] ;
-then
-  if [[ ${REMOTE_CLI} == y ]] ; then
-    helm install $HOME/deployments/helm/packages/remote-cli-volume-1.0.0.tgz -f $HOME/deployments/helm/sample-configurations/remote_cli.yaml --generate-name
-    helm install $HOME/deployments/helm/packages/remote-cli-1.0.0.tgz -f $HOME/deployments/helm/sample-configurations/remote_cli.yaml --generate-name
-  fi 
-  helm install $HOME/deployments/helm/packages/anylog-node-volume-1.22.3.tgz -f $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml --generate-name
-  helm install $HOME/deployments/helm/packages/anylog-node-1.22.3.tgz -f $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml --generate-name
 fi
-
