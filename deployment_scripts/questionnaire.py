@@ -372,7 +372,30 @@ def operator_questions(configs:dict)->dict:
                 if answer == "''" or answer == '""':
                     answer = ''
 
-                if param == 'START_DATE':
+                if param in ['ENABLE_HA', 'ENABLE_PARTITIONS'] and answer != '':
+                    if answer not in configs[param]['options']:
+                        error_msg = f"Invalid value {answer}. Please try again.."
+                    else:
+                        configs[param]['value'] = answer
+                        status = True
+                elif param in ['PARTITION_INTERVAL', 'PARTITION_SYNC'] and answer != "":
+                    if " " not in answer or answer.split(" ")[-1] in ['hour', 'hours', 'day', 'days', 'month', 'months']:
+                        error_msg = f"Invalid value {answer}. Please try again"
+                    else:
+                        configs[param]['value'] = answer
+                        status = True
+                elif param == "OPERATOR_THREADS" and answer != "":
+                    try:
+                        int(answer)
+                    except Exception as error:
+                        error_msg = f"Invalid value for {answer}. Please try again"
+                    else:
+                        if int(answer) <= 0:
+                            error_msg = f"Thread count is too low. Please try again..."
+                        else:
+                            configs[param]['value'] = answer
+                            status = True
+                elif param == 'START_DATE' and answer != "":
                     if answer != "":
                         try:
                             int(answer)
@@ -381,19 +404,6 @@ def operator_questions(configs:dict)->dict:
                         else:
                             configs[param]['value'] = f"-{answer}d"
                             status = True
-                    else:
-                        configs[param]['value'] = "-30d"
-                        status = True
-                elif answer != "":
-                    if "options" in configs[param]:
-                        if answer not in configs[param]['options'] and answer != "":
-                            error_msg = f"Invalid value {answer}. Please try again.."
-                        elif answer in configs[param]['options']:
-                            configs[param]['value'] = answer
-                            status = True
-                    else: 
-                        configs[param]['value'] = answer
-                        status = True
                 else:
                     configs[param]['value'] = configs[param]['default']
                     status = True

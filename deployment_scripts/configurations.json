@@ -651,7 +651,7 @@
     "UPDAE_TSD_INFO": {
       "question": "Track JSON Files",
       "description": "Record data inserted on Operator",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
@@ -662,7 +662,7 @@
     "ARCHIVE": {
       "question": "Archive Files",
       "description": "Archive data coming in",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
@@ -673,7 +673,7 @@
     "COMPRESS_FILE": {
       "question": "Compress Files",
       "description": "Compress JSON and SQL file(s) backup",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
