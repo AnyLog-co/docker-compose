@@ -82,7 +82,7 @@ if [[ ${NODE_TYPE} == query ]]; then
   REMOTE_CLI=$(validate_yes_no_option "Deploy Remote-CLI with Query Node (y/n)?")
   if [[ ${REMOTE_CLI} == y ]] && [[ ${DEPLOYMENT_TYPE} == docker ]]; then
     cp $HOME/deployments/docker-compose/anylog-query/anylog_configs.env $HOME/deployments/docker-compose/anylog-query-remote-cli/anylog_configs.env
-    cp $HOME/deployments/docker-compose/anylog-query/.env $HOME/deployments/docker-compose/anylog-query-remote-cli/.env
+    sed -i "s/BUILD=.*/BUILD=${BUILD}/g" $HOME/deployments/docker-compose/anylog-query-remote-cli/.env
   elif [[ ${REMOTE_CLI} == y ]] && [[ ${DEPLOYMENT_TYPE} == kubernetes ]]; then
     if [[ $(uname) == "Darwin" ]]; then
       sed -i '' 's/remote_cli false/remote_cli true/' "$HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml"
