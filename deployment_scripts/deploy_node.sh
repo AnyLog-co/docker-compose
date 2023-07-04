@@ -25,11 +25,14 @@ function validate_yes_no_option() {
 }
 
 read -p "Node Type [default: generic | options: generic, master, operator, publisher, query, info]: " NODE_TYPE
-
-while [[ ! ${NODE_TYPE} =~ ^(generic|master|operator|publisher|query)$ ]] || [[ -z ${NODE_TYPE} ]]; do
+if [[ -z ${NODE_TYPE} ]] ; then NODE_TYPE=generic ; fi
+while [[ ! ${NODE_TYPE} =~ ^(generic|master|operator|publisher|query)$ ]] && [[ ! -z ${NODE_TYPE} ]]; do
   if [[ ${NODE_TYPE} == info ]]; then
     display_node_type_options
-  elif [[ -z ${NODE_TYPE} ]]; then
+    NODE_TYPE=""
+    read -p "Node Type [default: generic | options: generic, master, operator, publisher, query, info]: " NODE_TYPE
+  elif [[ -z ${NODE_TYPE} ]]
+  then
     NODE_TYPE=generic
   else
     read -p "Invalid node type '${NODE_TYPE}'. Node Type [default: generic | options: generic, master, operator, publisher, query, info]: " NODE_TYPE
