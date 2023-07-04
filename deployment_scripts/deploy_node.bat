@@ -2,39 +2,42 @@
 REM The following code initiates a Python3 script that helps setup configurations for an AnyLog instance.
 
 REM Function to display node type options
-:function_display_node_type_options
-echo Node type options to deploy:
-echo     generic - sandbox for understanding AnyLog as only TCP & REST are configured
-echo     master - a database node replacing an actual blockchain
-echo     operator - node where data will be stored
-echo     publisher - node to distribute data among operators
-echo     query - node dedicated to master node (installed with Remote-CLI)
-echo     info - display node type options
-exit /b
-:end
+# Function to display node type options
+function display_node_type_options() {
+    echo "Node type options to deploy:"
+    echo "    generic - sandbox for understanding AnyLog as only TCP & REST are configured"
+    echo "    master - a database node replacing an actual blockchain"
+    echo "    operator - node where data will be stored"
+    echo "    publisher - node to distribute data among operators"
+    echo "    query - node dedicated to master node (installed with Remote-CLI)"
+    echo "    info - display node type options"
+}
 
-REM Function to validate yes/no options
-:function_validate_yes_no_option
-set /p "input=%~1: "
-:loop
-if "%input%"=="y" exit /b 0
-if "%input%"=="n" exit /b 1
-set /p "input=Invalid option: %input%. %~1: "
-goto loop
-:end
+# Function to validate yes/no options
+function validate_yes_no_option() {
+    read -p "$1: " input
+    while true; do
+        case $input in
+            [yY]) return 0 ;;
+            [nN]) return 1 ;;
+            *) read -p "Invalid option: $input. $1: " input ;;
+        esac
+    done
+}
 
-set /p "NODE_TYPE=Node Type [default: generic | options: generic, master, operator, publisher, query, info]: "
-if "%NODE_TYPE%"=="info" call :function_display_node_type_options
+STATUS=true
+DISPLAY_INFO=false
 
-REM Loop until a valid node type is provided
-:loop_node_type
-if "%NODE_TYPE%"=="" set "NODE_TYPE=generic"
-if not "%NODE_TYPE%"=="generic" if not "%NODE_TYPE%"=="master" if not "%NODE_TYPE%"=="operator" if not "%NODE_TYPE%"=="publisher" if not "%NODE_TYPE%"=="query" goto :input_node_type
-goto :end_loop_node_type
-:input_node_type
-set /p "NODE_TYPE=Invalid node type '%NODE_TYPE%'. Node Type [default: generic | options: generic, master, operator, publisher, query, info]: "
-goto :loop_node_type
-:end_loop_node_type
+while [[ ${STATUS} == true ]] ; then
+    read -p "Node Type [default: generic | options: generic, master, operator, publisher, query, info]: " NODE_TYPE
+    if [[ ${NODE_TYPE} == info ]]
+    then
+        DISPLAY_INFO=true
+    elif [[ -z ${NODE_TYPE} ]]
+    then
+        NODE_TYPE="generic"
+
+
 
 set /p "DEPLOYMENT_TYPE=Deployment Type [default: docker | options: docker, kubernetes]: "
 if "%DEPLOYMENT_TYPE%"=="" set "DEPLOYMENT_TYPE=docker"
