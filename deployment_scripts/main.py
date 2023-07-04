@@ -55,6 +55,7 @@ def main():
     parser.add_argument('--deployment-type', type=str, choices=['docker', 'kubernetes'], default='docker',
                         help='Deployment type - docker generates .env file, kubernetes generates YAML file')
     parser.add_argument('--config-file', type=str, default=None, help='Configuration file to use for default values')
+    parser.add_argument('--demo-build', type=bool, default=False, nargs='?', const=True, help='Only basic questions, used for demo purposes')
     parser.add_argument('-e', '--exception', type=bool, default=False, nargs='?', const=True, help='Whether to print exceptions')
     args = parser.parse_args()
 
@@ -80,6 +81,16 @@ def main():
         node_configs, kubernetes_configs = support.prep_configs(node_type=args.node_type, node_configs=node_configs,
                                                                 build=args.build, kubernetes_configs=kubernetes_configs)
 
+    if args.demo_build is True:
+        for section in node_configs:
+            for param in node_configs[section]:
+                if param not in ["LICENSE_KEY", "COMPANY_NAME", "LEDGER_CONN", "CLUSTER_NAME", "MONITOR_NODES",
+                                 "MONITOR_NODE_COMPANY"]:
+                    node_configs[section][param]["enable"] = False
+                elif param == "MONITOR_NODES":
+                    node_configs[section][param]["default"] = "true"
+                    node_configs[section][param]["enable"] = False
+
     for section in node_configs:
         status = support.print_questions(node_configs[section])
         if status is True:
@@ -92,6 +103,9 @@ def main():
                 for param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
                     if node_configs['general'][param]['value'] == node_configs['general'][param]['default']:
                         node_configs['general'][param]['value'] = ""
+                if args.demo_build is True:
+                    node_configs["advanced settings"]["MONITOR_NODE_COMPANY"]["value"] = node_configs["general"]["COMPANY_NAME"]["value"]
+                    node_configs["advanced settings"]["MONITOR_NODE_COMPANY"]["enable"] = False
             elif section == 'authentication':
                 node_configs['authentication'] = questionnaire.authentication_questions(configs=node_configs[section])
             elif section == 'networking':
