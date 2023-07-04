@@ -62,19 +62,37 @@ while [[ ! ${BUILD_TYPE} =~ ^(latest|predevelop|test)$ ]] || [[ -z ${BUILD_TYPE}
   fi
 done
 
-printf "\n"
+DEMO_BUILD=$(validate_yes_no_option "Demo Deployment [y/n]")
 
+printf "\n"
 # If user decides not to use existing configs, then ask questions to help fill out the configurations.
-if [[ ${EXISTING_CONFIGS} == n ]]; then
+if [[ ${EXISTING_CONFIGS} == n ]] && [[ ${DEMO_BUILD} == y ]]; then
+  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    --build ${BUILD_TYPE} \
+    --deployment-type ${DEPLOYMENT_TYPE} \
+    --demo-build
+elif [[ ${EXISTING_CONFIGS} == n ]] && [[ ${DEMO_BUILD} == n ]]; then
   python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE}
-elif [[ ${DEPLOYMENT_TYPE} == docker ]]; then
+elif [[ ${DEPLOYMENT_TYPE} == docker ]] && [[ ${DEMO_BUILD} == y ]]; then
+  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    --build ${BUILD_TYPE} \
+    --deployment-type ${DEPLOYMENT_TYPE} \
+    --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}/anylog_configs.env \
+    --demo-build
+elif [[ ${DEPLOYMENT_TYPE} == docker ]] && [[ ${DEMO_BUILD} == n ]]; then
   python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}/anylog_configs.env
-elif [[ ${DEPLOYMENT_TYPE} == kubernetes ]]; then
+elif [[ ${DEPLOYMENT_TYPE} == kubernetes ]] && [[ ${DEMO_BUILD} == y ]]; then
+  python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
+    --build ${BUILD_TYPE} \
+    --deployment-type ${DEPLOYMENT_TYPE} \
+    --config-file $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml \
+    --demo-build
+elif [[ ${DEPLOYMENT_TYPE} == kubernetes ]] && [[ ${DEMO_BUILD} == n ]]; then
   python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
