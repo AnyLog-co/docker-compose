@@ -70,7 +70,6 @@
       "description": "Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols",
       "enable": false,
       "options": [
-        "none",
         "rest",
         "ledger",
         "operator",
@@ -140,7 +139,7 @@
     "ENABLE_REST_AUTH": {
       "question": "Enable Basic REST Authentication",
       "description": "Whether or not to enable authentication when accessing node via REST",
-      "enable": true,
+      "enable": false,
       "options": [
         "true",
         "false"
@@ -151,28 +150,28 @@
     "NODE_PASSWORD": {
       "question": "Node Password",
       "description": "Provide a password to protect sensitive information that is kept on the node",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": ""
     },
     "USER_NAME": {
       "question": "User Name",
       "description": "user that can connect to this node",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": ""
     },
     "USER_PASSWORD": {
       "question": "User Password",
       "description": "Password associated with the user",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": ""
     },
     "USER_TYPE": {
       "question": "User Type",
       "description": "The type of user",
-      "enable": true,
+      "enable": false,
       "options": [
         "admin",
         "user"
@@ -183,7 +182,7 @@
     "ROOT_PASSWORD": {
       "question": "Root User Password",
       "description": "Password used by the ROOT member in authentication",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": ""
     }

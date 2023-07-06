@@ -1,5 +1,4 @@
 import argparse
-import json
 import os
 
 import file_io
@@ -55,6 +54,7 @@ def main():
     parser.add_argument('--deployment-type', type=str, choices=['docker', 'kubernetes'], default='docker',
                         help='Deployment type - docker generates .env file, kubernetes generates YAML file')
     parser.add_argument('--config-file', type=str, default=None, help='Configuration file to use for default values')
+    parser.add_argument('--demo-build', type=bool, default=False, nargs='?', const=True, help='Only basic questions, used for demo purposes')
     parser.add_argument('-e', '--exception', type=bool, default=False, nargs='?', const=True, help='Whether to print exceptions')
     args = parser.parse_args()
 
@@ -80,53 +80,48 @@ def main():
         node_configs, kubernetes_configs = support.prep_configs(node_type=args.node_type, node_configs=node_configs,
                                                                 build=args.build, kubernetes_configs=kubernetes_configs)
 
+    if args.demo_build is True:
+        for section in node_configs:
+            for param in node_configs[section]:
+                if param not in ["LICENSE_KEY", "COMPANY_NAME", "LEDGER_CONN", "CLUSTER_NAME", "MONITOR_NODES",
+                                 "MONITOR_NODE_COMPANY"]:
+                    node_configs[section][param]["enable"] = False
+                    node_configs[section][param]["value"] = node_configs[section][param]["default"]
+                    if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                        node_configs[section][param]['default'] = ''
+                        node_configs[section][param]['value'] = ''
+                elif param == "MONITOR_NODES":
+                    node_configs[section][param]["default"] = "true"
+                    node_configs[section][param]["enable"] = False
+
     for section in node_configs:
         status = support.print_questions(node_configs[section])
         if status is True:
-            if section not in ['operator', 'publisher', 'mqtt']:
+            if section == 'networking':
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-            if section == 'directories':
-                node_configs['directories'] = questionnaire.directories_questions(configs=node_configs[section])
-            if section == 'general':
-                node_configs['general'] = questionnaire.generic_questions(configs=node_configs[section])
-                for param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
-                    if node_configs['general'][param]['value'] == node_configs['general'][param]['default']:
-                        node_configs['general'][param]['value'] = ""
-            elif section == 'authentication':
-                node_configs['authentication'] = questionnaire.authentication_questions(configs=node_configs[section])
-            elif section == 'networking':
-                node_configs[section] = questionnaire.networking_questions(configs=node_configs[section])
+                node_configs[section] = questionnaire.networking_section(configs=node_configs[section])
             elif section == 'database':
-                node_configs[section] = questionnaire.database_questions(configs=node_configs[section])
+                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+                node_configs[section] = questionnaire.database_section(configs=node_configs[section])
             elif section == 'blockchain':
-                if args.node_type in ['master', 'standalone', 'standalone-publisher', 'rest']:
-                    node_configs['blockchain']['LEDGER_CONN']['default'] = f"127.0.0.1:{node_configs['networking']['ANYLOG_SERVER_PORT']['value']}"
-                node_configs[section] = questionnaire.blockchain_questions(configs=node_configs[section])
+                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+                node_configs['blockchain']['LEDGER_CONN']['default'] = f"127.0.0.1:{node_configs['networking']['ANYLOG_SERVER_PORT']['value']}"
+                node_configs[section] = questionnaire.blockchain_section(configs=node_configs[section])
             elif section == 'operator' and args.node_type in ['rest', 'operator', 'standalone']:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-                node_configs[section] = questionnaire.operator_questions(configs=node_configs[section])
+                node_configs[section] = questionnaire.operator_section(configs=node_configs[section])
             elif section == 'publisher' and args.node_type in ['rest', 'publisher', 'standalone-publisher']:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-                node_configs[section] = questionnaire.publisher_questions(configs=node_configs[section])
-            elif section == 'mqtt' and (args.node_type in ['rest', 'operator', 'publisher', 'standalone',
-                                                           'standalone-publisher'] or
-                                        node_configs['networking']['ANYLOG_BROKER_PORT']['value'] != ''):
+                node_configs[section] = questionnaire.generic_section(configs=node_configs[section])
+            elif section == 'mqtt' and (args.node_type in ['rest', 'operator', 'publisher', 'standalone', 'standalone-publisher'] or node_configs['networking']['ANYLOG_BROKER_PORT']['value'] != ''):
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-                if args.config_file is None:
-                    user = None
-                    password = None
-                    if 'AUTH_USER' in node_configs['authentication'] and node_configs['authentication']['AUTH_USER']['value'] != '':
-                        user = node_configs['authentication']['AUTH_USER']['value'],
-                    if 'AUTH_PASSWD' in node_configs['authentication'] and node_configs['authentication']['AUTH_PASSWD']['value'] != '':
-                        password = node_configs['authentication']['AUTH_PASSWD']['value']
-                    node_configs[section] = support.prepare_mqtt_params(configs=node_configs[section],
-                                                                        db_name=node_configs['operator']['DEFAULT_DBMS']['value'],
-                                                                        port=node_configs['networking']['ANYLOG_BROKER_PORT']['value'],
-                                                                        user=user, password=password)
-                node_configs[section] = questionnaire.mqtt_questions(configs=node_configs[section])
-            elif section == 'advanced settings':
-                node_configs[section]["MONITOR_NODE_COMPANY"]["default"] = node_configs["general"]["COMPANY_NAME"]["value"]
-                node_configs[section] = questionnaire.advanced_settings(configs=node_configs[section])
+                node_configs[section] = questionnaire.generic_section(configs=node_configs[section])
+            else:
+                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+                node_configs[section] = questionnaire.generic_section(configs=node_configs[section])
+                if section == "general" and args.demo_build is True:
+                    node_configs["advanced settings"]["MONITOR_NODE_COMPANY"]["value"] = node_configs["general"]["COMPANY_NAME"]["value"]
+                    node_configs["advanced settings"]["MONITOR_NODE_COMPANY"]["enable"] = False
             print('\n')
 
     if args.deployment_type == 'docker':

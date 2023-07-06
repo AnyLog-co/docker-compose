@@ -1,3 +1,4 @@
+import ipaddress
 import re
 
 
@@ -139,490 +140,264 @@ def __validate_ports(tcp_port:int, rest_info:dict, broker_info:dict)->(dict, dic
     return rest_info, broker_info
 
 
-def directories_questions(configs:dict)->dict:
+def __validate_int(value:str)->(int, str):
+    """
+    validate value is of type int and >= 1
+    :args:
+        value:str - user input
+    :params:
+        error_msg:str - error message
+    :return:
+        value, error_msg
+    """
+    error_msg = ""
+    try:
+        value = int(value)
+    except Exception as error:
+        error_msg = f"Invalid value: {value}. Please try again..."
+    else:
+        if value < 1:
+            error_msg = f"Value out of range - minimum value 1. Please try again... "
+
+    return value, error_msg
+
+
+def __validate_ipaddress(address:str)->(str, str):
+    """
+    Validate if IP address is correct - used for Proxy and Overlay IP
+    :args:
+        address:str - addrress to check
+    :params:
+        error_msg:str - error_msg
+    :return:
+        address, error_msg
+    """
+    error_msg = ""
+    try:
+        ipaddress.ip_address(address)
+    except Exception:
+        try:
+            ipaddress.ip_network(address)
+        except Exception:
+            error_msg = "Invalid IP address. Please try again..."
+
+    return address, error_msg
+
+
+def ask_question(param:str, configs:dict, error_msg="")->str:
+    status = False
+    full_question = __generate_question(configs=configs)
+    while status is False:
+        answer = __ask_question(question=full_question, description=configs['description'],
+                                param=param, error_msg=error_msg).strip()
+        status = True
+        if answer == '' or answer == "":
+            answer = ''
+        elif isinstance(configs['default'], int):
+            answer, error_msg = __validate_int(value=answer)
+            if 'PORT' in param and error_msg == "":
+                answer, error_msg = __validate_port(port=answer, check_range=True)
+            if error_msg != "":
+                status = False
+        elif 'options' in configs and " " in answer:
+            answer = answer.lower()
+            front, back = answer.split(" ")
+            front, error_msg = __validate_int(value=front)
+            if error_msg != "":
+                status = False
+            if back not in configs['options'] and back[:-1] not in configs['options'] and error_msg != '':
+                error_msg.replace("Please try again...", f"Value {back} out of range. Please try again... ")
+            elif back not in configs['options'] and back[:-1] not in configs['options'] and error_msg == '':
+                error_msg = f"Value {back} out of range. Please try again... "
+                status = False
+        elif 'options' in configs:
+            answer = answer.lower()
+            if answer not in configs['options']:
+                error_msg = f"Invalid option {answer}. Please try again..."
+                status = False
+
+    return answer
+
+
+def generic_section(configs:dict)->dict:
+    """
+    Generic Questionnaire
+    :sections:
+        - directories
+        - general
+        - authentication
+        - publisher
+        - MQTT
+        - advanced settings
+    :args:
+        configs:dict - configuration to review
+    :params:
+        answer - user input result
+    :return:
+        updated configs-
+    """
     for param in configs:
-        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            answer = ask_question(param=param, configs=configs[param])
+            if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
+                    configs[param]['value'] = ''
+            elif answer == "":
+                configs[param]['value'] = configs[param]['default']
+            else:
+                configs[param]['value'] = answer
+        else:
+            configs[param]['value'] = configs[param]['default']
+
+        if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
+            import json
+            print(json.dumps(configs))
+            if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
+                for section in configs:
+                    if section != "ENABLE_MQTT":
+                        configs[section]['enable'] = False
+
     return configs
 
-def generic_questions(configs:dict)->dict:
+
+def networking_section(configs:dict)->dict:
     """
-    Generic configuration questionnaire
+    Network configuration credentials
     :args:
-        configs:dict - configuration information for generic params
+        configs:dict - configuration to review
     :params:
-        full_question:str - generated full question
-        answer:str - user inputted answer
+        answer - user input result
+    :return:
+        updated configs
     """
     for param in configs:
-        error_msg = ""
+        if configs[param]['enable'] is True:
+            status = False
+            error_msg = ""
+            while status is False:
+                answer = ask_question(param=param, configs=configs[param], error_msg=error_msg)
+                status = True
+                if answer == "":
+                    configs[param]['value'] = configs[param]['default']
+                elif param in ['OVERLAY_IP', 'PROXY_IP']:
+                    answer, error_msg = __validate_ipaddress(answer)
+                    if error_msg == "":
+                        configs[param]['value'] = answer
+                    else:
+                        status = False
+                else:
+                    configs[param]['value'] = answer
+        else:
+            configs[param]['value'] = configs[param]['default']
+
+        if param == "POLICY_BASED_NETWORKING" and configs[param]['value'] == 'false':
+            configs["CONFIG_POLICY_NAME"]['enable'] = False
+        if param == "ANYLOG_BROKER_PORT":
+            # Validate
+            configs['ANYLOG_REST_PORT'], configs['ANYLOG_BROKER_PORT'] = __validate_ports(tcp_port=configs['ANYLOG_SERVER_PORT']['value'],
+                                                                                          rest_info=configs['ANYLOG_REST_PORT'],
+                                                                                          broker_info=configs['ANYLOG_BROKER_PORT'])
+            if configs[param]['value'] == '':
+                configs["BROKER_BIND"]['enable'] = False
+                configs["BROKER_THREADS"]['enable'] = False
+
+    return configs
+
+
+def database_section(configs:dict)->dict:
+    """
+    Database configuration credentials
+    :args:
+        configs:dict - configuration to review
+    :params:
+        answer - user input result
+    :return:
+        updated configs
+    """
+    for param in configs:
+        if configs[param]['enable'] is True:
+            status = False
+            error_msg = ""
+            while status is False:
+                answer = ask_question(param=param, configs=configs[param], error_msg=error_msg)
+                status = True
+                if answer == "":
+                    configs[param]['value'] = configs[param]['default']
+                elif param == "DB_IP":
+                    answer, error_msg = __validate_ipaddress(address=answer)
+                    if error_msg != "":
+                        status = False
+                elif param == "DB_PROT":
+                    answer, error_msg = __validate_int(value=answer)
+                    if error_msg != "":
+                        status = False
+                else:
+                    configs[param]['value'] = answer
+        else:
+            configs[param]['value'] = configs[param]['default']
+
+        if param == "DB_TYPE" and configs[param]['value'] == 'sqlite':
+            for section in ["DB_USER", "DB_PASSWD", "DB_IP", "DB_PORT"]:
+                configs[section]['enable'] = False
+                configs[section]['default'] = ''
+        elif param == "SYSTEM_QUERY" and configs[param]['value'] == 'false':
+            configs['MEMORY']['enable'] = False
+            configs['MEMORY']['value'] = 'false'
+        elif param == "NOSQL_ENABLE" and configs[param]['value'] == 'false':
+            for section in ["NOSQL_TYPE", "NOSQL_USER", "NOSQL_PASSWD", "NOSQL_PORT", "NOSQL_BLOBS_DBMS",
+                            "NOSQL_BLOBS_FOLDER", "NOSQL_BLOBS_COMPRESS", "NOSQL_BLOBS_REUSE"]:
+                configs[section]['enable'] = False
+
+    return configs
+
+
+def blockchain_section(configs:dict)->dict:
+    error_msg = ""
+    for param in configs:
         status = False
         if configs[param]['enable'] is True:
             while status is False:
-                full_question = __generate_question(configs=configs[param])
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                        param=param, error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-                    status = True
-                if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
-                    configs[param]['value'] = ''
-                    status = True
-                elif answer == "":
+                answer = ask_question(param=param, configs=configs[param])
+                status = True
+                if answer == "":
                     configs[param]['value'] = configs[param]['default']
-                    status = True
-                else:
-                    configs[param]['value'] = answer
-                    status = True
-
-    return configs
-
-
-def networking_questions(configs:dict)->dict:
-    """
-    Networking configurations questionnaire
-    :args:
-        configs:dict - networking configuration
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - question
-        answer:str - user input
-    :return:
-        updated configs
-    """
-    for param in configs:
-        if configs[param]['enable'] is True:
-            error_msg = ""
-            full_question = __generate_question(configs=configs[param])
-            status = False
-            while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['default'],
-                                        param=param, error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-
-                if param in 'PORT' and answer != '':
-                    port, error_msg = __validate_port(port=answer)
-                    if error_msg == "":
+                elif param == 'LEDGER_CONN' and not re.match(r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\:[30000-32767]', answer):
+                    error_msg = "Invalid format for ledger conn - expected format: IP:PORT. Please try again... "
+                elif param == 'LEDGER_CONN':
+                    ipaddress, port = answer.split(":")
+                    ipaddress, error_msg = __validate_ipaddress(address=ipaddress)
+                    port, error_msg2 = __validate_int(value=port)
+                    status = False
+                    if error_msg != "" and error_msg2 != '':
+                        error_msg.replace("Please try again...", error_msg2)
+                    elif error_msg == '' and error_msg2 != '':
+                        error_msg = error_msg2
+                    else:
                         configs[param]['value'] = answer
                         status = True
-                elif 'options' in configs[param] and answer != ''  and answer not in configs[param]['options']:
-                    error_msg = f'Invalid option {answer}. Please try again... '
-                elif answer != "":
-                    configs[param]['value'] = answer
-                    status = True
                 else:
-                    configs[param]['value'] = configs[param]['default']
-                    status = True
+                    configs[param]['value'] = answer
+
         else:
             configs[param]['value'] = configs[param]['default']
 
-        # if disable network based on policy, provide params for user to configure their network with
-        if configs['POLICY_BASED_NETWORKING']['value'] == "false":
-            for param in ['TCP_THREADS','REST_TIMEOUT', 'REST_THREADS', 'BROKER_THREADS']:
-                configs[param]['enable'] = True
 
-    # validate consistent ports
-    configs['ANYLOG_REST_PORT'], configs['ANYLOG_BROKER_PORT'] = __validate_ports(tcp_port=configs['ANYLOG_SERVER_PORT']['value'],
-                                                                                  rest_info=configs['ANYLOG_REST_PORT'],
-                                                                                  broker_info=configs['ANYLOG_BROKER_PORT'])
-
-    return configs
-
-
-def database_questions(configs:dict)->dict:
-    """
-    Database configurations
-    :args:
-        configs:dict - database configurations
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - question
-        answer:str - user input
-    :return:
-        updated configs
-    """
+def operator_section(configs:dict)->dict:
     for param in configs:
         if configs[param]['enable'] is True:
-            error_msg = ""
-            full_question = __generate_question(configs=configs[param])
-            status = False
-            while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                        param=param, error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-
-                if param in ['DB_TYPE', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY', 'NOSQL_ENABLE', 'NOSQL_TYPE',
-                             'NOSQL_BLOBS_DBMS', 'NOSQL_BLOBS_FOLDER', 'NOSQL_BLOBS_COMPRESS', 'NOSQL_BLOBS_REUSE']:
-                    if answer != "" and answer not in configs[param]['options']:
-                        print(f'Invalid value {answer}. Please try again...')
-                    elif answer != "":
-                        configs[param]['value'] = answer
-                        status = True
-                    else:
-                        configs[param]['value'] = configs[param]['default']
-                        status = True
-                else:
-                    configs[param]['value'] = answer
-                    status = True
-            if param == 'DB_TYPE' and configs[param]['value'] == 'sqlite':
-                for prm in ['DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT']:
-                    configs[prm]['enable'] = False
-            elif param == 'SYSTEM_QUERY' and configs[param]['value'] == 'false':
-                configs['MEMORY']['enable'] = False
-                configs['MEMORY']['value'] = False
-            elif param == 'NOSQL_ENABLE' and configs[param]['value'] == 'false':
-                for prm in configs:
-                    if 'NOSQL' in param:
-                        configs[prm]['enable'] = False
-
-    if configs['DB_TYPE']['value'] != 'sqlite': # if missing username and/or password then set DB_TYPE back to sqlite
-        if configs['DB_USER']['value'] == "" or configs['DB_PASSWD']['value'] == "":
-            configs['DB_TYPE']['value'] = 'sqlite'
-
-    return configs
-
-
-def blockchain_questions(configs:dict)->dict:
-    """
-    Generate questions for blockchain configurations
-    :args:
-        configs:dict - database configurations
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - question
-        answer:str - user input
-    :return:
-        updated configs
-    """
-    for param in configs:
-        if configs[param]['enable'] is True:
-            error_msg = ""
-            full_question = __generate_question(configs=configs[param])
-            status = False
-            while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                        param=param, error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-
-                if param == 'LEDGER_CONN':
-                    # need to change to support etherium blockchain
-                    #if re.search(r'[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\:[30000-32767]', answer):
-                    #   configs[param]['value'] = answer
-                    #   status = True
-                    if answer == "":
-                        configs[param]['value'] = configs[param]['default']
-                        status = True
-                    else:
-                       configs[param]['value'] = answer
-                       status = True
-                        #error_msg = f"Invalid LEDGER_CONN information value {answer}. Please try again... "
-                elif param == 'SYNC_TIME':
-                    if answer == "":
-                        configs[param]['value'] = configs[param]['default']
-                        status = True
-                    elif answer[-1] == "s":
-                        answer = answer[:-1]
-                    for option in configs[param]['options']:
-                        if option not in answer:
-                            error_msg = f"Invalid value {answer} for blockchain sync time. Please try again... "
-                    if error_msg == "":
-                        configs[param]['value'] = answer
-                        status = True
-                elif param in ["BLOCKCHAIN_SOURCE", "BLOCKCHAIN_DESTINATION"]:
-                    if answer in configs[param]['options']:
-                        configs[param]['value'] = answer
-                        status = True
-                    elif answer != "":
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    else:
-                        configs[param]['value'] = configs[param]['default']
-                        status = True
+            answer = ask_question(param=param, configs=configs[param])
+            if answer == "":
+                configs[param]['value'] = configs[param]['default']
+            else:
+                configs[param]['value'] = answer
         else:
             configs[param]['value'] = configs[param]['default']
 
-    return configs
-
-
-def operator_questions(configs:dict)->dict:
-    """
-    Generate questions for operator configurations
-    :args:
-        configs:dict - database configurations
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - question
-        answer:str - user input
-    :return:
-        updated configs
-    """
-    for param in configs:
-        if configs[param]['enable'] is True:
-            error_msg = ""
-            full_question = __generate_question(configs=configs[param])
-            status = False
-            while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                        param=param, error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-
-                if param in ['ENABLE_HA', 'ENABLE_PARTITIONS'] and answer != '':
-                    if answer not in configs[param]['options']:
-                        error_msg = f"Invalid value {answer}. Please try again.."
-                    else:
-                        configs[param]['value'] = answer
-                        status = True
-                elif param in ['PARTITION_INTERVAL', 'PARTITION_SYNC'] and answer != "":
-                    if " " not in answer or answer.split(" ")[-1] in ['hour', 'hours', 'day', 'days', 'month', 'months']:
-                        error_msg = f"Invalid value {answer}. Please try again"
-                    else:
-                        configs[param]['value'] = answer
-                        status = True
-                elif param == "OPERATOR_THREADS" and answer != "":
-                    try:
-                        int(answer)
-                    except Exception as error:
-                        error_msg = f"Invalid value for {answer}. Please try again"
-                    else:
-                        if int(answer) <= 0:
-                            error_msg = f"Thread count is too low. Please try again..."
-                        else:
-                            configs[param]['value'] = answer
-                            status = True
-                elif param == 'START_DATE' and answer != "":
-                    if answer != "":
-                        try:
-                            int(answer)
-                        except:
-                            error_msg = f"Invalid value {answer}. Please try again... "
-                        else:
-                            configs[param]['value'] = f"-{answer}d"
-                            status = True
-                else:
-                    configs[param]['value'] = configs[param]['default']
-                    status = True
-
-                if param in ["ENABLE_PARTITIONS", "START_DATE"] and configs[param]["value"] == "false":
-                    if param == "ENABLE_HA" and configs[param]["value"] == "false":
-                        configs["START_DATE"]["enable"] = False
-                    else:
-                        for key in ["TABLE_NAME", "PARTITION_COLUMN", "PARTITION_INTERVAL", "PARTITION_KEEP", "PARTITION_SYNC"]:
-                            configs[key]["enable"] = False
-
-    return configs
-
-
-def publisher_questions(configs:dict)->dict:
-    """
-    Generate questions for publisher configurations
-    :args:
-        configs:dict - database configurations
-    :note:
-        for  ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION'] convert int value to file_name[X]
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - question
-        answer:str - user input
-    :return:
-        updated configs
-    """
-    for param in configs:
-        if configs[param]['enable'] is True:
-            error_msg = ""
-            full_question = __generate_question(configs=configs[param])
-            status = False
-            while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                        param=param, error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-
-                if param in ['DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION']:
-                    if answer != "":
-                        try:
-                            answer = int(answer)
-                        except:
-                            error_msg = f"Invalid value {answer}. Please try again... "
-                        else:
-                            configs[param]['value'] = f"file_name[{answer}]"
-                            status = True
-                    else:
-                        configs[param]['value'] = f"file_name[{configs[param]['default']}]"
-                        status = True
-                elif param == 'COMPRESS_FILE' and answer != "":
-                    if answer not in configs[param]['options'] and answer != "":
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    elif answer in configs[param]['options']:
-                        configs[param]['value'] = answer
-                        status = True
-                else:
-                    configs[param]['value'] = configs[param]['default']
-                    status = True
-
-    return configs
-
-
-def authentication_questions(configs:dict)->dict:
-    """
-    Generate questions for authentication configurations
-    :notes:
-        need to write code in AnyLog deployment script to support authentication. As such, process is disabled in
-        deployment main.
-    :args:
-        configs:dict - database configurations
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - question
-        answer:str - user input
-    :return:
-        updated configs
-    """
-    for param in configs:
-        if configs[param]['enable'] is True:
-            status = False
-            full_question = __generate_question(configs=configs[param])
-            error_msg = ""
-            while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['description'], param=param,
-                                        error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-
-                if answer == '':
-                    configs[param]['value'] = configs[param]['default']
-                    status = True
-                elif ('options' in configs[param] and answer in configs[param]['options']) or ('options' not in configs[param] and answer != ''):
-                    configs[param]['value'] = answer
-                    status = True
-                else:
-                    error_msg = f"Invalid value {answer}. Please try again... "
-
-                if param in ['ENABLE_REST_AUTH'] and configs[param]['value'] == 'false':
-                    for sub_param in ['NODE_PASSWORD', 'USER_NAME', 'USER_PASSWORD', 'USER_TYPE', 'ROOT_PASSWORD']:
-                        configs[sub_param]['enable'] = False
-
-    return configs
-
-
-def mqtt_questions(configs:dict)->dict:
-    """
-    Generate questions for MQTT configurations
-    :args:
-        configs:dict - database configurations
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - question
-        answer:str - user input
-    :return:
-        updated configs
-    """
-    for param in configs:
-        if configs[param]['enable'] is True:
-            error_msg = ""
-            full_question = __generate_question(configs=configs[param])
-            status = False
-            while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                        param=param, error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-
-                if param in ['ENABLE_MQTT', 'MQTT_LOG'] and answer != '':
-                    if answer not in configs[param]['options']:
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    else:
-                        configs[param]['value'] = answer
-                        status = True
-                elif answer != '':
-                    configs[param]['value'] = answer
-                    status = True
-                else:
-                    configs[param]['value'] = configs[param]['default']
-                    status = True
-            if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
-                for sub_param in configs:
-                    if sub_param != "ENABLE_MQTT":
-                        configs[sub_param]['enable'] = False
-
-    return configs
-
-
-def advanced_settings(configs:dict)->dict:
-    """
-    Generate questions for advanced settings configurations
-    :args:
-        configs:dict - database configurations
-    :params:
-        status:bool
-        error_msg:str - error message
-        full_question:str - question
-        answer:str - user input
-        str_answer:str - when needing to separate between between REST and
-    :return:
-        updated configs
-    """
-    for param in configs:
-        if configs[param]['enable'] is True:
-            error_msg = ""
-            full_question = __generate_question(configs=configs[param])
-            status = False
-            while status is False:
-                answer = __ask_question(question=full_question, description=configs[param]['description'],
-                                        param=param, error_msg=error_msg).strip()
-                if answer == "''" or answer == '""':
-                    answer = ''
-
-                if param in ['MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY']:
-                    if param in ['MONITOR_NODE', 'MONITOR_NODE_COMPANY']:
-                        configs[param]['value'] = configs[param]['default']
-                        if answer != '':
-                            configs[param]['value'] = answer
-                        status = True
-                    elif answer not in configs[param]['options'] and answer != '':
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    else:
-                        configs[param]['value'] = configs[param]['default']
-                        if answer != '':
-                            configs[param]['value'] = answer
-                        status = True
-                elif param in ['DEPLOY_LOCAL_SCRIPT', 'WRITE_IMMEDIATE'] and answer != "":
-                    if answer not in configs[param]['options']:
-                        error_msg = f"Invalid value {answer}. Please try again... "
-                    else:
-                        configs[param]['value'] = answer
-                        status = True
-                elif param in ['TCP_THREAD_POOL', 'REST_THREADS', 'QUERY_POOL', 'REST_TIMEOUT'] and answer != '':
-                    try:
-                        answer = int(answer)
-                    except Exception as error:
-                        error_msg = f"Invalid value {answer}. Please try again..."
-                    else:
-                        if answer < configs[param]['default'] and param != 'REST_TIMEOUT':
-                            error_msg = f"Value {answer} is out of range, minimum value is {configs[param]['default']}. Please try again... "
-                        elif param == 'REST_TIMEOUT' and -1 >= answer:
-                            error_msg = f"Value {answer} is out of range minimum value is 0. Please try again... "
-                        else:
-                            configs[param]['value'] = answer
-                            status = True
-                elif param in ['THRESHOLD_TIME', 'THRESHOLD_VOLUME'] and answer != '':
-                    answer = answer.replace(" ", "")
-                    str_answer = ''.join([i for i in answer if not i.isdigit()]).strip()
-                    if str_answer.lower() not in configs[param]['options'] and str_answer.upper() not in configs[param]['options']:
-                        error_msg = f"Invalid value {answer}. Please try again"
-                    else:
-                        configs[param]['value'] = answer
-                        status = True
-                else:
-                    configs[param]['value'] = configs[param]['default']
-                    status = True
-
+        if param == 'ENABLE_HA' and configs[param]['value'] == 'false':
+            configs['START_DATE']['enable'] = False
+        elif param == 'START_DATE':
+            configs[param]['value'] = f"-{configs[param]['value']}d"
+        elif param == 'ENABLE_PARTITIONS' and configs[param]['value'] == 'false':
+            for section in ['TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP', 'PARTITION_SYNC']:
+                configs[param]['enable'] = False
+                configs[param]['default'] = ''
     return configs
