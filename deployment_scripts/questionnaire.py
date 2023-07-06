@@ -380,6 +380,7 @@ def blockchain_section(configs:dict)->dict:
         else:
             configs[param]['value'] = configs[param]['default']
 
+    return configs
 
 def operator_section(configs:dict)->dict:
     for param in configs:
