@@ -90,9 +90,6 @@ def main():
                     if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
                         node_configs[section][param]['default'] = ''
                         node_configs[section][param]['value'] = ''
-                    elif param == "NODE_NAME" and args.node_type == 'operator':
-                        operator_value = questionnaire.operator_number()
-                        node_configs[section][param]['default'] = f"{node_configs[section][param]['default']}{operator_value}"
                 elif param == "MONITOR_NODES":
                     node_configs[section][param]["default"] = "true"
                     node_configs[section][param]["enable"] = False
@@ -107,22 +104,29 @@ def main():
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
                 node_configs[section] = questionnaire.database_section(configs=node_configs[section])
             elif section == 'blockchain':
-                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-                node_configs['blockchain']['LEDGER_CONN']['default'] = f"127.0.0.1:{node_configs['networking']['ANYLOG_SERVER_PORT']['value']}"
-                node_configs[section] = questionnaire.blockchain_section(configs=node_configs[section])
-            elif section == 'operator' and args.node_type in ['rest', 'operator', 'standalone']:
-                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-                node_configs[section] = questionnaire.operator_section(configs=node_configs[section])
-            elif section == 'publisher' and args.node_type in ['rest', 'publisher', 'standalone-publisher']:
-                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-                node_configs[section] = questionnaire.generic_section(configs=node_configs[section])
-            elif section == 'mqtt' and (args.node_type in ['rest', 'operator', 'publisher', 'standalone', 'standalone-publisher'] or node_configs['networking']['ANYLOG_BROKER_PORT']['value'] != ''):
-                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-                node_configs[section] = questionnaire.generic_section(configs=node_configs[section])
+                if (args.node_type != 'master' and args.demo_build is True) or args.demo_build is False:
+                    print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+                    node_configs['blockchain']['LEDGER_CONN']['default'] = f"127.0.0.1:{node_configs['networking']['ANYLOG_SERVER_PORT']['value']}"
+                    node_configs[section] = questionnaire.blockchain_section(configs=node_configs[section])
+            elif section == 'operator':
+                if args.node_type in ['rest', 'operator', 'standalone']:
+                    print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+                    node_configs[section] = questionnaire.operator_section(configs=node_configs[section])
+            elif section == 'publisher':
+                if args.node_type in ['rest', 'publisher', 'standalone-publisher']:
+                    print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+                    node_configs[section] = questionnaire.generic_section(configs=node_configs[section])
+            elif section == 'mqtt':
+                if args.node_type in ['rest', 'operator', 'publisher', 'standalone', 'standalone-publisher'] or node_configs['networking']['ANYLOG_BROKER_PORT']['value'] != '':
+                    print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+                    node_configs[section] = questionnaire.generic_section(configs=node_configs[section])
             else:
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
                 node_configs[section] = questionnaire.generic_section(configs=node_configs[section])
                 if section == "general" and args.demo_build is True:
+                    if args.node_type == 'operator':
+                        operator_value = questionnaire.operator_number()
+                        node_configs[section]["NODE_NAME"]['value'] = f"{node_configs[section]['NODE_NAME']['default']}{operator_value}"
                     node_configs["advanced settings"]["MONITOR_NODE_COMPANY"]["value"] = node_configs["general"]["COMPANY_NAME"]["value"]
                     node_configs["advanced settings"]["MONITOR_NODE_COMPANY"]["enable"] = False
             print('\n')
