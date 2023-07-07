@@ -84,7 +84,7 @@ def main():
         for section in node_configs:
             for param in node_configs[section]:
                 if param not in ["LICENSE_KEY", "COMPANY_NAME", "LEDGER_CONN", "CLUSTER_NAME", "MONITOR_NODES",
-                                 "MONITOR_NODE_COMPANY"]:
+                                 "MONITOR_NODE_COMPANY", "ENABLE_MQTT"]:
                     node_configs[section][param]["enable"] = False
                     node_configs[section][param]["value"] = node_configs[section][param]["default"]
                     if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
@@ -93,7 +93,7 @@ def main():
                     if param == "NODE_NAME" and args.node_type == 'operator':
                         operator_value = questionnaire.operator_number()
                         node_configs[section][param]['default'] = f"{node_configs[section][param]['default']}{operator_value}"
-                elif param in ["ENABLE_MQTT", "MONITOR_NODES"]:
+                elif param == "MONITOR_NODES":
                     node_configs[section][param]["default"] = "true"
                     node_configs[section][param]["enable"] = False
 
