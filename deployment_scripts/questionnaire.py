@@ -279,8 +279,6 @@ def generic_section(configs:dict)->dict:
             configs[param]['value'] = configs[param]['default']
 
         if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
-            import json
-            print(json.dumps(configs))
             if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
                 for section in configs:
                     if section != "ENABLE_MQTT":
