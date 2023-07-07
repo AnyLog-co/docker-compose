@@ -203,7 +203,7 @@ def operator_number()->int:
     error_msg = ""
     status = False
     while status is False:
-        answer = __ask_question(question==question, description=description, param="operator number",  error_msg=error_msg)
+        answer = __ask_question(question=question, description=description, param="operator number",  error_msg=error_msg)
         if answer == '' or answer == "":
             answer = default
         answer, error_msg == __validate_int(value=answer)
