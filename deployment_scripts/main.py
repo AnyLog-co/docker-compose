@@ -90,7 +90,7 @@ def main():
                     if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
                         node_configs[section][param]['default'] = ''
                         node_configs[section][param]['value'] = ''
-                    if param == "NODE_NAME" and args.node_type == 'operator':
+                    elif param == "NODE_NAME" and args.node_type == 'operator':
                         operator_value = questionnaire.operator_number()
                         node_configs[section][param]['default'] = f"{node_configs[section][param]['default']}{operator_value}"
                 elif param == "MONITOR_NODES":
