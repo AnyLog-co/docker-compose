@@ -184,6 +184,36 @@ def __validate_ipaddress(address:str)->(str, str):
     return address, error_msg
 
 
+def operator_number()->int:
+    """
+    for a demo based deployment, get the numeric value for the new operator
+    :params:
+        default:int - default value
+        description:str question description
+        question:str - the actual question
+        error_msg:str - error message if something fails
+        status:bool
+        answer - user input
+    :return:
+        answer as int
+    """
+    default = 1
+    description = "In the network, which operator is this node in your network. The value will be used as part of the node name."
+    question = f"Which operator is this [default: {default}]"
+    error_msg = ""
+    status = False
+    while status is False:
+        answer = __ask_question(question==question, description=description, param="operator number",  error_msg=error_msg)
+        if answer == '' or answer == "":
+            answer = default
+        answer, error_msg == __validate_int(value=answer)
+        if error_msg == "":
+            status = True
+
+    return answer
+
+
+
 def ask_question(param:str, configs:dict, error_msg="")->str:
     status = False
     full_question = __generate_question(configs=configs)

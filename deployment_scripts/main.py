@@ -90,7 +90,10 @@ def main():
                     if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
                         node_configs[section][param]['default'] = ''
                         node_configs[section][param]['value'] = ''
-                elif param == "MONITOR_NODES":
+                    if param == "NODE_NAME" and args.node_type == 'operator':
+                        operator_value = questionnaire.operator_number()
+                        node_configs[section][param]['default'] = f"{node_configs[section][param]['default']}{operator_value}"
+                elif param in ["ENABLE_MQTT", "MONITOR_NODES"]:
                     node_configs[section][param]["default"] = "true"
                     node_configs[section][param]["enable"] = False
 
