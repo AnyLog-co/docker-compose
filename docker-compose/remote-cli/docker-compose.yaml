@@ -17,3 +17,4 @@ services:
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
   remote-cli:
+  remote-cli-current:
