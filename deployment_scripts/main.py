@@ -49,7 +49,7 @@ def main():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('node_type', type=str, choices=NODE_TYPES, default='generic', help='Node type to deploy')
-    parser.add_argument('--build', type=str, choices=['latest', 'predevelop', 'test'], default='latest',
+    parser.add_argument('--build', type=str, choices=['latest', 'beta'], default='latest',
                         help='Which AnyLog version to run')
     parser.add_argument('--deployment-type', type=str, choices=['docker', 'kubernetes'], default='docker',
                         help='Deployment type - docker generates .env file, kubernetes generates YAML file')

@@ -51,14 +51,14 @@ done
 
 EXISTING_CONFIGS=$(validate_yes_no_option "Deploy Existing Configs [y/n]")
 
-read -p "AnyLog Build Version [default: latest | options: latest, predevelop, test]: " BUILD_TYPE
+read -p "AnyLog Build Version [default: latest | options: latest, beta]: " BUILD_TYPE
 # Loop until a valid build type is provided
 while [[ ! ${BUILD_TYPE} =~ ^(latest|predevelop|test)$ ]] || [[ -z ${BUILD_TYPE} ]]; do
   # Set a default value if input is empty
   if [[ -z ${BUILD_TYPE} ]]; then
     BUILD_TYPE=latest
   else
-    read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: latest | options: latest, predevelop, test]: " BUILD_TYPE
+    read -p "Invalid build type: ${BUILD_TYPE}. AnyLog Build Version [default: latest | options: latest, beta]: " BUILD_TYPE
   fi
 done
 
