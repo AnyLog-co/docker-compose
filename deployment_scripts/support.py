@@ -41,8 +41,8 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
         node_configs, kubernetes_configs
     """
     node_configs['general']['NODE_TYPE']['default'] = node_type
-    if node_configs['general']['NODE_TYPE']['enable'] is False:
-        node_configs['general']['NODE_TYPE']['value'] = node_type
+    # if node_configs['general']['NODE_TYPE']['enable'] is False:
+    #     node_configs['general']['NODE_TYPE']['value'] = node_type
     if kubernetes_configs != {}:
         if build is not None:
             kubernetes_configs['image']['tag']['default'] = build
@@ -52,22 +52,24 @@ def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_co
         node_configs['database']['DB_IP']['default'] = 'postgres-svs'
         node_configs['database']['NOSQL_IP']['default'] = 'mongo-svs'
 
-    if node_type != 'rest':
-        node_configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
-    else:
-        # for REST node we allow users to manually change their configurations
-        node_configs['networking']['POLICY_BASED_NETWORKING']['default'] = 'false'
-        node_configs['networking']['REST_BIND']['enable'] = True
-        node_configs['networking']['BROKER_BIND']['enable'] = True
+    node_configs['general']['NODE_NAME']['default'] = f'anylog-{node_type}'
+    if node_type == 'generic':
+        node_configs['general']['NODE_NAME']['default'] = f'anylog-node'
+        node_configs['general']['NODE_TYPE']['default'] = 'rest'
+        node_configs['general']['NODE_NAME']['default'] = 'anylog-node'
         node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32548
         node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32549
-    if node_type == 'operator':
+    elif node_type in ['master', 'ledger']:
+        node_configs['general']['NODE_TYPE']['default'] = 'master'
+        node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32048
+        node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32049
+    elif node_type == 'operator':
         node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32148
         node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32149
-    if node_type == 'publisher':
+    elif node_type == 'publisher':
         node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32248
         node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32249
-    if node_type == 'query':
+    elif node_type == 'query':
         node_configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32348
         node_configs['networking']['ANYLOG_REST_PORT']['default'] = 32349
         node_configs['database']['SYSTEM_QUERY']['default'] = 'true'

@@ -58,10 +58,6 @@ def main():
     parser.add_argument('-e', '--exception', type=bool, default=False, nargs='?', const=True, help='Whether to print exceptions')
     args = parser.parse_args()
 
-    # if user declares "generic" node type then we'll deploy a REST node
-    if args.node_type == "generic":
-        args.node_type = "rest"
-
     kubernetes_configs = {}
 
     # read configurations +
@@ -130,6 +126,7 @@ def main():
                     node_configs["advanced settings"]["MONITOR_NODE_COMPANY"]["value"] = node_configs["general"]["COMPANY_NAME"]["value"]
                     node_configs["advanced settings"]["MONITOR_NODE_COMPANY"]["enable"] = False
             print('\n')
+
 
     if args.deployment_type == 'docker':
         # del node_configs['networking']['KUBERNETES_SERVICE_IP']

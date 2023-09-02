@@ -145,7 +145,6 @@ def write_docker_configs(file_path:str, configs:dict, exception:bool=False)->boo
         False if fails
     """
     content = ""
-
     # generate content
     for section in configs:
         content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---\n'
@@ -276,6 +275,8 @@ def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_
 
     if deployment_type == 'docker':
         file_path = __create_file_name_docker(node_type=node_type)
+        if node_type == 'rest':
+            file_path = __create_file_name_docker(node_type='generic')
         file_path = file_support.create_file(file_path=file_path, exception=exception)
         if file_path != "":
             status = write_docker_configs(file_path=file_path, configs=configs, exception=exception)

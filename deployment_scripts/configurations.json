@@ -281,7 +281,7 @@
         "true",
         "false"
       ],
-      "default": "true",
+      "default": "false",
       "value": ""
     },
     "TCP_THREADS": {
@@ -320,7 +320,7 @@
       "question": "Enable REST SSL",
       "description": "Boolean value to determine if messages are send over HTTPS with client certificates.",
       "enable": false,
-      "default": false,
+      "default": "false",
       "value": ""
     },
     "BROKER_BIND": {
