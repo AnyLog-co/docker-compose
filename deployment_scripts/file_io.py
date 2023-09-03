@@ -285,10 +285,11 @@ def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_
                                            node_name=node_name, exception=exception)
     elif deployment_type == 'kubernetes':
         file_path = __create_file_name_kubernetes(node_type=node_type)
+        if node_type == 'rest':
+            file_path = __create_file_name_kubernetes(node_type='generic')
         file_path = file_support.create_file(file_path=file_path, exception=exception)
         write_kubernetes_configs(file_path=file_path, metadata_configs=kubernetes_configs, configs=configs,
                                  exception=exception)
-
 
     return status
 
