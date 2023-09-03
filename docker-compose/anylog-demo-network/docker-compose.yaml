@@ -17,75 +17,75 @@ services:
         interval: 5s
         timeout: 5s
         retries: 5
-  anylog-master-node:
+  anylog-master:
     depends_on:
       postgres:
         condition: service_healthy
     image: anylogco/anylog-network:${TAG}
     env_file:
       - envs/anylog_master.env
-    container_name: anylog-master-node
+    container_name: anylog-master
     restart: always
     stdin_open: true
     tty: true
     network_mode: "host"
     volumes:
-      - anylog-master-node-anylog:/app/AnyLog-Network/anylog
-      - anylog-master-node-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-master-node-data:/app/AnyLog-Network/data
-      - anylog-master-node-local-scripts:/app/deployment-scripts
-  anylog-query-node:
+      - anylog-master-anylog:/app/AnyLog-Network/anylog
+      - anylog-master-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-master-data:/app/AnyLog-Network/data
+      - anylog-master-local-scripts:/app/deployment-scripts
+  anylog-query:
     depends_on:
       postgres:
         condition: service_healthy
     image: anylogco/anylog-network:${TAG}
     env_file:
       - envs/anylog_query.env
-    container_name: anylog-query-node
+    container_name: anylog-query
     restart: always
     stdin_open: true
     tty: true
     network_mode: "host"
     volumes:
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
-      - anylog-query-node-anylog:/app/AnyLog-Network/anylog
-      - anylog-query-node-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-query-node-data:/app/AnyLog-Network/data
-      - anylog-query-node-local-scripts:/app/deployment-scripts
-  anylog-operator-node1:
+      - anylog-query-anylog:/app/AnyLog-Network/anylog
+      - anylog-query-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-query-data:/app/AnyLog-Network/data
+      - anylog-query-local-scripts:/app/deployment-scripts
+  anylog-operator1:
     depends_on:
       postgres:
         condition: service_healthy
     image: anylogco/anylog-network:${TAG}
     env_file:
       - envs/anylog_operator1.env
-    container_name: anylog-operator-node1
+    container_name: anylog-operator1
     restart: always
     stdin_open: true
     tty: true
     network_mode: "host"
     volumes:
-      - anylog-operator-node1-anylog:/app/AnyLog-Network/anylog
-      - anylog-operator-node1-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-operator-node1-data:/app/AnyLog-Network/data
-      - anylog-operator-node1-local-scripts:/app/deployment-scripts
-  anylog-operator-node2:
+      - anylog-operator1-anylog:/app/AnyLog-Network/anylog
+      - anylog-operator1-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-operator1-data:/app/AnyLog-Network/data
+      - anylog-operator1-local-scripts:/app/deployment-scripts
+  anylog-operator2:
     depends_on:
       postgres:
         condition: service_healthy
     image: anylogco/anylog-network:${TAG}
     env_file:
       - envs/anylog_operator2.env
-    container_name: anylog-operator-node2
+    container_name: anylog-operator2
     restart: always
     stdin_open: true
     tty: true
     network_mode: "host"
     volumes:
-      - anylog-operator-node2-anylog:/app/AnyLog-Network/anylog
-      - anylog-operator-node2-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-operator-node2-data:/app/AnyLog-Network/data
-      - anylog-operator-node2-local-scripts:/app/deployment-scripts
+      - anylog-operator2-anylog:/app/AnyLog-Network/anylog
+      - anylog-operator2-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-operator2-data:/app/AnyLog-Network/data
+      - anylog-operator2-local-scripts:/app/deployment-scripts
   remote-cli:
     image: anylogco/remote-cli:latest
     container_name: remote-cli
@@ -93,11 +93,8 @@ services:
     stdin_open: true
     tty: true
     network_mode: "host" 
-    #ports:
-    #  - "${CLI_PORT}:${CLI_PORT}"
-    environment:
-      - CONN_IP=${CONN_IP}
-      - CLI_PORT=${CLI_PORT}
+    env_file:
+      - envs/remote_cli.env
     volumes:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
@@ -122,19 +119,19 @@ volumes:
   grafana-data:
   grafana-log:
   grafana-config:
-  anylog-master-node-anylog:
-  anylog-master-node-blockchain:
-  anylog-master-node-data:
-  anylog-master-node-local-scripts:
-  anylog-query-node-anylog:
-  anylog-query-node-blockchain:
-  anylog-query-node-data:
-  anylog-query-node-local-scripts:
-  anylog-operator-node1-anylog:
-  anylog-operator-node1-blockchain:
-  anylog-operator-node1-data:
-  anylog-operator-node1-local-scripts:
-  anylog-operator-node2-anylog:
-  anylog-operator-node2-blockchain:
-  anylog-operator-node2-data:
-  anylog-operator-node2-local-scripts:
+  anylog-master-anylog:
+  anylog-master-blockchain:
+  anylog-master-data:
+  anylog-master-local-scripts:
+  anylog-query-anylog:
+  anylog-query-blockchain:
+  anylog-query-data:
+  anylog-query-local-scripts:
+  anylog-operator1-anylog:
+  anylog-operator1-blockchain:
+  anylog-operator1-data:
+  anylog-operator1-local-scripts:
+  anylog-operator2-anylog:
+  anylog-operator2-blockchain:
+  anylog-operator2-data:
+  anylog-operator2-local-scripts:

@@ -770,7 +770,7 @@
       "question": "Topic",
       "description": "Topic to get data for",
       "enable": true,
-      "default": "anylogedgex",
+      "default": "anylogedgex-demo",
       "value": ""
     },
     "MQTT_DBMS": {
@@ -784,7 +784,7 @@
       "question": "Table Name",
       "description": "Table where to store data",
       "enable": true,
-      "default": "rand_data",
+      "default": "bring [sourceName]",
       "value": ""
     },
     "MQTT_TIMESTAMP_COLUMN": {
@@ -805,7 +805,7 @@
       "question": "Value type",
       "description": "Column value type",
       "enable": true,
-      "default": "float",
+      "default": "int",
       "options": ["str", "int", "float", "timestamp", "bool"],
       "value": ""
     }
