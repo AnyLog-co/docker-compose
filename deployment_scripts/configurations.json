@@ -69,7 +69,7 @@
     "LICENSE_KEY": {
       "question": "License Key",
       "description": "License Key for activating AnyLog",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": "",
       "config_file": "anylog_configs"
@@ -92,7 +92,7 @@
     "NODE_NAME": {
       "question": "Node Name",
       "description": "Name of the AnyLog instance",
-      "enable": true,
+      "enable": false,
       "default": "anylog-node",
       "value": "",
       "config_file": "anylog_configs"
@@ -100,7 +100,7 @@
     "COMPANY_NAME": {
       "question": "Company Name",
       "description": "Owner of the AnyLog instance",
-      "enable": true,
+      "enable": false,
       "default": "New Company",
       "value": "",
       "config_file": "anylog_configs"
@@ -108,7 +108,7 @@
     "LOCATION": {
       "question": "Location",
       "description": "Coordinates of the machine - used by Grafana to map the network",
-      "enable": true,
+      "enable": false,
       "default": "0.0, 0.0",
       "value": "",
       "config_file": "advance_configs"
@@ -116,7 +116,7 @@
     "COUNTRY": {
       "question": "Country",
       "description": "Country where machine is located",
-      "enable": true,
+      "enable": false,
       "default": "Unknown",
       "value": "",
       "config_file": "advance_configs"
@@ -124,7 +124,7 @@
     "STATE": {
       "question": "State",
       "description": "State where machine is located",
-      "enable": true,
+      "enable": false,
       "default": "Unknown",
       "value": "",
       "config_file": "advance_configs"
@@ -132,7 +132,7 @@
     "CITY": {
       "question": "City",
       "description": "City where machine is located",
-      "enable": true,
+      "enable": false,
       "default": "Unknown",
       "value": "",
       "config_file": "advance_configs"
@@ -212,7 +212,7 @@
     "POLICY_BASED_NETWORKING": {
       "question": "Connect to Networking based on Blockchain Policy",
       "description": "Connect to TCP, REST and Message Broker (if configured) based on correlating node policy",
-      "enable": true,
+      "enable": false,
       "options": [
         "true",
         "false"
@@ -224,7 +224,7 @@
     "CONFIG_POLICY_NAME": {
       "question": "Config Policy Name",
       "description": "Declare Policy name",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": "",
       "config_file": "advance_configs"
@@ -255,7 +255,7 @@
     "OVERLAY_IP": {
       "question": "Overlay IP",
       "description": "Overlay IP address - if set, will replace local IP address when connecting to network",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": "",
       "config_file": "advance_configs"
@@ -263,7 +263,7 @@
     "PROXY_IP": {
       "question": "Proxy IP",
       "description": "Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": "",
       "config_file": "advance_configs"
@@ -271,7 +271,7 @@
     "ANYLOG_SERVER_PORT": {
       "question": "TCP Port",
       "description": "Port address used by AnyLog's TCP protocol to communicate with other nodes in the network",
-      "enable": true,
+      "enable": false,
       "default": 32048,
       "range": [
         30000,
@@ -283,7 +283,7 @@
     "ANYLOG_REST_PORT": {
       "question": "REST Port",
       "description": "Port address used by AnyLog's REST protocol",
-      "enable": true,
+      "enable": false,
       "default": 32049,
       "range": [
         30000,
@@ -295,7 +295,7 @@
     "ANYLOG_BROKER_PORT": {
       "question": "Local Broker Port",
       "description": "Port value to be used as an MQTT broker, or some other third-party broker",
-      "enable": true,
+      "enable": false,
       "default": "",
       "range": [
         30000,
@@ -307,7 +307,7 @@
     "TCP_BIND": {
       "question": "Bind TCP Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": true,
+      "enable": false,
       "options": [
         "true",
         "false"
@@ -327,7 +327,7 @@
     "REST_BIND": {
       "question": "Bind REST Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": true,
+      "enable": false,
       "options": [
         "true",
         "false"
@@ -363,7 +363,7 @@
     "BROKER_BIND": {
       "question": "Bind Message Broker Connection",
       "description": "A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)",
-      "enable": true,
+      "enable": false,
       "options": [
         "true",
         "false"
@@ -385,7 +385,7 @@
     "DB_TYPE": {
       "question": "Database Type",
       "description": "Physical database type",
-      "enable": true,
+      "enable": false,
       "default": "sqlite",
       "options": [
         "sqlite",
@@ -397,7 +397,7 @@
     "DB_USER": {
       "question": "Database User",
       "description": "Username for SQL database connection",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": "",
       "config_file": "anylog_configs"
@@ -405,7 +405,7 @@
     "DB_PASSWD": {
       "question": "Database Password",
       "description": "Password correlated to database user",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": "",
       "config_file": "anylog_configs"
@@ -413,7 +413,7 @@
     "DB_IP": {
       "question": "Database IP Address",
       "description": "Database IP address",
-      "enable": true,
+      "enable": false,
       "default": "127.0.0.1",
       "value": "",
       "config_file": "anylog_configs"
@@ -421,7 +421,7 @@
     "DB_PORT": {
       "question": "Database Port",
       "description": "Database port number",
-      "enable": true,
+      "enable": false,
       "default": 5432,
       "value": "",
       "config_file": "anylog_configs"
@@ -429,7 +429,7 @@
     "AUTOCOMMIT": {
       "question": "Enable Autocommit",
       "description": "Whether to set autocommit data",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": [
         "true",
@@ -441,7 +441,7 @@
     "SYSTEM_QUERY": {
       "question": "Enable System Query Database",
       "description": "Whether to start to start system_query logical database",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": [
         "true",
@@ -453,7 +453,7 @@
     "MEMORY": {
       "question": "Set System Query in-memory",
       "description": "Run system_query using in-memory SQLite. If set to false, will use pre-set database type",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
@@ -465,7 +465,7 @@
     "NOSQL_ENABLE": {
       "question": "Enable NoSQL Database",
       "description": "Whether to enable NoSQL logical database",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": [
         "true",
@@ -477,7 +477,7 @@
     "NOSQL_TYPE": {
       "question": "NoSQL database Type",
       "description": "Physical NoSQL database type",
-      "enable": true,
+      "enable": false,
       "default": "mongo",
       "options": [
         "mongo"
@@ -488,7 +488,7 @@
     "NOSQL_USER": {
       "question": "NoSQL Database User",
       "description": "Username for NoSQL database connection",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": "",
       "config_file": "anylog_configs"
@@ -496,7 +496,7 @@
     "NOSQL_PASSWD": {
       "question": "NoSQL Database Password",
       "description": "Password correlated to NoSQL database user",
-      "enable": true,
+      "enable": false,
       "default": "",
       "value": "",
       "config_file": "anylog_configs"
@@ -504,7 +504,7 @@
     "NOSQL_IP": {
       "question": "NoSQL Database IP Address",
       "description": "NoSQL database IP address",
-      "enable": true,
+      "enable": false,
       "default": "127.0.0.1",
       "value": "",
       "config_file": "anylog_configs"
@@ -512,7 +512,7 @@
     "NOSQL_PORT": {
       "question": "NoSQL Database Port",
       "description": "Database port number",
-      "enable": true,
+      "enable": false,
       "default": 27017,
       "value": "",
       "config_file": "anylog_configs"
@@ -520,7 +520,7 @@
     "NOSQL_BLOBS_DBMS": {
     "question": "NoSQL Blobs DBMS",
       "description": "Store blobs in database",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": ["true", "false"],
       "value": "",
@@ -529,7 +529,7 @@
     "NOSQL_BLOBS_FOLDER": {
       "question": "Blobs Folder",
       "description": "Store blobs in folder",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": ["true", "false"],
       "value": "",
@@ -538,7 +538,7 @@
     "NOSQL_BLOBS_COMPRESS": {
       "question": "Compress Blobs",
       "description": "Compress stored blobs",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": ["true", "false"],
       "value": "",
@@ -547,7 +547,7 @@
     "NOSQL_BLOBS_REUSE": {
       "question": "Reuse Blobs",
       "description": "Whether (re)store a blob if already exists",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": ["true", "false"],
       "value": "",
@@ -558,7 +558,7 @@
     "LEDGER_CONN": {
       "question": "Master Node TCP Connection",
       "description": "TCP connection information for Master Node",
-      "enable": true,
+      "enable": false,
       "default": "127.0.0.1:32048",
       "value": "",
       "config_file": "anylog_configs"
@@ -566,7 +566,7 @@
     "SYNC_TIME": {
       "question": "Sync Time",
       "description": "How often to sync from blockchain",
-      "enable": true,
+      "enable": false,
       "default": "30 second",
       "options": [
         "second",
@@ -580,7 +580,7 @@
     "BLOCKCHAIN_SOURCE": {
       "question": "Blockchain Source",
       "description": "Source of where the data is coming from",
-      "enable": true,
+      "enable": false,
       "default": "master",
       "options": [
         "master",
@@ -592,7 +592,7 @@
     "BLOCKCHAIN_DESTINATION": {
       "question": "Blockchain Destination",
       "description": "Where will the copy of the blockchain be stored",
-      "enable": true,
+      "enable": false,
       "default": "file",
       "options": [
         "file",
@@ -614,7 +614,7 @@
     "CLUSTER_NAME": {
       "question": "Cluster Name",
       "description": "Owner of the cluster",
-      "enable": true,
+      "enable": false,
       "default": "new-company-cluster",
       "value": "",
       "config_file": "anylog_configs"
@@ -622,7 +622,7 @@
     "DEFAULT_DBMS": {
       "question": "Database Name",
       "description": "Logical database name",
-      "enable": true,
+      "enable": false,
       "default": "test",
       "value": "",
       "config_file": "anylog_configs"
@@ -630,7 +630,7 @@
     "ENABLE_HA": {
       "question": "Enable HA",
       "description": "Whether of not to enable HA against the cluster",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": [
         "true",
@@ -642,7 +642,7 @@
     "START_DATE": {
       "question": "Number of days to sync",
       "description": "How many days back to sync between nodes",
-      "enable": true,
+      "enable": false,
       "default": 30,
       "value": "",
       "config_file": "advance_configs"
@@ -650,7 +650,7 @@
     "ENABLE_PARTITIONS": {
       "question": "Enable Partitions",
       "description": "Whether to enable partitioning",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
@@ -662,7 +662,7 @@
     "TABLE_NAME": {
       "question": "Partitioned Table(s)",
       "description": "Which tables to partition",
-      "enable": true,
+      "enable": false,
       "default": "*",
       "value": "",
       "config_file": "advance_configs"
@@ -670,7 +670,7 @@
     "PARTITION_COLUMN": {
       "question": "Partitioned Column",
       "description": "Which timestamp column to partition by",
-      "enable": true,
+      "enable": false,
       "default": "insert_timestamp",
       "value": "",
       "config_file": "anylog_configs"
@@ -678,7 +678,7 @@
     "PARTITION_INTERVAL": {
       "question": "Partition Interval",
       "description": "Time period to partition by",
-      "enable": true,
+      "enable": false,
       "default": "1 day",
       "options": [
         "hour",
@@ -691,7 +691,7 @@
     "PARTITION_KEEP": {
       "question": "Partition Keep",
       "description": "How many partitions to keep",
-      "enable": true,
+      "enable": false,
       "default": 3,
       "value": "",
       "config_file": "anylog_configs"
@@ -699,7 +699,7 @@
     "PARTITION_SYNC": {
       "question": "Partition Sync",
       "description": "How often to check if an old partition should be removed",
-      "enable": true,
+      "enable": false,
       "default": "1 day",
       "options": [
         "day",
@@ -759,7 +759,7 @@
     "OPERATOR_THREADS": {
       "question": "Operator Threads",
       "description": "How many threads to use in the operator process\n",
-      "enable": true,
+      "enable": false,
       "default": 1,
       "value": "",
       "config_file": "advance_configs"
@@ -769,7 +769,7 @@
     "DBMS_FILE_LOCATION": {
       "question": "DB File Location",
       "description": "Location of logical database name within file name",
-      "enable": true,
+      "enable": false,
       "default": 0,
       "value": "",
       "config_file": "advance_configs"
@@ -777,7 +777,7 @@
     "TABLE_FILE_LOCATION": {
       "question": "Table File Location",
       "description": "Location of table name within file name",
-      "enable": true,
+      "enable": false,
       "default": 1,
       "value": "",
       "config_file": "advance_configs"
@@ -785,7 +785,7 @@
     "PUBLISHER_COMPRESS_FILE": {
       "question": "Compress Files",
       "description": "Compress JSON and SQL file(s) backup",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": [
         "true",
@@ -799,7 +799,7 @@
     "ENABLE_MQTT": {
       "question": "Enable MQTT",
       "description": "Whether to enable the default MQTT process",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": [
         "true",
@@ -811,7 +811,7 @@
     "MQTT_LOG": {
       "question": "Enable MQTT Logging",
       "description": "Whether to enable MQTT logging process",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": [
         "true",
@@ -823,7 +823,7 @@
     "MQTT_BROKER": {
       "question": "Broker",
       "description": "IP address of MQTT broker",
-      "enable": true,
+      "enable": false,
       "default": "driver.cloudmqtt.com",
       "value": "",
       "config_file": "anylog_configs"
@@ -831,7 +831,7 @@
     "MQTT_PORT": {
       "question": "Port",
       "description": "Port associated with MQTT broker",
-      "enable": true,
+      "enable": false,
       "default": 18785,
       "value": "",
       "config_file": "anylog_configs"
@@ -839,7 +839,7 @@
     "MQTT_USER": {
       "question": "MQTT User",
       "description": "User associated with MQTT broker",
-      "enable": true,
+      "enable": false,
       "default": "ibglowct",
       "value": "",
       "config_file": "anylog_configs"
@@ -847,7 +847,7 @@
     "MQTT_PASSWD": {
       "question": "MQTT Password",
       "description": "Password associated with MQTT user",
-      "enable": true,
+      "enable": false,
       "default": "MSY4e009J7ts",
       "value": "",
       "config_file": "anylog_configs"
@@ -855,7 +855,7 @@
     "MQTT_TOPIC": {
       "question": "Topic",
       "description": "Topic to get data for",
-      "enable": true,
+      "enable": false,
       "default": "anylogedgex-demo",
       "value": "",
       "config_file": "anylog_configs"
@@ -863,7 +863,7 @@
     "MQTT_DBMS": {
       "question": "Database Name",
       "description": "Logical database name",
-      "enable": true,
+      "enable": false,
       "default": "test",
       "value": "",
       "config_file": "anylog_configs"
@@ -871,7 +871,7 @@
     "MQTT_TABLE": {
       "question": "Table Name",
       "description": "Table where to store data",
-      "enable": true,
+      "enable": false,
       "default": "bring [sourceName]",
       "value": "",
       "config_file": "anylog_configs"
@@ -879,7 +879,7 @@
     "MQTT_TIMESTAMP_COLUMN": {
       "question": "Timestamp Column",
       "description": "Timestamp column name",
-      "enable": true,
+      "enable": false,
       "default": "now",
       "value": "",
       "config_file": "anylog_configs"
@@ -887,7 +887,7 @@
     "MQTT_VALUE_COLUMN": {
       "question": "Value Column",
       "description": "Value column name",
-      "enable": true,
+      "enable": false,
       "default": "bring [readings][][value]",
       "value": "",
       "config_file": "anylog_configs"
@@ -895,7 +895,7 @@
     "MQTT_VALUE_COLUMN_TYPE": {
       "question": "Value type",
       "description": "Column value type",
-      "enable": true,
+      "enable": false,
       "default": "int",
       "options": ["str", "int", "float", "timestamp", "bool"],
       "value": "",
@@ -907,7 +907,7 @@
     "DEPLOY_LOCAL_SCRIPT": {
       "question": "Enable Local Script",
       "description": "Whether to automatically run a local (or personalized) script at the end of the process",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": ["true", "false"],
       "value": "",
@@ -924,7 +924,7 @@
     "WRITE_IMMEDIATE": {
       "question": "Write Data Immediate",
       "description": "When data comes in write to database immidiately, as opposed to waiting for a full buffer",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": ["true", "false"],
       "value": "",
@@ -933,7 +933,7 @@
     "THRESHOLD_TIME": {
       "question": "Threshold Time",
       "description": "If buffer is not full, how long to wait until pushing data through",
-      "enable": true,
+      "enable": false,
       "default": "60 seconds",
       "options": [
         "second",
@@ -947,7 +947,7 @@
     "THRESHOLD_VOLUME": {
       "question": "Threshold Volume",
       "description": "Buffer size to reach, at which point data is pushed through",
-      "enable": true,
+      "enable": false,
       "default": "10KB",
       "options": ["KB", "MB", "GB"],
       "value": "",
@@ -956,7 +956,7 @@
     "MONITOR_NODES": {
       "question": "Monitor Node",
       "description": "Whether to monitor the node or not",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": ["true", "false"],
       "value": "",
@@ -965,7 +965,7 @@
     "MONITOR_NODE": {
       "question": "Monitoring Node",
       "description": "Which node type to send monitoring information to",
-      "enable": true,
+      "enable": false,
       "default": "query",
       "value": "",
       "config_file": "anylog_configs"
@@ -973,7 +973,7 @@
     "MONITOR_NODE_COMPANY": {
       "question": "Company Name",
       "description": "Company node is associated with the monitor node",
-      "enable": true,
+      "enable": false,
       "default": "New Company",
       "value": "",
       "config_file": "anylog_configs"

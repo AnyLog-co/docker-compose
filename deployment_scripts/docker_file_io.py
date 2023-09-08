@@ -1,11 +1,11 @@
 import os
 
-from file_support import read_notes
+from __file_support__ import read_notes,  create_file
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(os.path.abspath(__file__))).split("deployment_scripts")[0]
 
 
-def __docker_create_path(node_type:str, file_name:str):
+def __docker_create_path(node_type:str, file_name:str, exception:bool=False):
     """
     Based on node_type and file_name create new file
     :process:
@@ -16,6 +16,7 @@ def __docker_create_path(node_type:str, file_name:str):
     :args:
         node_type:str - AnyLog node type
         file_name:str - from configs config_file value
+        exception:bool - whether to print exceptions
     :params:
         file_path:str - file path
     :return:
@@ -25,12 +26,29 @@ def __docker_create_path(node_type:str, file_name:str):
         node_type = 'generic'
     file_path = os.path.join(ROOT_PATH, "docker-compose", f"anylog-{node_type}", f"{file_name}.env")
     if os.path.isfile(file_path):
-        os.rename(file_path, f"{file_path}.old")
-    open(file_path, 'w').close()
+        try:
+            os.rename(file_path, f"{file_path}.old")
+        except Exception as error:
+            file_path = ""
+            if exception is True:
+                print(f"Failed to rename {file_path} (Error: {error})")
+        else:
+            try:
+                open(file_path, 'w').close()
+            except Exception as error:
+                file_path = ""
+                if exception is True:
+                print(f"Failed to recreate file {file_path} (Error: {error})")
 
     return file_path
 
-def __docker_write_file(config_file:str, content:str):
+def write_file(config_file:str, content:str):
+    """
+    write content to file
+    :args:
+        config_file:str - file to write into
+        contnet:str - contnet to write into file
+    """
     try:
         with open(config_file, 'a') as f:
             try:
@@ -43,6 +61,18 @@ def __docker_write_file(config_file:str, content:str):
 
 
 def __docker_create_configs_section(anylog_configs:str, advance_configs:str, configs:dict):
+    """
+    Create configuration file(s) for anylog  based on the  config_file
+    :args:
+        anylog_configs:str - anylog_configs file path
+        advance_configs:str - advance_configs file path
+        configs:dict - configurations
+    :params:
+        wrote_anylog_configs:bool - whether to write config anylog_configs
+        wrote_advanced_configs:bool - whether to write to advanced_configs
+        advanced_configs_content:str  - content in  advanced_configs
+        anylog_configs_content:str  - content in  anylog_configs
+    """
     for section in configs:
         wrote_anylog_configs = False
         wrote_advanced_configs = False
@@ -85,10 +115,10 @@ def __docker_create_configs_section(anylog_configs:str, advance_configs:str, con
 
         if anylog_configs_content != "":
             anylog_configs_content += "\n"
-            __docker_write_file(config_file=anylog_configs, content=anylog_configs_content)
+            write_file(config_file=anylog_configs, content=anylog_configs_content)
         if advanced_configs_content != "":
             advanced_configs_content += "\n"
-            __docker_write_file(config_file=advance_configs, content=advanced_configs_content)
+            write_file(config_file=advance_configs, content=advanced_configs_content)
 
 
 def write_configs(deployment_type:str, configs:dict, build:str=None, exception:bool=False):

@@ -1,5 +1,5 @@
 import os
-import file_support
+import __file_support__
 import support
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
@@ -20,7 +20,7 @@ def __create_file_name_docker(node_type:str, file_name:str, exception:bool=False
         full path of file name
     """
     full_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), f'{file_name}.env')
-    if file_support.create_file(file_path=full_path, exception=exception) is False:
+    if __file_support__.create_file(file_path=full_path, exception=exception) is False:
         full_path = None
     return full_path
 
@@ -69,12 +69,12 @@ def read_configs(config_file:str, exception:bool=False)->dict:
         file_extension = config_file.rsplit('.', 1)[-1]
 
         if file_extension == 'env':
-            configs = file_support.read_dotenv(config_file=config_file, exception=exception)
+            configs = __file_support__.read_dotenv(config_file=config_file, exception=exception)
         elif file_extension in ['yml', 'yaml']:
-            configs = file_support.read_yaml(config_file=config_file, exception=exception)
+            configs = __file_support__.read_yaml(config_file=config_file, exception=exception)
             configs = support.prep_imported_kubernetes(configs=configs)
         elif file_extension == 'json':
-            configs = file_support.read_json(config_file=config_file, exception=exception)
+            configs = __file_support__.read_json(config_file=config_file, exception=exception)
         else:
             print(f'Invalid extension type: {file_extension}')
     else:
@@ -110,7 +110,7 @@ def update_dotenv_tag(file_path:str, build:str, node_name:str, exception:bool=Fa
 
     dotenv_file = os.path.join(file_path, '.env')
     if os.path.isfile(dotenv_file):
-        file_content = file_support.read_dotenv(config_file=dotenv_file, exception=exception)
+        file_content = __file_support__.read_dotenv(config_file=dotenv_file, exception=exception)
         for key in content:
             if key not in file_content:
                 line += f"{key}={content[key]}\n"
@@ -122,9 +122,9 @@ def update_dotenv_tag(file_path:str, build:str, node_name:str, exception:bool=Fa
         for key in content:
             line += f"{key}={content[key]}\n"
 
-    dotenv_file = file_support.create_file(file_path=dotenv_file, exception=exception)
+    dotenv_file = __file_support__.create_file(file_path=dotenv_file, exception=exception)
 
-    status = file_support.append_content(content=line, file_path=dotenv_file, exception=exception)
+    status = __file_support__.append_content(content=line, file_path=dotenv_file, exception=exception)
     if status is False and exception is True:
         print(f"Failed to insert '{line}' into {dotenv_file}")
 
@@ -149,7 +149,7 @@ def write_docker_configs(file_path:str, configs:dict, exception:bool=False)->boo
     for section in configs:
         content += f'# --- {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")} ---\n'
         if section == 'networking':
-            content += file_support.read_notes() + "\n"
+            content += __file_support__.read_notes() + "\n"
         for param in configs[section]:
             comment = configs[section][param]['description'].replace('\n', '')
             if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
@@ -176,7 +176,7 @@ def write_docker_configs(file_path:str, configs:dict, exception:bool=False)->boo
         content += "\n"
 
     # store content to file
-    return file_support.append_content(content=content, file_path=file_path, exception=exception)
+    return __file_support__.append_content(content=content, file_path=file_path, exception=exception)
 
 
 def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict, exception:bool=False)->bool:
@@ -228,7 +228,7 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
     for section in configs:
         content += f"{section.replace(' ', '_')}: \n"
         if section == 'networking':
-            content += file_support.read_notes()
+            content += __file_support__.read_notes()
         for param in configs[section]:
             if section == 'general' and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
                 if configs[section][param]['value'] == "":
@@ -247,7 +247,7 @@ def write_kubernetes_configs(file_path:str, metadata_configs:dict, configs:dict,
                 line = line % '""'
             content += comment + line
 
-    return file_support.append_content(content=content, file_path=file_path, exception=exception)
+    return __file_support__.append_content(content=content, file_path=file_path, exception=exception)
 
 
 def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_configs:dict=None,
@@ -284,7 +284,7 @@ def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_
         file_path = __create_file_name_kubernetes(node_type=node_type)
         if node_type == 'rest':
             file_path = __create_file_name_kubernetes(node_type='generic')
-        file_path = file_support.create_file(file_path=file_path, exception=exception)
+        file_path = __file_support__.create_file(file_path=file_path, exception=exception)
         write_kubernetes_configs(file_path=file_path, metadata_configs=kubernetes_configs, configs=configs,
                                  exception=exception)
 

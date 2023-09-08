@@ -1,4 +1,4 @@
-import file_support
+import __file_support__
 
 
 def merge_configs(default_configs:dict, updated_configs:dict)->dict:

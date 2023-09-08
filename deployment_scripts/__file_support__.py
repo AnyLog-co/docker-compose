@@ -107,12 +107,10 @@ def create_file(file_path:str, exception:bool=False)->bool:
         status
     """
     status = True
-    file_path = os.path.expanduser(os.path.expandvars(file_path))
-    file_ext = file_path.rsplit(".", 1)[-1]
 
     if os.path.isfile(file_path):
         try:
-            os.rename(file_path, file_path.replace(f".{file_ext}", f".{file_ext}.old"))
+            os.rename(file_path, f"{file_path}.old")
         except Exception as error:
             status = False
             if exception is True:
