@@ -974,7 +974,9 @@
       "question": "Company Name",
       "description": "Company node is associated with the monitor node",
       "enable": true,
-      "default": "New anylog_configs"
+      "default": "New Company",
+      "value": "",
+      "config_file": "anylog_configs"
     }
   }
 }

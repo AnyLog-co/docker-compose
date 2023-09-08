@@ -5,7 +5,7 @@ import file_io
 import support
 import kubernetes_questionnaire
 import questionnaire
-
+import docker_file_io
 
 # import support
 # import questionnaire
@@ -130,8 +130,9 @@ def main():
 
     if args.deployment_type == 'docker':
         # del node_configs['networking']['KUBERNETES_SERVICE_IP']
-        file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
-                              kubernetes_configs=None, exception=args.exception)
+        # file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build,
+        #                       kubernetes_configs=None, exception=args.exception)
+        docker_file_io.write_configs(deployment_type=args.deployment_type, configs=node_configs, build=args.build, exception=args.exception)
     elif args.deployment_type == 'kubernetes':
         kubernetes_configs = kubernetes_questionnaire.questionnaire(node_name=node_configs['general']['NODE_NAME']['value'],
                                                                     configs=kubernetes_configs)

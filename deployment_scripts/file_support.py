@@ -94,17 +94,19 @@ def read_yaml(config_file:str, exception:bool=False)->dict:
     return configs
 
 
-def create_file(file_path:str, exception:bool=False)->str:
+def create_file(file_path:str, exception:bool=False)->bool:
     """
     Create file based on file_path
     :args:
         file_path:str - file (with path) to store configurations in
         exception:bool - whether to print exceptions
     :params:
+        status:bool
         file_ext:str - extension of file_path
     :return:
-        file_path
+        status
     """
+    status = True
     file_path = os.path.expanduser(os.path.expandvars(file_path))
     file_ext = file_path.rsplit(".", 1)[-1]
 
@@ -112,19 +114,19 @@ def create_file(file_path:str, exception:bool=False)->str:
         try:
             os.rename(file_path, file_path.replace(f".{file_ext}", f".{file_ext}.old"))
         except Exception as error:
+            status = False
             if exception is True:
                 print(f"Failed to rename {file_path} (Error: {error})")
-            file_path = ""
 
-    if file_path != "": # reset file
+    if status is True: # reset file
         try:
             open(file_path, "w").close()
         except Exception as error:
+            status = False
             if exception is True: 
                 print(f"Failed to create file {file_path} (Error: {error})")
-            file_path = ""
 
-    return  file_path
+    return  status
 
 
 def read_notes(exception:bool=False)->str:

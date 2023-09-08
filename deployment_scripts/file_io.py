@@ -5,7 +5,7 @@ import support
 ROOT_PATH = os.path.expandvars(os.path.expanduser(__file__)).split('deployment_scripts')[0]
 
 
-def __create_file_name_docker(node_type:str)->str:
+def __create_file_name_docker(node_type:str, file_name:str, exception:bool=False)->str:
     """
     Create file path  based on node_type for Docker nodes
     :args:
@@ -15,14 +15,14 @@ def __create_file_name_docker(node_type:str)->str:
             - operator
             - publisher
             - query
-    :params:
-        file_name:str - file to store data in
+        file_name:str - file name
     :return:
-        file_name
+        full path of file name
     """
-    file_name = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), 'anylog_configs.env')
-
-    return file_name
+    full_path = os.path.join(ROOT_PATH, 'docker-compose', 'anylog-%s' % node_type.lower(), f'{file_name}.env')
+    if file_support.create_file(file_path=full_path, exception=exception) is False:
+        full_path = None
+    return full_path
 
 
 def __create_file_name_kubernetes(node_type:str)->str:
@@ -274,14 +274,11 @@ def write_configs(deployment_type:str, configs:dict, build:str=None, kubernetes_
     node_name = configs['general']['NODE_NAME']['value'].replace(' ', '-').replace('_', '-').lower()
 
     if deployment_type == 'docker':
-        file_path = __create_file_name_docker(node_type=node_type)
-        if node_type == 'rest':
-            file_path = __create_file_name_docker(node_type='generic')
-        file_path = file_support.create_file(file_path=file_path, exception=exception)
-        if file_path != "":
-            status = write_docker_configs(file_path=file_path, configs=configs, exception=exception)
-            if status is True:
-                status = update_dotenv_tag(file_path=file_path.split('anylog_configs.env')[0], build=build,
+        advance_configs = __create_file_name_docker(node_type=node_type, file_name="advance_configs", exception=exception)
+        anylog_configs = __create_file_name_docker(node_type=node_type, file_name="anylog_configs", exception=exception)
+        if write_docker_configs(configs=configs, advance_configs=advance_configs, anylog_configs=anylog_configs,
+                                exception=exception) is True:
+                status = update_dotenv_tag(file_path=anylog_configs.split('anylog_configs.env')[0], build=build,
                                            node_name=node_name, exception=exception)
     elif deployment_type == 'kubernetes':
         file_path = __create_file_name_kubernetes(node_type=node_type)
