@@ -1,0 +1,23 @@
+version: "3.7"
+services:
+  anylog-rest-node:
+    restart: always
+    image: anylog-node:${BUILD}
+    env_file:
+      - ${ENV_FILE}
+    secrets:
+      - my_secret
+    container_name: ${CONTAINER_NAME}
+    stdin_open: true
+    tty: true
+    network_mode: "${NETWORK}"
+    volumes:
+      - anylog-rest-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-rest-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-rest-node-data:/app/AnyLog-Network/data
+      - anylog-rest-node-local-scripts:/app/deployment-scripts
+volumes:
+  anylog-rest-node-anylog:
+  anylog-rest-node-blockchain:
+  anylog-rest-node-data:
+  anylog-rest-node-local-scripts:
