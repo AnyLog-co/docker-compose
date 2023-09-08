@@ -72,7 +72,7 @@
       "enable": false,
       "default": "",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NODE_TYPE": {
       "question": "Node Type",
@@ -87,7 +87,7 @@
       ],
       "default": "generic",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NODE_NAME": {
       "question": "Node Name",
@@ -95,7 +95,7 @@
       "enable": false,
       "default": "anylog-node",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "COMPANY_NAME": {
       "question": "Company Name",
@@ -103,7 +103,7 @@
       "enable": false,
       "default": "New Company",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "LOCATION": {
       "question": "Location",
@@ -278,7 +278,7 @@
         32767
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "ANYLOG_REST_PORT": {
       "question": "REST Port",
@@ -290,7 +290,7 @@
         32767
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "ANYLOG_BROKER_PORT": {
       "question": "Local Broker Port",
@@ -302,7 +302,7 @@
         32767
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "TCP_BIND": {
       "question": "Bind TCP Connection",
@@ -392,7 +392,7 @@
         "psql"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "DB_USER": {
       "question": "Database User",
@@ -400,7 +400,7 @@
       "enable": false,
       "default": "",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "DB_PASSWD": {
       "question": "Database Password",
@@ -408,7 +408,7 @@
       "enable": false,
       "default": "",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "DB_IP": {
       "question": "Database IP Address",
@@ -416,7 +416,7 @@
       "enable": false,
       "default": "127.0.0.1",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "DB_PORT": {
       "question": "Database Port",
@@ -424,7 +424,7 @@
       "enable": false,
       "default": 5432,
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "AUTOCOMMIT": {
       "question": "Enable Autocommit",
@@ -448,7 +448,7 @@
         "false"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MEMORY": {
       "question": "Set System Query in-memory",
@@ -460,7 +460,7 @@
         "false"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_ENABLE": {
       "question": "Enable NoSQL Database",
@@ -472,7 +472,7 @@
         "false"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_TYPE": {
       "question": "NoSQL database Type",
@@ -483,7 +483,7 @@
         "mongo"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_USER": {
       "question": "NoSQL Database User",
@@ -491,7 +491,7 @@
       "enable": false,
       "default": "",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_PASSWD": {
       "question": "NoSQL Database Password",
@@ -499,7 +499,7 @@
       "enable": false,
       "default": "",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_IP": {
       "question": "NoSQL Database IP Address",
@@ -507,7 +507,7 @@
       "enable": false,
       "default": "127.0.0.1",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_PORT": {
       "question": "NoSQL Database Port",
@@ -515,7 +515,7 @@
       "enable": false,
       "default": 27017,
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_BLOBS_DBMS": {
     "question": "NoSQL Blobs DBMS",
@@ -524,7 +524,7 @@
       "default": "true",
       "options": ["true", "false"],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_BLOBS_FOLDER": {
       "question": "Blobs Folder",
@@ -533,7 +533,7 @@
       "default": "true",
       "options": ["true", "false"],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_BLOBS_COMPRESS": {
       "question": "Compress Blobs",
@@ -542,7 +542,7 @@
       "default": "false",
       "options": ["true", "false"],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "NOSQL_BLOBS_REUSE": {
       "question": "Reuse Blobs",
@@ -551,7 +551,7 @@
       "default": "true",
       "options": ["true", "false"],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     }
   },
   "blockchain": {
@@ -561,7 +561,7 @@
       "enable": false,
       "default": "127.0.0.1:32048",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "SYNC_TIME": {
       "question": "Sync Time",
@@ -575,7 +575,7 @@
         "day"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "BLOCKCHAIN_SOURCE": {
       "question": "Blockchain Source",
@@ -617,7 +617,7 @@
       "enable": false,
       "default": "new-company-cluster",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "DEFAULT_DBMS": {
       "question": "Database Name",
@@ -625,7 +625,7 @@
       "enable": false,
       "default": "test",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "ENABLE_HA": {
       "question": "Enable HA",
@@ -657,7 +657,7 @@
         "false"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "TABLE_NAME": {
       "question": "Partitioned Table(s)",
@@ -673,7 +673,7 @@
       "enable": false,
       "default": "insert_timestamp",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "PARTITION_INTERVAL": {
       "question": "Partition Interval",
@@ -694,7 +694,7 @@
       "enable": false,
       "default": 3,
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "PARTITION_SYNC": {
       "question": "Partition Sync",
@@ -806,7 +806,7 @@
         "false"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_LOG": {
       "question": "Enable MQTT Logging",
@@ -818,7 +818,7 @@
         "false"
       ],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_BROKER": {
       "question": "Broker",
@@ -826,7 +826,7 @@
       "enable": false,
       "default": "driver.cloudmqtt.com",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_PORT": {
       "question": "Port",
@@ -834,7 +834,7 @@
       "enable": false,
       "default": 18785,
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_USER": {
       "question": "MQTT User",
@@ -842,7 +842,7 @@
       "enable": false,
       "default": "ibglowct",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_PASSWD": {
       "question": "MQTT Password",
@@ -850,7 +850,7 @@
       "enable": false,
       "default": "MSY4e009J7ts",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_TOPIC": {
       "question": "Topic",
@@ -858,7 +858,7 @@
       "enable": false,
       "default": "anylogedgex-demo",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_DBMS": {
       "question": "Database Name",
@@ -866,7 +866,7 @@
       "enable": false,
       "default": "test",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_TABLE": {
       "question": "Table Name",
@@ -874,7 +874,7 @@
       "enable": false,
       "default": "bring [sourceName]",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_TIMESTAMP_COLUMN": {
       "question": "Timestamp Column",
@@ -882,7 +882,7 @@
       "enable": false,
       "default": "now",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_VALUE_COLUMN": {
       "question": "Value Column",
@@ -890,7 +890,7 @@
       "enable": false,
       "default": "bring [readings][][value]",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MQTT_VALUE_COLUMN_TYPE": {
       "question": "Value type",
@@ -899,7 +899,7 @@
       "default": "int",
       "options": ["str", "int", "float", "timestamp", "bool"],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     }
 
   },
@@ -960,7 +960,7 @@
       "default": "false",
       "options": ["true", "false"],
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MONITOR_NODE": {
       "question": "Monitoring Node",
@@ -968,7 +968,7 @@
       "enable": false,
       "default": "query",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     },
     "MONITOR_NODE_COMPANY": {
       "question": "Company Name",
@@ -976,7 +976,7 @@
       "enable": false,
       "default": "New Company",
       "value": "",
-      "config_file": "anylog_configs"
+      "config_file": "advance_configs"
     }
   }
 }
