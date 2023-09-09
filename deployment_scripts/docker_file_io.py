@@ -1,11 +1,81 @@
 import json
+import dotenv
 import os
+import yaml
 
-from __file_support__ import read_notes,  create_file
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(os.path.abspath(__file__))).split("deployment_scripts")[0]
 
+def read_notes(exception:bool=False)->str:
+    """
+    Read comments in network_comment.txt
+    :args:
+        exception:bool - whether to print exceptions
+    :params:
+        file_path:str - file path form network_comment.txt
+        content:str - content from file
+    :return:
+        content
+    """
+    file_path = os.path.join(ROOT_PATH, 'deployment_scripts', 'config_files/network_comment.txt')
+    content = ""
+    if os.path.isfile(file_path):
+        try:
+            with open(file_path, 'r') as f:
+                try:
+                    content +=  f.read() + "\n"
+                except Exception as error:
+                    if exception is True:
+                        print(f'Failed to read comments in {file_path} (Error: {error})')
+        except Exception as error:
+            if exception is True:
+                print(f'Failed to open comments file {file_path} (Error: {error})')
+    elif exception is True:
+        print(f'Failed to locate comments file {file_path}')
 
+    return content
+
+
+def __create_file(file_path:str, exception:bool=False):
+    if os.path.isfile(file_path):
+        try:
+            os.rename(file_path, f"{file_path}.old")
+        except Exception as error:
+            file_path = ""
+            if exception is True:
+                print(f"Failed to rename {file_path} (Error: {error})")
+
+    if file_path != "":
+        try:
+            open(file_path, 'w').close()
+        except Exception as error:
+            file_path = ""
+            if exception is True:
+                print(f"Failed to recreate file {file_path} (Error: {error})")
+
+    return file_path
+
+def __write_file(config_file:str, content:str, exception:bool=False):
+    """
+    write content to file
+    :args:
+        config_file:str - file to write into
+        content:str - content to write into file
+    """
+    status = False
+    try:
+        with open(config_file, 'a') as f:
+            try:
+                f.write(content)
+            except Exception as error:
+                if exception is True:
+                    print(f"Failed to write content in {config_file} (Error: {error}")
+    except Exception as error:
+        if exception is True:
+            print(f"Failed to open {config_file} (Error: {error}")
+    else:
+        status = True
+    return status
 
 def read_configs_file(config_file:str, exception:bool=False)->dict:
     """
@@ -35,29 +105,6 @@ def read_configs_file(config_file:str, exception:bool=False)->dict:
 
     return file_content
 
-def write_file(config_file:str, content:str, exception:bool=False):
-    """
-    write content to file
-    :args:
-        config_file:str - file to write into
-        contnet:str - contnet to write into file
-    """
-    status = False
-    try:
-        with open(config_file, 'a') as f:
-            try:
-                f.write(content)
-            except Exception as error:
-                if exception is True:
-                    print(f"Failed to write content in {config_file} (Error: {error}")
-    except Exception as error:
-        if exception is True:
-            print(f"Failed to open {config_file} (Error: {error}")
-    else:
-        status = True
-    return status
-
-
 def docker_create_path(node_type:str, file_name:str, exception:bool=False):
     """
     Based on node_type and file_name create new file
@@ -78,26 +125,56 @@ def docker_create_path(node_type:str, file_name:str, exception:bool=False):
     if node_type == 'rest':
         node_type = 'generic'
     file_path = os.path.join(ROOT_PATH, "docker-compose", f"anylog-{node_type}", f"{file_name}.env")
-    if os.path.isfile(file_path):
-        try:
-            os.rename(file_path, f"{file_path}.old")
-        except Exception as error:
-            file_path = ""
-            if exception is True:
-                print(f"Failed to rename {file_path} (Error: {error})")
 
-    if file_path != "":
-        try:
-            open(file_path, 'w').close()
-        except Exception as error:
-            file_path = ""
-            if exception is True:
-                print(f"Failed to recreate file {file_path} (Error: {error})")
+    return __create_file(file_path=file_path, exception=exception)
 
-    return file_path
+def dotenv_create_path(node_type:str, exception:bool=False):
+    """
+    Based on node_type and file_name create new file
+    :process:
+        1. if file exists create a backup
+        2. create new file
+    :global:
+        ROOT_PATH - root path
+    :args:
+        node_type:str - AnyLog node type
+        file_name:str - from configs config_file value
+        exception:bool - whether to print exceptions
+    :params:
+        file_path:str - file path
+    :return:
+        file_path
+    """
+    if node_type == 'rest':
+        node_type = 'generic'
+    file_path = os.path.join(ROOT_PATH, "docker-compose", f"anylog-{node_type}", f".env")
 
+    return __create_file(file_path=file_path, exception=exception)
 
-def docker_create_configs_section(anylog_configs:str, advance_configs:str, configs:dict, exception:bool=False):
+def kubernetes_create_path(node_type:str, exception:bool=False):
+    """
+    Based on node_type create new kubernetes config file
+    :process:
+        1. if file exists create a backup
+        2. create new file
+    :global:
+        ROOT_PATH - root path
+    :args:
+        node_type:str - AnyLog node type
+        file_name:str - from configs config_file value
+        exception:bool - whether to print exceptions
+    :params:
+        file_path:str - file path
+    :return:
+        file_path
+    """
+    if node_type == 'rest':
+        node_type = 'generic'
+    file_path = os.path.join(ROOT_PATH, 'helm', 'sample-configurations', f'anylog_{node_type}.yaml')
+
+    return __create_file(file_path=file_path, exception=exception)
+
+def docker_write_configs_files(anylog_configs:str, advance_configs:str, configs:dict, exception:bool=False):
     """
     Create configuration file(s) for anylog  based on the  config_file
     :args:
@@ -152,20 +229,52 @@ def docker_create_configs_section(anylog_configs:str, advance_configs:str, confi
 
         if anylog_configs_content != "":
             anylog_configs_content += "\n"
-            write_file(config_file=anylog_configs, content=anylog_configs_content, exception=exception)
+            __write_file(config_file=anylog_configs, content=anylog_configs_content, exception=exception)
         if advanced_configs_content != "":
             advanced_configs_content += "\n"
-            write_file(config_file=advance_configs, content=advanced_configs_content, exception=exception)
+            __write_file(config_file=advance_configs, content=advanced_configs_content, exception=exception)
 
 
+def dotenv_update_configs_files(node_type:str, node_name:str, build:str, exception:bool=False):
+    """
+    Create configuration file(s) for anylog  based on the  config_file
+    :args:
+        anylog_configs:str - anylog_configs file path
+        advance_configs:str - advance_configs file path
+        configs:dict - configurations
+    :params:
+        DEFAULT_DOTENV_CONFIGS:dict - .env configurations
+        wrote_anylog_configs:bool - whether to write config anylog_configs
+        wrote_advanced_configs:bool - whether to write to advanced_configs
+        advanced_configs_content:str  - content in  advanced_configs
+        anylog_configs_content:str  - content in  anylog_configs
+    """
+    DEFAULT_DOTENV_CONFIGS = {
+        "BUILD": build,
+        "CONTAINER_NAME":  node_name,
+        "NETWORK": "host"
+    }
 
+    if node_type == 'rest':
+        node_type = 'generic'
+    file_path = os.path.join(ROOT_PATH, "docker-compose", f"anylog-{node_type}", ".env")
+    file_path = __create_file(file_path=file_path, exception=exception)
 
+    if file_path != "":
+        content = ""
+        for key in DEFAULT_DOTENV_CONFIGS:
+            content += f"{key}={DEFAULT_DOTENV_CONFIGS[key]}\n"
+        __write_file(config_file=file_path, content=content, exception=exception)
 
-
-
-
-
-
-
-
-
+def kubernetes_write_configs_files(configs:dict, config_file:str, exception:bool=False):
+    try:
+        yaml_configs = yaml.dump(configs    , default_style='"')
+    except Exception as error:
+        status = False
+        if exception is True:
+            print(f"Failed to convert configs to YAML format")
+    else:
+        status = __write_file(config_file=config_file, content=yaml_configs, exception=exception)
+        if status is True:
+            status = __write_file(config_file=config_file, content="\n", exception=exception)
+    return status

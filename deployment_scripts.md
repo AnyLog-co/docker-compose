@@ -4,7 +4,7 @@ The following tool provides a questionnaire to help setup configuration file(s) 
 
 
 ## Requirements
-1. [Docker](../docker-compose/README.md) or [Kubernetes](../helm/README.md)  
+1. [Docker](docker-compose/README.md) or [Kubernetes](../helm/README.md)  
 2. Python `dotenv` package - 
 ```bash 
 # using python3-pip
@@ -16,9 +16,9 @@ sudo apt-get -y install python3-dotenv
 
 ## Process
 1. Make sure databases are installed and configured
-   * The package contains deployment scripts for PostgreSQL ([Docker](../docker-compose/postgres) || 
-   [Kubernetes](../helm/postgres)) and MongoDB ([Docker](../docker-compose/mongodb)).
-2. Execute [deploy_node.sh](deploy_node.sh) for form of parameters to fill-out 
+   * The package contains deployment scripts for PostgreSQL ([Docker](docker-compose/postgres) || 
+   [Kubernetes](helm/postgres)) and MongoDB ([Docker](docker-compose/mongodb)).
+2. Execute [deploy_node.sh](deployment_scripts/deploy_node.sh) for form of parameters to fill-out 
 ```bash
 bash $HOME/deployments/deployment_scripts/deploy_node.sh
 ```
@@ -26,7 +26,7 @@ bash $HOME/deployments/deployment_scripts/deploy_node.sh
  
 
 ## Adding New Configurations
-1. In [configurations.json](configurations.json), add a new JSON object above "advanced settings" section.
+1. In [configurations.json](deployment_scripts/config_files/configurations.json), add a new JSON object above "advanced settings" section.
 ```json
 {
   "section name": {
@@ -56,7 +56,7 @@ bash $HOME/deployments/deployment_scripts/deploy_node.sh
 }
 ```
 
-2. In [questionnaire.py](../deployment_scripts/questionnaire.py), create a method that asks user(s) to fill in the new configuration
+2. In [questionnaire.py](deployment_scripts/questionnaire.py), create a method that asks user(s) to fill in the new configuration
 ```python
 def section_questions(configs:dict)->dict: 
     """
@@ -107,6 +107,6 @@ def section_questions(configs:dict)->dict:
     return configs
 ```
 
-3. In [main.py](../deployment_scripts/main.py), add an `elif` condition to process the new configurations
+3. In [main.py](deployment_scripts/main.py), add an `elif` condition to process the new configurations
 
 4. Make sure the new configuration(s)  are supported by AnyLog

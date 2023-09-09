@@ -199,7 +199,7 @@ def operator_number()->int:
     """
     default = 1
     description = "In the network, which operator is this node in your network. The value will be used as part of the node name."
-    question = f"Which operator is this [default: {default}]"
+    question = f"Which operator is this [default: {default}]: "
     error_msg = ""
     status = False
     while status is False:
@@ -279,10 +279,13 @@ def generic_section(configs:dict)->dict:
             configs[param]['value'] = configs[param]['default']
 
         if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
-            if param == 'ENABLE_MQTT' and configs['ENABLE_MQTT']['value'] == 'false':
-                for section in configs:
-                    if section != "ENABLE_MQTT":
-                        configs[section]['enable'] = False
+            for section in configs:
+                if section != "ENABLE_MQTT":
+                    configs[section]['enable'] = False
+        if param == "MONITOR_NODES" and configs["MONITOR_NODES"]["value"] == "false":
+            for section in configs:
+                if section in ["MONITOR_NODE", "MONITOR_NODE_COMPANY"]:
+                    configs[section]['enable'] = False
 
     return configs
 

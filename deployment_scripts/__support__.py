@@ -1,32 +1,3 @@
-import __file_support__
-
-
-def merge_configs(default_configs:dict, updated_configs:dict)->dict:
-    """
-    Given 2 sets of configurations merge them into a single dictionary
-    :args:
-        default_configs:dict - the original (or default) configurations
-        updated_configs:dict - the new (user defined configurations)
-    :return:
-        merged configurations of default_configs
-    """
-    for key in updated_configs:
-        if isinstance(updated_configs[key], dict):
-            """
-            either YAML or JSON file, in which case we need to go section by section 
-            """
-            if key in default_configs:
-                for param in updated_configs[key]:
-                    if param in default_configs[key]:
-                        default_configs[key][param]['default'] = updated_configs[key][param]
-                        # default_configs[key][param]['default'] = updated_configs[param]
-        else:
-            for key in default_configs:
-                for param in updated_configs:
-                    if param in default_configs[key]:
-                        default_configs[key][param]['default'] = updated_configs[param]
-
-    return default_configs
 
 
 def prep_configs(node_type:str, node_configs:dict, build:str=None, kubernetes_configs:dict={})->(dict, dict):

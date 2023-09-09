@@ -1,6 +1,4 @@
-import os
-import support
-import questionnaire
+import __support__
 
 
 def __generate_question(configs:dict)->str:
