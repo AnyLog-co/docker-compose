@@ -1,4 +1,4 @@
-from __support__ import generate_question, ask_question, print_questions
+from __support__ import print_questions
 
 
 def __kubernetes_prep(node_name:str, configs:dict)->dict:

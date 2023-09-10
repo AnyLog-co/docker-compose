@@ -1,15 +1,34 @@
 import ipaddress
 import re
 
-from questionnaire import __get_answer
+import questionnaire
+
 
 NODE_TYPES = {
-    'generic': ['LICENSE_KEY', 'NODE_NAME', 'COMPANY_NAME', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'DB_TYPE',
-                 'DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT', 'SYSTEM_QUERY', 'MEMORY', 'NOSQL_ENABLE',
-                 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT', 'LEDGER_CONN', 'ENABLE_MQTT', 'MQTT_LOG',
-                 'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD', 'MQTT_TOPIC',
-                 'MQTT_DBMS', 'MQTT_TABLE', 'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN', 'MQTT_VALUE_COLUMN_TYPE',
-                 'DEPLOY_LOCAL_SCRIPT', 'MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY'],
+    'generic': ['ANYLOG_PATH', 'ANYLOG_LIB', 'ANYLOG_HOME_PATH', 'ANYLOG_ID_DIR', 'BLOCKCHAIN_DIR', 'DATA_DIR',
+                'LOCAL_SCRIPTS', 'TEST_DIR', 'LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LOCATION',
+                'COUNTRY', 'STATE', 'CITY', 'ENABLE_AUTH', 'ENABLE_REST_AUTH', 'NODE_PASSWORD', 'USER_NAME',
+                'USER_PASSWORD', 'USER_TYPE', 'ROOT_PASSWORD', 'POLICY_BASED_NETWORKING', 'CONFIG_POLICY_NAME',
+                'EXTERNAL_IP', 'LOCAL_IP', 'KUBERNETES_SERVICE_IP', 'OVERLAY_IP', 'PROXY_IP', 'ANYLOG_SERVER_PORT',
+                'ANYLOG_REST_PORT', 'ANYLOG_BROKER_PORT', 'TCP_BIND', 'TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT',
+                'REST_THREADS', 'REST_SSL', 'BROKER_BIND', 'BROKER_THREADS', 'DB_TYPE', 'DB_USER', 'DB_PASSWD',
+                'DB_IP', 'DB_PORT', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY', 'NOSQL_ENABLE', 'NOSQL_TYPE',
+                'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT', 'NOSQL_BLOBS_DBMS', 'NOSQL_BLOBS_FOLDER',
+                'NOSQL_BLOBS_COMPRESS', 'NOSQL_BLOBS_REUSE', 'LEDGER_CONN', 'SYNC_TIME', 'BLOCKCHAIN_SOURCE',
+                'BLOCKCHAIN_DESTINATION', 'MEMBER', 'CLUSTER_NAME', 'DEFAULT_DBMS', 'ENABLE_HA', 'START_DATE',
+                'ENABLE_PARTITIONS', 'TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP',
+                'PARTITION_SYNC', 'CREATE_TABLE', 'UPDAE_TSD_INFO', 'ARCHIVE', 'COMPRESS_FILE', 'OPERATOR_THREADS',
+                'DBMS_FILE_LOCATION', 'TABLE_FILE_LOCATION', 'PUBLISHER_COMPRESS_FILE', 'ENABLE_MQTT', 'MQTT_LOG',
+                'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD', 'MQTT_TOPIC', 'MQTT_DBMS', 'MQTT_TABLE',
+                'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN', 'MQTT_VALUE_COLUMN_TYPE', 'DEPLOY_LOCAL_SCRIPT',
+                'QUERY_POOL', 'WRITE_IMMEDIATE', 'THRESHOLD_TIME', 'THRESHOLD_VOLUME', 'MONITOR_NODES',
+                'MONITOR_NODE', 'MONITOR_NODE_COMPANY'],
+    # 'generic': ['LICENSE_KEY', 'NODE_NAME', 'COMPANY_NAME', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'DB_TYPE',
+    #              'DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT', 'SYSTEM_QUERY', 'MEMORY', 'NOSQL_ENABLE',
+    #              'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT', 'LEDGER_CONN', 'ENABLE_MQTT', 'MQTT_LOG',
+    #              'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD', 'MQTT_TOPIC',
+    #              'MQTT_DBMS', 'MQTT_TABLE', 'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN', 'MQTT_VALUE_COLUMN_TYPE',
+    #              'DEPLOY_LOCAL_SCRIPT', 'MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY'],
     'master': ['LICENSE_KEY', 'NODE_NAME', 'COMPANY_NAME', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'DB_TYPE',
                'DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT', 'SYSTEM_QUERY', 'MEMORY', 'LEDGER_CONN', 'DEPLOY_LOCAL_SCRIPT',
                'MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY'],
@@ -30,8 +49,6 @@ NODE_TYPES = {
     }
 
 BASIC_CONFIG = ["LICENSE_KEY", "NODE_NAME", "COMPANY_NAME", "LEDGER_CONN", "MONITOR_NODES", "ENABLE_MQTT"]
-
-
 
 
 def format_configs(node_type:str, configs:dict, basic_config:bool=False):
@@ -76,8 +93,6 @@ def format_configs(node_type:str, configs:dict, basic_config:bool=False):
 
     return configs
 
-
-
 def print_questions(configs:dict)->bool:
     """
     Whether to print question
@@ -92,7 +107,6 @@ def print_questions(configs:dict)->bool:
         if configs[param]['enable'] is True:
             return True
     return False
-
 
 def validate_ports(anylog_tcp:dict, anylog_rest:dict, anylog_broker:dict):
     """
@@ -117,38 +131,37 @@ def validate_ports(anylog_tcp:dict, anylog_rest:dict, anylog_broker:dict):
             anylog_tcp['value'] = int(anylog_tcp['value'])
         except Exception as error:
             err_msg = f"TCP value type is invalid (Error: {error})..."
-            anylog_tcp = __get_answer(param='ANYLOG_SERVER_PORT', configs=anylog_tcp, err_msg=err_msg)
+            anylog_tcp = questionnaire.__get_answer(param='ANYLOG_SERVER_PORT', configs=anylog_tcp, err_msg=err_msg)
             continue
         try:
             anylog_rest['value'] = int(anylog_rest['value'])
         except Exception as error:
             err_msg = f"REST value type is invalid (Error: {error})..."
-            anylog_rest = __get_answer(param='ANYLOG_REST_PORT', configs=anylog_rest, err_msg=err_msg)
+            anylog_rest = questionnaire.__get_answer(param='ANYLOG_REST_PORT', configs=anylog_rest, err_msg=err_msg)
             continue
         try:
             anylog_broker['value'] = int(anylog_broker['value'])
         except Exception as error:
             err_msg = f"Broker value type is invalid (Error: {error})..."
-            anylog_broker = __get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
+            anylog_broker = questionnaire.__get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
             continue
 
         if anylog_tcp['value'] == anylog_rest['value']:
             err_msg = f"REST port value {anylog_tcp['value']} is already used by the TCP service..."
-            anylog_rest = __get_answer(param='ANYLOG_REST_PORT', configs=anylog_rest, err_msg=err_msg)
+            anylog_rest = questionnaire.__get_answer(param='ANYLOG_REST_PORT', configs=anylog_rest, err_msg=err_msg)
             continue
         elif anylog_tcp['value'] == anylog_broker['value']:
             err_msg = f"Broker port value {anylog_tcp['value']} is already used by the TCP service..."
-            anylog_broker = __get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
+            anylog_broker = questionnaire.__get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
             continue
         elif anylog_rest == anylog_broker:
             err_msg = f"Broker port value {anylog_rest} is already used by the REST service..."
-            anylog_broker = __get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
+            anylog_broker = questionnaire.__get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
             continue
         else: # no two services share a port value
             status = True
 
     return anylog_tcp, anylog_rest, anylog_broker
-
 
 def validate_ips(param:str, configs:str):
     """
@@ -197,7 +210,6 @@ def validate_ips(param:str, configs:str):
         err_msg = f"Invalid {param} value.. "
 
     return configs, err_msg
-
 
 def validate_ledger(ledger_conn:str):
     status = True
