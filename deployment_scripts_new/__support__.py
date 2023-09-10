@@ -108,77 +108,21 @@ def print_questions(configs:dict)->bool:
             return True
     return False
 
-def validate_ports(anylog_tcp:dict, anylog_rest:dict, anylog_broker:dict):
+def validate_ip(param:str, ip_addr:str)->str:
     """
-    Validate no two ports are the same
+    Validate IP address format
     :args:
-        anylog_tcp:dict - AnyLog TCP configs
-        anylog_rest:dict - AnyLog REST configs
-        anaylog_broker:dict - AnyLog broker configs
+        param:str - param name
+        ip_addr:str - ip address
     :params:
-        status:bool
-        err_msg:str - error meessage
-    :return:
-        anylog_rest, anylog_broker
-    """
-    status = False
-    if anylog_tcp['value'] == anylog_tcp['default'] and anylog_rest['value'] == anylog_rest['default'] and anylog_broker['value'] == anylog_broker['default']:
-        status = True
-
-    while status is False:
-        err_msg = ""
-        try:
-            anylog_tcp['value'] = int(anylog_tcp['value'])
-        except Exception as error:
-            err_msg = f"TCP value type is invalid (Error: {error})..."
-            anylog_tcp = questionnaire.__get_answer(param='ANYLOG_SERVER_PORT', configs=anylog_tcp, err_msg=err_msg)
-            continue
-        try:
-            anylog_rest['value'] = int(anylog_rest['value'])
-        except Exception as error:
-            err_msg = f"REST value type is invalid (Error: {error})..."
-            anylog_rest = questionnaire.__get_answer(param='ANYLOG_REST_PORT', configs=anylog_rest, err_msg=err_msg)
-            continue
-        try:
-            anylog_broker['value'] = int(anylog_broker['value'])
-        except Exception as error:
-            err_msg = f"Broker value type is invalid (Error: {error})..."
-            anylog_broker = questionnaire.__get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
-            continue
-
-        if anylog_tcp['value'] == anylog_rest['value']:
-            err_msg = f"REST port value {anylog_tcp['value']} is already used by the TCP service..."
-            anylog_rest = questionnaire.__get_answer(param='ANYLOG_REST_PORT', configs=anylog_rest, err_msg=err_msg)
-            continue
-        elif anylog_tcp['value'] == anylog_broker['value']:
-            err_msg = f"Broker port value {anylog_tcp['value']} is already used by the TCP service..."
-            anylog_broker = questionnaire.__get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
-            continue
-        elif anylog_rest == anylog_broker:
-            err_msg = f"Broker port value {anylog_rest} is already used by the REST service..."
-            anylog_broker = questionnaire.__get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
-            continue
-        else: # no two services share a port value
-            status = True
-
-    return anylog_tcp, anylog_rest, anylog_broker
-
-def validate_ips(param:str, configs:str):
-    """
-    Validate IP address
-    :args:
-        param:dict - param name
-        configs:dict - configuraiton for givenn param
-    ::params:
-        status:bool
-        valid_patterns:list - list of statuses (must have at least 1 True
-        patterns:list - list of patterns
+        valid_patterns:list - pattern status
         err_msg:str - error message
+        patterns:list - list of patterns
     :return:
-        config, error_msg
+        err_msg
     """
-    status = False
     valid_patterns = []
+    err_msg = f"Invalid format for {param.replace('_', ' ').lower()}..."
     patterns = [
         r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$', # 127.0.0.1
         r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', # my-hostname-123.net
@@ -186,59 +130,92 @@ def validate_ips(param:str, configs:str):
         r'([a-zA-Z0-9-]+)\.([a-zA-Z0-9-]+)\.([a-zA-Z0-9-]+)\.([a-zA-Z0-9-]+)', # sub-domain.sub.example.co.uk
         r'^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$' # valid hostname format
     ]
-
-    while status is False:
-        err_msg = ""
-        for pattern in patterns:
-            valid_patterns.append(re.match(pattern, configs['value']))
-        if True in valid_patterns:
-            status = True
-            continue
-
-        user_input = ""
-        err_msg = ""
-        while user_input not in ["y", " n"]:
-            user_input = input(f"\t{err_msg.strip()}IP pattern for  not found, do you want to keep IP {configs['value']} [y/n]? ").strip().lower()
-            if user_input not in ["y", " n"] and err_msg != "":
-                err_msg = f'Invalid answer {user_input}, please try again.. '
-
-        if user_input == "y":
-            status = True
-            err_msg = ""
-            continue
-
-        err_msg = f"Invalid {param} value.. "
-
-    return configs, err_msg
-
-def validate_ledger(ledger_conn:str):
-    status = True
-    err_msg = ""
-    ip_patterns = [
-        r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$',  # 127.0.0.1
-        r'^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',  # my-hostname-123.net
-        r'(\d+)\.(\d+)\.(\d+)\.(\d+)',  # 10.0.0.255
-        r'([a-zA-Z0-9-]+)\.([a-zA-Z0-9-]+)\.([a-zA-Z0-9-]+)\.([a-zA-Z0-9-]+)',  # sub-domain.sub.example.co.uk
-        r'^[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$'  # valid hostname format
-    ]
-    if ':' in ledger_conn:
-        ip, port = ledger_conn.split(":")
+    if ip_addr not in ["", None]:
         try:
-            port = int(port)
-        except Exception as error:
-            err_msg = f"LEDGER_CONN port is not of type integer (Error: {error})..."
-        else:
-            if port < 2048 or port > 32767:
-                err_msg = f"LEDGER_CONN port value {port} out of range..."
-            else:
-                status = False
-                for ip_pattern in ip_patterns:
-                    if re.match(ip_pattern, ip):
-                        status = True
-        if status is False:
-            err_msg = "Invalid LEDGER_CONN IP address..."
+            valid_patterns.append(ipaddress.IPv4Address(ip_addr))
+        except ipaddress.AddressValueError or TypeError:
+            for pattern in patterns:
+                valid_patterns.append(re.match(pattern, ip_addr))
+    if True in valid_patterns or ip_addr in ["", None]:
+        err_msg = ""
+
+    return err_msg
+
+def validate_port(param:str, port:str, rng:list=None)->str:
+    """
+    Validate port value
+    :args:
+        param:str - param name
+        value:str - value to check
+        rng:list - range value to be within
+    :params:
+        err_msg:str - error message
+    :return:
+        err_msg
+    """
+    err_msg = ""
+    try:
+        port = int(port)
+    except Exception as error:
+        err_msg = f"Invalid type {type(port)} for {param.replace('_', ' ').title()}..."
     else:
-        err_msg = "Invalid ledger_conn connection information..."
+        if rng is not None and port < rng[0] or port > rng[1]:
+            err_msg = f"Value for {param.replace('_', ' ').title()} out of range..."
 
-    return ledger_conn, err_msg
+    return port, err_msg
 
+def validate_ports(configs:dict)->dict:
+    """
+    Validate port values
+    :args:
+        configs:dict
+    :params:
+        status:bool
+        anylog_tcp:dict - sub-configs for TCP
+        anylog_rest:dict - sub-configs for REST
+        anylog_broker:dict - sub-configs for broker
+    :configs:
+        updated & validated configs
+    """
+    anylog_tcp = configs['ANYLOG_SERVER_PORT']
+    anylog_rest = configs['ANYLOG_REST_PORT']
+    anylog_broker = configs['ANYLOG_BROKER_PORT']
+    if anylog_broker['value'] is None:
+        anylog_broker['value'] = ""
+
+    status = False
+    while status is False:
+        anylog_tcp['value'], err_msg = validate_port(param='ANYLOG_SERVER_PORT', port=anylog_tcp['value'], rng=anylog_tcp['range'])
+        if err_msg != "":
+            continue
+        anylog_rest['value'], err_msg = validate_port(param='ANYLOG_REST_PORT', port=anylog_rest['value'], rng=anylog_rest['range'])
+        if err_msg != "":
+            continue
+        if anylog_broker['value'] not in ["", None]:
+            anylog_broker['value'], err_msg = validate_port(param='ANYLOG_BROKER_PORT', port=anylog_broker['value'], rng=anylog_broker['range'])
+            if err_msg != "":
+                continue
+
+        if anylog_tcp['value'] == anylog_rest['value']:
+            err_msg = f"REST port value {anylog_tcp['value']} is already used by the TCP service..."
+            anylog_rest = questionnaire.__get_answer(param='ANYLOG_REST_PORT', configs=anylog_rest, err_msg=err_msg)
+            continue
+        elif anylog_broker['value'] != '':
+            if anylog_tcp['value'] == anylog_broker['value']:
+                err_msg = f"Broker port value {anylog_tcp['value']} is already used by the TCP service..."
+                anylog_broker = questionnaire.__get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
+                continue
+            elif anylog_rest == anylog_broker:
+                err_msg = f"Broker port value {anylog_rest} is already used by the REST service..."
+                anylog_broker = questionnaire.__get_answer(param='ANYLOG_BROKER_PORT', configs=anylog_broker, err_msg=err_msg)
+                continue
+            else: # no two services share a port value
+                status = True
+        else:
+            status = True
+
+    configs['ANYLOG_SERVER_PORT'] = anylog_tcp
+    configs['ANYLOG_REST_PORT'] = anylog_rest
+    configs['ANYLOG_REST_PORT'] = anylog_broker
+
+    return configs

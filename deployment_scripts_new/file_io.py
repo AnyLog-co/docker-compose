@@ -6,35 +6,6 @@ import yaml
 
 ROOT_PATH = os.path.expandvars(os.path.expanduser(os.path.abspath(__file__))).split("deployment_scripts")[0]
 
-def read_notes(exception:bool=False)->str:
-    """
-    Read comments in network_comment.txt
-    :args:
-        exception:bool - whether to print exceptions
-    :params:
-        file_path:str - file path form network_comment.txt
-        content:str - content from file
-    :return:
-        content
-    """
-    file_path = os.path.join(ROOT_PATH, 'deployment_scripts', 'config_files/network_comment.txt')
-    content = ""
-    if os.path.isfile(file_path):
-        try:
-            with open(file_path, 'r') as f:
-                try:
-                    content +=  f.read() + "\n"
-                except Exception as error:
-                    if exception is True:
-                        print(f'Failed to read comments in {file_path} (Error: {error})')
-        except Exception as error:
-            if exception is True:
-                print(f'Failed to open comments file {file_path} (Error: {error})')
-    elif exception is True:
-        print(f'Failed to locate comments file {file_path}')
-
-    return content
-
 
 def __create_file(file_path:str, exception:bool=False):
     if os.path.isfile(file_path):
@@ -76,6 +47,35 @@ def __write_file(config_file:str, content:str, exception:bool=False):
     else:
         status = True
     return status
+
+def read_notes(exception:bool=False)->str:
+    """
+    Read comments in network_comment.txt
+    :args:
+        exception:bool - whether to print exceptions
+    :params:
+        file_path:str - file path form network_comment.txt
+        content:str - content from file
+    :return:
+        content
+    """
+    file_path = os.path.join(ROOT_PATH, 'deployment_scripts', 'config_files/network_comment.txt')
+    content = ""
+    if os.path.isfile(file_path):
+        try:
+            with open(file_path, 'r') as f:
+                try:
+                    content +=  f.read() + "\n"
+                except Exception as error:
+                    if exception is True:
+                        print(f'Failed to read comments in {file_path} (Error: {error})')
+        except Exception as error:
+            if exception is True:
+                print(f'Failed to open comments file {file_path} (Error: {error})')
+    elif exception is True:
+        print(f'Failed to locate comments file {file_path}')
+
+    return content
 
 def read_configs_file(config_file:str, exception:bool=False)->dict:
     """
@@ -233,7 +233,6 @@ def docker_write_configs_files(anylog_configs:str, advance_configs:str, configs:
         if advanced_configs_content != "":
             advanced_configs_content += "\n"
             __write_file(config_file=advance_configs, content=advanced_configs_content, exception=exception)
-
 
 def dotenv_update_configs_files(node_type:str, node_name:str, build:str, exception:bool=False):
     """

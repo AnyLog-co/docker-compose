@@ -1,8 +1,7 @@
 import ast
 import re
 
-from __support__ import validate_ledger
-# from __support__ import validate_ports, validate_ips, validate_ledger
+from __support__ import validate_ip, validate_ports
 
 def __generate_question(config_question:str, config_default=None, config_options=None, config_rng=None)->str:
     question = config_question
@@ -21,12 +20,12 @@ def __generate_question(config_question:str, config_default=None, config_options
         params += f"[{default}"
     if options != "":
         if params == " ":
-            params += f"[{options}]"
+            params += f"[{options}"
         else:
             params += f" | {options}"
     if rng != "":
         if params == " ":
-            params += f"[{rng}]"
+            params += f"[{rng}"
         else:
             params += f" | {rng}"
     if params == " ":
@@ -38,11 +37,25 @@ def __generate_question(config_question:str, config_default=None, config_options
 
 
 def __ask_question(question:str, param:str, description:str, default=None, options:list=None, rng:list=None, err_msg:str=""):
+    """
+    Ask aak question & validate inputs based on arguments
+    :args:
+        question:str - question to ask user
+        param:str - param looking for
+        description:str - param description
+        default - default value
+        options:list - param options
+        rng:list - range for a given default (usually for ports)
+        err_msg:str - error message
+    :params:
+        status:bool
+        user_input:str - user input
+    """
     status = False
     while status is False:
         if err_msg.strip() != "":
             err_msg = err_msg.strip() + " "
-        user_input = input(f"\t{err_msg}{question}").strip()
+        user_input = input(f"\t{err_msg}{question}").strip() or ""
         if user_input == 'help':
             err_msg = ""
             print(f"\t`{param}` param description - {description}")
@@ -97,8 +110,6 @@ def __get_answer(param:str, configs:dict, err_msg:str="")->dict:
                                 default=default, options=options, rng=rng, err_msg=err_msg)
 
     configs['value'] = user_input
-    if user_input == "":
-        configs['value'] = configs['default']
 
     return configs
 
@@ -136,7 +147,17 @@ def operator_number():
 
     return user_input
 
-def general_configs(configs):
+def general_configs(configs:dict)->dict:
+    """
+    General configurations user input
+    :args:
+        configs:dict - configurations
+    :params:
+        status:bool
+        err_msg:str - error message
+    :return:
+        status
+    """
     for param in configs:
         configs[param]['value'] = configs[param]['default']
         if configs[param]['enable'] is True:
@@ -144,28 +165,44 @@ def general_configs(configs):
             err_msg = ""
             while status is False:
                 configs[param] = __get_answer(param=param, configs=configs[param], err_msg=err_msg)
-                if param in ['LICENSE_KEY', 'NODE_TYPE', 'COMPANY_NAME'] and configs[param]['value'] == "":
+                if param in ['LICENSE_KEY', 'NODE_TYPE', 'COMPANY_NAME'] and configs[param]['value'] in ["", None]:
                     err_msg = f"Missing {param.replace('_', ' ').lower()} value... "
                     continue
                 else:
                     status = True
-
             if param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY'] and configs[param]['value'] == configs[param]['default']:
                 configs[param]['value'] = ""
+
     return  configs
 
-def blockchain_section(configs:dict):
+def network_configs(configs:dict)->dict:
+    """
+    General configurations user input
+    :args:
+        configs:dict - configurations
+    :params:
+        status:bool
+        err_msg:str - error message
+    :return:
+        status
+    """
     for param in configs:
         configs[param]['value'] = configs[param]['default']
         if configs[param]['enable'] is True:
             status = False
             err_msg = ""
             while status is False:
-                configs[param] = __get_answer(param=param, configs=configs[param], err_msg="")
-                if param == 'LEDGER_CONN':
-                    ledger_conn, err_msg =  validate_ledger(ledger_conn=configs[param]['VALUE'])
+                configs[param] = __get_answer(param=param, configs=configs[param], err_msg=err_msg)
+                if param in ['EXTERNAL_IP', 'LOCAL_IP', 'KUBERNETES_SERVICE_IP', 'OVERLAY_IP', 'PROXY_IP']:
+                    err_msg = validate_ip(param=param, ip_addr=configs[param]['value'])
                     if err_msg == "":
                         status = True
+                elif (configs['ANYLOG_BROKER_PORT']['enable'] is False and param == 'ANYLOG_REST_PORT') or param == 'ANYLOG_BROKER_PORT':
+                    configs = validate_ports(configs=configs)
+                    status = True
+                else:
+                    status = True
 
 
-    return configs
+
+    return  configs

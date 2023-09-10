@@ -80,7 +80,7 @@
       "enable": false,
       "options": [
         "generic",
-        "ledger",
+        "master",
         "operator",
         "query",
         "publisher"

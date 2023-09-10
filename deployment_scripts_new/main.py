@@ -68,10 +68,9 @@ def main():
             if section == 'general':
                 print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
                 node_configs[section] = questionnaire.general_configs(configs=node_configs[section])
-                print(node_configs[section])
-    #         if section == 'networking':
-    #             print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
-    #             node_configs[section] = questionnaire.networking_section(configs=node_configs[section])
+            if section == 'networking':
+                print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
+                node_configs[section] = questionnaire.network_configs(configs=node_configs[section])
     #         elif section == 'database':
     #             print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
     #             node_configs[section] = questionnaire.database_section(configs=node_configs[section])
