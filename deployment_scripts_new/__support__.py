@@ -219,3 +219,14 @@ def validate_ports(configs:dict)->dict:
     configs['ANYLOG_REST_PORT'] = anylog_broker
 
     return configs
+
+
+def validate_process_time(param:str, value:str, options:list)->str:
+    """
+    Validate process time
+    """
+    err_msg = ""
+    pattern = fr"^(\d+)\s*({'|'.join(options)})"
+    if not re.match(pattern, value):
+        err_msg = f"Invalid value {value} for {param.lower().replace('_', ' ')}..."
+    return err_msg

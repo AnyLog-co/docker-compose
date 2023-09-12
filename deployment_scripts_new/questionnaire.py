@@ -1,7 +1,7 @@
 import ast
 import re
 
-from __support__ import validate_ip, validate_ports
+from __support__ import validate_ip, validate_port, validate_ports, validate_process_time
 
 def __generate_question(config_question:str, config_default=None, config_options=None, config_rng=None)->str:
     question = config_question
@@ -36,7 +36,7 @@ def __generate_question(config_question:str, config_default=None, config_options
     return f"{question}{params}"
 
 
-def __ask_question(question:str, param:str, description:str, default=None, options:list=None, rng:list=None, err_msg:str=""):
+def __ask_question(question:str, param:str, description:str, default=None, err_msg:str=""):
     """
     Ask aak question & validate inputs based on arguments
     :args:
@@ -53,30 +53,23 @@ def __ask_question(question:str, param:str, description:str, default=None, optio
     """
     status = False
     while status is False:
+        status = True
         if err_msg.strip() != "":
             err_msg = err_msg.strip() + " "
-        user_input = input(f"\t{err_msg}{question}").strip() or ""
+        user_input = input(f"\t{err_msg}{question}").strip()
         if user_input == 'help':
             err_msg = ""
             print(f"\t`{param}` param description - {description}")
             continue
-        elif user_input == "":
+        elif user_input in ["", None]:
             user_input = default
-            status = True
-        elif options is not None and user_input not in options:
-            err_msg = f"Invalid value {user_input} for {param.title().replace('_', ' ')}... "
-        elif rng is not None:
+        elif isinstance(default, int):
             try:
                 user_input = int(user_input)
-            except Exception as error:
-                err_msg = f"Invalid value {user_input} type for {param.title().replace('_', ' ')}..."
-            else:
-                if user_input < rng[0] or user_input > rng[1]:
-                    err_msg = f"Value for {param.title().replace('_', ' ')} is out of range..."
-                else:
-                    status = True
-        else:
-            status = True
+            except:
+                err_msg = f"Invalid value type {type(user_input)} for {param.title().replace('_', ' ')}..."
+                status = False
+
 
     return user_input
 
@@ -113,7 +106,7 @@ def __get_answer(param:str, configs:dict, err_msg:str="")->dict:
 
     return configs
 
-def operator_number():
+def operator_number()->int:
     """
    for a demo based deployment, get the numeric value for the new operator
    :params:
@@ -147,6 +140,24 @@ def operator_number():
 
     return user_input
 
+
+def generic_configs(configs:dict)->dict:
+    """
+    Generic configurations questioniare
+    :sections:
+        - authentication
+    :args:
+        configs:dict - section configuraiions
+    :retunr:
+        configs
+    """
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            configs[param] = __get_answer(param=param, configs=configs[param], err_msg="")
+    return configs
+
+
 def general_configs(configs:dict)->dict:
     """
     General configurations user input
@@ -174,6 +185,14 @@ def general_configs(configs:dict)->dict:
                 configs[param]['value'] = ""
 
     return  configs
+
+
+def configs_questions(configs:dict)->dict:
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            pass
+
 
 def network_configs(configs:dict)->dict:
     """
@@ -203,6 +222,212 @@ def network_configs(configs:dict)->dict:
                 else:
                     status = True
 
-
-
     return  configs
+
+
+def database_configs(configs:dict)->dict:
+    """
+    Validate database configurations
+    :args:
+        configs:dict - databse configurations
+    :params:
+        status:bool
+        err_msg:str - error message
+    :return:
+        configs
+    """
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            status = False
+            err_msg = ""
+            while status is False:
+                configs[param] = __get_answer(param=param, configs=configs[param], err_msg=err_msg)
+                if param == "DB_TYPE" and configs[param]['value'] == 'sqlite':
+                    for section in ['DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT']:
+                        configs[section]['enable'] = False
+                elif param == 'NOSQL_ENABLE' and configs[param]['value'] == 'false':
+                    for section in ['NOSQL_TYPE', 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT',
+                                    'NOSQL_BLOBS_DBMS', 'NOSQL_BLOBS_FOLDER', 'NOSQL_BLOBS_COMPRESS',
+                                    'NOSQL_BLOBS_REUSE']:
+                        configs[section]['enable'] = False
+                elif param in ["DB_IP", 'NOSQL_IP']:
+                    err_msg = validate_ip(param=param, ip_addr=configs[param]['value'])
+                elif param in ["DB_PORT", "NOSQL_PORT"]:
+                    err_msg = validate_port(param=param, port=configs[param]['value'], rng=None)
+                if err_msg == "":
+                    status = True
+    return configs
+
+
+def blockchain_section(configs:dict)->dict:
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            status = False
+            err_msg = ""
+            while status is False:
+                configs[param] = __get_answer(param=param, configs=configs[param], err_msg=err_msg)
+                if param == "LEDGER_CONN":
+                    try:
+                        ip, port = configs[param]['value'].split(":")
+                    except Exception as error:
+                        err_msg = "Invalid ledger connection format (ex. {IP}:{ANYLOG_SERVER_PORT})"
+                        continue
+                    err_msg = validate_ip(param="LEDGER_CONN", ip_addr=ip)
+                    if err_msg != "":
+                        continue
+                    err_msg = validate_port(param='LEDGER_CONN', port=port, rng=None)
+                    if err_msg != "":
+                        continue
+                    status = True
+                elif param == "SYNC_TIME":
+                    err_msg = validate_process_time(param=param, value=configs[param]['value'])
+                    if err_msg != "":
+                        continue
+                    status = True
+                else:
+                    status = True
+
+    return configs
+
+
+def operator_section(configs:dict)->dict:
+    """
+    Operator section configs
+    :args:
+        configs:dict - configurations for operator
+    :params:
+        status:bool
+        err_msg;str
+    :return:
+        configs
+    """
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            status = False
+            err_msg = ""
+            while status is False:
+                configs[param] = __get_answer(param=param, configs=configs[param], err_msg=err_msg)
+                if param in ['MEMBER', 'START_DATE', 'OPERATOR_THREADS']:
+                    try:
+                        value = int(configs[param]['value'])
+                    except Exception as error:
+                        err_msg = f"Invalid value type {type(configs[param]['value'])} for {param.lower()}..."
+                    else:
+                        if param == 'START_DATE':
+                            configs[param]['value'] = "-{value}d"
+                        else:
+                            configs[param]['value'] = value
+                        status = True
+                elif param == "ENABLE_HA" and param[param]['value'] == 'false':
+                    configs['START_DATE']['enable'] = False
+                    status = True
+                elif param == 'ENABLE_PARTITIONS' and param[param]['value'] == 'false':
+                    for section in ['TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_COLUMN', 'PARTITION_INTERVAL',
+                                    'PARTITION_KEEP', 'PARTITION_SYNC']:
+                        configs[section]['enable'] = False
+                    status = True
+                else:
+                    status = True
+
+    return configs
+
+
+def publisher_configs(configs:dict)->dict:
+    """
+    Configuration for publisher node
+    :args:
+        configs:dict
+    :params:
+        status:bool
+        err_msg:str - error message
+    :return:
+        err_msg
+    """
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            status = False
+            err_msg = ""
+            while status is False:
+                configs[param] = __get_answer(param=param, configs=configs[param], err_msg=err_msg)
+                if param in ["DBMS_FILE_LOCATION", "TABLE_FILE_LOCATION"]:
+                    try:
+                        value = int(configs[param]['value'])
+                    except Exception as error:
+                        err_msg = f"Invalid value type {type(configs[param]['value'])}"
+                    else:
+                        configs[param]['value'] = value
+
+                if error == "":
+                    status = True
+
+
+def mqtt_section(configs:dict)->dict:
+    """
+    Configuration for MQTT configs
+    :args:
+        configs:dict
+    :params:
+        status:bool
+        err_msg:str - error message
+    :return:
+        configs
+    """
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            status = False
+            err_msg = ""
+            while status is False:
+                configs[param] = __get_answer(param=param, configs=configs[param], err_msg=err_msg)
+                if param == 'ENABLE_MQTT' and configs[param]['value'] == 'false':
+                    for section in ['MQTT_LOG', 'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD', 'MQTT_TOPIC',
+                                    'MQTT_DBMS', 'MQTT_TABLE', 'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN',
+                                    'MQTT_VALUE_COLUMN_TYPE']:
+                        configs[param]['enable'] = False
+                elif param == 'MQTT_BROKER':
+                    err_msg = validate_ip(param=param, ip_addr=configs[param]['value'])
+                elif param == 'MQTT_PORT':
+                    try:
+                        value = int(configs[param]['value'])
+                    except Exception as error:
+                        err_msg = f"Invalid value type {type(configs[param]['value'])} for {param.lower()}..."
+                    else:
+                        configs[param]['value'] = value
+                if err_msg == "":
+                    status = True
+
+    return configs
+
+def advanced_settings_section(configs:dict)->dict:
+    """
+    Advanced setting configurations
+    :args:
+        configs:dict
+    :params:
+        status:bool
+        err_msg:str - error message
+    :return:
+        configs
+    """
+    for param in configs:
+        configs[param]['value'] = configs[param]['default']
+        if configs[param]['enable'] is True:
+            status = False
+            err_msg = ""
+            while status is False:
+                configs[param] = __get_answer(param=param, configs=configs[param], err_msg=err_msg)
+                if param in 'QUERY_POOL':
+                    try:
+                        value = int(configs[param]['value'])
+                    except Exception as error:
+                        err_msg = f"Invalid value type {type(configs[param]['value'])} for {param.lower()}..."
+                    else:
+                        configs[param]['value'] = value
+                if err_msg != "":
+                    status = True
+
+    return configs

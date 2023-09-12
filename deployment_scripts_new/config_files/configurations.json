@@ -518,7 +518,7 @@
       "config_file": "advance_configs"
     },
     "NOSQL_BLOBS_DBMS": {
-    "question": "NoSQL Blobs DBMS",
+      "question": "NoSQL Blobs DBMS",
       "description": "Store blobs in database",
       "enable": false,
       "default": "true",
@@ -643,7 +643,10 @@
       "question": "Number of days to sync",
       "description": "How many days back to sync between nodes",
       "enable": false,
-      "default": 30,
+      "default": "-30d",
+      "options": [
+
+      ],
       "value": "",
       "config_file": "advance_configs"
     },
@@ -720,7 +723,7 @@
       "value": "",
       "config_file": "advance_configs"
     },
-    "UPDAE_TSD_INFO": {
+    "UPDATE_TSD_INFO": {
       "question": "Track JSON Files",
       "description": "Record data inserted on Operator",
       "enable": false,
@@ -760,7 +763,7 @@
       "question": "Operator Threads",
       "description": "How many threads to use in the operator process\n",
       "enable": false,
-      "default": 1,
+      "default": 3,
       "value": "",
       "config_file": "advance_configs"
     }
