@@ -1,0 +1,23 @@
+version: "2.2"
+services:
+  anylog-generic-node:
+    image: anylogco/anylog-network:${BUILD}
+    restart: always
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      - INIT_TYPE=${INIT_TYPE}
+    container_name: ${CONTAINER_NAME}
+    stdin_open: true
+    tty: true
+    network_mode: "${NETWORK}"
+    volumes:
+      - anylog-generic-node-anylog:/app/AnyLog-Network/anylog
+      - anylog-generic-node-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-generic-node-data:/app/AnyLog-Network/data
+      - anylog-generic-node-local-scripts:/app/deployment-scripts
+volumes:
+  anylog-generic-node-anylog:
+  anylog-generic-node-blockchain:
+  anylog-generic-node-data:
+  anylog-generic-node-local-scripts:
