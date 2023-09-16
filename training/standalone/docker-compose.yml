@@ -4,7 +4,7 @@ services:
     image: anylogco/anylog-network:${BUILD}
     restart: always
     env_file:
-      - anylog_master.env
+      - master_configs.env
     environment:
       - INIT_TYPE=${INIT_TYPE}
     container_name: anylog-master
