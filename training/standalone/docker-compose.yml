@@ -37,7 +37,7 @@ services:
     image: anylogco/anylog-network:${BUILD}
     restart: always
     env_file:
-      - operator1_configs1.env
+      - operator1_configs.env
     environment:
       - INIT_TYPE=${INIT_TYPE}
     container_name: ${CONTAINER_NAME}
@@ -53,7 +53,7 @@ services:
     image: anylogco/anylog-network:${BUILD}
     restart: always
     env_file:
-      - ${ENV_FILE}
+      - operator2_configs.env
     environment:
       - INIT_TYPE=${INIT_TYPE}
     container_name: ${CONTAINER_NAME}
@@ -71,7 +71,7 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    network_mode: "host"w
+    network_mode: "host"
     environment:
       - CONN_IP=${CONN_IP}
       - CLI_PORT=${CLI_PORT}
