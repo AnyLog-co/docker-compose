@@ -1,6 +1,6 @@
 version: "2.2"
 services:
-  anylog-master-node:
+  anylog-master:
     image: anylogco/anylog-network:${BUILD}
     restart: always
     env_file:
@@ -12,13 +12,90 @@ services:
     tty: true
     network_mode: ${NETWORK}
     volumes:
-      - anylog-master-node-anylog:/app/AnyLog-Network/anylog
-      - anylog-master-node-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-master-node-data:/app/AnyLog-Network/data
-      - anylog-master-node-local-scripts:/app/deployment-scripts
-
+      - anylog-master-anylog:/app/AnyLog-Network/anylog
+      - anylog-master-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-master-data:/app/AnyLog-Network/data
+      - anylog-master-local-scripts:/app/deployment-scripts
+  anylog-query:
+    image: anylogco/anylog-network:${BUILD}
+    restart: always
+    env_file:
+      - query_configs.env
+    environment:
+      - INIT_TYPE=${INIT_TYPE}
+    container_name: ${CONTAINER_NAME}
+    stdin_open: true
+    tty: true
+    network_mode: "${NETWORK}"
+    volumes:
+      - anylog-query-anylog:/app/AnyLog-Network/anylog
+      - anylog-query-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-query-data:/app/AnyLog-Network/data
+      - anylog-query-local-scripts:/app/deployment-scripts
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+  anylog-operator1:
+    image: anylogco/anylog-network:${BUILD}
+    restart: always
+    env_file:
+      - operator1_configs1.env
+    environment:
+      - INIT_TYPE=${INIT_TYPE}
+    container_name: ${CONTAINER_NAME}
+    stdin_open: true
+    tty: true
+    network_mode: "${NETWORK}"
+    volumes:
+      - anylog-operator1-anylog:/app/AnyLog-Network/anylog
+      - anylog-operator1-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-operator1-data:/app/AnyLog-Network/data
+      - anylog-operator1-local-scripts:/app/deployment-scripts
+  anylog-operator2:
+    image: anylogco/anylog-network:${BUILD}
+    restart: always
+    env_file:
+      - ${ENV_FILE}
+    environment:
+      - INIT_TYPE=${INIT_TYPE}
+    container_name: ${CONTAINER_NAME}
+    stdin_open: true
+    tty: true
+    network_mode: "${NETWORK}"
+    volumes:
+      - anylog-operator2-anylog:/app/AnyLog-Network/anylog
+      - anylog-operator2-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-operator2-data:/app/AnyLog-Network/data
+      - anylog-operator2-local-scripts:/app/deployment-scripts
+  remote-cli:
+    image: anylogco/remote-cli:latest
+    container_name: remote-cli
+    restart: always
+    stdin_open: true
+    tty: true
+    network_mode: "host"w
+    environment:
+      - CONN_IP=${CONN_IP}
+      - CLI_PORT=${CLI_PORT}
+    volumes:
+      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
-  anylog-master-node-anylog:
-  anylog-master-node-blockchain:
-  anylog-master-node-data:
-  anylog-master-node-local-scripts:
+  anylog-master-anylog:
+  anylog-master-blockchain:
+  anylog-master-data:
+  anylog-master-local-scripts:
+  anylog-query-anylog:
+  anylog-query-blockchain:
+  anylog-query-data:
+  anylog-query-local-scripts:
+  anylog-operator1-anylog:
+  anylog-operator1-blockchain:
+  anylog-operator1-data:
+  anylog-operator1-local-scripts:
+  anylog-operator2-anylog:
+  anylog-operator2-blockchain:
+  anylog-operator2-data:
+  anylog-operator2-local-scripts:
+  remote-cli:
+  remote-cli-current:
+
+
