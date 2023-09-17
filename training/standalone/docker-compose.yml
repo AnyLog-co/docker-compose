@@ -23,7 +23,7 @@ services:
       - query_configs.env
     environment:
       - INIT_TYPE=${INIT_TYPE}
-    container_name: ${CONTAINER_NAME}
+    container_name: anylog-query
     stdin_open: true
     tty: true
     network_mode: "${NETWORK}"
@@ -40,7 +40,7 @@ services:
       - operator1_configs.env
     environment:
       - INIT_TYPE=${INIT_TYPE}
-    container_name: ${CONTAINER_NAME}
+    container_name: anylog-operator1
     stdin_open: true
     tty: true
     network_mode: "${NETWORK}"
@@ -56,7 +56,7 @@ services:
       - operator2_configs.env
     environment:
       - INIT_TYPE=${INIT_TYPE}
-    container_name: ${CONTAINER_NAME}
+    container_name: anylog-operator2
     stdin_open: true
     tty: true
     network_mode: "${NETWORK}"
