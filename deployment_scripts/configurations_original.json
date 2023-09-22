@@ -7,6 +7,41 @@
       "default": "/app",
       "value": ""
     },
+    "ANYLOG_LIB": {
+      "question": "AnyLog Library Path",
+      "description": "AnyLog Library Path",
+      "enable": false,
+      "default": "/app/AnyLog-Network",
+      "value": ""
+    },
+    "ANYLOG_HOME_PATH": {
+      "question": "AnyLog Home Path",
+      "description": "AnyLog Home Path",
+      "enable": false,
+      "default": "/app/AnyLog-Network",
+      "value": ""
+    },
+    "ANYLOG_ID_DIR": {
+      "question": "AnyLog IDs Dir",
+      "description": "!id_dir: ${ANYLOG_HOME}/anylog",
+      "enable": false,
+      "default": "/app/AnyLog-Network/anylog",
+      "value": ""
+    },
+    "BLOCKCHAIN_DIR": {
+      "question": "AnyLog Blockchain Dir",
+      "description": "!blockchain_dir: ${ANYLOG_HOME}/blockchain",
+      "enable": false,
+      "default": "/app/AnyLog-Network/blockchain",
+      "value": ""
+    },
+    "DATA_DIR": {
+      "question": "AnyLog Data Dir",
+      "description": "!data_dir: ${ANYLOG_HOME}/data",
+      "enable": false,
+      "default": "/app/AnyLog-Network/data",
+      "value": ""
+    },
     "LOCAL_SCRIPTS": {
       "question": "AnyLog Local Scripts Dir",
       "description": "!local_scripts: ${ANYLOG_HOME}/deployment-scripts/scripts",
@@ -35,13 +70,15 @@
       "description": "Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols",
       "enable": false,
       "options": [
-        "generic",
-        "master",
+        "rest",
+        "ledger",
         "operator",
         "query",
-        "publisher"
+        "publisher",
+        "standalone",
+        "standalone-publisher"
       ],
-      "default": "generic",
+      "default": "rest",
       "value": ""
     },
     "NODE_NAME": {
@@ -87,13 +124,107 @@
       "value": ""
     }
   },
+  "authentication": {
+    "ENABLE_AUTH": {
+      "question": "Enable Authentication",
+      "description": "When using AnyLog authentication, nodes should have authentcation enabled once declared as a member on the blockchain",
+      "enable": false,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
+    "ENABLE_REST_AUTH": {
+      "question": "Enable Basic REST Authentication",
+      "description": "Whether or not to enable authentication when accessing node via REST",
+      "enable": false,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "false",
+      "value": ""
+    },
+    "NODE_PASSWORD": {
+      "question": "Node Password",
+      "description": "Provide a password to protect sensitive information that is kept on the node",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "USER_NAME": {
+      "question": "User Name",
+      "description": "user that can connect to this node",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "USER_PASSWORD": {
+      "question": "User Password",
+      "description": "Password associated with the user",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "USER_TYPE": {
+      "question": "User Type",
+      "description": "The type of user",
+      "enable": false,
+      "options": [
+        "admin",
+        "user"
+      ],
+      "default": "admin",
+      "value": ""
+    },
+    "ROOT_PASSWORD": {
+      "question": "Root User Password",
+      "description": "Password used by the ROOT member in authentication",
+      "enable": false,
+      "default": "",
+      "value": ""
+    }
+  },
   "networking": {
-    "CONFIG_NAME": {
+    "POLICY_BASED_NETWORKING": {
+      "question": "Connect to Networking based on Blockchain Policy",
+      "description": "Connect to TCP, REST and Message Broker (if configured) based on correlating node policy",
+      "enable": true,
+      "options": [
+        "true",
+        "false"
+      ],
+      "default": "true",
+      "value": ""
+    },
+    "CONFIG_POLICY_NAME": {
       "question": "Config Policy Name",
       "description": "Declare Policy name",
       "enable": true,
       "default": "",
       "value": ""
+    },
+    "EXTERNAL_IP": {
+      "question": "External IP",
+      "description": "External IP address of the machine",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "LOCAL_IP": {
+      "question": "Local IP",
+      "description": "Local network IP address of the machine",
+      "enable": false,
+      "default": "",
+      "value": ""
+    },
+    "KUBERNETES_SERVICE_IP": {
+       "description": "Kubernetes service name - used in stead of local IP on the blockchain if overlay IP is not declared",
+       "enable": false, 
+       "default": "anylog-node-svs", 
+       "value": "" 
     },
     "OVERLAY_IP": {
       "question": "Overlay IP",
@@ -175,7 +306,7 @@
       "question": "REST Timeout",
       "description": "Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.",
       "enable": false,
-      "default": 30,
+      "default": 20,
       "value": ""
     },
     "REST_THREADS": {
@@ -183,6 +314,13 @@
       "description": "The number of concurrent threads supporting HTTP requests.\t",
       "enable": false,
       "default": 6,
+      "value": ""
+    },
+    "REST_SSL": {
+      "question": "Enable REST SSL",
+      "description": "Boolean value to determine if messages are send over HTTPS with client certificates.",
+      "enable": false,
+      "default": "false",
       "value": ""
     },
     "BROKER_BIND": {
@@ -326,15 +464,31 @@
       "default": 27017,
       "value": ""
     },
-    "BLOBS_DBMS": {
+    "NOSQL_BLOBS_DBMS": {
       "question": "Blobs DBMS",
       "description": "Store blobs in database",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_FOLDER": {
+      "question": "Blobs Folder",
+      "description": "Store blobs in folder",
+      "enable": true,
+      "default": "true",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "NOSQL_BLOBS_COMPRESS": {
+      "question": "Compress Blobs",
+      "description": "Compress stored blobs",
       "enable": true,
       "default": "false",
       "options": ["true", "false"],
       "value": ""
     },
-    "BLOBS_REUSE": {
+    "NOSQL_BLOBS_REUSE": {
       "question": "Reuse Blobs",
       "description": "Whether (re)store a blob if already exists",
       "enable": true,
@@ -387,7 +541,7 @@
       "value": ""
     }
   },
-  "operator+publisher": {
+  "operator": {
     "MEMBER": {
       "question": "Member ID",
       "description": "Operator ID",
@@ -456,7 +610,7 @@
       "question": "Partition Interval",
       "description": "Time period to partition by",
       "enable": true,
-      "default": "1 day",
+      "default": "14 days",
       "options": [
         "hour",
         "day",
@@ -468,7 +622,7 @@
       "question": "Partition Keep",
       "description": "How many partitions to keep",
       "enable": true,
-      "default": 3,
+      "default": 6,
       "value": ""
     },
     "PARTITION_SYNC": {
@@ -479,6 +633,39 @@
       "options": [
         "day",
         "month"
+      ],
+      "value": ""
+    },
+    "CREATE_TABLE": {
+      "question": "Create Table",
+      "description": "Whether to create a new table in the operator",
+      "enable": false,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "UPDAE_TSD_INFO": {
+      "question": "Track JSON Files",
+      "description": "Record data inserted on Operator",
+      "enable": false,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
+      "value": ""
+    },
+    "ARCHIVE": {
+      "question": "Archive Files",
+      "description": "Archive data coming in",
+      "enable": false,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
       ],
       "value": ""
     },
@@ -498,6 +685,33 @@
       "description": "How many threads to use in the operator process\n",
       "enable": true,
       "default": 1,
+      "value": ""
+    }
+  },
+  "publisher": {
+    "DBMS_FILE_LOCATION": {
+      "question": "DB File Location",
+      "description": "Location of logical database name within file name",
+      "enable": true,
+      "default": 0,
+      "value": ""
+    },
+    "TABLE_FILE_LOCATION": {
+      "question": "Table File Location",
+      "description": "Location of table name within file name",
+      "enable": true,
+      "default": 1,
+      "value": ""
+    },
+    "PUBLISHER_COMPRESS_FILE": {
+      "question": "Compress Files",
+      "description": "Compress JSON and SQL file(s) backup",
+      "enable": true,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
       "value": ""
     }
   },
@@ -610,12 +824,12 @@
       "question": "Query Pool",
       "description": "Number of parallel queries",
       "enable": false,
-      "default": 6,
+      "default": 3,
       "value": ""
     },
     "WRITE_IMMEDIATE": {
       "question": "Write Data Immediate",
-      "description": "When data comes in write to database immediately, as opposed to waiting for a full buffer",
+      "description": "When data comes in write to database immidiately, as opposed to waiting for a full buffer",
       "enable": true,
       "default": "true",
       "options": ["true", "false"],
