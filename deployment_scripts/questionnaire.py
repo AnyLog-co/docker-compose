@@ -1,92 +1,5 @@
-import ipaddress
 import re
-
-
-def __generate_question(param:str, configs:dict)->str:
-    """
-    Generate question
-    :args:
-        configs:dict - configuration information
-    :params:
-        question:str - question based on configs
-    :return:
-        question
-    """
-    params = ""
-    if 'default' in configs and configs['default'] != "":
-        if params == "":
-            params += "["
-        default_value = configs['default']
-        if param == 'LICENSE_KEY':
-            start = default_value[:10]
-            end = default_value[-26:]
-            default_value=f"{start}...{end}"
-        params += f"default: {default_value}"
-    if 'options' in configs:
-        if params == "":
-            params += "["
-        else:
-            params += " | "
-        params += f"options: {', '.join(configs['options'])}"
-    if 'range' in configs:
-        if params == "":
-            params += "["
-        else:
-            params += " | "
-        params += f"range: {'-'.join(map(str, configs['range']))}"
-
-    if params != "":
-        question = f"{configs['question']} {params}]: "
-    else:
-        question = f"{configs['question']}: "
-
-    return question
-
-
-def __ask_question(question:str, description:str, param:str="", error_msg:str="")->str:
-    """
-    ask question
-    :args:
-        question:str - question to ask
-        description:str - issue description
-    :params:
-        user_input:str - user input
-    :return:
-        user_input
-    """
-    status = False
-    while status is False:
-        user_input = input(f"\t{error_msg} {question}")
-        if user_input == 'help':
-            error_msg = ""
-            print(f"\t`{param}` param description - {description}")
-        else:
-            status = True
-
-    return user_input.strip()
-
-
-def __validate_ipaddress(address:str)->(str, str):
-    """
-    Validate if IP address is correct - used for Proxy and Overlay IP
-    :args:
-        address:str - addrress to check
-    :params:
-        error_msg:str - error_msg
-    :return:
-        address, error_msg
-    """
-    error_msg = ""
-    try:
-        ipaddress.ip_address(address)
-    except Exception:
-        try:
-            ipaddress.ip_network(address)
-        except Exception:
-            error_msg = "Invalid IP address. Please try again..."
-
-    return address, error_msg
-
+from __support__ import generate_question, ask_question, validate_ipaddress
 
 def section_general(configs:dict)->dict:
     """
@@ -100,9 +13,9 @@ def section_general(configs:dict)->dict:
     """
     for param in configs:
         err_msg = ""
-        question = __generate_question(param=param, configs=configs[param])
+        question = generate_question(param=param, configs=configs[param])
         if configs[param]['enable'] is True:
-            answer = __ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
+            answer = ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
             if answer == "" and param in ['LOCATION', 'COUNTRY', 'STATE', 'CITY']:
                     configs[param]['value'] = ''
             elif answer == "":
@@ -129,16 +42,16 @@ def section_networking(configs:dict)->dict:
     """
     for param in configs:
         err_msg = ""
-        question = __generate_question(param=param, configs=configs[param])
+        question = generate_question(param=param, configs=configs[param])
         status = False
         if configs[param]['enable'] is True:
             while status is False:
-                answer = __ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
+                answer = ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
                 if answer == "":
                     configs[param]['value'] = configs[param]['default']
                     status = True
                 elif param in ['OVERLAY_IP', 'PROXY_IP']:
-                    answer, err_msg =  __validate_ipaddress(address=answer)
+                    answer, err_msg =  validate_ipaddress(address=answer)
                     if err_msg == "":
                         configs[param]['value'] = answer
                         status = True
@@ -177,7 +90,7 @@ def section_networking(configs:dict)->dict:
 
 def section_blockchain(configs:dict) -> dict:
     """
-    general information
+    blockchain information
     :args:
         configs:dict - node configurations
     :params:
@@ -187,11 +100,11 @@ def section_blockchain(configs:dict) -> dict:
     """
     for param in configs:
         err_msg = ""
-        question = __generate_question(param=param, configs=configs[param])
+        question = generate_question(param=param, configs=configs[param])
         status = False
         if configs[param]['enable'] is True:
             while status is False:
-                answer = __ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
+                answer = ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
                 if answer == "":
                     configs[param]['value'] = configs[param]['default']
                     status = True
@@ -200,7 +113,7 @@ def section_blockchain(configs:dict) -> dict:
                         err_msg = "Invalid LEDGER_CONN format"
                     else:
                         ip, port = answer.split(':')
-                        ip, err_msg = __validate_ipaddress(address=ip)
+                        ip, err_msg = validate_ipaddress(address=ip)
                         if err_msg == "":
                             try:
                                 port = int(port)
@@ -224,5 +137,61 @@ def section_blockchain(configs:dict) -> dict:
                     status = True
         else:
             configs[param]['value'] = configs[param]['default']
+
+    return configs
+
+
+def section_mqtt(configs:dict, rest_port:int=None, broker_port:int=None)->dict:
+    """
+    MQTT information
+    :args:
+        configs:dict - node configurations
+    :params:
+        answer:str - answer from user
+    :return:
+        update configs
+    """
+    for param in configs:
+        err_msg = ""
+        question = generate_question(param=param, configs=configs[param])
+        status = False
+        if param == "MQTT_PORT" and configs["MQTT_BROKER"]['value'] == 'rest':
+            configs[param]['value'] = rest_port
+        elif param == "MQTT_PORT" and configs["MQTT_BROKER"]['value'] == 'local':
+            configs[param]['value'] = broker_port
+        elif configs[param]['enable'] is True:
+            while status is False:
+                answer = ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
+                if answer == "":
+                    configs[param]['value'] = configs[param]['default']
+                    status = True
+                elif param == 'MQTT_BROKER':
+                    if answer == 'local' and broker_port is None:
+                        err_msg = "No local broker port specified"
+                    elif answer in ['local', 'rest']:
+                        configs[param]['value'] = answer
+                        status = True
+                    else:
+                        ip, err_msg = validate_ipaddress(address=answer)
+                        if err_msg == "":
+                            configs[param]['value'] = answer
+                            status = True
+                elif param == "MQTT_PORT":
+                    if answer != '':
+                        try:
+                            answer = int(answer)
+                        except Exception as error:
+                            err_msg = f"Invalid port value type {type(answer)}"
+                        else:
+                            configs[param]['value'] = answer
+                            status = True
+                elif param == 'MQTT_LOG' and answer not in configs[param]['options']:
+                    err_msg = f"Invalid value for {param}"
+                else:
+                    configs[param]['value'] = answer
+                    status = True
+        else:
+            configs[param]['value'] = configs[param]['default']
+
 
     return configs

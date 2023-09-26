@@ -1,9 +1,9 @@
 import argparse
 import os
 
-from __file_io__ import is_file, read_config_file
-from __support__ import prepare_configs, print_questions
-from questionnaire import section_general, section_networking, section_blockchain
+from __file_io__ import is_file, read_config_file, copy_file, write_file
+from __support__ import prepare_configs, print_questions, separate_configs, prepare_configs_dotenv
+from questionnaire import section_general, section_networking, section_blockchain, section_mqtt
 
 NODE_TYPES = {
     "generic": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LOCATION', 'COUNTRY', 'STATE', 'CITY',
@@ -101,10 +101,25 @@ def main():
         exit(1)
 
     config_file_data = read_config_file(file_path=args.config_file, exception=args.exception)
-    k8s_config_file_data = read_config_file(file_path=args.k8s_config, exception=args.exception)
+    # k8s_config_file_data = read_config_file(file_path=args.k8s_config, exception=args.exception)
+    anylog_configs = {}
+    advanced_configs = {}
 
-    config_file_data = prepare_configs(node_type=args.node_type, configs=config_file_data,
-                                       node_configs=NODE_TYPES[args.node_type], is_training=args.training)
+    if args.deployment_type == 'docker':
+        dir_path = os.path.join(ROOT_DIR.split('deployment_scripts')[0], 'docker-compose', f'anylog-{args.node_type}')
+        anylog_file_configs = os.path.join(dir_path, 'anylog_configs.env')
+        advance_file_configs = os.path.join(dir_path, 'advance_configs.env')
+
+        if is_file(file_path=anylog_file_configs, exception=args.exception) is not None:
+            anylog_configs = read_config_file(file_path=anylog_file_configs, exception=args.exception)
+        if is_file(file_path=advance_file_configs, exception=args.exception) is not None:
+            advanced_configs = read_config_file(file_path=advance_file_configs, exception=args.exception)
+
+    config_file_data = prepare_configs(node_type=args.node_type, configs=config_file_data, node_configs=NODE_TYPES[args.node_type],
+                                       anylog_configs=anylog_configs, advanced_configs=advanced_configs, is_training=args.training)
+
+    rest_port = config_file_data['networking']['ANYLOG_REST_PORT']['value']
+    broker_port = None
 
     for section in config_file_data:
         status = print_questions(config_file_data[section])
@@ -112,10 +127,27 @@ def main():
             print(f'Section: {section.title().replace("Sql", "SQL").replace("Mqtt", "MQTT")}')
             if section == 'general':
                 config_file_data[section] = section_general(configs=config_file_data[section])
-            if section == 'networking':
+            elif section == 'networking':
                 config_file_data[section] = section_networking(configs=config_file_data[section])
-            if section == 'blockchain':
+                rest_port = config_file_data[section]['ANYLOG_REST_PORT']['value']
+                broker_port = None
+                if config_file_data[section]['ANYLOG_BROKER_PORT']['value'] != "":
+                    broker_port = config_file_data[section]['ANYLOG_BROKER_PORT']['value']
+            elif section == 'blockchain':
                 config_file_data[section] = section_blockchain(configs=config_file_data[section])
+            elif section == 'mqtt':
+                config_file_data[section] = section_mqtt(configs=config_file_data[section], rest_port=rest_port, broker_port=broker_port)
+            print("\n")
+
+    if args.deployment_type == 'docker':
+        anylog_configs, advanced_configs = separate_configs(configs=config_file_data)
+        if is_file(file_path=anylog_file_configs, exception=args.exception) is not None:
+            copy_file(file_path=anylog_file_configs, exception=args.exception)
+        if is_file(file_path=advance_file_configs, exception=args.exception) is not None:
+            copy_file(file_path=advance_file_configs, exception=args.exception)
+
+        write_file(file_path=anylog_file_configs, content=prepare_configs_dotenv(configs=anylog_configs), exception=args.exception)
+        write_file(file_path=advance_file_configs, content=prepare_configs_dotenv(configs=advanced_configs), exception=args.exception)
 
 
 if __name__ == '__main__':
