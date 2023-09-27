@@ -56,6 +56,12 @@ def prepare_configs(node_type:str, configs:dict, node_configs:list, anylog_confi
         configs['networking']['ANYLOG_SERVER_PORT']['default'] = 32248
         configs['networking']['ANYLOG_REST_PORT']['default'] = 32249
 
+    if node_type in ['master', 'query']:
+        del configs['operator']
+        del configs['mqtt']
+    if node_type == 'publisher':
+        del configs['operator']
+
     return configs
 
 
@@ -114,7 +120,7 @@ def prepare_configs_dotenv(configs:dict)->str:
         if section == 'mqtt':
             content += "#--- MQTT ---\n"
         else:
-            content += f"#--- {section.title} ---\n"
+            content += f"#--- {section.title()} ---\n"
         for param in configs[section]:
             content += f"# {configs[section][param]['description']}\n"
             content += f"{param}={configs[section][param]['value']}\n"
