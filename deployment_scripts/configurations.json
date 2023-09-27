@@ -1,21 +1,21 @@
 {
   "directories": {
     "ANYLOG_PATH": {
-      "question": "AnyLog Root Path",
+      "question": "Root Path",
       "description": "AnyLog Root Path",
       "enable": false,
       "default": "/app",
       "value": ""
     },
     "LOCAL_SCRIPTS": {
-      "question": "AnyLog Local Scripts Dir",
+      "question": "Local Scripts Directory",
       "description": "!local_scripts: ${ANYLOG_HOME}/deployment-scripts/scripts",
       "enable": false,
       "default": "/app/deployment-scripts/scripts",
       "value": ""
     },
     "TEST_DIR": {
-      "question": "AnyLog Test Dir",
+      "question": "Test Directory",
       "description": "!test_dir: ${ANYLOG_HOME}/deployment-scripts/test",
       "enable": false,
       "default": "/app/deployment-scripts/test",
@@ -59,7 +59,7 @@
       "value": ""
     },
     "LOCATION": {
-      "question": "Location",
+      "question": "Geo Coordinates",
       "description": "Coordinates of the machine - used by Grafana to map the network",
       "enable": true,
       "default": "",
