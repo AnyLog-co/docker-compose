@@ -2,11 +2,11 @@ import ipaddress
 
 TRAINING_CONFIGS = {
     "master": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LEDGER_CONN', 'ANYLOG_SERVER_PORT',
-               'ANYLOG_REST_PORT'],
+               'ANYLOG_REST_PORT', 'MONITOR_NODES'],
     "operator": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LEDGER_CONN', 'ANYLOG_SERVER_PORT',
-               'ANYLOG_REST_PORT', 'DEFAULT_DBMS', 'CLUSTER_NAME', 'ENABLE_MQTT'],
+               'ANYLOG_REST_PORT', 'DEFAULT_DBMS', 'CLUSTER_NAME', 'ENABLE_MQTT', 'MONITOR_NODES'],
     "query": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LEDGER_CONN', 'ANYLOG_SERVER_PORT',
-               'ANYLOG_REST_PORT'],
+               'ANYLOG_REST_PORT', 'MONITOR_NODES'],
 }
 
 def prepare_configs(node_type:str, configs:dict, node_configs:list, anylog_configs:dict={}, advanced_configs:dict={},
@@ -111,7 +111,10 @@ def separate_configs(configs:dict)->(dict,dict):
 def prepare_configs_dotenv(configs:dict)->str:
     content = ""
     for section in configs:
-        content += f"#--- {section} ---\n"
+        if section == 'mqtt':
+            content += "#--- MQTT ---\n"
+        else:
+            content += f"#--- {section.title} ---\n"
         for param in configs[section]:
             content += f"# {configs[section][param]['description']}\n"
             content += f"{param}={configs[section][param]['value']}\n"

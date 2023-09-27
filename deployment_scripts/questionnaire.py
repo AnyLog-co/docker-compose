@@ -196,11 +196,15 @@ def section_operator(company_name:str, configs:dict, operator_id:int=None, is_tr
     configs['DEFAULT_DBMS']['default'] = company_name.replace("-", '_')
     if is_training is True:
         status = False
-        question = "Operator Number"
+        question = "Operator Number [default: 1]: "
         description = "Number of operators already in the network"
         err_msg = ""
-        while status is True:
-            answer = ask_question(question=question, description=description, param="operator_number", err_msg=err_msg)
+        while status is False:
+            answer = ask_question(question=question, description=description, param="operator_number", error_msg=err_msg)
+            if answer == '':
+                configs['CLUSTER_NAME']['default'] = f"{configs['CLUSTER_NAME']['default']}1"
+                status = True
+                continue
             try:
                 answer = int(answer)
             except Exception as error:
@@ -236,7 +240,29 @@ def section_operator(company_name:str, configs:dict, operator_id:int=None, is_tr
                     if status is False:
                         err_msg = f"Invalid value for {param}"
         else:
-            configs[param]['value'] = configs[param['default']
+            configs[param]['value'] = configs[param]['default']
+    return configs
+
+
+def section_monitoring(configs:dict)->dict:
+    for param in configs:
+        err_msg = ""
+        question = generate_question(param=param, configs=configs[param])
+        status = False
+        if configs[param]['enable'] is True:
+            while status is False:
+                answer = ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
+                status = True
+                if answer == "":
+                    configs[param]['value'] = configs[param]['default']
+                elif 'options' in configs[param] and answer not in configs[param]['options']:
+                    err_msg = f'Invalid value for {param}'
+                    status = False
+                else:
+                    configs[param]['value'] = answer
+        else:
+            configs[param]['value'] = configs[param]['default']
+
     return  configs
 
 

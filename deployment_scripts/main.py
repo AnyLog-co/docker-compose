@@ -1,9 +1,9 @@
 import argparse
 import os
 
-from __file_io__ import is_file, read_config_file, copy_file, write_file
+from __file_io__ import is_file, read_config_file, copy_file, write_file, write_dotenv_file
 from __support__ import prepare_configs, print_questions, separate_configs, prepare_configs_dotenv
-from questionnaire import section_general, section_networking, section_database, section_operator, section_blockchain, section_mqtt
+from questionnaire import section_general, section_networking, section_database, section_operator, section_blockchain, section_monitoring, section_mqtt
 
 NODE_TYPES = {
     "generic": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LOCATION', 'COUNTRY', 'STATE', 'CITY',
@@ -109,6 +109,7 @@ def main():
         dir_path = os.path.join(ROOT_DIR.split('deployment_scripts')[0], 'docker-compose', f'anylog-{args.node_type}')
         anylog_file_configs = os.path.join(dir_path, 'anylog_configs.env')
         advance_file_configs = os.path.join(dir_path, 'advance_configs.env')
+        dotenv_file = os.path.join(dir_path, '.env')
 
         if is_file(file_path=anylog_file_configs, is_argparse=False, exception=args.exception) is not None:
             anylog_configs = read_config_file(file_path=anylog_file_configs, exception=args.exception)
@@ -138,13 +139,15 @@ def main():
                     config_file_data[section]['ENABLE_NOSQL']['enable'] = False
                 config_file_data[section] = section_database(configs=config_file_data[section])
             elif section == 'operator' and args.node_type == 'operator':
-                company_name = config_file_data['general']['COMPANY_NAME']['default'].lower().replace(' ', '-')
-                config_file_data[section] = section_operator(company_name=company_name, configs=config_file_data[section],
-                                                             is_training=args.training)
+                company_name = config_file_data['general']['COMPANY_NAME']['value'].lower().replace(' ', '-')
+                config_file_data[section] = section_operator(company_name=company_name, configs=config_file_data[section], is_training=args.training)
             elif section == 'blockchain':
                 config_file_data[section] = section_blockchain(configs=config_file_data[section])
-            elif section == 'mqtt':
+            elif section == 'mqtt' and args.node_type in ['publisher', 'operator']:
                 config_file_data[section] = section_mqtt(configs=config_file_data[section], rest_port=rest_port, broker_port=broker_port)
+            elif section == 'monitoring':
+                config_file_data[section]['MONITOR_NODE_COMPANY']['default'] = config_file_data['general']['COMPANY_NAME']['value']
+                config_file_data[section] = section_monitoring(configs=config_file_data[section])
             print("\n")
 
     if args.deployment_type == 'docker':
@@ -156,7 +159,9 @@ def main():
 
         write_file(file_path=anylog_file_configs, content=prepare_configs_dotenv(configs=anylog_configs), exception=args.exception)
         write_file(file_path=advance_file_configs, content=prepare_configs_dotenv(configs=advanced_configs), exception=args.exception)
-
+        write_dotenv_file(file_path=dotenv_file, node_type=args.node_type, build=args.build,
+                          node_name=config_file_data['general']['NODE_NAME']['value'], is_trainig=args.training,
+                          exception=args.exception)
 
 if __name__ == '__main__':
     main()

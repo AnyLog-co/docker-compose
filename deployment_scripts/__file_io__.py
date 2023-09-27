@@ -158,3 +158,22 @@ def read_config_file(file_path:str, exception:bool=False)->dict:
 
 
 
+def write_dotenv_file(file_path:str, node_type:str, build:str, node_name:str, is_trainig:bool=False, exception:bool=False):
+    configs = {
+        "BUILD": build,
+        "CONTAINER_NAME": node_name.replace(" ", "-").replace("_", '-'),
+        'NETWORK': "host",
+        'INIT_TYPE': 'prod'
+    }
+    if is_trainig is True:
+        configs['INIT_TYPE'] = 'training'
+    if node_type == 'query': # include Remote-CLI information
+        configs['CONN_IP'] = '0.0.0.0'
+        configs['CLI_PORT'] = '31800'
+
+    content = ""
+    for param in configs:
+        content += f"{param}={configs[param]}\n"
+
+    write_file(file_path=file_path, content=content, exception=exception)
+

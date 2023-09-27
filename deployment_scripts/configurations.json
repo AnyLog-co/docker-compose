@@ -591,7 +591,7 @@
       "question": "Monitor Node",
       "description": "Whether to monitor the node or not",
       "enable": true,
-      "default": "false",
+      "default": "true",
       "options": ["true", "false"],
       "value": ""
     },
