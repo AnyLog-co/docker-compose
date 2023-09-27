@@ -3,7 +3,7 @@ import os
 
 from __file_io__ import is_file, read_config_file, copy_file, write_file
 from __support__ import prepare_configs, print_questions, separate_configs, prepare_configs_dotenv
-from questionnaire import section_general, section_networking, section_blockchain, section_mqtt
+from questionnaire import section_general, section_networking, section_database, section_operator, section_blockchain, section_mqtt
 
 NODE_TYPES = {
     "generic": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LOCATION', 'COUNTRY', 'STATE', 'CITY',
@@ -110,9 +110,9 @@ def main():
         anylog_file_configs = os.path.join(dir_path, 'anylog_configs.env')
         advance_file_configs = os.path.join(dir_path, 'advance_configs.env')
 
-        if is_file(file_path=anylog_file_configs, exception=args.exception) is not None:
+        if is_file(file_path=anylog_file_configs, is_argparse=False, exception=args.exception) is not None:
             anylog_configs = read_config_file(file_path=anylog_file_configs, exception=args.exception)
-        if is_file(file_path=advance_file_configs, exception=args.exception) is not None:
+        if is_file(file_path=advance_file_configs, is_argparse=False, exception=args.exception) is not None:
             advanced_configs = read_config_file(file_path=advance_file_configs, exception=args.exception)
 
     config_file_data = prepare_configs(node_type=args.node_type, configs=config_file_data, node_configs=NODE_TYPES[args.node_type],
@@ -130,9 +130,17 @@ def main():
             elif section == 'networking':
                 config_file_data[section] = section_networking(configs=config_file_data[section])
                 rest_port = config_file_data[section]['ANYLOG_REST_PORT']['value']
-                broker_port = None
                 if config_file_data[section]['ANYLOG_BROKER_PORT']['value'] != "":
                     broker_port = config_file_data[section]['ANYLOG_BROKER_PORT']['value']
+            elif section == 'database':
+                if args.node_type != 'operator':
+                    config_file_data[section]['ENABLE_NOSQL']['value'] = 'false'
+                    config_file_data[section]['ENABLE_NOSQL']['enable'] = False
+                config_file_data[section] = section_database(configs=config_file_data[section])
+            elif section == 'operator' and args.node_type == 'operator':
+                company_name = config_file_data['general']['COMPANY_NAME']['default'].lower().replace(' ', '-')
+                config_file_data[section] = section_operator(company_name=company_name, configs=config_file_data[section],
+                                                             is_training=args.training)
             elif section == 'blockchain':
                 config_file_data[section] = section_blockchain(configs=config_file_data[section])
             elif section == 'mqtt':
@@ -141,9 +149,9 @@ def main():
 
     if args.deployment_type == 'docker':
         anylog_configs, advanced_configs = separate_configs(configs=config_file_data)
-        if is_file(file_path=anylog_file_configs, exception=args.exception) is not None:
+        if is_file(file_path=anylog_file_configs, is_argparse=False, exception=args.exception) is not None:
             copy_file(file_path=anylog_file_configs, exception=args.exception)
-        if is_file(file_path=advance_file_configs, exception=args.exception) is not None:
+        if is_file(file_path=advance_file_configs, is_argparse=False, exception=args.exception) is not None:
             copy_file(file_path=advance_file_configs, exception=args.exception)
 
         write_file(file_path=anylog_file_configs, content=prepare_configs_dotenv(configs=anylog_configs), exception=args.exception)

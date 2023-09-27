@@ -87,6 +87,14 @@ def separate_configs(configs:dict)->(dict,dict):
                         "description": configs[section][param]['description'],
                         "value": configs[section][param]['default']
                     }
+                if anylog_configs[section][param]['value'] == "":
+                    del anylog_configs[section][param]
+                    if section not in advanced_configs:
+                        advanced_configs[section] = {}
+                    advanced_configs[section][param] = {
+                        "description": configs[section][param]['description'],
+                        "value": '""'
+                    }
             else:
                 if section not in advanced_configs:
                     advanced_configs[section] = {}
@@ -94,6 +102,8 @@ def separate_configs(configs:dict)->(dict,dict):
                     "description": configs[section][param]['description'],
                     "value": configs[section][param]['default']
                 }
+                if advanced_configs[section][param]['value'] == "":
+                    advanced_configs[section][param]['value'] = '""'
 
     return anylog_configs, advanced_configs
 

@@ -277,7 +277,7 @@
       ],
       "value": ""
     },
-    "NOSQL_ENABLE": {
+    "ENABLE_NOSQL": {
       "question": "Enable NoSQL Database",
       "description": "Whether to enable NoSQL logical database",
       "enable": true,
@@ -291,7 +291,7 @@
     "NOSQL_TYPE": {
       "question": "Database Type",
       "description": "Physical database type",
-      "enable": true,
+      "enable": false,
       "default": "mongo",
       "options": [
         "mongo"
@@ -329,7 +329,7 @@
     "BLOBS_DBMS": {
       "question": "Blobs DBMS",
       "description": "Store blobs in database",
-      "enable": true,
+      "enable": false,
       "default": "false",
       "options": ["true", "false"],
       "value": ""
@@ -337,7 +337,7 @@
     "BLOBS_REUSE": {
       "question": "Reuse Blobs",
       "description": "Whether (re)store a blob if already exists",
-      "enable": true,
+      "enable": false,
       "default": "true",
       "options": ["true", "false"],
       "value": ""
@@ -387,7 +387,7 @@
       "value": ""
     }
   },
-  "operator+publisher": {
+  "operator": {
     "MEMBER": {
       "question": "Member ID",
       "description": "Operator ID",
@@ -482,22 +482,11 @@
       ],
       "value": ""
     },
-    "COMPRESS_FILE": {
-      "question": "Compress Files",
-      "description": "Compress JSON and SQL file(s) backup",
-      "enable": false,
-      "default": "true",
-      "options": [
-        "true",
-        "false"
-      ],
-      "value": ""
-    },
     "OPERATOR_THREADS": {
       "question": "Operator Threads",
       "description": "How many threads to use in the operator process\n",
       "enable": true,
-      "default": 1,
+      "default": 3,
       "value": ""
     }
   },
@@ -597,6 +586,30 @@
     }
 
   },
+  "monitoring": {
+    "MONITOR_NODES": {
+      "question": "Monitor Node",
+      "description": "Whether to monitor the node or not",
+      "enable": true,
+      "default": "false",
+      "options": ["true", "false"],
+      "value": ""
+    },
+    "MONITOR_NODE": {
+      "question": "Monitoring Node",
+      "description": "Which node type to send monitoring information to",
+      "enable": true,
+      "default": "query",
+      "value": ""
+    },
+    "MONITOR_NODE_COMPANY": {
+      "question": "Company Name",
+      "description": "Company node is associated with the monitor node",
+      "enable": true,
+      "default": "New Company",
+      "value": ""
+    }
+  },
   "advanced settings": {
     "DEPLOY_LOCAL_SCRIPT": {
       "question": "Enable Local Script",
@@ -604,6 +617,17 @@
       "enable": true,
       "default": "false",
       "options": ["true", "false"],
+      "value": ""
+    },
+    "COMPRESS_FILE": {
+      "question": "Compress Files",
+      "description": "Compress JSON and SQL file(s) backup",
+      "enable": false,
+      "default": "true",
+      "options": [
+        "true",
+        "false"
+      ],
       "value": ""
     },
     "QUERY_POOL": {
@@ -640,28 +664,6 @@
       "enable": true,
       "default": "10KB",
       "options": ["KB", "MB", "GB"],
-      "value": ""
-    },
-    "MONITOR_NODES": {
-      "question": "Monitor Node",
-      "description": "Whether to monitor the node or not",
-      "enable": true,
-      "default": "false",
-      "options": ["true", "false"],
-      "value": ""
-    },
-    "MONITOR_NODE": {
-      "question": "Monitoring Node",
-      "description": "Which node type to send monitoring information to",
-      "enable": true,
-      "default": "query",
-      "value": ""
-    },
-    "MONITOR_NODE_COMPANY": {
-      "question": "Company Name",
-      "description": "Company node is associated with the monitor node",
-      "enable": true,
-      "default": "New Company",
       "value": ""
     }
   }
