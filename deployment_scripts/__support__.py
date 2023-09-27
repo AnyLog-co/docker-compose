@@ -75,7 +75,7 @@ def separate_configs(configs:dict)->(dict,dict):
 
     for section in configs:
         for param in configs[section]:
-            if configs[section][param]['enable'] is True:
+            if configs[section][param]['enable'] is True or param  == "NODE_TYPE":
                 if section not in anylog_configs:
                     anylog_configs[section] = {}
                 anylog_configs[section][param] = {
