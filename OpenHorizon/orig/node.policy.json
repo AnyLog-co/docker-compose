@@ -1,0 +1,7 @@
+{
+  "properties": [
+    { "name": "anylog.monitor", "value": "true" }
+  ],
+  "constraints": [
+  ]
+}

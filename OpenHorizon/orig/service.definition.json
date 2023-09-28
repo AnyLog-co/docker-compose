@@ -1,0 +1,341 @@
+{
+    "org": "myorg",
+    "label": "anylog-node for amd64",
+    "description": "A sample AnyLog service to deploy a Master Node",
+    "documentation": "https://github.com/open-horizon-services/service-anylog/tree/os-dev/README.md",
+    "url": "anylog-node",
+    "version": "0.1.0",
+    "arch": "amd64",
+    "sharable": "multiple",
+    "requiredServices": [],
+    "userInput": [
+        {
+            "name": "ANYLOG_PATH",
+            "defaultValue": "/app"
+        },
+        {
+            "name": "ANYLOG_LIB",
+            "defaultValue": "/app/AnyLog-Network"
+        },
+        {
+            "name": "ANYLOG_HOME_PATH",
+            "defaultValue": "/app/AnyLog-Network"
+        },
+        {
+            "name": "ANYLOG_ID_DIR",
+            "defaultValue": "/app/AnyLog-Network/anylog"
+        },
+        {
+            "name": "BLOCKCHAIN_DIR",
+            "defaultValue": "/app/AnyLog-Network/blockchain"
+        },
+        {
+            "name": "DATA_DIR",
+            "defaultValue": "/app/AnyLog-Network/data"
+        },
+        {
+            "name": "LOCAL_SCRIPTS",
+            "defaultValue": "/app/deployment-scripts/scripts"
+        },
+        {
+            "name": "TEST_DIR",
+            "defaultValue": "/app/deployment-scripts/test"
+        },
+        {
+            "name": "LICENSE_KEY",
+            "defaultValue": "0f6068c4c868bc1bb2caace57895c091c2d659f4af44ad275b260e93d1b556b48a3c0b18674b57e6f0ee795ec7f4dcda0957bae8c17ecb1d9006b6d8a44219494bc6cce29f01c0538005afb674f44fdff2ded4e0e9b3ff2b21afc35b540a142f36c9d2e9f6c3549c08476bf5102f01bc997d00f1a4bd8b4c73d212c3f06f5cfa2023-11-25bIBM"
+        },
+        {
+            "name": "NODE_TYPE",
+            "defaultValue": "master"
+        },
+        {
+            "name": "NODE_NAME",
+            "defaultValue": "openhorizon-master"
+        },
+        {
+            "name": "COMPANY_NAME",
+            "defaultValue": "Open Horizon"
+        },
+        {
+            "name": "ENABLE_AUTH",
+            "defaultValue": "false"
+        },
+        {
+            "name": "ENABLE_REST_AUTH",
+            "defaultValue": "false"
+        },
+        {
+            "name": "USER_TYPE",
+            "defaultValue": "admin"
+        },
+        {
+            "name": "POLICY_BASED_NETWORKING",
+            "defaultValue": "true"
+        },
+        {
+            "name": "ANYLOG_SERVER_PORT",
+            "defaultValue": "32048"
+        },
+        {
+            "name": "ANYLOG_REST_PORT",
+            "defaultValue": "32049"
+        },
+        {
+            "name": "TCP_BIND",
+            "defaultValue": "false"
+        },
+        {
+            "name": "TCP_THREADS",
+            "defaultValue": "6"
+        },
+        {
+            "name": "REST_BIND",
+            "defaultValue": "false"
+        },
+        {
+            "name": "REST_TIMEOUT",
+            "defaultValue": "20"
+        },
+        {
+            "name": "REST_THREADS",
+            "defaultValue": "6"
+        },
+        {
+            "name": "REST_SSL",
+            "defaultValue": "false"
+        },
+        {
+            "name": "BROKER_BIND",
+            "defaultValue": "false"
+        },
+        {
+            "name": "BROKER_THREADS",
+            "defaultValue": "6"
+        },
+        {
+            "name": "DB_TYPE",
+            "defaultValue": "sqlite"
+        },
+        {
+            "name": "AUTOCOMMIT",
+            "defaultValue": "false"
+        },
+        {
+            "name": "SYSTEM_QUERY",
+            "defaultValue": "false"
+        },
+        {
+            "name": "MEMORY",
+            "defaultValue": "true"
+        },
+        {
+            "name": "NOSQL_ENABLE",
+            "defaultValue": "false"
+        },
+        {
+            "name": "NOSQL_TYPE",
+            "defaultValue": "mongo"
+        },
+        {
+            "name": "NOSQL_IP",
+            "defaultValue": "127.0.0.1"
+        },
+        {
+            "name": "NOSQL_PORT",
+            "defaultValue": "27017"
+        },
+        {
+            "name": "NOSQL_BLOBS_DBMS",
+            "defaultValue": "true"
+        },
+        {
+            "name": "NOSQL_BLOBS_FOLDER",
+            "defaultValue": "true"
+        },
+        {
+            "name": "NOSQL_BLOBS_COMPRESS",
+            "defaultValue": "false"
+        },
+        {
+            "name": "NOSQL_BLOBS_REUSE",
+            "defaultValue": "true"
+        },
+        {
+            "name": "LEDGER_CONN",
+            "defaultValue": "132.177.125.232:32048"
+        },
+        {
+            "name": "SYNC_TIME",
+            "defaultValue": "30 second"
+        },
+        {
+            "name": "BLOCKCHAIN_SOURCE",
+            "defaultValue": "master"
+        },
+        {
+            "name": "BLOCKCHAIN_DESTINATION",
+            "defaultValue": "file"
+        },
+        {
+            "name": "CLUSTER_NAME",
+            "defaultValue": "open-horizon-cluster-1"
+        },
+        {
+            "name": "DEFAULT_DBMS",
+            "defaultValue": "test"
+        },
+        {
+            "name": "ENABLE_HA",
+            "defaultValue": "false"
+        },
+        {
+            "name": "START_DATE",
+            "defaultValue": "30"
+        },
+        {
+            "name": "ENABLE_PARTITIONS",
+            "defaultValue": "false"
+        },
+        {
+            "name": "TABLE_NAME",
+            "defaultValue": "*"
+        },
+        {
+            "name": "PARTITION_COLUMN",
+            "defaultValue": "insert_timestamp"
+        },
+        {
+            "name": "PARTITION_INTERVAL",
+            "defaultValue": "14 days"
+        },
+        {
+            "name": "PARTITION_KEEP",
+            "defaultValue": "6"
+        },
+        {
+            "name": "PARTITION_SYNC",
+            "defaultValue": "1 day"
+        },
+        {
+            "name": "CREATE_TABLE",
+            "defaultValue": "true"
+        },
+        {
+            "name": "UPDAE_TSD_INFO",
+            "defaultValue": "true"
+        },
+        {
+            "name": "ARCHIVE",
+            "defaultValue": "true"
+        },
+        {
+            "name": "COMPRESS_FILE",
+            "defaultValue": "true"
+        },
+        {
+            "name": "OPERATOR_THREADS",
+            "defaultValue": "1"
+        },
+        {
+            "name": "DBMS_FILE_LOCATION",
+            "defaultValue": "0"
+        },
+        {
+            "name": "TABLE_FILE_LOCATION",
+            "defaultValue": "1"
+        },
+        {
+            "name": "PUBLISHER_COMPRESS_FILE",
+            "defaultValue": "true"
+        },
+        {
+            "name": "ENABLE_MQTT",
+            "defaultValue": "false"
+        },
+        {
+            "name": "MQTT_LOG",
+            "defaultValue": "false"
+        },
+        {
+            "name": "MQTT_BROKER",
+            "defaultValue": "driver.cloudmqtt.com"
+        },
+        {
+            "name": "MQTT_PORT",
+            "defaultValue": "18785"
+        },
+        {
+            "name": "MQTT_USER",
+            "defaultValue": "ibglowct"
+        },
+        {
+            "name": "MQTT_PASSWD",
+            "defaultValue": "MSY4e009J7ts"
+        },
+        {
+            "name": "MQTT_TOPIC",
+            "defaultValue": "anylogedgex-demo"
+        },
+        {
+            "name": "MQTT_DBMS",
+            "defaultValue": "test"
+        },
+        {
+            "name": "MQTT_TABLE",
+            "defaultValue": "bring [sourceName]"
+        },
+        {
+            "name": "MQTT_TIMESTAMP_COLUMN",
+            "defaultValue": "now"
+        },
+        {
+            "name": "MQTT_VALUE_COLUMN",
+            "defaultValue": "bring [readings][][value]"
+        },
+        {
+            "name": "MQTT_VALUE_COLUMN_TYPE",
+            "defaultValue": "int"
+        },
+        {
+            "name": "DEPLOY_LOCAL_SCRIPT",
+            "defaultValue": "false"
+        },
+        {
+            "name": "QUERY_POOL",
+            "defaultValue": "3"
+        },
+        {
+            "name": "WRITE_IMMEDIATE",
+            "defaultValue": "true"
+        },
+        {
+            "name": "THRESHOLD_TIME",
+            "defaultValue": "60 seconds"
+        },
+        {
+            "name": "THRESHOLD_VOLUME",
+            "defaultValue": "10KB"
+        },
+        {
+            "name": "MONITOR_NODES",
+            "defaultValue": "true"
+        },
+        {
+            "name": "MONITOR_NODE",
+            "defaultValue": "query"
+        },
+        {
+            "name": "MONITOR_NODE_COMPANY",
+            "defaultValue": "Open Horizon"
+        }
+    ],
+    "deployment": {
+        "services": {
+            "anylog-node": {
+                "image": "anylogco/anylog-network:latest",
+                "network": "host"
+            }
+        }
+    }
+}
