@@ -57,7 +57,7 @@ NODE_TYPES = {
 
 ROOT_DIR = os.path.dirname(os.path.abspath(os.path.expandvars(os.path.expanduser(__file__))))
 CONFIG_FILE = os.path.join(ROOT_DIR, 'configurations.json')
-K8S_CONFIG = os.path.join(ROOT_DIR, 'kubernetes_configurations.json')
+K8S_CONFIG = os.path.join(ROOT_DIR, '../archive/kubernetes_configurations.json')
 
 def main():
     """
