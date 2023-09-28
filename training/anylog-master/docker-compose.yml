@@ -1,0 +1,23 @@
+version: "2.2"
+services:
+  anylog-master:
+    image: anylogco/anylog-network:${BUILD}
+    restart: always
+    env_file:
+      - anylog_configs.env
+    environment:
+      INIT_TYPE: ${INIT_TYPE}
+    container_name: ${CONTAINER_NAME}
+    stdin_open: true
+    tty: true
+    network_mode: "${NETWORK}"
+    volumes:
+      - anylog-master-anylog:/app/AnyLog-Network/anylog
+      - anylog-master-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-master-data:/app/AnyLog-Network/data
+      - anylog-master-local-scripts:/app/deployment-scripts
+volumes:
+  anylog-master-anylog:
+  anylog-master-blockchain:
+  anylog-master-data:
+  anylog-master-local-scripts:
