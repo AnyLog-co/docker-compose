@@ -25,6 +25,10 @@ def prepare_configs(node_type:str, configs:dict, node_configs:list, anylog_confi
     """
     for section in configs:
         for param in configs[section]:
+            if param in anylog_configs:
+                configs[section][param]['default'] = anylog_configs[param]
+            elif param in advanced_configs:
+                configs[section][param]['default'] = advanced_configs[param]
             if param == 'LOCAL_SCRIPTS' and is_training is True:
                 configs[section][param]['default'] = '/app/deployment-scripts/training-deployment'
             elif param == 'NODE_TYPE':
