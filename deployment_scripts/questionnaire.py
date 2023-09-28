@@ -221,6 +221,7 @@ def section_operator(company_name:str, configs:dict, operator_id:int=None, is_tr
             else:
                 status = True
                 configs['CLUSTER_NAME']['default'] = f"{configs['CLUSTER_NAME']['default']}{answer}"
+        configs['DEFAULT_DBMS']['value'] = configs['DEFAULT_DBMS']['default']
         return configs
 
     for param in configs:

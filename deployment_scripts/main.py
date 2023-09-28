@@ -144,6 +144,8 @@ def main():
             elif section == 'blockchain':
                 config_file_data[section] = section_blockchain(configs=config_file_data[section])
             elif section == 'mqtt' and args.node_type in ['generic', 'operator', 'publisher']:
+                if  config_file_data['operator']['DEFAULT_DBMS']['value'] != "":
+                    config_file_data[section]['MQTT_DBMS']['default'] = config_file_data['operator']['DEFAULT_DBMS']['value']
                 config_file_data[section] = section_mqtt(configs=config_file_data[section], rest_port=rest_port, broker_port=broker_port)
             elif section == 'monitoring':
                 config_file_data[section]['MONITOR_NODE_COMPANY']['default'] = config_file_data['general']['COMPANY_NAME']['value']
