@@ -3,21 +3,21 @@ import os
 
 from __file_io__ import is_file, read_config_file, copy_file, write_file, write_dotenv_file
 from __support__ import prepare_configs, print_questions, separate_configs, prepare_configs_dotenv
-from questionnaire import section_general, section_networking, section_database, section_operator, section_blockchain, section_monitoring, section_mqtt
+from questionnaire import section_general, section_networking, section_database, section_operator, section_blockchain, section_monitoring, section_mqtt, section_advanced_settings
 
 NODE_TYPES = {
     "generic": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LOCATION', 'COUNTRY', 'STATE', 'CITY',
                 'CONFIG_NAME', 'OVERLAY_IP', 'PROXY_IP', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'ANYLOG_BROKER_PORT',
                 'TCP_BIND', 'TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT', 'REST_THREADS', 'BROKER_BIND', 'BROKER_THREADS',
                 'DB_TYPE', 'DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY',
-                'NOSQL_ENABLE', 'NOSQL_TYPE', 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT', 'BLOBS_DBMS',
-                'BLOBS_REUSE', 'LEDGER_CONN', 'SYNC_TIME', 'BLOCKCHAIN_SOURCE', 'BLOCKCHAIN_DESTINATION', 'MEMBER',
-                'CLUSTER_NAME', 'DEFAULT_DBMS', 'ENABLE_HA', 'START_DATE', 'ENABLE_PARTITIONS', 'TABLE_NAME',
-                'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP', 'PARTITION_SYNC', 'COMPRESS_FILE',
-                'OPERATOR_THREADS', 'ENABLE_MQTT', 'MQTT_LOG', 'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD',
-                'MQTT_TOPIC', 'MQTT_DBMS', 'MQTT_TABLE', 'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN',
-                'MQTT_VALUE_COLUMN_TYPE', 'DEPLOY_LOCAL_SCRIPT', 'QUERY_POOL', 'WRITE_IMMEDIATE', 'THRESHOLD_TIME',
-                'THRESHOLD_VOLUME', 'MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY'],
+                'ENABLE_NOSQL', 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT',  'LEDGER_CONN', 
+                'SYNC_TIME', 'BLOCKCHAIN_SOURCE', 'BLOCKCHAIN_DESTINATION', 'CLUSTER_NAME', 'DEFAULT_DBMS',
+                'ENABLE_HA', 'START_DATE', 'ENABLE_PARTITIONS', 'TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 
+                'PARTITION_KEEP', 'PARTITION_SYNC', 'COMPRESS_FILE', 'OPERATOR_THREADS', 'ENABLE_MQTT', 'MQTT_BROKER',
+                'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD', 'MQTT_TOPIC', 'MQTT_DBMS', 'MQTT_TABLE',
+                'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN', 'MQTT_VALUE_COLUMN_TYPE', 'DEPLOY_LOCAL_SCRIPT',
+                'QUERY_POOL', 'WRITE_IMMEDIATE', 'THRESHOLD_TIME', 'THRESHOLD_VOLUME', 'MONITOR_NODES', 'MONITOR_NODE',
+                'MONITOR_NODE_COMPANY'],
     "master": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LOCATION', 'COUNTRY', 'STATE', 'CITY',
                'CONFIG_NAME', 'OVERLAY_IP', 'PROXY_IP', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT',
                'TCP_BIND', 'TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT', 'REST_THREADS',  'DB_TYPE', 'DB_USER',
@@ -29,23 +29,23 @@ NODE_TYPES = {
                 'CONFIG_NAME', 'OVERLAY_IP', 'PROXY_IP', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'ANYLOG_BROKER_PORT',
                 'TCP_BIND', 'TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT', 'REST_THREADS', 'BROKER_BIND', 'BROKER_THREADS',
                 'DB_TYPE', 'DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY',
-                'NOSQL_ENABLE', 'NOSQL_TYPE', 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT', 'BLOBS_DBMS',
-                'BLOBS_REUSE', 'LEDGER_CONN', 'SYNC_TIME', 'BLOCKCHAIN_SOURCE', 'BLOCKCHAIN_DESTINATION', 'MEMBER',
+                'ENABLE_NOSQL', 'NOSQL_TYPE', 'NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT', 
+                 'LEDGER_CONN', 'SYNC_TIME', 'BLOCKCHAIN_SOURCE', 'BLOCKCHAIN_DESTINATION',
                 'CLUSTER_NAME', 'DEFAULT_DBMS', 'ENABLE_HA', 'START_DATE', 'ENABLE_PARTITIONS', 'TABLE_NAME',
                 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP', 'PARTITION_SYNC', 'COMPRESS_FILE',
-                'OPERATOR_THREADS', 'ENABLE_MQTT', 'MQTT_LOG', 'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD',
+                'OPERATOR_THREADS', 'ENABLE_MQTT',  'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD',
                 'MQTT_TOPIC', 'MQTT_DBMS', 'MQTT_TABLE', 'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN',
                 'MQTT_VALUE_COLUMN_TYPE', 'DEPLOY_LOCAL_SCRIPT', 'QUERY_POOL', 'WRITE_IMMEDIATE', 'THRESHOLD_TIME',
                 'THRESHOLD_VOLUME', 'MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY'],
     "publisher": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LOCATION', 'COUNTRY', 'STATE', 'CITY',
-                'CONFIG_NAME', 'OVERLAY_IP', 'PROXY_IP', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'ANYLOG_BROKER_PORT',
-                'TCP_BIND', 'TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT', 'REST_THREADS', 'BROKER_BIND', 'BROKER_THREADS',
-                'DB_TYPE', 'DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY',
-                'LEDGER_CONN', 'SYNC_TIME', 'BLOCKCHAIN_SOURCE', 'BLOCKCHAIN_DESTINATION',
-                'COMPRESS_FILE', 'ENABLE_MQTT', 'MQTT_LOG', 'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD',
-                'MQTT_TOPIC', 'MQTT_DBMS', 'MQTT_TABLE', 'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN',
-                'MQTT_VALUE_COLUMN_TYPE', 'DEPLOY_LOCAL_SCRIPT', 'QUERY_POOL', 'WRITE_IMMEDIATE', 'THRESHOLD_TIME',
-                'THRESHOLD_VOLUME', 'MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY'],
+                  'CONFIG_NAME', 'OVERLAY_IP', 'PROXY_IP', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT', 'ANYLOG_BROKER_PORT',
+                  'TCP_BIND', 'TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT', 'REST_THREADS', 'BROKER_BIND', 'BROKER_THREADS',
+                  'DB_TYPE', 'DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT', 'AUTOCOMMIT', 'SYSTEM_QUERY', 'MEMORY',
+                  'LEDGER_CONN', 'SYNC_TIME', 'BLOCKCHAIN_SOURCE', 'BLOCKCHAIN_DESTINATION', 'COMPRESS_FILE',
+                  'ENABLE_MQTT',  'MQTT_BROKER', 'MQTT_PORT', 'MQTT_USER', 'MQTT_PASSWD',
+                  'MQTT_TOPIC', 'MQTT_DBMS', 'MQTT_TABLE', 'MQTT_TIMESTAMP_COLUMN', 'MQTT_VALUE_COLUMN',
+                  'MQTT_VALUE_COLUMN_TYPE', 'DEPLOY_LOCAL_SCRIPT', 'QUERY_POOL', 'WRITE_IMMEDIATE', 'THRESHOLD_TIME',
+                  'THRESHOLD_VOLUME', 'MONITOR_NODES', 'MONITOR_NODE', 'MONITOR_NODE_COMPANY'],
     "query": ['LICENSE_KEY', 'NODE_TYPE', 'NODE_NAME', 'COMPANY_NAME', 'LOCATION', 'COUNTRY', 'STATE', 'CITY',
                'CONFIG_NAME', 'OVERLAY_IP', 'PROXY_IP', 'ANYLOG_SERVER_PORT', 'ANYLOG_REST_PORT',
                'TCP_BIND', 'TCP_THREADS', 'REST_BIND', 'REST_TIMEOUT', 'REST_THREADS',  'DB_TYPE', 'DB_USER',
@@ -134,20 +134,22 @@ def main():
                 if config_file_data[section]['ANYLOG_BROKER_PORT']['value'] != "":
                     broker_port = config_file_data[section]['ANYLOG_BROKER_PORT']['value']
             elif section == 'database':
-                if args.node_type != 'operator':
+                if args.node_type not in ['generic', 'operator']:
                     config_file_data[section]['ENABLE_NOSQL']['value'] = 'false'
                     config_file_data[section]['ENABLE_NOSQL']['enable'] = False
                 config_file_data[section] = section_database(configs=config_file_data[section])
-            elif section == 'operator' and args.node_type == 'operator':
+            elif section == 'operator' and args.node_type in ['generic', 'operator']:
                 company_name = config_file_data['general']['COMPANY_NAME']['value'].lower().replace(' ', '-')
                 config_file_data[section] = section_operator(company_name=company_name, configs=config_file_data[section], is_training=args.training)
             elif section == 'blockchain':
                 config_file_data[section] = section_blockchain(configs=config_file_data[section])
-            elif section == 'mqtt' and args.node_type in ['publisher', 'operator']:
+            elif section == 'mqtt' and args.node_type in ['generic', 'operator', 'publisher']:
                 config_file_data[section] = section_mqtt(configs=config_file_data[section], rest_port=rest_port, broker_port=broker_port)
             elif section == 'monitoring':
                 config_file_data[section]['MONITOR_NODE_COMPANY']['default'] = config_file_data['general']['COMPANY_NAME']['value']
                 config_file_data[section] = section_monitoring(configs=config_file_data[section])
+            elif section == 'advanced settings':
+                config_file_data[section] = section_advanced_settings(configs=config_file_data[section])
             print("\n")
 
     if args.deployment_type == 'docker':

@@ -23,21 +23,18 @@ def prepare_configs(node_type:str, configs:dict, node_configs:list, anylog_confi
     :return:
         configs with enabled / disabled configss
     """
-    if is_training is True:
-        node_configs = TRAINING_CONFIGS[node_type]
-
     for section in configs:
         for param in configs[section]:
             if param == 'LOCAL_SCRIPTS' and is_training is True:
                 configs[section][param]['default'] = '/app/deployment-scripts/training-deployment'
-            if param == 'NODE_TYPE':
+            elif param == 'NODE_TYPE':
                 configs[section][param]['default'] = node_type
-            if param not in node_configs:
+            elif is_training is True and param in TRAINING_CONFIGS[node_type]:
+                configs[section][param]['enable'] = True
+            elif is_training is False and param in node_configs:
+                configs[section][param]['enable'] = True
+            else:
                 configs[section][param]['enable'] = False
-            if param in anylog_configs:
-                configs[section][param]['default'] = anylog_configs[param]
-            elif param in advanced_configs:
-                configs[section][param]['default'] = advanced_configs[param]
 
     if node_type == 'master':
         configs['general']['NODE_NAME']['default'] = 'anylog-master'
@@ -78,40 +75,43 @@ def separate_configs(configs:dict)->(dict,dict):
     """
     anylog_configs = {}
     advanced_configs = {}
-
+    import json
     for section in configs:
         for param in configs[section]:
-            if configs[section][param]['enable'] is True or param  == "NODE_TYPE":
+            if param in ['LICENSE_KEY', 'NODE_TYPE']:
                 if section not in anylog_configs:
                     anylog_configs[section] = {}
                 anylog_configs[section][param] = {
                     "description": configs[section][param]['description'],
                     "value": configs[section][param]['value']
                 }
-                if configs[section][param]['value'] == "" and configs[section][param]['default'] != "":
-                    anylog_configs[section][param] = {
-                        "description": configs[section][param]['description'],
-                        "value": configs[section][param]['default']
-                    }
-                if anylog_configs[section][param]['value'] == "":
-                    del anylog_configs[section][param]
-                    if section not in advanced_configs:
-                        advanced_configs[section] = {}
-                    advanced_configs[section][param] = {
-                        "description": configs[section][param]['description'],
-                        "value": '""'
-                    }
+            elif configs[section][param]['enable'] is True:
+                if section not in anylog_configs:
+                    anylog_configs[section] = {}
+
+                anylog_configs[section][param] = {
+                    "description": configs[section][param]['description'],
+                    "value": configs[section][param]["value"]
+                }
+                if all(configs[section][param][x] == "" for x in ['value', 'default']):
+                    anylog_configs[section][param]["value"] = '""'
+                elif configs[section][param]["value"] == "":
+                    anylog_configs[section][param]["value"] = configs[section][param]["default"]
             else:
                 if section not in advanced_configs:
                     advanced_configs[section] = {}
+
                 advanced_configs[section][param] = {
                     "description": configs[section][param]['description'],
-                    "value": configs[section][param]['default']
+                    "value": configs[section][param]["value"]
                 }
-                if advanced_configs[section][param]['value'] == "":
-                    advanced_configs[section][param]['value'] = '""'
+                if all(configs[section][param][x] == "" for x in ['value', 'default']):
+                    advanced_configs[section][param]["value"] = '""'
+                elif configs[section][param]["value"] == "":
+                    advanced_configs[section][param]["value"] = configs[section][param]["default"]
 
     return anylog_configs, advanced_configs
+
 
 
 def prepare_configs_dotenv(configs:dict)->str:

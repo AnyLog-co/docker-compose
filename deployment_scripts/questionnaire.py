@@ -55,7 +55,7 @@ def section_networking(configs:dict)->dict:
                     if err_msg == "":
                         configs[param]['value'] = answer
                         status = True
-                elif isinstance(configs[param]['default'], int):
+                elif isinstance(configs[param]['default'], int) or param == 'ANYLOG_BROKER_PORT':
                     try:
                         answer = int(answer)
                     except Exception as error:
@@ -83,6 +83,9 @@ def section_networking(configs:dict)->dict:
         else:
             configs[param]['value'] = configs[param]['default']
 
+        if param == 'ANYLOG_BROKER_PORT' and configs[param]['value'] == "":
+            configs['BROKER_BIND']['enable'] = False
+            configs['BROKER_THREADS']['enable'] = False
 
 
     return configs
@@ -122,20 +125,26 @@ def section_database(configs:dict)->dict:
         else:
             configs[param]['value'] = configs[param]['default']
 
+        if param == "SYSTEM_QUERY" and configs[param]['value'] == "false":
+            configs["MEMORY"]["enable"] = False
+
         if param == 'DB_TYPE' and configs[param]['value'] != 'sqlite':
             for key in ['DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT']:
                 configs[key]['enable'] = True
         elif param == 'DB_TYPE' and configs[param]['value'] == 'sqlite':
             for key in ['DB_USER', 'DB_PASSWD', 'DB_IP', 'DB_PORT']:
                 configs[key]['enable'] = False
-        elif param == 'ENABLE_NOSQL' and configs[param]['value'] == 'true':
+
+        if param == 'ENABLE_NOSQL' and configs[param]['value'] == "false":
+            for key in ['NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT']:
+                configs[key]['enable'] = False
+            configs['BLOBS_DBMS']['default'] = 'false'
+        elif param == 'ENABLE_NOSQL' and configs[param]['value'] == "true":
             for key in ['NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT']:
                 configs[key]['enable'] = True
-            configs['BLOBS_DBMS']['value'] = 'true'
-        elif param == 'ENABLE_NOSQL' and configs[param]['value'] == 'false':
-            for key in ['NOSQL_USER', 'NOSQL_PASSWD', 'NOSQL_IP', 'NOSQL_PORT']:
-                configs[key]['enable'] = True
-            configs['BLOBS_DBMS']['value'] = 'false'
+            configs['BLOBS_DBMS']['default'] = 'true'
+
+    return configs
 
 
 def section_blockchain(configs:dict) -> dict:
@@ -217,9 +226,9 @@ def section_operator(company_name:str, configs:dict, operator_id:int=None, is_tr
     for param in configs:
         if configs[param]['enable'] is True:
             err_msg = ""
-            status = True
+            status = False
             question = generate_question(param=param, configs=configs[param])
-            while status is True:
+            while status is False:
                 answer = ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
                 if answer == "":
                     configs[param]['value'] = configs[param]['default']
@@ -239,8 +248,24 @@ def section_operator(company_name:str, configs:dict, operator_id:int=None, is_tr
                             status = True
                     if status is False:
                         err_msg = f"Invalid value for {param}"
+                else:
+                    configs[param]['value'] = answer
+                    status = True
         else:
             configs[param]['value'] = configs[param]['default']
+
+        if param == 'ENABLE_HA' and configs[param]['value'] == 'false':
+            configs['START_DATE']['enable'] = False
+        elif param == 'ENABLE_HA' and configs[param]['value'] == 'true':
+            configs['START_DATE']['enable'] = True
+
+        if param == 'ENABLE_PARTITIONS' and configs[param]['value'] == 'false':
+            for key in ['TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP', 'PARTITION_SYNC']:
+                configs[key]['enable'] = False
+        elif param == 'ENABLE_PARTITIONS' and configs[param]['value'] == 'true':
+            for key in ['TABLE_NAME', 'PARTITION_COLUMN', 'PARTITION_INTERVAL', 'PARTITION_KEEP', 'PARTITION_SYNC']:
+                configs[key]['enable'] = True
+
     return configs
 
 
@@ -318,6 +343,38 @@ def section_mqtt(configs:dict, rest_port:int=None, broker_port:int=None)->dict:
         else:
             configs[param]['value'] = configs[param]['default']
 
+        if param == 'ENABLE_MQTT' and configs[param]['value'] == 'false':
+            for key in configs:
+                if param == 'ENABLE_MQTT' and configs[param]['value'] == 'false' and key not in ['ENABLE_MQTT', 'MQTT_LOG']:
+                    configs[key]['enable'] = False
+                elif param == 'ENABLE_MQTT' and configs[param]['value'] == 'true' and key not in ['ENABLE_MQTT', 'MQTT_LOG']:
+                    configs[key]['enable'] = True
 
     return configs
 
+
+def section_advanced_settings(configs:dict)->dict:
+    for param in configs:
+        err_msg = ""
+        question = generate_question(param=param, configs=configs[param])
+        status = False
+        if configs[param]['enable'] is True:
+            while status is False:
+                answer = ask_question(question=question, description=configs[param]['description'], param=param, error_msg=err_msg)
+                if answer == "":
+                    configs[param]['value'] = configs[param]['default']
+                    status = True
+                elif 'options' in configs[param]:
+                    for option in configs[param][option]:
+                        if option in answer:
+                            configs[param]['value'] = answer
+                            status = True
+                    if status is False:
+                        err_msg = f"Invalid option value for {param}"
+                else:
+                    configs[param]['value'] = answer
+                    status = True
+        else:
+            configs[param]['value'] = configs[param]['default']
+
+    return configs
