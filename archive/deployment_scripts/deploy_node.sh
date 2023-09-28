@@ -70,7 +70,7 @@ if [[ ${EXISTING_CONFIGS} == n ]] && [[ ${DEMO_BUILD} == y ]]; then
   python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
-    --basic-config
+    --demo-build
 elif [[ ${EXISTING_CONFIGS} == n ]] && [[ ${DEMO_BUILD} == n ]]; then
   python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
@@ -80,7 +80,7 @@ elif [[ ${DEPLOYMENT_TYPE} == docker ]] && [[ ${DEMO_BUILD} == y ]]; then
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/docker-compose/anylog-${NODE_TYPE}/anylog_configs.env \
-    --basic-config
+    --demo-build
 elif [[ ${DEPLOYMENT_TYPE} == docker ]] && [[ ${DEMO_BUILD} == n ]]; then
   python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
@@ -91,7 +91,7 @@ elif [[ ${DEPLOYMENT_TYPE} == kubernetes ]] && [[ ${DEMO_BUILD} == y ]]; then
     --build ${BUILD_TYPE} \
     --deployment-type ${DEPLOYMENT_TYPE} \
     --config-file $HOME/deployments/helm/sample-configurations/anylog_${NODE_TYPE}.yaml \
-    --basic-config
+    --demo-build
 elif [[ ${DEPLOYMENT_TYPE} == kubernetes ]] && [[ ${DEMO_BUILD} == n ]]; then
   python3 $HOME/deployments/deployment_scripts/main.py ${NODE_TYPE} \
     --build ${BUILD_TYPE} \
