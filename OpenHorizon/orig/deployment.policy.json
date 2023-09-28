@@ -1,13 +1,13 @@
 {
-  "label": "$SERVICE_NAME Deployment Policy",
+  "label": "anylog-node_0.1.0_amd64 Deployment Policy",
   "description": "A super-simple sample Horizon Deployment Policy",
   "service": {
-    "name": "$SERVICE_NAME",
-    "org": "$HZN_ORG_ID",
+    "name": "anylog-node",
+    "org": "myorg",
     "arch": "*",
     "serviceVersions": [
       {
-        "version": "$SERVICE_VERSION",
+        "version": "0.1.0",
         "priority":{}
       }
     ]
@@ -15,12 +15,12 @@
   "properties": [
   ],
   "constraints": [
-    "anylog.monitor == true"
+    "anylog.node == master"
   ],
   "userInput": [
     {
-      "serviceOrgid": "$HZN_ORG_ID",
-      "serviceUrl": "$SERVICE_NAME",
+      "serviceOrgid": "myorg",
+      "serviceUrl": "anylog-node",
       "serviceVersionRange": "[0.0.0,INFINITY)",
       "inputs": [
         {
