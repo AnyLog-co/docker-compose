@@ -1,0 +1,13 @@
+{
+    "services": [
+        {
+            "org": "anylog",
+            "url": "anylog-node",
+            "variables": {
+                "NODE_TYPE": "query",
+                "NODE_NAME": "openhorizon-query",
+                "CLUSTER_NAME": "open-horizon-cluster-2"
+            }
+        }
+    ]
+}
