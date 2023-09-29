@@ -39,7 +39,7 @@
         },
         {
             "name": "COMPANY_NAME",
-            "defaultValue": "IBM"
+            "defaultValue": "Open Horizon"
         },
         {
             "name": "ANYLOG_SERVER_PORT",
