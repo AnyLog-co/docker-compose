@@ -31,11 +31,11 @@
         },
         {
             "name": "NODE_TYPE",
-            "defaultValue": "master"
+            "defaultValue": "query"
         },
         {
             "name": "NODE_NAME",
-            "defaultValue": "anylog-master"
+            "defaultValue": "anylog-query"
         },
         {
             "name": "COMPANY_NAME",
@@ -43,23 +43,15 @@
         },
         {
             "name": "ANYLOG_SERVER_PORT",
-            "defaultValue": "32048"
+            "defaultValue": "32348"
         },
         {
             "name": "ANYLOG_REST_PORT",
-            "defaultValue": "32049"
-        },
-        {
-            "name": "DEFAULT_DBMS",
-            "defaultValue": "open_horizon"
-        },
-        {
-            "name": "CLUSTER_NAME",
-            "defaultValue": ""
+            "defaultValue": "32349"
         },
         {
             "name": "LEDGER_CONN",
-            "defaultValue": "127.0.0.1:32048"
+            "defaultValue": "172.105.4.104:32048"
         },
         {
             "name": "ENABLE_MQTT",
