@@ -43,11 +43,11 @@
         },
         {
             "name": "ANYLOG_SERVER_PORT",
-            "defaultValue": 32048
+            "defaultValue": "32048"
         },
         {
             "name": "ANYLOG_REST_PORT",
-            "defaultValue": 32049
+            "defaultValue": "32049"
         },
         {
             "name": "LEDGER_CONN",
