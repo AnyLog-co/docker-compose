@@ -50,12 +50,24 @@
             "defaultValue": "32049"
         },
         {
+            "name": "DEFAULT_DBMS",
+            "defaultValue": "open_horizon"
+        },
+        {
+            "name": "CLUSTER_NAME",
+            "defaultValue": ""
+        },
+        {
             "name": "LEDGER_CONN",
             "defaultValue": "127.0.0.1:32048"
         },
         {
-            "name": "MONITOR_NODES",
+            "name": "ENABLE_MQTT",
             "defaultValue": "false"
+        },
+        {
+            "name": "MONITOR_NODES",
+            "defaultValue": "true"
         }
     ],
     "deployment": {
