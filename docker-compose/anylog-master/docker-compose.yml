@@ -10,6 +10,8 @@ services:
     stdin_open: true
     tty: true
     network_mode: "${NETWORK}"
+    environment:
+      - INIT_TYPE=${INIT_TYPE}
     volumes:
       - anylog-master-anylog:/app/AnyLog-Network/anylog
       - anylog-master-blockchain:/app/AnyLog-Network/blockchain

@@ -6,7 +6,7 @@ services:
     env_file:
       - anylog_configs.env
     environment:
-      INIT_TYPE: ${INIT_TYPE}
+      - INIT_TYPE=${INIT_TYPE}
     container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
