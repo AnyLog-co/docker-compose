@@ -5,7 +5,7 @@ services:
     env_file:
       - anylog_configs.env
     environment:
-      INIT_TYPE: ${INIT_TYPE}
+      - INIT_TYPE=${INIT_TYPE}
     container_name: anylog-query
     restart: always
     stdin_open: true
