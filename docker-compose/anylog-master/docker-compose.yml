@@ -5,7 +5,7 @@ services:
     restart: always
     env_file:
       - anylog_configs.env
-      - advanced_configs.env
+      - advance_configs.env
     container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true

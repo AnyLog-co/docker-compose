@@ -1,0 +1,27 @@
+#--------------------------------------------------------------------------------------------#
+# The following provides a sample Dockerfile extending AnyLog to include all possible packages.
+#
+# Base Operating System: Ubuntu:22.04
+# Base image:  anylogco/anylog-network:latest-alpine
+#  
+#--------------------------------------------------------------------------------------------#
+FROM anylogco/anylog-network:latest AS extended_base
+
+RUN apt-get update && \
+    apt-get install -y \
+        libssl-dev \
+        build-essential \
+        libpq-dev \
+        libffi-dev \
+        libssl-dev \
+        python3-numpy && \
+    python3 -m pip install --upgrade pip && \
+    python3 -m pip install jwt \
+                           pyOpenSSL \
+                           psycopg2-binary \
+                           pymongo \
+                           paho-mqtt \
+                           kafka-python \
+                           web3 \
+                           py4j \
+                           python3-opencv
