@@ -15,7 +15,7 @@ Currently, we support 2 types of installation:
 AnyLog works. Directions for using training can be found in our [documentation](https://github.com/AnyLog-co/documentation/tree/master/training).
 
 * [docker-compose](docker-compose/) - A deployment of AnyLog node(s) that's fully configurable. This includes: 
-  * using _PostgresSQL_ as oppose, to _SQLite_ 
+  * using _PostgresSQL_ as oppose to _SQLite_ 
   * Personalize MQTT client 
   * Geolocation of the node
   * Network binding 
@@ -37,7 +37,7 @@ cd $HOME/deployments/
 bash $HOME/deployments/installations/docker_credentials.sh ${YOUR_ANYLOG_DOCKER_CREDENTIALS}
 ```
 
-3. (Optionally) Based on AnyLog [docker image](https://github.com/AnyLog-co/documentation/blob/os-dev/docker%20image.md),
+3. (Optionally) Based on AnyLog [docker image](https://github.com/AnyLog-co/documentation/blob/master/docker%20image.md),
 build Docker image 
 ```shell
 # Ubuntu based 
