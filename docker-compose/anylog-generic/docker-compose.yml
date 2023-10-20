@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   anylog-node:
-    image: anylogco/anylog-network:${BUILD}
+    image: anylogco/anylog-network:${TAG}
     restart: always
     env_file:
       - anylog_configs.env
