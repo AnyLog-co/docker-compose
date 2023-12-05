@@ -21,6 +21,9 @@ AnyLog works. Directions for using training can be found in our [documentation](
   * Network binding 
   * etc. 
 
+**Note**: The 2 deployments share the same same script and policies when deploying. As such, users can easily switch between
+_training_ and _docker-compose_ deployments. 
+
 ### Requirements
 * [Docker and docker-compose](https://docs.docker.com/engine/install/)
 
