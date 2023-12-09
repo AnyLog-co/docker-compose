@@ -9,10 +9,9 @@ services:
     container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
-    # network_mode: "${NETWORK}"  # Uncomment and configure if needed
     ports:
-      - 32048:32048
-      - 32049:32049
+      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
+      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     environment:
       - INIT_TYPE=${INIT_TYPE}
     volumes:
