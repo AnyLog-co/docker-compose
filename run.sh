@@ -2,6 +2,7 @@
 
 # Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
 # Sample Calls:
+#  - help: bash run.sh help
 #  - Start: bash run.sh NODETYPE up [--training]
 #  - Stop: bash run.sh {NODETYPE} down [--training] [--volume] [--rmi]
 

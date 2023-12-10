@@ -58,6 +58,17 @@ docker build -f Dockerfiles/Dockerfile.alpine -t anylogco/anylog-network:${PERSO
 
 
 5. Starting / Stopping AnyLog node
+* Help
+```shell
+bash deployments/run.sh help 
+<<COMMENT
+Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
+Sample Calls:
+  - Start: bash run.sh NODETYPE up [--training]
+  - Stop:  bash run.sh NODETYPE down [--training] [--volume] [--rmi]
+<<
+```
+
 * Starting Node
 ```shell
 # Generic Command
@@ -69,6 +80,7 @@ bash deployments/run.sh master up --training
 # Start Maser in training 
 bash deployments/run.sh master up
 ``` 
+
 * Stopping Node 
 ```shell
 # Generic Command
