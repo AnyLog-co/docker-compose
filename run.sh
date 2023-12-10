@@ -3,11 +3,8 @@
 Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
 
 Sample Calls:
-  - Start: bash run.sh up
-  - Stop but keep image and volume(s): bash run.sh down
-  - Stop and remove volume(s): bash run.sh down --volume
-  - Stop and remove image: bash run.sh down --rmi
-  - Stop and remove image and volume(s): bash run.sh down --volume --rmi
+  - Start: bash run.sh NODETYPE up [--training]
+  - Stop: bash run.sh {NODETYPE} down [--training] [--volume] [--rmi]
 """
 NODETYPE=$1
 DOCKERCMD=$2
