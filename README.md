@@ -58,7 +58,7 @@ docker build -f Dockerfiles/Dockerfile.alpine -t anylogco/anylog-network:${PERSO
 
 
 5. Starting / Stopping AnyLog node
-   * Starting Node
+* Starting Node
 ```shell
 # Generic Command
 bash deployments/run.sh ${NODETYPE} up [--training]
@@ -68,8 +68,8 @@ bash deployments/run.sh master up --training
 
 # Start Maser in training 
 bash deployments/run.sh master up
-```
-  * Stopping Node 
+``` 
+* Stopping Node 
 ```shell
 # Generic Command
 bash deployments/run.sh ${NODETYPE} down [--training] [--volume] [--rmi]
