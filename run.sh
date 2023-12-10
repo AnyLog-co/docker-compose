@@ -1,16 +1,24 @@
 #!/bin/bash
-"""
-Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
 
-Sample Calls:
-  - Start: bash run.sh NODETYPE up [--training]
-  - Stop: bash run.sh {NODETYPE} down [--training] [--volume] [--rmi]
-"""
+# Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
+# Sample Calls:
+#  - Start: bash run.sh NODETYPE up [--training]
+#  - Stop: bash run.sh {NODETYPE} down [--training] [--volume] [--rmi]
+
 NODETYPE=$1
 DOCKERCMD=$2
 VOLUME=false
 IMAGE=false
 TRAINING=false
+
+if [[ ${NODETYPE} == help ]] ; then
+  printf """Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
+  Sample Calls:
+  \t- Start: bash run.sh NODETYPE up [--training]
+  \t- Stop:  bash run.sh NODETYPE down [--training] [--volume] [--rmi]
+  """
+  exit 0
+fi
 
 ROOT_PATH=$(dirname $(readlink -f "$0"))
 
