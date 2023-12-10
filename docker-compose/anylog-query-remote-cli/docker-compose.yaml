@@ -6,7 +6,8 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    network_mode: "${NETWORK}"
+    ports:
+      - ${CLI_PORT}:${CLI_PORT}
     environment:
       - CONN_IP=${CONN_IP}
       - CLI_PORT=${CLI_PORT}
