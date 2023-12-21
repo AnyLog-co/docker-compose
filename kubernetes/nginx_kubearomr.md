@@ -1,8 +1,11 @@
-# README
+# Nginx with Kubearmor
 
-## Install Kubearmor 
-Based on [Kuberarmor Documentation](https://docs.kubearmor.io/kubearmor/) for Helm/Kubernetes 
+## Links
+* [Kuberarmor Documentation](https://docs.kubearmor.io/kubearmor/) 
+* [NginX Documentation](https://docs.nginx.com)
+* [AnyLog NginX](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nginx.md)
 
+## Steps 
 1. Declare repo in _Helm_
 ```shell
 helm repo add kubearmor https://kubearmor.github.io/charts
@@ -57,12 +60,11 @@ Started to watch alerts
 
 [kubearmor.json](kubearmor.json) provides a clear output of the sample data. 
 
-**Current Issues**: 
+## Current Issues 
 1. _Karmor_ is using a different port each time we run it -- is there a way to make it static?
 2. We configured _nginx_ service to NodePort, is it possible to do the same with karmar in order to send the data to our gRPC client?
 3. any other approach to connect and receive the logs (to a third party app)?
 4. Anything else that we need to consider?
-
 
 
 
