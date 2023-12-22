@@ -3,8 +3,6 @@ metadata:
   namespace: default
   # hostname for deployment
   hostname: anylog-master
-  # deployment application name
-  app_name: anylog-master-app
   # Pod application name
   pod_name: anylog-master-pod
   # Kubernetes deployment name

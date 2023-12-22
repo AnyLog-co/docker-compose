@@ -37,6 +37,16 @@ in our Docker deployment. A full list of configuration options can be found in t
 
 # Deploy associated Volumes  
 ```
+
+5. Attach / Detach from Pod 
+```shell
+# Attach to Pod - replace `master` with desired node type 
+POD=$(kubectl get pod -l app=nginx -o name | grep master)
+
+
+# to detach: Ctrl+P followed by Ctrl+Q
+```
+
 **Questions**: 
 1. on values.yaml - `LEDGER_CONN` should have the same name as service 
 2. on values.yaml - For volumes, instead of /app/AnyLog-Network or /app/deployment-scripts /app should be replaced with 
