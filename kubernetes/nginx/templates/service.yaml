@@ -6,13 +6,13 @@ metadata:
   labels:
     app: '{{ .Values.metadata.app_name }}'
 spec:
-  replicas: '{{ .Values.metadata.replicas }}'
+  replicas: {{ .Values.metadata.replicas | default "1" | quote }}
   selector:
     matchLabels:
-      app: '{{ .Values.metadata.app_name }}'
+      app: "{{ .Values.metadata.app_name }}"
   type: NodePort
   ports:
     - protocol: TCP
-      port: '{{ .Values.node_configs.nginx.nginx_port }}'
-      targetPort: '{{ .Values.node_configs.nginx.nginx_port }}'
-      nodePort: '{{ .Values.node_configs.nginx.node_port }}'
+      port: {{ .Values.node_configs.nginx.nginx_port | int }}
+      targetPort: {{ .Values.node_configs.nginx.nginx_port | int }}
+      nodePort: {{ .Values.node_configs.nginx.node_port | int }}

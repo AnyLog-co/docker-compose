@@ -11,10 +11,3 @@ data:
   NGINX_PORT: '{{ .Values.node_configs.nginx.nginx_port }}'
   ANYLOG_SERVER_PORT: '{{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}'
   ANYLOG_REST_PORT: '{{ .Values.node_configs.networking.ANYLOG_REST_PORT }}'
-  {{ if ne .Values.node_configs.networking.ANYLOG_BROKER_PORT "" }}
-  ANYLOG_BROKER_PORT: '{{ .Values.node_configs.networking.ANYLOG_BROKER_PORT }}'
-  {{ end }}
-  nginx.conf: |- 
-    {{ tpl (.Files.Get "nginx/nginx.conf") . | nindent 2 }}
-  anylog.conf: |-
-    {{ tpl (.Files.Get "nginx/sites-enabled/anylog.conf") . | nindent 2 }}

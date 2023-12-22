@@ -20,7 +20,3 @@ spec:
         image: '{{ .Values.image.repository }}'
         ports:
         - containerPort: {{ .Values.node_configs.nginx.nginx_port }}
-        lifecycle:
-          postStart:
-            exec:
-              command: ["/bin/sh", "-c", "sudo rm -rf /etc/nginx/sites-enabled/default && sudo rm -rf /etc/nginx/sites-available/default && nginx -s reload"]
