@@ -4,14 +4,14 @@ metadata:
   # hostname for deployment
   hostname: anylog-node
   # deployment application name
-  app_name: anylog-node-app
+  app_name: anylog-node
   # Pod application name
   pod_name: anylog-node-pod
   # Kubernetes deployment name
   deployment_name: anylog-node-deployment
   # Kubernetes service name
   service_name: anylog-node-service
-  # Kubernetes configuration mapping name
+  # Configuration mapping name
   configmap_name: anylog-node-configmap
   # Allows running Kubernetes remotely. If commented out, code will ignore it
   node_selector: ""
@@ -26,50 +26,16 @@ image:
   tag: beta-arm64
   # Image pulling policy
   pull_policy: IfNotPresent
-  pull_info:
-    # Docker username (echo -n ${USER_NAME} | base64
-    username: b3NoYWRtb24=
-    # Docker password (echo -n ${USER_NAME} | base64
-    password: ZG9ja2VyNEFueUxvZyE=
-    # Docker API kI (echo -n ${USER_NAME} | base64
-    api: ""
   # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
   init_type: prod
 
-volume:
-  # Whether or not to enable volumes for AnyLog
-  enable_volume: false
-  anylog_volume:     # AnyLog Volume name
-    name: anylog-node-anylog-data
-    # AnyLog security directory path
-    path: /app/AnyLog-Network/anylog
-    # Volume access mode
-    access_mode: ReadWriteOnce
-    # Volume storage size
-    storage_size: 1Gi
-  blockchain_volume:     # AnyLog Volume name
-    name: anylog-node-blockchain-data
-    # AnyLog security directory path
-    path: /app/AnyLog-Network/blockchain
-    # Volume access mode
-    access_mode: ReadWriteOnce
-    # Volume storage size
-    storage_size: 1Gi
-  data_volume:     # AnyLog Volume name
-    name: anylog-node-data-data
-    # AnyLog security directory path
-    path: /app/AnyLog-Network/data
-    # Volume access mode
-    access_mode: ReadWriteOnce
-    # Volume storage size
-    storage_size: 1Gi
 
 node_configs:
   directories:
     # AnyLog Root Path
     ANYLOG_PATH: /app
     # !local_scripts: ${ANYLOG_HOME}/deployment-scripts/scripts
-    LOCAL_SCRIPTS: /app/deployment-scripts/scripts
+    LOCAL_SCRIPTS: /app/deployment-scripts/node-deployment
     # !test_dir: ${ANYLOG_HOME}/deployment-scripts/test
     TEST_DIR: /app/deployment-scripts/test
   general:
@@ -79,7 +45,7 @@ node_configs:
     NODE_TYPE: generic
     # Name of the AnyLog instance
     NODE_NAME: anylog_node
-    # Owner of the Anylog instace
+    # Owner of the Anylog instance
     COMPANY_NAME: New Company
   geolocation:
     # Coordinates of the machine - used by Grafana to map the network
@@ -94,7 +60,7 @@ node_configs:
     # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
     ANYLOG_SERVER_PORT: 32458
     # Port address used by AnyLog's REST protocol
-    ANYLOG_REST_PORT: 32549
+    ANYLOG_REST_PORT: 32459
 
     # Declare Policy name
     CONFIG_NAME: ""
@@ -131,7 +97,7 @@ node_configs:
     DB_PORT: 5432
     # Whether to set autocommit data
     AUTOCOMMIT: false
-    # Whether to start to start system_query logical database
+    # Whether to start system_query logical database
     SYSTEM_QUERY: false
     # Run system_query using in-memory SQLite. If set to false, will use pre-set database type
     MEMORY: true
@@ -230,3 +196,43 @@ node_configs:
     THRESHOLD_TIME: 60 seconds
     # Buffer size to reach, at which point data is pushed through
     THRESHOLD_VOLUME: 10KB
+
+
+volume:
+  # Whether to enable volumes for AnyLog
+  enable_volume: false
+  anylog_volume:     # volume name: {.Values.metadata.deployment_name}-anylog-dir
+    # AnyLog security directory path
+    path: /app/AnyLog-Network/anylog
+    # Volume access mode
+    access_mode: ReadWriteOnce
+    # Volume storage size
+    storage_size: 1Gi
+  blockchain_volume:     # volume name: {.Values.metadata.deployment_name}-blockchain-dir
+    # AnyLog blockchain directory path
+    path: /app/AnyLog-Network/blockchain
+    # Volume access mode
+    access_mode: ReadWriteOnce
+    # Volume storage size
+    storage_size: 1Gi
+  data_volume:     # volume name: {.Values.metadata.deployment_name}-data-dir
+    # AnyLog data directory path
+    path: /app/AnyLog-Network/data
+    # Volume access mode
+    access_mode: ReadWriteOnce
+    # Volume storage size
+    storage_size: 1Gi
+  local_scripts: # volume name: {.Values.metadata.deployment_name}-local-scripts
+    # AnyLog local scripts directory path
+    path: /app/deployment-scripts/node-deployment
+    # Volume access mode
+    access_mode: ReadWriteOnce
+    # Volume storage size
+    storage_size: 1Gi
+  test_scripts: # volume name: {.Values.metadata.deployment_name}-tests
+    # AnyLog test cases directory path
+    path: /app/deployment-scripts/test
+    # Volume access mode
+    access_mode: ReadWriteOnce
+    # Volume storage size
+    storage_size: 1Gi
