@@ -25,10 +25,10 @@ spec:
         - name: '{{ .Values.image.secret_name }}'
       {{ end }}
       containers:
-        name: '{{ .Values.metadata.deployment_name }}'
+      - name: '{{ .Values.metadata.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pull_policy }}'
-      envFrom:
+        envFrom:
         - configMapRef:
             name: '{{ .Values.metadata.configmap_name }}'
         tty: true
