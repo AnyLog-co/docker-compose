@@ -37,11 +37,7 @@ spec:
 #          mountPath: /app/AnyLog-Network/blockchain
 #        - name: '{{ .Values.metadata.deployment_name }}-local-scripts'
 #          mountPath: /app/deployment-scripts
-#        {{- if .Values.other.remote_cli true }}
-#        - name: remote-cli-blobs
-#          mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
-#        {{ end }}
-        envFrom:
+       envFrom:
         - configMapRef:
             name: '{{ .Values.metadata.configmap_name }}'
         tty: true
@@ -68,8 +64,3 @@ spec:
 #      - name: {{ .Values.metadata.deployment_name }}-local-scripts
 #        persistentVolumeClaim:
 #          claimName: '{{ .Values.metadata.deployment_name }}-local-scrpts-pvc'
-#      {{- if .Values.other.remote_cli true }}
-#      - name: remote-cli-blobs
-#        persistentVolumeClaim:
-#          claimName: remote-cli-blobs-pvc
-#      {{ end }}

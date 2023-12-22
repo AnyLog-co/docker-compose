@@ -166,7 +166,7 @@ node_configs:
     # Whether to enable partitioning
     ENABLE_PARTITIONS: false
     # Which tables to partition
-    TABLE_NAME: *
+    TABLE_NAME: '*'
     # Which timestamp column to partition by
     PARTITION_COLUMN: insert_timestamp
     # Time period to partition by
