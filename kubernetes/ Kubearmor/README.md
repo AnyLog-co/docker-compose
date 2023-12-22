@@ -1,10 +1,7 @@
-# Nginx with Kubearmor
+# KubeArmor 
 
-## Links
-* [Kuberarmor Documentation](https://docs.kubearmor.io/kubearmor/) 
-* [NginX Documentation](https://docs.nginx.com)
-* [AnyLog NginX](https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nginx.md)
-
+* [Kuberarmor Documentation](https://docs.kubearmor.io/kubearmor/)
+ 
 ## Steps 
 1. Declare repo in _Helm_
 ```shell
@@ -20,27 +17,19 @@ helm upgrade --install kubearmor-operator kubearmor/kubearmor-operator -n kubear
 curl -sfL http://get.kubearmor.io/ | sudo sh -s -- -b /usr/local/bin
 ```
 
-3. Build nignx / kubearmor helm package 
-* **Note 1**:  [KubeArmorConfig.yml](nginx-kubearmor%2Ftemplates%2FKubeArmorConfig.yml) is the default [sample configurations](https://raw.githubusercontent.com/kubearmor/KubeArmor/main/pkg/KubeArmorOperator/config/samples/sample-config.yml). 
+3. Deploy KubeArmor 
 ```shell
-helm package nginx-kubearmor
+kubectl apply -f kubearmor.yaml
 ```
 
-4. Deploy nginx / kubearmor helm pacakge 
+4. Start karmor gRPC client
 ```shell
-helm install ./[nginx-kubearmor-0.1.0.tgz](nginx-kubearmor-0.1.0.tgz) --generate-name
-```
+#  Observe Logs from KubeArmor
+karmor logs --json [--namespace default]
 
-5. set nginx port-forwarding 
-```shell
-nohup kubectl port-forward service/nginx 30800:80 > port-forward.log 2>&1 &
+# Collect system dump information for troubleshooting and error report
+karmor sysdump --json
 ```
-
-6. Start karmor gRPC client 
-```shell
-karmor logs -n default --json
-```
-
 **Sample Output**: 
 ```shell
 POD=$(kubectl get pod -l app=nginx -o name)
@@ -58,15 +47,12 @@ Started to watch alerts
 << COMMENT 
 ```
 
-[kubearmor.json](kubearmor.json) provides a clear output of the sample data. 
+[kubearmor.json]( Kubearmor/kubearmor.json) provides a clear output of the sample data. 
 
 ## Current Issues 
 1. _Karmor_ is using a different port each time we run it -- is there a way to make it static?
 2. We configured _nginx_ service to NodePort, is it possible to do the same with karmar in order to send the data to our gRPC client?
 3. any other approach to connect and receive the logs (to a third party app)?
 4. Anything else that we need to consider?
-
-
-
 
 
