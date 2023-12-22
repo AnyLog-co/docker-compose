@@ -24,7 +24,7 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: predevelop
+  tag: beta-arm64
   # Image pulling policy
   pull_policy: IfNotPresent
   pull_info:
