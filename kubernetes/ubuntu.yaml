@@ -1,0 +1,27 @@
+# ubuntu-pod.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-pod
+  labels:
+    app: ubuntu
+spec:
+  containers:
+  - name: ubuntu-container
+    image: ubuntu:22.04
+    command: ["sleep", "infinity"]
+
+---
+
+# ubuntu-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ubuntu-service
+spec:
+  selector:
+    app: ubuntu
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
