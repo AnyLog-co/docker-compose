@@ -15,32 +15,32 @@ spec:
       labels:
         app: '{{ .Values.metadata.app_name }}'
     spec:
-      hostname: {{ .Values.metadata.pod_name }}
+      hostname: '{{ .Values.metadata.pod_name }}'
       {{- if ne .Values.metadata.node_selector "" }}
       nodeSelector:
-        kubernetes.io/hostname: {{ .Values.metadata.node_selector }}
+        kubernetes.io/hostname: '{{ .Values.metadata.node_selector }}'
       {{ end }}
       {{- if ne .Values.image.secret_name "" }}
       imagePullSecrets:
-        - name: {{ .Values.image.secret_name }}
+        - name: '{{ .Values.image.secret_name }}'
       {{ end }}
       containers:
       - name: '{{ .Values.metadata.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pull_policy }}'
-        volumeMounts:
-        - name: '{{ .Values.metadata.deployment_name }}-data'
-          mountPath: /app/AnyLog-Network/data
-        - name: '{{ .Values.metadata.deployment_name }}-anylog'
-          mountPath: /app/AnyLog-Network/anylog
-        - name: '{{ .Values.metadata.deployment_name }}-blockchain'
-          mountPath: /app/AnyLog-Network/blockchain
+#        volumeMounts:
+#        - name: '{{ .Values.metadata.deployment_name }}-data'
+#          mountPath: /app/AnyLog-Network/data
+#        - name: '{{ .Values.metadata.deployment_name }}-anylog'
+#          mountPath: /app/AnyLog-Network/anylog
+#        - name: '{{ .Values.metadata.deployment_name }}-blockchain'
+#          mountPath: /app/AnyLog-Network/blockchain
 #        - name: '{{ .Values.metadata.deployment_name }}-local-scripts'
 #          mountPath: /app/deployment-scripts
-        {{- if .Values.other.remote_cli true }}
-        - name: remote-cli-blobs
-          mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
-        {{ end }}
+#        {{- if .Values.other.remote_cli true }}
+#        - name: remote-cli-blobs
+#          mountPath: /app/Remote-CLI/anylog_query/static/blobs/current/
+#        {{ end }}
         envFrom:
         - configMapRef:
             name: '{{ .Values.metadata.configmap_name }}'
@@ -48,28 +48,28 @@ spec:
         stdin: true
         ports:
         - name: server
-          containerPort: {{ .Values.networking.ANYLOG_SERVER_PORT }}
+          containerPort: {{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}
         - name: rest
-          containerPort: {{ .Values.networking.ANYLOG_REST_PORT }}
-        {{- if .Values.networking.ANYLOG_BROKER_PORT }}
+          containerPort: {{ .Values.node_configs.networking.ANYLOG_REST_PORT }}
+        {{- if .Values.node_configs.networking.ANYLOG_BROKER_PORT }}
         - name: broker
-          containerPort: {{ .Values.networking.ANYLOG_BROKER_PORT }}
+          containerPort: {{ .Values.node_configs.networking.ANYLOG_BROKER_PORT }}
         {{ end }}
-      volumes:
-      - name: '{{ .Values.metadata.deployment_name }}-data'
-        persistentVolumeClaim:
-          claimName: '{{ .Values.metadata.deployment_name }}-data-pvc'
-      - name: '{{ .Values.metadata.deployment_name }}-anylog'
-        persistentVolumeClaim:
-          claimName: '{{ .Values.metadata.deployment_name }}-anylog-pvc'
-      - name: '{{ .Values.metadata.deployment_name }}-blockchain'
-        persistentVolumeClaim:
-          claimName: '{{ .Values.metadata.deployment_name }}-blockchain-pvc'
+#      volumes:
+#      - name: '{{ .Values.metadata.deployment_name }}-data'
+#        persistentVolumeClaim:
+#          claimName: '{{ .Values.metadata.deployment_name }}-data-pvc'
+#      - name: '{{ .Values.metadata.deployment_name }}-anylog'
+#        persistentVolumeClaim:
+#          claimName: '{{ .Values.metadata.deployment_name }}-anylog-pvc'
+#      - name: '{{ .Values.metadata.deployment_name }}-blockchain'
+#        persistentVolumeClaim:
+#          claimName: '{{ .Values.metadata.deployment_name }}-blockchain-pvc'
 #      - name: {{ .Values.metadata.deployment_name }}-local-scripts
 #        persistentVolumeClaim:
 #          claimName: '{{ .Values.metadata.deployment_name }}-local-scrpts-pvc'
-      {{- if .Values.other.remote_cli true }}
-      - name: remote-cli-blobs
-        persistentVolumeClaim:
-          claimName: remote-cli-blobs-pvc
-      {{ end }}
+#      {{- if .Values.other.remote_cli true }}
+#      - name: remote-cli-blobs
+#        persistentVolumeClaim:
+#          claimName: remote-cli-blobs-pvc
+#      {{ end }}
