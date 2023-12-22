@@ -35,7 +35,7 @@ image:
     # Docker API kI (echo -n ${USER_NAME} | base64
     api: ""
 volume:
-  # Whether or not to enable volumes for AnyLog
+  # Whether to enable volumes for AnyLog
   enable_volume: false
   anylog_volume:     # AnyLog Volume name
     name: anylog-node-anylog-data

@@ -6,6 +6,8 @@ metadata:
   labels:
     app: '{{ .Values.metadata.app_name }}'
 data:
+  # -- INIT Type --
+  INIT_TYPE: '{{ .Values.image.init_type }}'
   # -- Directories --
   ANYLOG_PATH: '{{ .Values.node_configs.directories.ANYLOG_PATH }}'
   LOCAL_SCRIPTS: '{{ .Values.node_configs.directories.LOCAL_SCRIPTS }}'

@@ -23,11 +23,19 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: predevelop
+  tag: beta-arm64
   # Image pulling policy
   pull_policy: IfNotPresent
+  pull_info:
+    # Docker username (echo -n ${USER_NAME} | base64
+    username: b3NoYWRtb24=
+    # Docker password (echo -n ${USER_NAME} | base64
+    password: ZG9ja2VyNEFueUxvZyE=
+    # Docker API kI (echo -n ${USER_NAME} | base64
+    api: ""
   # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
   init_type: prod
+
 volume:
   # Whether or not to enable volumes for AnyLog
   enable_volume: false
