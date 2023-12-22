@@ -36,13 +36,10 @@ data:
   # -- Networking --
   ANYLOG_SERVER_PORT: '{{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}'
   ANYLOG_REST_PORT: '{{ .Values.node_configs.networking.ANYLOG_REST_PORT }}'
+  OVERLAY_IP: '{{ .Values.metadata.namespace }}-{{ .Values.metadata.service_name }}.{{ .Release.Namespace }}.svc.cluster.local'
 
   {{ if ne .Values.node_configs.networking.CONFIG_NAME "" }}
   CONFIG_NAME: '{{ .Values.node_configs.networking.CONFIG_NAME }}'
-  {{ end }}
-
-  {{ if ne .Values.node_configs.networking.OVERLAY_IP "" }}
-  OVERLAY_IP: '{{ .Values.node_configs.networking.OVERLAY_IP }}'
   {{ end }}
 
   {{ if ne .Values.node_configs.networking.PROXY_IP "" }}
