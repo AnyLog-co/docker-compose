@@ -15,6 +15,6 @@ data:
   ANYLOG_BROKER_PORT: '{{ .Values.node_configs.networking.ANYLOG_BROKER_PORT }}'
   {{ end }}
   nginx.conf: |- 
-    {{ .Files.Get "nginx/nginx.conf" | .AsConfig | nindent 4 }}
+    {{ tpl (.Files.Get "nginx/nginx.conf") . | nindent 2 }}
   anylog.conf: |-
-    {{ .Files.Get "nginx/sites-enabled/anylog.conf" | .AsConfig | nindent 4 }}
+    {{ tpl (.Files.Get "nginx/sites-enabled/anylog.conf") . | nindent 2 }}
