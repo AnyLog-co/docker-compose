@@ -1,19 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  namespace: '{{ .Values.metadata.namespace }}'
+  name: '{{ .Values.metadata.deployment_name }}'
+  labels:
+    app: '{{ .Values.metadata.app_name }}'
 spec:
-  replicas: 1
+  replicas: {{ .Values.metadata.replicas }}
   selector:
     matchLabels:
-      app: nginx
+      app: '{{ .Values.metadata.app_name }}'
   template:
     metadata:
       labels:
-        app: nginx
+        app: '{{ .Values.metadata.app_name }}'
     spec:
       containers:
-      - name: nginx
-        image: nginx
+      - name: '{{ .Values.metadata.app_name }}'
+        image: '{{ .Values.image.repository }}'
         ports:
-        - containerPort: 80
+        - containerPort: {{ .Values.node_configs.nginx.nginx_port }}
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "sudo rm -rf /etc/nginx/sites-enabled/default && sudo rm -rf /etc/nginx/sites-available/default && nginx -s reload"]
