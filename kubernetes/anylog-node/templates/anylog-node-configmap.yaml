@@ -72,7 +72,7 @@ data:
   {{ if ne .Values.node_configs.database.DB_IP "" }}
   DB_IP: '{{ .Values.node_configs.database.DB_IP }}'
   {{ end }}
-  {{ if ne .Values.node_configs.database.DB_PORT "" }}
+  {{ if ne (printf "%s" .Values.node_configs.database.DB_PORT) "" }}
   DB_PORT: '{{ .Values.node_configs.database.DB_PORT }}'
   {{ end }}
 
