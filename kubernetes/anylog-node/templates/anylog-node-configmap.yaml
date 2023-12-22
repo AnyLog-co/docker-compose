@@ -91,9 +91,9 @@ data:
   NOSQL_IP: '{{ .Values.node_configs.database.NOSQL_IP }}'
   NOSQL_PORT: '{{ .Values.node_configs.database.NOSQL_PORT }}'
 
-  BLOBS_DBMS: '{{ default false .Values.node_configs.database.BLOBS_DBMS }}'
+  BLOBS_DBMS: '{{ default "false" .Values.node_configs.database.BLOBS_DBMS }}'
   {{ if eq .Values.node_configs.database.ENABLE_NOSQL "true" }}
-  BLOBS_REUSE: '{{ default true .Values.node_configs.database.BLOBS_REUSE }}'
+  BLOBS_REUSE: '{{ default "true" .Values.node_configs.database.BLOBS_REUSE }}'
   {{ end }}
 
   BLOBS_REUSE: '{{ .Values.node_configs.database.BLOBS_REUSE }}'
@@ -155,5 +155,3 @@ data:
   WRITE_IMMEDIATE: '{{ .Values.node_configs.advanced.WRITE_IMMEDIATE }}'
   THRESHOLD_TIME: '{{ .Values.node_configs.advanced.THRESHOLD_TIME }}'
   THRESHOLD_VOLUME: '{{ .Values.node_configs.advanced.THRESHOLD_VOLUME }}'
-
-
