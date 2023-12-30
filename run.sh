@@ -44,26 +44,14 @@ if [[ ${DOCKERCMD} == down ]] ; then
 fi
 
 if [[ ${TRAINING} == true ]] ; then
-  if [[ ${NODETYPE} == master ]] ; then
-    cd ${ROOT_PATH}/training/anylog-master || echo "Failed to cd into anylog-master dir" && exit 1
-  elif [[ ${NODETYPE} == operator ]] ; then
-    cd ${ROOT_PATH}/training/anylog-operator || echo "Failed to cd into anylog-operator dir" && exit 1
-  elif [[ ${NODETYPE} == query ]] ; then
-    cd ${ROOT_PATH}/training/anylog-query || echo "Failed to cd into anylog-query dir" && exit 1
+  if [[ ${NODETYPE} == master ]] || [[ ${NODETYPE} == operator ]] || [[ ${NODETYPE} == query ]] ; then
+    cd ${ROOT_PATH}/training/anylog-${NODETYPE} || echo "Failed to cd into anylog-${NODETYPE} dir" && exit 1
   else
     echo "Invalid deployment type: ${NODETYPE}"
     exit 1
   fi
-elif [[ ${NODETYPE} == master ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-master || echo "Failed to cd into anylog-master dir" && exit 1
-elif [[ ${NODETYPE} == operator ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-operator || echo "Failed to cd into anylog-operator dir" && exit 1
-elif [[ ${NODETYPE} == query ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-query || echo "Failed to cd into anylog-query dir" && exit 1
-elif [[ ${NODETYPE} == query-remote-cli ]] ; then # AnyLog Query with Remote-CLI
-  cd ${ROOT_PATH}/docker-compose/anylog-query-remote-cli || echo "Failed to cd into anylog-query-remote-cli dir" && exit 1
-elif [[ ${NODETYPE} == publisher ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-publisher || echo "Failed to cd into anylog-publisher dir" && exit 1
+elif [[ ${NODETYPE} == master ]] || [[ ${NODETYPE} == operator ]] || [[ ${NODETYPE} == query ]]  || [[ ${NODETYPE} == publisher ]] || [[ ${NODETYPE} == query-remote-cli ]] ; then
+  cd ${ROOT_PATH}/docker-compose/anylog-${NODETYPE} || echo "Failed to cd into anylog-${NODETYPE} dir" && exit 1
 else
   echo "Invalid deployment type: ${NODETYPE}"
   exit 1
