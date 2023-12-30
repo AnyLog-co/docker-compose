@@ -45,13 +45,13 @@ fi
 
 if [[ ${TRAINING} == true ]] ; then
   if [[ ${NODETYPE} == master ]] || [[ ${NODETYPE} == operator ]] || [[ ${NODETYPE} == query ]] ; then
-    cd ${ROOT_PATH}/training/anylog-${NODETYPE} || {echo "Failed to cd into anylog-${NODETYPE} dir" && exit 1}
+    cd ${ROOT_PATH}/training/anylog-${NODETYPE} || (echo "Failed to cd into anylog-${NODETYPE} dir" && exit 1)
   else
     echo "Invalid deployment type: ${NODETYPE}"
     exit 1
   fi
 elif [[ ${NODETYPE} == master ]] || [[ ${NODETYPE} == operator ]] || [[ ${NODETYPE} == query ]]  || [[ ${NODETYPE} == publisher ]] || [[ ${NODETYPE} == query-remote-cli ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-${NODETYPE} || {echo "Failed to cd into anylog-${NODETYPE} dir" && exit 1}
+  cd ${ROOT_PATH}/docker-compose/anylog-${NODETYPE} || (echo "Failed to cd into anylog-${NODETYPE} dir" && exit 1)
 else
   echo "Invalid deployment type: ${NODETYPE}"
   exit 1
