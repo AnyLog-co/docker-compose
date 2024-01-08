@@ -29,7 +29,7 @@ in our Docker deployment. A full list of configuration options can be found in t
 
 * [Master Node](configs/anylog_master.yaml)
 * [Operator Node](configs/anylog_master.yaml)
-* [Query Node](configs/anylog_master.yaml)
+* [Query Node](configs/anylog_query.yaml)
 * [Publisher Node](configs/anylog_master.yaml)
  
 

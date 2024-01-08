@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xv
 
 # Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
 # Sample Calls:
@@ -23,7 +23,6 @@ fi
 
 ROOT_PATH=$(dirname $(readlink -f "$0"))
 
-
 if [[ ${DOCKERCMD} == down ]] ; then
   while [[ $# -gt 0 ]] ; do
     case $1 in
@@ -41,34 +40,36 @@ if [[ ${DOCKERCMD} == down ]] ; then
     esac
     shift
   done
+elif [[ ${DOCKERCMD} == up ]] ; then
+  while [[ $# -gt 0 ]] ; do
+    case $1 in
+      "--training")
+        TRAINING=true
+        ;;
+      *)
+        ;;
+    esac
+    shift
+  done
+else
+  echo Invalid Userinput ${DOCKERCMD}
+  exit 1
 fi
 
+
 if [[ ${TRAINING} == true ]] ; then
-  if [[ ${NODETYPE} == master ]] ; then
-    cd ${ROOT_PATH}/training/anylog-master || echo "Failed to cd into anylog-master dir" && exit 1
-  elif [[ ${NODETYPE} == operator ]] ; then
-    cd ${ROOT_PATH}/training/anylog-operator || echo "Failed to cd into anylog-operator dir" && exit 1
-  elif [[ ${NODETYPE} == query ]] ; then
-    cd ${ROOT_PATH}/training/anylog-query || echo "Failed to cd into anylog-query dir" && exit 1
+  if [[ ${NODETYPE} == master ]] || [[ ${NODETYPE} == operator ]] || [[ ${NODETYPE} == query ]] ; then
+    cd "${ROOT_PATH}/training/anylog-${NODETYPE}" || { echo "Failed to cd into anylog-${NODETYPE} dir"; exit 1; }
   else
     echo "Invalid deployment type: ${NODETYPE}"
     exit 1
   fi
-elif [[ ${NODETYPE} == master ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-master || echo "Failed to cd into anylog-master dir" && exit 1
-elif [[ ${NODETYPE} == operator ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-operator || echo "Failed to cd into anylog-operator dir" && exit 1
-elif [[ ${NODETYPE} == query ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-query || echo "Failed to cd into anylog-query dir" && exit 1
-elif [[ ${NODETYPE} == query-remote-cli ]] ; then # AnyLog Query with Remote-CLI
-  cd ${ROOT_PATH}/docker-compose/anylog-query-remote-cli || echo "Failed to cd into anylog-query-remote-cli dir" && exit 1
-elif [[ ${NODETYPE} == publisher ]] ; then
-  cd ${ROOT_PATH}/docker-compose/anylog-publisher || echo "Failed to cd into anylog-publisher dir" && exit 1
+elif [[ ${NODETYPE} == master ]] || [[ ${NODETYPE} == operator ]] || [[ ${NODETYPE} == query ]] || [[ ${NODETYPE} == query-remote-cli ]] || [[ ${NODETYPE} == publisher ]]; then
+  cd "${ROOT_PATH}/docker-compose/anylog-${NODETYPE}" || { echo "Failed to cd into anylog-${NODETYPE} dir"; exit 1; }
 else
   echo "Invalid deployment type: ${NODETYPE}"
   exit 1
 fi
-
 
 export ANYLOG_SERVER_PORT=`cat anylog_configs.env | grep "ANYLOG_REST_PORT" | awk -F "=" '{print $2}'`
 export ANYLOG_REST_PORT=`cat anylog_configs.env | grep "ANYLOG_SERVER_PORT" |  awk -F "=" '{print $2}'`
@@ -110,7 +111,4 @@ elif [[ ${DOCKERCMD} == down ]] ; then
       docker-compose down
     fi
   fi
-else
-  echo Invalid Userinput ${DOCKERCMD}
-  exit 1
 fi

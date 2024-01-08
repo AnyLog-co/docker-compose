@@ -19,9 +19,9 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: beta-arm64
+  tag: test-arm64
   # Image pulling policy
-  pull_policy: IfNotPresent
+  pull_policy: always
   # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
   init_type: prod
 
@@ -45,6 +45,8 @@ node_configs:
     ANYLOG_SERVER_PORT: 32348
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32349
+    # Overlay IP address - if set, will replace local IP address when connecting to network
+    OVERLAY_IP: default-anylog-query-service.default.svc.cluster.local
 
   blockchain:
     # TCP connection information for query Node
@@ -52,7 +54,7 @@ node_configs:
 
   monitoring:
     # Whether to monitor the node or not
-    MONITOR_NODES: true
+    MONITOR_NODES: false
     # Which node type to send monitoring information to
     MONITOR_NODE: query
     # Company node is associated with the monitor node
