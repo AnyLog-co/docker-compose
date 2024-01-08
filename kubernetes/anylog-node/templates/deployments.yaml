@@ -28,7 +28,7 @@ spec:
       - name: '{{ .Values.metadata.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pull_policy }}'
-        {{- if .Values.volume.enable_volume true }}
+        {{- if .Values.volume.enable_volume }}
         volumeMounts:
           - name: '{{ .Values.metadata.pod_name }}-data'
             mountPath: /app/AnyLog-Network/data
@@ -36,8 +36,6 @@ spec:
             mountPath: /app/AnyLog-Network/anylog
           - name: '{{ .Values.metadata.pod_name }}-blockchain'
             mountPath: /app/AnyLog-Network/blockchain
-#          - name: '{{ .Values.metadata.deployment_name }}-local-scripts'
-#            mountPath: /app/deployment-scripts
         {{ end }}
         envFrom:
         - configMapRef:
@@ -53,7 +51,7 @@ spec:
         - name: broker
           containerPort: {{ .Values.node_configs.networking.ANYLOG_BROKER_PORT }}
         {{ end }}
-      {{- if .Values.volume.enable_volume true }}
+      {{- if .Values.volume.enable_volume }}
       volumes:
       - name: '{{ .Values.metadata.pod_name }}-data'
         persistentVolumeClaim:
@@ -64,7 +62,4 @@ spec:
       - name: '{{ .Values.metadata.pod_name }}-blockchain'
         persistentVolumeClaim:
           claimName: '{{ .Values.metadata.pod_name }}-blockchain-pvc'
-#      - name: {{ .Values.metadata.pod_name }}-local-scripts
-#        persistentVolumeClaim:
-#          claimName: '{{ .Values.metadata.pod_name }}-local-scripts-pvc'
       {{ end }}

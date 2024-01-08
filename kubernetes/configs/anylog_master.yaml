@@ -27,7 +27,7 @@ image:
 
 volume:
   # Whether to enable volumes for AnyLog
-  enable_volume: false
+  enable_volume: true
 
 node_configs:
   general:
