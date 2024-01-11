@@ -15,7 +15,7 @@ kubectl create secret docker-registry imagepullsecret \
 2. Create Package 
 ```shell
 # packages AnyLog Node 
-helm package anylog-node
+helm package deployments/kubernetes/anylog-node
 
 # package AnyLog Volume
 helm package anylog-node-volume 
@@ -35,9 +35,16 @@ in our Docker deployment. A full list of configuration options can be found in t
 
 4. Deploy Node 
 ```shell
-# Deploy AnyLog instance
+# Deploy AnyLog instance & volume
+bash deployments/run.sh helm master up
 
-# Deploy associated Volumes  
+# Set port-forwarding for TCP, REST and Broker is configured
+# -- TCP
+kubectl port-forward --address 10.0.0.251 service/anylog-master-service 32048:32048 -n default &
+# -- REST 
+kubectl port-forward --address 10.0.0.251 service/anylog-master-service 32049:32049 -n default &
+# -- Broker (used 
+kubectl port-forward --address 10.0.0.251 service/anylog-master-service 32150:32150 -n default & 
 ```
 
 5. Attach / Detach from Pod 
@@ -52,13 +59,3 @@ kubectl attach -it ${POD}
 
 ## Nginx
 Validate Nginx works - https://github.com/AnyLog-co/documentation/blob/master/deployments/Networking%20%26%20Security/nginx.md
-
-
-## Issues
-1. fails to communicate over TCP using service information 
-   * `run client () print` - works  
-   * `run client () get status` - fails 
-   * `test network` - works  
-2. Still need to create sample configs for _Operator_ & _Publisher_
-3. Why aren't we seeing AnyLog in _kubearmor_? 
-4. [Volumes](https://github.com/AnyLog-co/deployments/tree/ms-dev/helm) 

@@ -19,9 +19,9 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: beta-arm64
+  tag: test-arm64
   # Image pulling policy
-  pull_policy: IfNotPresent
+  pull_policy: Always # IfNotPresent
   # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
   init_type: prod
 
@@ -45,10 +45,11 @@ node_configs:
     ANYLOG_SERVER_PORT: 32048
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32049
+    PROXY_IP: 10.0.0.251
 
   blockchain:
     # TCP connection information for Master Node
-    LEDGER_CONN: '{{ .Values.metadata.service_name }}:32048'
+    LEDGER_CONN: 127.0.0.1:32048
 
   monitoring:
     # Whether to monitor the node or not
