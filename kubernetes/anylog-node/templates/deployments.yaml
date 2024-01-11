@@ -22,7 +22,7 @@ spec:
       {{ end }}
       {{- if ne .Values.image.secret_name "" }}
       imagePullSecrets:
-        - name: '{{ .Values.image.secret_name }}'
+      - name: '{{ .Values.image.secret_name }}'
       {{ end }}
       containers:
       - name: '{{ .Values.metadata.deployment_name }}'
@@ -30,12 +30,12 @@ spec:
         imagePullPolicy: '{{ .Values.image.pull_policy }}'
          {{- if eq .Values.volume.enable_volume true }}
          volumeMounts:
-           - name: '{{ .Values.metadata.pod_name }}-data'
-             mountPath: /app/AnyLog-Network/data
-           - name: '{{ .Values.metadata.pod_name }}-anylog'
-             mountPath: /app/AnyLog-Network/anylog
-           - name: '{{ .Values.metadata.pod_name }}-blockchain'
-             mountPath: /app/AnyLog-Network/blockchain
+           - name: '{{ .Values.volume.anylog_volume.volume_name }}'
+             mountPath: '{{ .Values.volume.anylog_volume.path }}'
+           - name: '{{ .Values.volume.blockchain_volume.volume_name }}'
+             mountPath: '{{ .Values.volume.blockchain_volume.path }}'
+           - name: '{{ .Values.volume.data_volume.volume_name }}'
+             mountPath: '{{ .Values.volume.data_volume.path }}'
          {{ end }}
         envFrom:
         - configMapRef:
@@ -53,13 +53,13 @@ spec:
         {{ end }}
        {{- if eq .Values.volume.enable_volume true }}
        volumes:
-       - name: '{{ .Values.metadata.pod_name }}-data'
+       - name: '{{ .Values.volume.anylog_volume.volume_name }}'
          persistentVolumeClaim:
-          claimName: '{{ .Values.metadata.pod_name }}-data-pvc'
-       - name: '{{ .Values.metadata.pod_name }}-anylog'
+          claimName: '{{ .Values.volume.anylog_volume.volume_name_pvc }}'
+       - name: '{{ .Values.volume.blockchain_volume.volume_name }}'
          persistentVolumeClaim:
-          claimName: '{{ .Values.metadata.pod_name }}-anylog-pvc'
-#       - name: '{{ .Values.metadata.pod_name }}-blockchain'
-#         persistentVolumeClaim:
-#           claimName: '{{ .Values.metadata.pod_name }}-blockchain-pvc'
+          claimName: '{{ .Values.volume.blockchain_volume.volume_name_pvc }}'
+       - name: '{{ .Values.volume.data_volume.volume_name }}'
+         persistentVolumeClaim:
+           claimName: '{{ .Values.volume.data_volume.volume_name_pvc }}'
        {{ end }}

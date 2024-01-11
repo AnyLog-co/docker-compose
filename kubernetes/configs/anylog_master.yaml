@@ -27,7 +27,33 @@ image:
 
 volume:
   # Whether to enable volumes for AnyLog
-  enable_volume: false
+  enable_volume: true
+  anylog_volume:     # volume name: {.Values.metadata.deployment_name}-anylog-dir
+    # Volume name associated with anylog directory
+    volume_name: anylog-master-anylog-dir
+    volume_name_pvc: anylog-master-anylog-dir-pvc
+  blockchain_volume:     # volume name: {.Values.metadata.deployment_name}-blockchain-dir
+    # Volume name associated with blockchain directory
+    volume_name: anylog-master-blockchain-dir
+    volume_name_pvc: anylog-master-blockchain-dir-pvc
+  data_volume:     # volume name: {.Values.metadata.deployment_name}-data-dir
+    # Volume name associated with data directory
+    volume_name: anylog-master-data-dir
+    volume_name_pvc: anylog-master-data-dir-pvc
+#  local_scripts: # volume name: {.Values.metadata.deployment_name}-local-scripts
+#    # AnyLog local scripts directory path
+#    path: /app/deployment-scripts/node-deployment
+#    # Volume access mode
+#    access_mode: ReadWriteOnce
+#    # Volume storage size
+#    storage_size: 1Gi
+#  test_scripts: # volume name: {.Values.metadata.deployment_name}-tests
+#    # AnyLog test cases directory path
+#    path: /app/deployment-scripts/test
+#    # Volume access mode
+#    access_mode: ReadWriteOnce
+#    # Volume storage size
+#    storage_size: 1Gi
 
 node_configs:
   general:

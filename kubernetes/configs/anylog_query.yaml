@@ -19,15 +19,41 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: beta-arm64
+  tag: test-arm64
   # Image pulling policy
-  pull_policy: IfNotPresent
+  pull_policy: Always # IfNotPresent
   # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
   init_type: prod
 
 volume:
   # Whether to enable volumes for AnyLog
-  enable_volume: false
+  enable_volume: true
+  anylog_volume: # volume name: {.Values.metadata.deployment_name}-anylog-dir
+    # Volume name associated with anylog directory
+    volume_name: anylog-query-anylog-dir
+    volume_name_pvc: anylog-query-anylog-dir-pvc
+  blockchain_volume: # volume name: {.Values.metadata.deployment_name}-blockchain-dir
+    # Volume name associated with blockchain directory
+    volume_name: anylog-query-blockchain-dir
+    volume_name_pvc: anylog-query-blockchain-dir-pvc
+  data_volume: # volume name: {.Values.metadata.deployment_name}-data-dir
+    # Volume name associated with data directory
+    volume_name: anylog-query-data-dir
+    volume_name_pvc: anylog-query-data-dir-pvc
+#  local_scripts: # volume name: {.Values.metadata.deployment_name}-local-scripts
+#    # AnyLog local scripts directory path
+#    path: /app/deployment-scripts/node-deployment
+#    # Volume access mode
+#    access_mode: ReadWriteOnce
+#    # Volume storage size
+#    storage_size: 1Gi
+#  test_scripts: # volume name: {.Values.metadata.deployment_name}-tests
+#    # AnyLog test cases directory path
+#    path: /app/deployment-scripts/test
+#    # Volume access mode
+#    access_mode: ReadWriteOnce
+#    # Volume storage size
+#    storage_size: 1Gi
 
 node_configs:
   general:
@@ -45,10 +71,11 @@ node_configs:
     ANYLOG_SERVER_PORT: 32348
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32349
+    PROXY_IP: 10.0.0.251
 
   blockchain:
     # TCP connection information for query Node
-    LEDGER_CONN: default-anylog-master-service.default.svc.cluster.local:32048
+    LEDGER_CONN: 10.0.0.251:32048
 
   monitoring:
     # Whether to monitor the node or not
