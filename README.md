@@ -37,10 +37,13 @@ bash $HOME/deployments/installations/docker_credentials.sh ${YOUR_ANYLOG_DOCKER_
 
 
 3. [Deploy AnyLog](https://github.com/AnyLog-co/documentation/blob/master/deployments/Docker/deploying_node.md)
+```shell
+bash $HOME/deployments/run.sh docker master
 
+bash $HOME/deployments/run.sh docker master --training   
+```
 
-4. Deploy other services like [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Remote-CLI.md)
-and [Grafana](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Grafana.md)
+4. Deploy other services like [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Remote-CLI.md) and [Grafana](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Grafana.md)
 
 
 If you are planning to deploy a [single deployment demo network](docker-compose/anylog-demo-network/README.md), there is no need to
