@@ -15,7 +15,7 @@ Currently, we support 2 types of installation:
 AnyLog works. Directions for using training can be found in our [documentation](https://github.com/AnyLog-co/documentation/tree/master/training).
 
 * [docker-compose](docker-compose/) - A deployment of AnyLog node(s) that's fully configurable. This includes: 
-  * using _PostgresSQL_ as oppose to _SQLite_ 
+  * using _PostgresSQL_ instead of _SQLite_ 
   * Personalize MQTT client 
   * Geolocation of the node
   * Network binding 
@@ -57,14 +57,50 @@ docker build -f Dockerfiles/Dockerfile.alpine -t anylogco/anylog-network:${PERSO
 * for [docker-compose](docker-compose) can configure `advance_configs.yml`
 
 
-5. Deploy AnyLog node(s)
-
+5. Starting / Stopping AnyLog node
+* Help
 ```shell
-cd $HOME/deployments/docker-compose/anylog-${NODE_TYPE}
+bash deployments/run.sh help 
+<<COMMENT
+Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
+Sample Calls:
+  - Start: bash run.sh NODETYPE up [--training]
+  - Stop:  bash run.sh NODETYPE down [--training] [--volume] [--rmi]
+<<
+```
 
-# start a node in detached mode
-docker-compose up -d 
+* Starting Node
+```shell
+# Generic Command
+bash deployments/run.sh ${NODETYPE} up [--training]
 
-# to attach
-docker attach --detach-keys=ctrl-d anylog-${NODE_NAME} 
+# Start Master in training  
+bash deployments/run.sh master up --training
+
+# Start Maser in training 
+bash deployments/run.sh master up
+``` 
+
+* Stopping Node 
+```shell
+# Generic Command
+bash deployments/run.sh ${NODETYPE} down [--training] [--volume] [--rmi]
+
+# Stop Master node in training but keep volume and image
+bash deployments/run.sh master down --training
+
+# Stop Master node in training, remove volume but keep image
+bash deployments/run.sh master down --training --volume
+
+# Stop Master node in training, remove volume & keep image
+bash deployments/run.sh master down --training --volume --rmi
+
+# Stop Master node but keep volume and image
+bash deployments/run.sh master down
+
+# Stop Master node remove volume but keep image
+bash deployments/run.sh master down --volume
+
+# Stop Master node in remove volume & keep image
+bash deployments/run.sh master down --training --volume --rmi
 ```

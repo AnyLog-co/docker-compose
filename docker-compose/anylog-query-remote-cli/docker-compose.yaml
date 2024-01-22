@@ -6,7 +6,8 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    network_mode: "${NETWORK}"
+    ports:
+      - ${CLI_PORT}:${CLI_PORT}
     environment:
       - CONN_IP=${CONN_IP}
       - CLI_PORT=${CLI_PORT}
@@ -24,7 +25,9 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    network_mode: "${NETWORK}"
+    ports:
+      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
+      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
       - anylog-query-anylog:/app/AnyLog-Network/anylog
       - anylog-query-blockchain:/app/AnyLog-Network/blockchain
