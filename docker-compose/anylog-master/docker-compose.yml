@@ -3,18 +3,13 @@ services:
   anylog-master:
     image: anylogco/anylog-network:${TAG}
     restart: always
-#    logging:
-#      driver: syslog
-#      options:
-#        syslog-address: "udp://$(ifconfig | grep 'inet ' | grep -Fv 127.0.0.1 | awk '{print $2}' | head -n 1):514"
-#        syslog-facility: "daemon"
-#        syslog-format: "rfc5424"
     env_file:
       - anylog_configs.env
       - advance_configs.env
     container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
+    network_mode: host
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}

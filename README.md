@@ -1,106 +1,54 @@
-# Deploying a Node
+# Installing AnyLog using Docker
 
-The AnyLog instances are using the same code base and differ by the services they provide. 
-The services offered by a node are determined by the configuration applied to the node. 
-For convenience, we named 4 types of nodes which are configured differently to provide different functionalities
-(_Master_, _Operator_, _Query_ and _Publisher_), as-well-as a _Generic_ instance configured with commonly used
-services and can be deployed "out-of-the-box" to support many of the edge use cases. 
+You can deploy AnyLog via _docker-compose_ by using either our deployment script or manually. Additionally, we provide a 
+single docker-compose that builds a [demo network](docker-compose/anylog-demo-network/README.md) [1 _Master_, 1 _Query_ and 
+2 _Operator_ nodes] on a single machine.  
 
-In the examples below, users define **system variables** by assigning values to keys. These keys  
-are referenced in the node configuration process to apply a configuration option, or a configuration value.
+For login credentials contact us at: [info@anylog.co](mailto:info@anylog.co)
 
-Currently, we support 2 types of installation: 
+**Support Links**
+* [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Remote-CLI.md)
+* [EdgeX](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/EdgeX.md)
+* [Grafana](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Grafana.md)
+* [Trouble Shooting](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/cheatsheet.md)
 
-* [training](training/) - A deployment of AnyLog node(s) with limited configuration, intended to demonstrate how 
-AnyLog works. Directions for using training can be found in our [documentation](https://github.com/AnyLog-co/documentation/tree/master/training).
 
-* [docker-compose](docker-compose/) - A deployment of AnyLog node(s) that's fully configurable. This includes: 
-  * using _PostgresSQL_ instead of _SQLite_ 
-  * Personalize MQTT client 
-  * Geolocation of the node
-  * Network binding 
-  * etc. 
+**Requirements**
+* Docker
+* docker-compose
+* Python3 + [dotenv](https://pypi.org/project/python-dotenv/) - for utilizing [deployment scripts](https://github.com/AnyLog-co/deployments) 
 
-**Note**: The 2 deployments share the same  scripts and policies when deploying. As such, users can easily switch between
-_training_ and _docker-compose_ deployments. The difference between the two is the amount of configurations a user can 
-play with; with _training_ being the less comprehensive of the two. 
+Directions for downloading Docker / docker-compose can be found in the [Docker Engine Installation](https://docs.docker.com/engine/install/)
 
-### Requirements
-* [Docker and docker-compose](https://docs.docker.com/engine/install/)
-
-### Deployment
-1. Download [deployment scripts](https://github.com/AnyLog-co/deployments)
+## Deployment Process 
+1. Download [deployments](../) & log into AnyLog Docker Hub
 ```shell
 cd $HOME
-git clone https://github.com/AnyLog-co/deployments
-cd $HOME/deployments/
-```
 
-2. Log into AnyLog's Dockerhub - [contact us](mailto:info@anylog.co) if you do not have login credentials
-```shell
+git clone https://github.com/AnyLog-co/deployments
+
+cd $HOME/deployments/
+
 bash $HOME/deployments/installations/docker_credentials.sh ${YOUR_ANYLOG_DOCKER_CREDENTIALS}
 ```
 
-3. (Optionally) Based on AnyLog [docker image](https://github.com/AnyLog-co/documentation/blob/master/docker%20image.md),
-build Docker image 
-```shell
-# Ubuntu based 
-docker build -f Dockerfiles/Dockerfile.ubuntu -t anylogco/anylog-network:${PERSONALLIZED_TAG} 
-
-# Alpine   
-docker build -f Dockerfiles/Dockerfile.alpine -t anylogco/anylog-network:${PERSONALLIZED_TAG}
-```
-
-4. In either [training](training) or [docker-compose](docker-compose), update configurations.  
-* `.env` - Update `BUILD` to use your personalized _tag_ 
-* `anylog_configs.yml` 
-* for [docker-compose](docker-compose) can configure `advance_configs.yml`
+2. Deploy relevant database, this can be done as docker image(s) or as services on your machine. Directions can be found 
+[here](https://github.com/AnyLog-co/documentation/blob/master/deployments/Docker/database_configuration.md)
 
 
-5. Starting / Stopping AnyLog node
-* Help
-```shell
-bash deployments/run.sh help 
-<<COMMENT
-Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
-Sample Calls:
-  - Start: bash run.sh NODETYPE up [--training]
-  - Stop:  bash run.sh NODETYPE down [--training] [--volume] [--rmi]
-<<
-```
+3. [Deploy AnyLog](https://github.com/AnyLog-co/documentation/blob/master/deployments/Docker/deploying_node.md)
 
-* Starting Node
-```shell
-# Generic Command
-bash deployments/run.sh ${NODETYPE} up [--training]
 
-# Start Master in training  
-bash deployments/run.sh master up --training
+4. Deploy other services like [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Remote-CLI.md)
+and [Grafana](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Grafana.md)
 
-# Start Maser in training 
-bash deployments/run.sh master up
-``` 
 
-* Stopping Node 
-```shell
-# Generic Command
-bash deployments/run.sh ${NODETYPE} down [--training] [--volume] [--rmi]
+If you are planning to deploy a [single deployment demo network](docker-compose/anylog-demo-network/README.md), there is no need to
+complete step 2 through 4 prior to deploying your node. The single demo network will automatically deploy: 
+* 1 master 
+* 2 operator nodes (1 using PostgresSQL and another using SQLite)
+* 1 Query Node 
+* PostgresSQL (used by 1 of the operators)
+* Remote CLI 
+* Grafana 
 
-# Stop Master node in training but keep volume and image
-bash deployments/run.sh master down --training
-
-# Stop Master node in training, remove volume but keep image
-bash deployments/run.sh master down --training --volume
-
-# Stop Master node in training, remove volume & keep image
-bash deployments/run.sh master down --training --volume --rmi
-
-# Stop Master node but keep volume and image
-bash deployments/run.sh master down
-
-# Stop Master node remove volume but keep image
-bash deployments/run.sh master down --volume
-
-# Stop Master node in remove volume & keep image
-bash deployments/run.sh master down --training --volume --rmi
-```
