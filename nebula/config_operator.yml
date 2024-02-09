@@ -352,3 +352,6 @@ firewall:
     - port:  32149
       proto: tcp
       host: any
+    - port: 32150
+      proto: tcp
+      host: any

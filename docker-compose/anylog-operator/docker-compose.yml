@@ -2,6 +2,7 @@ version: "2.2"
 services:
   anylog-operator:
     image: anylogco/anylog-network:${TAG}
+    privileged: true
     restart: always
     env_file:
       - anylog_configs.env
@@ -19,6 +20,8 @@ services:
       - anylog-operator-blockchain:/app/AnyLog-Network/blockchain
       - anylog-operator-data:/app/AnyLog-Network/data
       - anylog-operator-local-scripts:/app/deployment-scripts
+      - ${NEBULA_CONFIG_FILE}:${ANYLOG_PATH}/nebula/config.yml
+      - nebula-configs:${ANYLOG_PATH}/nebula/
 
 volumes:
   anylog-operator-anylog:
