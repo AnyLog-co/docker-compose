@@ -78,7 +78,7 @@ firewall:
       proto: tcp
       host: any
 ```
-* [Node](config_node.yml) 
+* [Node](config_operator.yml) 
 ```yaml
 # This is the nebula example configuration file. You must edit, at a minimum, the static_host_map, lighthouse, and firewall sections
 # Some options in this file are HUPable, including the pki section. (A HUP will reload credentials from disk without affecting existing tunnels)
