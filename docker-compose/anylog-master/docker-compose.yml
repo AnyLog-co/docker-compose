@@ -26,6 +26,7 @@ services:
       - anylog-master-data:/app/AnyLog-Network/data
       - anylog-master-local-scripts:/app/deployment-scripts
       - anylog-master-syslog-volume:/var/log/syslog
+      - ${NEBULA_CONFIG_FILE}:${ANYLOG_PATH}/nebula/config.yml
 volumes:
   anylog-master-anylog:
   anylog-master-blockchain:
