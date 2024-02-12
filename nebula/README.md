@@ -78,7 +78,7 @@ firewall:
       proto: tcp
       host: any
 ```
-* [Node](config_operator.yml) 
+* [Node](config_node.yml) 
 ```yaml
 # This is the nebula example configuration file. You must edit, at a minimum, the static_host_map, lighthouse, and firewall sections
 # Some options in this file are HUPable, including the pki section. (A HUP will reload credentials from disk without affecting existing tunnels)
@@ -166,4 +166,6 @@ sudo modprobe tun
 
 5. Start Node
 
-**Note**: It is recommended to begin with lighthouse(s) and then slowly add in more nodes. 
+**Notes**: 
+1. It is recommended to begin with lighthouse(s) and then slowly add in more nodes.
+2. When using Nebula, no 2 nodes can seat on the same physical machine due to the dependecy on _tun_ driver
