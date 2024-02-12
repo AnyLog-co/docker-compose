@@ -16,6 +16,7 @@ services:
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
   anylog-query:
     image: anylogco/anylog-network:${TAG}
+    privileged: true
     env_file:
       - anylog_configs.env
       - advance_configs.env
@@ -25,9 +26,10 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    ports:
-      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
-      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+    network_mode: host
+#    ports:
+#      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
+#      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
       - anylog-query-anylog:/app/AnyLog-Network/anylog
       - anylog-query-blockchain:/app/AnyLog-Network/blockchain

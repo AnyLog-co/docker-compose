@@ -2,6 +2,7 @@ version: "2.2"
 services:
   anylog-publisher:
     image: anylogco/anylog-network:${TAG}
+    privileged: true
     restart: always
     env_file:
       - anylog_configs.env
