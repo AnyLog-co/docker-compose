@@ -59,6 +59,8 @@ if [[ ${DEPLOYMENT_TYPE} == docker ]] ; then
     exit 1
   fi
 
+  export ANYLOG_PATH=$(cat advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $2}')
+  export NEBULA_CONFIG_FILE=$(cat advance_configs.env | grep NEBULA_CONFIG_FILE | awk -F "=" '{print $2}')
   export ANYLOG_SERVER_PORT=$(cat anylog_configs.env | grep "ANYLOG_SERVER_PORT" | awk -F "=" '{print $2}')
   export ANYLOG_REST_PORT=$(cat anylog_configs.env | grep "ANYLOG_REST_PORT" |  awk -F "=" '{print $2}')
   export ANYLOG_BROKER_PORT=""
