@@ -149,8 +149,15 @@ data:
 
   # -- Advanced --
   DEPLOY_LOCAL_SCRIPT: '{{ .Values.node_configs.advanced.DEPLOY_LOCAL_SCRIPT }}'
+  {{ if or (eq .Values.node_configs.general.NODE_TYPE "operator") (eq .Values.node_configs.general.NODE_TYPE "generic") (eq .Values.node_configs.general.NODE_TYPE "publisher") }}
+  DEPLOY_SYSLOG: '{{ .Values.node_configs.advanced.DEPLOY_SYSLOG }}'
+  {{ end }}
   COMPRESS_FILE: '{{ .Values.node_configs.advanced.COMPRESS_FILE }}'
   QUERY_POOL: '{{ .Values.node_configs.advanced.QUERY_POOL }}'
   WRITE_IMMEDIATE: '{{ .Values.node_configs.advanced.WRITE_IMMEDIATE }}'
   THRESHOLD_TIME: '{{ .Values.node_configs.advanced.THRESHOLD_TIME }}'
   THRESHOLD_VOLUME: '{{ .Values.node_configs.advanced.THRESHOLD_VOLUME }}'
+
+  # -- Nebula --
+  ENABLE_NEBULA: '{{ .Values.node_configs.nebula.ENABLE_NEBULA }}'
+  NEBULA_CONFIG_FILE: '{{ .Values.node_configs.nebula.NEBULA_CONFIG_FILE }}'

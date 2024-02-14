@@ -186,6 +186,8 @@ node_configs:
   advanced:
     # Whether to automatically run a local (or personalized) script at the end of the process
     DEPLOY_LOCAL_SCRIPT: false
+    # Deploy a process that accepts syslog
+    DEPLOY_SYSLOG: false
     # Compress JSON and SQL file(s) backup
     COMPRESS_FILE: true
     # Number of parallel queries
@@ -196,7 +198,9 @@ node_configs:
     THRESHOLD_TIME: 60 seconds
     # Buffer size to reach, at which point data is pushed through
     THRESHOLD_VOLUME: 10KB
-
+  nebula:
+    ENABLE_NEBULA: false
+    NEBULA_CONFIG_FILE: /root/deployments/nebula/config_lighthouse.yml
 
 volume:
   # Whether to enable volumes for AnyLog
