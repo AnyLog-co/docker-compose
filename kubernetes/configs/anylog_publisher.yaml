@@ -43,6 +43,8 @@ node_configs:
     ANYLOG_SERVER_PORT: 32248
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32249
+    # Port address used by AnyLog Broker
+    ANYLOG_BROKER_PORT: 32250
     # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
   database:
     # Physical database type
