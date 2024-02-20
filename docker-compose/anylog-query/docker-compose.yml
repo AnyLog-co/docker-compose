@@ -21,8 +21,11 @@ services:
       - anylog-query-blockchain:/app/AnyLog-Network/blockchain
       - anylog-query-data:/app/AnyLog-Network/data
       - anylog-query-local-scripts:/app/deployment-scripts
+      - ${NEBULA_CONFIG_FILE}:${ANYLOG_PATH}/nebula/config.yml
+      - anylog-query-nebula:${ANYLOG_PATH}/nebula/
 volumes:
   anylog-query-anylog:
   anylog-query-blockchain:
   anylog-query-data:
   anylog-query-local-scripts:
+  anylog-query:

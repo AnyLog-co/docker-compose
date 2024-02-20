@@ -23,7 +23,7 @@ services:
       - anylog-operator-data:/app/AnyLog-Network/data
       - anylog-operator-local-scripts:/app/deployment-scripts
       - ${NEBULA_CONFIG_FILE}:${ANYLOG_PATH}/nebula/config.yml
-      - nebula:${ANYLOG_PATH}/nebula/
+      - anylog-operator-nebula:${ANYLOG_PATH}/nebula/
 volumes:
   anylog-operator-anylog:
   anylog-operator-blockchain:

@@ -22,6 +22,8 @@ services:
       - anylog-publisher-blockchain:/app/AnyLog-Network/blockchain
       - anylog-publisher-data:/app/AnyLog-Network/data
       - anylog-publisher-local-scripts:/app/deployment-scripts
+      - ${NEBULA_CONFIG_FILE}:${ANYLOG_PATH}/nebula/config.yml
+      - anylog-publisher-nebula:${ANYLOG_PATH}/nebula/
 volumes:
   anylog-publisher-anylog:
   anylog-publisher-blockchain:
