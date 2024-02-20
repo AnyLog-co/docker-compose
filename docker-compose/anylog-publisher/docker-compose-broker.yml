@@ -29,3 +29,4 @@ volumes:
   anylog-publisher-blockchain:
   anylog-publisher-data:
   anylog-publisher-local-scripts:
+  anylog-publisher-nebula:

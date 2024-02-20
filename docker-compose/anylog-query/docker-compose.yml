@@ -28,4 +28,4 @@ volumes:
   anylog-query-blockchain:
   anylog-query-data:
   anylog-query-local-scripts:
-  anylog-query:
+  anylog-query-nebula:

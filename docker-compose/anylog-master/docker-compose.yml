@@ -36,3 +36,4 @@ volumes:
   anylog-master-data:
   anylog-master-local-scripts:
   anylog-master-syslog-volume:
+  anylog-master-nebula-configs:
