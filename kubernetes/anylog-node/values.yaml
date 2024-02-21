@@ -14,7 +14,7 @@ metadata:
   # Configuration mapping name
   configmap_name: anylog-node-configmap
   # Allows running Kubernetes remotely. If commented out, code will ignore it
-  node_selector: ""
+  node_selector: ''
   # Number of Kubernetes replicas
   replicas: 1
 image:
@@ -23,9 +23,9 @@ image:
   # (Docker Hub) Image Path
   repository: anylogco/anylog-network
   # Image version
-  tag: beta-arm64
+  tag: test-arm64
   # Image pulling policy
-  pull_policy: IfNotPresent
+  pull_policy: Always
   # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
   init_type: prod
 
@@ -40,7 +40,7 @@ node_configs:
     TEST_DIR: /app/deployment-scripts/test
   general:
     # AnyLog License Key
-    LICENSE_KEY: 4df552a98c6d7dbb178e828fd6947b1f3fee9911e03f37fe2106160465d9edba9eb34ca5b0c6b28a2e036dd5ed4c1590d9ae74a099ff1208775e3f3de67e571058a0a2b816e7fc45e06f33cf250851ebbce80e8b60dab00da5c425941637e636285e6883ba299d7ac810411197e09e857ba906ef39ef2cd40910f019a3c44acf2023-12-01bGuest
+    LICENSE_KEY: ''
     # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
     NODE_TYPE: generic
     # Name of the AnyLog instance
@@ -49,13 +49,13 @@ node_configs:
     COMPANY_NAME: New Company
   geolocation:
     # Coordinates of the machine - used by Grafana to map the network
-    LOCATION: ""
+    LOCATION: ''
     # Country where machine is located
-    COUNTRY: ""
+    COUNTRY: ''
     # State where machine is located
-    STATE: ""
+    STATE: ''
     # City where machine is located
-    CITY: ""
+    CITY: ''
   networking:
     # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
     ANYLOG_SERVER_PORT: 32458
@@ -63,13 +63,13 @@ node_configs:
     ANYLOG_REST_PORT: 32459
 
     # Declare Policy name
-    CONFIG_NAME: ""
+    CONFIG_NAME: ''
     # Overlay IP address - if set, will replace local IP address when connecting to network
-    OVERLAY_IP: ""
+    OVERLAY_IP: ''
     # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
-    PROXY_IP: ""
+    PROXY_IP: ''
     # Port value to be used as an MQTT broker, or some other third-party broker
-    ANYLOG_BROKER_PORT: ""
+    ANYLOG_BROKER_PORT: ''
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
     TCP_BIND: false
     # The number of concurrent threads supporting HTTP requests.	
@@ -88,9 +88,9 @@ node_configs:
     # Physical database type
     DB_TYPE: sqlite
     # Username for SQL database connection
-    DB_USER: ""
+    DB_USER: ''
     # Password correlated to database user
-    DB_PASSWD: ""
+    DB_PASSWD: ''
     # Database IP address
     DB_IP: 127.0.0.1
     # Database port number
@@ -106,9 +106,9 @@ node_configs:
     # Physical database type
     NOSQL_TYPE: mongo
     # Username for SQL database connection
-    NOSQL_USER: ""
+    NOSQL_USER: ''
     # Password correlated to database user
-    NOSQL_PASSWD: ""
+    NOSQL_PASSWD: ''
     # Database IP address
     NOSQL_IP: 127.0.0.1
     # Database port number
@@ -119,7 +119,7 @@ node_configs:
     BLOBS_REUSE: true
   blockchain:
     # TCP connection information for Master Node
-    LEDGER_CONN: '{{ .Values.metadata.service_name }}:32048'
+    LEDGER_CONN: 192.168.86.156:32048
     # How often to sync from blockchain
     SYNC_TIME: 30 second
     # Source of where the data is coming from
@@ -132,7 +132,7 @@ node_configs:
     # Logical database name
     DEFAULT_DBMS: new_company
     # Operator ID
-    MEMBER: ""
+    MEMBER: ''
     # Whether of not to enable HA against the cluster
     ENABLE_HA: false
     # How many days back to sync between nodes

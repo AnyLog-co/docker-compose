@@ -1,0 +1,115 @@
+metadata:
+  # Kubernetes Instance namespace
+  namespace: default
+  # hostname for deployment
+  hostname: anylog-publisher
+  # deployment application name
+  app_name: anylog-publisher
+  # Pod application name
+  pod_name: anylog-publisher-pod
+  # Kubernetes deployment name
+  deployment_name: anylog-publisher-deployment
+  # Kubernetes service name
+  service_name: anylog-publisher-service
+  # Configuration mapping name
+  configmap_name: anylog-publisher-configmap
+  # Allows running Kubernetes remotely. If commented out, code will ignore it
+  node_selector: ""
+  # Number of Kubernetes replicas
+  replicas: 1
+image:
+  # Image secret naming
+  secret_name: imagepullsecret
+  # (Docker Hub) Image Path
+  repository: anylogco/anylog-network
+  # Image version
+  tag: test-arm64
+  # Image pulling policy
+  pull_policy: IfNotPresent
+  # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
+  init_type: prod
+
+node_configs:
+  general:
+    # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
+    NODE_TYPE: publisher
+    # Name of the AnyLog instance
+    NODE_NAME: anylog-publisher
+    # Owner of the Anylog instance
+    COMPANY_NAME: AnyLog Co.
+
+  networking:
+    # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
+    ANYLOG_SERVER_PORT: 32248
+    # Port address used by AnyLog's REST protocol
+    ANYLOG_REST_PORT: 32249
+    # Port address used by AnyLog Broker
+    ANYLOG_BROKER_PORT: 32250
+    # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
+  database:
+    # Physical database type
+    DB_TYPE: sqlite
+  blockchain:
+    # TCP connection information for Master Node
+    LEDGER_CONN: 45.79.74.39:32048
+  operator:
+    # Owner of the cluster
+    CLUSTER_NAME: new-company-cluster1
+    # Logical database name
+    DEFAULT_DBMS: new_company
+  mqtt:
+    # Whether to enable the default MQTT process
+    ENABLE_MQTT: false
+  advanced:
+    # Whether to automatically run a local (or personalized) script at the end of the process
+    DEPLOY_LOCAL_SCRIPT: false
+    # Deploy a process that accepts syslog
+    DEPLOY_SYSLOG: false
+    # Compress JSON and SQL file(s) backup
+    COMPRESS_FILE: true
+    # Number of parallel queries
+    QUERY_POOL: 6
+    # When data comes in write to database immediately, as opposed to waiting for a full buffer
+    WRITE_IMMEDIATE: true
+    # If buffer is not full, how long to wait until pushing data through
+    THRESHOLD_TIME: 60 seconds
+    # Buffer size to reach, at which point data is pushed through
+    THRESHOLD_VOLUME: 10KB
+  monitoring:
+    # Whether to monitor the node or not
+    MONITOR_NODES: true
+    # Which node type to send monitoring information to
+    MONITOR_NODE: query
+    # Company node is associated with the monitor node
+    MONITOR_NODE_COMPANY: AnyLog Co.
+
+volume:
+  # Whether to enable volumes for AnyLog
+  enable_volume: false
+  anylog_volume: # volume name: {.Values.metadata.deployment_name}-anylog-dir
+    # Volume name associated with anylog directory
+    volume_name: anylog-operator-anylog-dir
+    volume_name_pvc: anylog-operator-anylog-dir-pvc
+  blockchain_volume: # volume name: {.Values.metadata.deployment_name}-blockchain-dir
+    # Volume name associated with blockchain directory
+    volume_name: anylog-operator-blockchain-dir
+    volume_name_pvc: anylog-operator-blockchain-dir-pvc
+  data_volume: # volume name: {.Values.metadata.deployment_name}-data-dir
+    # Volume name associated with data directory
+    volume_name: anylog-operator-data-dir
+    volume_name_pvc: anylog-operator-data-dir-pvc
+#  local_scripts: # volume name: {.Values.metadata.deployment_name}-local-scripts
+#    # AnyLog local scripts directory path
+#    path: /app/deployment-scripts/node-deployment
+#    # Volume access mode
+#    access_mode: ReadWriteOnce
+#    # Volume storage size
+#    storage_size: 1Gi
+#  test_scripts: # volume name: {.Values.metadata.deployment_name}-tests
+#    # AnyLog test cases directory path
+#    path: /app/deployment-scripts/test
+#    # Volume access mode
+#    access_mode: ReadWriteOnce
+#    # Volume storage size
+#    storage_size: 1Gi
+
