@@ -10,9 +10,7 @@ services:
     restart: always
     stdin_open: true
     tty: true
-    ports:
-      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
-      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+    network_mode: host
     volumes:
       - anylog-query-anylog:/app/AnyLog-Network/anylog
       - anylog-query-blockchain:/app/AnyLog-Network/blockchain
