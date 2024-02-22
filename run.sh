@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
+# Start / Stop Docker such that AnwyLog connects to specific ports, as opposed to using a generic bridge connection
 # Sample Calls:
 #  - help: bash run.sh help
 #  - Start: bash run.sh helm NODETYPE up || bash run.sh docker NODETYPE up [--training]
