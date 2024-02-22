@@ -9,6 +9,7 @@
 DEPLOYMENT_TYPE=$1
 NODETYPE=$2
 DOCKERCMD=$3
+IS_LIGHTHOUSE=false
 VOLUME=false
 IMAGE=false
 TRAINING=false
@@ -17,8 +18,8 @@ TRAINING=false
 if [[ ${DEPLOYMENT_TYPE} == help ]] ; then
   printf """Start / Stop Docker such that AnyLog connects to specific ports, as opposed to using a generic bridge connection
   Sample Calls:
-  \t- Start: bash run.sh NODETYPE up [--training]
-  \t- Stop:  bash run.sh NODETYPE down [--training] [--volume] [--rmi]
+  \t- Start: bash run.sh docker NODETYPE up [--training] [--
+  \t- Stop:  bash run.sh docker NODETYPE down [--training] [--volume] [--rmi]
   """
   exit 0
 fi
@@ -41,7 +42,33 @@ if [[ ${DOCKERCMD} == down ]] ; then
     esac
     shift
   done
+elif [[ ${DOCKERCMD} == up ]] ; then
+  while [[ $# -gt 0 ]] ; do
+    case $1 in
+    "--is-lighthouse")
+        IS_LIGHTHOUSE=true
+        ENABLE_NEBULA=true
+        ;;
+    "--lighthouse-ip")
+      LIGHTHOUSE_IP=$2
+      ENABLE_NEBULA=true
+      shift
+      ;;
+    "--lighthouse-external-ip")
+      LIGHTHOUSE_NODE_IP=$2
+      ENABLE_NEBULA=true
+      shift
+      ;;
+    "--training")
+      TRAINING=true
+      ;;
+    *)
+      ;;
+    esac
+    shift
+  done
 fi
+
 
 
 if [[ ${DEPLOYMENT_TYPE} == docker ]] ; then
@@ -60,21 +87,46 @@ if [[ ${DEPLOYMENT_TYPE} == docker ]] ; then
   fi
 
   export ANYLOG_PATH=$(cat advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $2}')
-  export NEBULA_CONFIG_FILE=$(cat advance_configs.env | grep NEBULA_CONFIG_FILE | awk -F "=" '{print $2}')
+#  export NEBULA_CONFIG_FILE=$(cat advance_configs.env | grep NEBULA_CONFIG_FILE | awk -F "=" '{print $2}')
   export ANYLOG_SERVER_PORT=$(cat anylog_configs.env | grep "ANYLOG_SERVER_PORT" | awk -F "=" '{print $2}')
   export ANYLOG_REST_PORT=$(cat anylog_configs.env | grep "ANYLOG_REST_PORT" |  awk -F "=" '{print $2}')
   export ANYLOG_BROKER_PORT=""
+  if [[ ! $(grep "ENABLE_NEBULA" .env |  awk -F "=" '{print $2}')   = 'true' ]] ; then
+        sed -i 's/ENABLE_NEBULA=true/ENABLE_NEBULA=false/g' .env
+  fi
 
   if [[ ${TRAINING} == false ]] && [[ ! $(grep "ANYLOG_BROKER_PORT" advance_configs.env |  awk -F "=" '{print $2}')   = '""' ]] ; then # if ANYLOG_BROKER_PORT exists
     export ANYLOG_BROKER_PORT=$(cat anylog_configs.env | grep "ANYLOG_BROKER_PORT" | awk -F "=" '{print $2}')
   fi
 
-  if [[ ${DOCKERCMD} == up ]] ; then
-    if [[ ! -z ${ANYLOG_BROKER_PORT} ]] ; then # if ANYLOG_BROKER_PORT exists
-      docker-compose -f docker-compose-broker.yml up -d
-    else
-      docker-compose up -d
+  # Overlay configurations
+  if [[ ${ENABLE_LIGHTHOUSE} == true ]] && [[ ${DOCKERCMD} == up ]]; then
+    if [[ ! ${ANYLOG_BROKER_PORT} == "" ]] && [[ ${IS_LIGHTHOUSE} == true ]] ; then
+    python3 $ROOT_PATH/nebula/run.py ${ANYLOG_PATH} ${ANYLOG_SERVER_PORT} ${ANYLOG_REST_PORT} \
+      --broker-port ${ANYLOG_REST_PORT} \
+      --is-lighthouse
+    elif [[ ! ${ANYLOG_BROKER_PORT} == "" ]] && [[ ${IS_LIGHTHOUSE} == true ]] ; then
+    python3 $ROOT_PATH/nebula/run.py ${ANYLOG_PATH} ${ANYLOG_SERVER_PORT} ${ANYLOG_REST_PORT} \
+      --broker-port ${ANYLOG_REST_PORT} \
+      --lighthouse-ip ${LIGHTHOUSE_IP} \
+      --lighthouse-node-ip ${LIGHTHOUSE_NODE_IP}
+    elif [[ ${ANYLOG_BROKER_PORT} == "" ]] && [[ ${IS_LIGHTHOUSE} == true ]] ; then
+    python3 $ROOT_PATH/nebula/run.py ${ANYLOG_PATH} ${ANYLOG_SERVER_PORT} ${ANYLOG_REST_PORT} \
+      --is-lighthouse
+    elif [[ ${ANYLOG_BROKER_PORT} == "" ]] && [[ ${IS_LIGHTHOUSE} == true ]] ; then
+    python3 $ROOT_PATH/nebula/run.py ${ANYLOG_PATH} ${ANYLOG_SERVER_PORT} ${ANYLOG_REST_PORT} \
+      --lighthouse-ip ${LIGHTHOUSE_IP} \
+      --lighthouse-node-ip ${LIGHTHOUSE_NODE_IP}
     fi
+    if [ $? -eq 0 ]; then
+      if [[ ! $(grep "ENABLE_NEBULA" .env |  awk -F "=" '{print $2}')   = 'false' ]] ; then
+        sed -i 's/ENABLE_NEBULA=false/ENABLE_NEBULA=true/g' .env
+      fi
+    fi
+  fi
+
+  if [[ ${DOCKERCMD} == up ]] ; then
+      docker-compose up -d
   elif [[ ${DOCKERCMD} == down ]] ; then
     if [[ ${VOLUME} == true ]] && [[ ${IMAGE} == true ]] ; then
       if [[ ! -z ${ANYLOG_BROKER_PORT} ]] ; then # if ANYLOG_BROKER_PORT exists
@@ -105,26 +157,29 @@ if [[ ${DEPLOYMENT_TYPE} == docker ]] ; then
     echo Invalid Userinput ${DOCKERCMD}
     exit 1
   fi
+
 elif [[ ${DEPLOYMENT_TYPE} == helm ]] ; then
-  export NODE_NAME=$(grep "pod_name" ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | awk -F ":" '{print $2}')
-  export ANYLOG_SERVER_PORT=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "ANYLOG_SERVER_PORT" | awk -F ":" '{print $2}')
-  export ANYLOG_REST_PORT=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "ANYLOG_REST_PORT" |  awk -F ":" '{print $2}')
-
-  export PROXY_IP=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "PROXY_IP" |  awk -F ":" '{print $2}')
-  export SERVICE_NAME=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "service_name" |  awk -F ":" '{print $2}')
-
-  export ANYLOG_BROKER_PORT=""
-  if [[ ! $(grep "ANYLOG_BROKER_PORT" ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml |  awk -F ":" '{print $2}')   = '""' ]] ; then
-    export ANYLOG_BROKER_PORT=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "ANYLOG_BROKER_PORT" |  awk -F ":" '{print $2}')
-  fi
-
-  if [[ ${DOCKERCMD} == up ]] ; then
-    helm install ${ROOT_PATH}/kubernetes/anylog-node-volume-1.22.3.tgz -f ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml --name-template ${NODE_NAME}-volume
-    helm install ${ROOT_PATH}/kubernetes/anylog-node-1.22.3.tgz -f ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml --name-template ${NODE_NAME}
-  elif [[ ${DOCKERCMD} == down ]] ; then
-    helm uninstall ${NODE_NAME}
-    if [[ ${VOLUME} == true ]] ; then
-      helm uninstall ${NODE_NAME}-volume
-    fi
-  fi
+  echo "Unsupported function at this time..."
 fi
+#  export NODE_NAME=$(grep "pod_name" ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | awk -F ":" '{print $2}')
+#  export ANYLOG_SERVER_PORT=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "ANYLOG_SERVER_PORT" | awk -F ":" '{print $2}')
+#  export ANYLOG_REST_PORT=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "ANYLOG_REST_PORT" |  awk -F ":" '{print $2}')
+#
+#  export PROXY_IP=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "PROXY_IP" |  awk -F ":" '{print $2}')
+#  export SERVICE_NAME=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "service_name" |  awk -F ":" '{print $2}')
+#
+#  export ANYLOG_BROKER_PORT=""
+#  if [[ ! $(grep "ANYLOG_BROKER_PORT" ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml |  awk -F ":" '{print $2}')   = '""' ]] ; then
+#    export ANYLOG_BROKER_PORT=$(cat ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml | grep "ANYLOG_BROKER_PORT" |  awk -F ":" '{print $2}')
+#  fi
+#
+#  if [[ ${DOCKERCMD} == up ]] ; then
+#    helm install ${ROOT_PATH}/kubernetes/anylog-node-volume-1.22.3.tgz -f ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml --name-template ${NODE_NAME}-volume
+#    helm install ${ROOT_PATH}/kubernetes/anylog-node-1.22.3.tgz -f ${ROOT_PATH}/kubernetes/configs/anylog_${NODETYPE}.yaml --name-template ${NODE_NAME}
+#  elif [[ ${DOCKERCMD} == down ]] ; then
+#    helm uninstall ${NODE_NAME}
+#    if [[ ${VOLUME} == true ]] ; then
+#      helm uninstall ${NODE_NAME}-volume
+#    fi
+#  fi
+#fi
