@@ -13,7 +13,6 @@ services:
     network_mode: host
     environment:
       - INIT_TYPE=${INIT_TYPE}
-      - ENABLE_NEBULA=${ENABLE_NEBULA}
     volumes:
       - anylog-master-anylog:/app/AnyLog-Network/anylog
       - anylog-master-blockchain:/app/AnyLog-Network/blockchain

@@ -10,9 +10,7 @@ services:
     container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
-    ports:
-      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
-      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+    network_mode: host
     environment:
       - INIT_TYPE=${INIT_TYPE}
     volumes:
@@ -20,7 +18,6 @@ services:
       - anylog-operator-blockchain:/app/AnyLog-Network/blockchain
       - anylog-operator-data:/app/AnyLog-Network/data
       - anylog-operator-local-scripts:/app/deployment-scripts
-      - ${NEBULA_CONFIG_FILE}:${ANYLOG_PATH}/nebula/config.yml
       - nebula:${ANYLOG_PATH}/nebula/
 
 volumes:
