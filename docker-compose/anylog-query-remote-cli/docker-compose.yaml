@@ -27,16 +27,12 @@ services:
     stdin_open: true
     tty: true
     network_mode: host
-#    ports:
-#      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
-#      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
       - anylog-query-anylog:/app/AnyLog-Network/anylog
       - anylog-query-blockchain:/app/AnyLog-Network/blockchain
       - anylog-query-data:/app/AnyLog-Network/data
       - anylog-query-local-scripts:/app/deployment-scripts
-      - ${NEBULA_CONFIG_FILE}:${ANYLOG_PATH}/nebula/config.yml
-      - anylog-query-nebula:${ANYLOG_PATH}/nebula/
+      - nebula-configs:${ANYLOG_PATH}/nebula/
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
   remote-cli:
@@ -45,4 +41,4 @@ volumes:
   anylog-query-blockchain:
   anylog-query-data:
   anylog-query-local-scripts:
-  anylog-query-nebula:
+  nebula-configs:     
