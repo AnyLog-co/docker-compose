@@ -21,10 +21,7 @@ services:
       - ${ANYLOG_TYPE}-configs/base_configs.env
       - ${ANYLOG_TYPE}-configs/advance_configs.env
     environment:
-      # AnyLog init type
-      # -> prod: run AnyLog instance
-      # -> bash: run shell interface with AnyLog installed and params set
-      - INIT_TYPE=prod
+      - INIT_TYPE=${INIT_TYPE}
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
