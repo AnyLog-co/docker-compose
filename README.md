@@ -228,7 +228,7 @@ make up ANYLOG_TYPE=[NODE_TYPE]
 ```shell
 Usage: make [target] ANYLOG_TYPE=[anylog-type]
 Targets:
-  login		  Log into AnyLog's Dockerhub - use ANYLOG_TYPE to set password value
+  login       Log into AnyLog's Dockerhub - use ANYLOG_TYPE to set password value
   build       Pull the docker image
   up          Start the containers
   attach      Attach to AnyLog instance
