@@ -10,7 +10,7 @@ ifeq ($(shell uname -m), arm64)
 	export TAG := latest-arm64
 endif
 
-export ANYLOG_PATH := $(shell cat docker-make/$(ANYLOG_TYPE)-configs/advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $2}')
+export ANYLOG_PATH := $(shell cat docker-makefile/$(ANYLOG_TYPE)-configs/advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $2}')
 
 all: help
 login:
