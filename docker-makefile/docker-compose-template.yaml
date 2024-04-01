@@ -12,8 +12,8 @@ services:
 #      - CONN_IP=${CONN_IP}
 #      - CLI_PORT=${CLI_PORT}
 #    volumes:
-#      - remote-cli:${ANYLOG_PATH}/Remote-CLI/djangoProject/static/json
-#      - remote-cli-current:${ANYLOG_PATH}/Remote-CLI/djangoProject/static/blobs/current/
+#      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+#      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
   anylog-${ANYLOG_TYPE}:
     image: anylogco/anylog-network:${TAG}
     restart: always
@@ -27,12 +27,12 @@ services:
     tty: true
     network_mode: host
     volumes:
-      - anylog-${ANYLOG_TYPE}-anylog:${ANYLOG_PATH}/AnyLog-Network/anylog
-      - anylog-${ANYLOG_TYPE}-blockchain:${ANYLOG_PATH}/AnyLog-Network/blockchain
-      - anylog-${ANYLOG_TYPE}-data:${ANYLOG_PATH}/AnyLog-Network/data
-      - anylog-${ANYLOG_TYPE}-local-scripts:${ANYLOG_PATH}/deployment-scripts
-      - anylog-${NODE_TYPE}-nebula:${ANYLOG_PATH}/AnyLog-Network/nebula
-#      - remote-cli-current:${ANYLOG_PATH}/Remote-CLI/djangoProject/static/blobs/current/
+      - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
+      - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
+      - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
+      - anylog-${NODE_TYPE}-nebula:/app/AnyLog-Network/nebula
+#      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
