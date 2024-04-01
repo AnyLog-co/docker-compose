@@ -237,7 +237,7 @@ Targets:
   logs        View logs of the containers
   clean       Clean up volumes and network
   help        Show this help message
-         supported AnyLog types: master, operator and query
+         supported AnyLog types: master, operator, query and publisher
 Sample calls: make up ANYLOG_TYPE=master | make attach ANYLOG_TYPE=master | make clean ANYLOG_TYPE=master
 ```
 
