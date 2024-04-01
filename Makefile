@@ -31,6 +31,7 @@ down:
 clean:
 	#ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
 	ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
+	@docker-compose -f docker-makefile/docker-compose.yaml down
 	@docker-compose -f docker-makefile/docker-compose.yaml down -v --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
