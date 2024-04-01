@@ -1,62 +1,116 @@
-# Installing AnyLog using Docker
+# Deploying EdgeLake
 
-You can deploy AnyLog via _docker-compose_ by using either our deployment script or manually. Additionally, we provide a 
-single docker-compose that builds a [demo network](docker-compose/anylog-demo-network/README.md) [1 _Master_, 1 _Query_ and 
-2 _Operator_ nodes] on a single machine.  
+The following provides direction to deploy EdgeLake using [_makefile_](Makefile) for Docker-based deployment.
 
-For login credentials contact us at: [info@anylog.co](mailto:info@anylog.co)
-
-**Support Links**
-* [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Remote-CLI.md)
-* [EdgeX](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/EdgeX.md)
-* [Grafana](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Grafana.md)
-* [Trouble Shooting](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/cheatsheet.md)
-
+* [EdgeLake Source Code](https://github.com/EdgeLake/EdgeLake)
 
 **Requirements**
-* Docker
-* docker-compose
-* Python3 + [dotenv](https://pypi.org/project/python-dotenv/) - for utilizing [deployment scripts](https://github.com/AnyLog-co/deployments) 
-
-Directions for downloading Docker / docker-compose can be found in the [Docker Engine Installation](https://docs.docker.com/engine/install/)
-
-## Deployment Process 
-1. Download [deployments](../) & log into AnyLog Docker Hub
+* _Docker_
+* _docker-compose_
+* _Makefile_
 ```shell
-cd $HOME
-
-git clone https://github.com/AnyLog-co/deployments
-
-cd $HOME/deployments/
-
-bash $HOME/deployments/installations/docker_credentials.sh ${YOUR_ANYLOG_DOCKER_CREDENTIALS}
+sudo snap install docker
+sudo apt-get -y install docker-compose 
+sudo apt-get -y install make
+ 
+# Grant non-root user permissions to use docker
+USER=`whoami` 
+sudo groupadd docker 
+sudo usermod -aG docker ${USER} 
+newgrp docker
 ```
 
-2. Deploy relevant database, this can be done as docker image(s) or as services on your machine. Directions can be found 
-[here](https://github.com/AnyLog-co/documentation/blob/master/deployments/Docker/database_configuration.md)
-
-
-3. [Deploy AnyLog](https://github.com/AnyLog-co/documentation/blob/master/deployments/Docker/deploying_node.md)
+## Prepare Machine
+Clone _docker-compose_ from EdgeLake repository
 ```shell
-# start node  
-bash $HOME/deployments/run.sh docker master up
-
-# start node in training version (less configs) 
-bash $HOME/deployments/run.sh docker master up --training   
-
-# stop node 
-bash $HOME/deployments/run.sh docker master down [--training] [--rmi] [--volume]
+git clone https://github.com/EdgeLake/docker-compose
+cd docker-compose
 ```
 
-4. Deploy other services like [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Remote-CLI.md) and [Grafana](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Grafana.md)
+## Deploy EdgeLake via Docker 
+1. Edit LEDGER_CONN in query and operator using IP address of master node
+2. Update `.env` configurations for the node(s) being deployed 
+   * [docker_makefile/edgelake_master.env](docker_makefile/master-configs /base_configs.env)
+   * [docker_makefile/edgelake_operator.env](docker_makefile/operator-configs/base_configs.env)
+   * [docker_makefile/edgelake_qauery.env](docker_makefile/query-configs/base_configs.env)
+
+```dotenv
+#--- General ---
+# Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
+NODE_TYPE=master
+# Name of the AnyLog instance
+NODE_NAME=anylog-master
+# Owner of the AnyLog instance
+COMPANY_NAME=New Company
+
+#--- Networking ---
+# Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
+ANYLOG_SERVER_PORT=32048
+# Port address used by AnyLog's REST protocol
+ANYLOG_REST_PORT=32049
+# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+TCP_BIND=false
+# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+REST_BIND=false
+
+#--- Blockchain ---
+# TCP connection information for Master Node
+LEDGER_CONN=127.0.0.1:32048
+
+#--- Advanced Settings ---
+# Whether to automatically run a local (or personalized) script at the end of the process
+DEPLOY_LOCAL_SCRIPT=false
+```
+
+3. Start Node using _makefile_
+```shell
+make up EDGELAKE_TYPE=[NODE_TYPE]
+```
+
+### Makefile Commands for Docker
+* help
+```shell
+Usage: make [target] EDGELAKE_TYPE=[anylog-type]
+Targets:
+  build       Pull the docker image
+  up          Start the containers
+  attach      Attach to EdgeLake instance
+  exec        Attach to shell interface for container
+  down        Stop and remove the containers
+  logs        View logs of the containers
+  clean       Clean up volumes and network
+  help        Show this help message
+         supported EdgeLake types: master, operator and query
+Sample calls: make up EDGELAKE_TYPE=master | make attach EDGELAKE_TYPE=master | make clean EDGELAKE_TYPE=master
+```
+
+* Bring up a _query_ node
+```shell
+make up EDGELAKE_TYPE=query
+```
+
+* Attach to _query_ node
+```shell
+# to detach: ctrl-d
+make attach EDGELAKE_TYPE=query  
+```
+
+* Bring down _query_ node
+```shell
+make down EDGELAKE_TYPE=query
+```
+If a _node-type_ is not set, then a generic node would automatically be used    
 
 
-If you are planning to deploy a [single deployment demo network](docker-compose/anylog-demo-network/README.md), there is no need to
-complete step 2 through 4 prior to deploying your node. The single demo network will automatically deploy: 
-* 1 master 
-* 2 operator nodes (1 using PostgresSQL and another using SQLite)
-* 1 Query Node 
-* PostgresSQL (used by 1 of the operators)
-* Remote CLI 
-* Grafana 
+
+## Makefile Commands 
+* `build` - pull docker image 
+* `up` - Using _docker-compose_, start a container of AnyLog based on node type
+* `attach` - Attach to an AnyLog docker container based on node type
+* `exec` - Attach to the shell interface of an AnyLog docker container, based on the node type 
+* `log` - check docker container logs based on container type
+* `down` - Stop container based on node type 
+* `clean` - remove everything associated with container (including volume and image) based on node type
+ 
+
 
