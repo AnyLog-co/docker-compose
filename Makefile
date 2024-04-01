@@ -34,7 +34,7 @@ clean:
 	@docker-compose -f docker-makefile/docker-compose.yaml down -v --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
-	docker attach --detach-keys=ctrl-d edgelake-$(ANYLOG_TYPE)
+	docker attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
 node-status:
 	@if [ "$(ANYLOG_TYPE)" = "master" ]; then \
 		curl -X GET 127.0.0.1:32049 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
@@ -72,11 +72,11 @@ test-network:
 		curl -X GET 127.0.0.1:32549 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
 	fi
 exec:
-	docker exec -it edgelake-$(ANYLOG_TYPE) bash
+	docker exec -it anylog-$(ANYLOG_TYPE) bash
 logs:
 	docker logs anylog-$(ANYLOG_TYPE)
 help:
-	@echo "Usage: make [target] [edgelake-type]"
+	@echo "Usage: make [target] [anylog-type]"
 	@echo "Targets:"
 	@echo "  login       Log into AnyLog's Dockerhub - use ANYLOG_TYPE to set password value"
 	@echo "  build       Pull the docker image"
