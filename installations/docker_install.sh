@@ -15,6 +15,9 @@ sudo groupadd docker
 sudo usermod -aG docker ${USER}
 newgrp docker
 
+# Install make and docker-compose
+sudo apt-get -y install docker-compose make
+
 # update / upgrade env
 for CMD in update upgrade update
 do
