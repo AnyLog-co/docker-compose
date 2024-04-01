@@ -14,7 +14,7 @@ export ANYLOG_PATH := $(shell cat docker-make/$(ANYLOG_TYPE)-configs/advance_con
 
 all: help
 login:
-	@bash installations/docker_credentials.sh $(ANYLOG_TYPE)
+	@docker login -u anyloguser -p $(ANYLOG_TYPE)
 build:
 	docker pull anylogco/anylog-network:$(TAG)
 up:
