@@ -74,7 +74,7 @@ test-network:
 exec:
 	docker exec -it edgelake-$(ANYLOG_TYPE) bash
 logs:
-	docker logs edgelake-$(ANYLOG_TYPE)
+	docker logs anylog-$(ANYLOG_TYPE)
 help:
 	@echo "Usage: make [target] [edgelake-type]"
 	@echo "Targets:"
