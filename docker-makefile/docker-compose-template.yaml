@@ -20,8 +20,7 @@ services:
     env_file:
       - ${ANYLOG_TYPE}-configs/base_configs.env
       - ${ANYLOG_TYPE}-configs/advance_configs.env
-    environment:
-      - INIT_TYPE=${INIT_TYPE}
+      - .env
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
