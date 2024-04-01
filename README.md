@@ -31,10 +31,10 @@ cd docker-compose
 
 ## Deploy AnyLog via Docker 
 1. Update configuration for node  
-   * [docker-makefile/master-configs/base_configs.env](docker-makefile/master-configs/base_configs.env) | [docker-makefile/master-configs/advance_configs.env](docker-makefile/master-configs/advance_configs.env)
-   * [docker-makefile/operator-configs/base_configs.env](docker-makefile/operator-configs/base_configs.env) | [docker-makefile/operator-configs/advance_configs.env](docker-makefile/operator-configs/advance_configs.env)
-   * [docker-makefile/query-configs/base_configs.env](docker-makefile/query-configs/base_configs.env) | [docker-makefile/query-configs/advance_configs.env](docker-makefile/query-configs/advance_configs.env)
-   * [docker-makefile/publisher-configs/base_configs.env](docker-makefile/publisher-configs/base_configs.env) | [docker-makefile/publisher-configs/advance_configs.env](docker-makefile/publisher-configs/advance_configs.env)
+   * [master-configs/base_configs.env](docker-makefile/master-configs/base_configs.env) | [master-configs/advance_configs.env](docker-makefile/master-configs/advance_configs.env)
+   * [operator-configs/base_configs.env](docker-makefile/operator-configs/base_configs.env) | [operator-configs/advance_configs.env](docker-makefile/operator-configs/advance_configs.env)
+   * [query-configs/base_configs.env](docker-makefile/query-configs/base_configs.env) | [query-configs/advance_configs.env](docker-makefile/query-configs/advance_configs.env)
+   * [publisher-configs/base_configs.env](docker-makefile/publisher-configs/base_configs.env) | [publisher-configs/advance_configs.env](docker-makefile/publisher-configs/advance_configs.env)
 
 **base_configs.env**
 ```dotenv
