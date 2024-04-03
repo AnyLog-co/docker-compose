@@ -33,7 +33,7 @@ networking:
   BROKER_THREADS: 6
 
 detabase:
-  # Whether to start to start system_query logical database
+  # Whether to start system_query logical database
   SYSTEM_QUERY: false
   # Run system_query using in-memory SQLite. If set to false, will use pre-set database type
   MEMORY: false
@@ -76,10 +76,6 @@ operator:
   # How often to check if an old partition should be removed
   PARTITION_SYNC: 1 day
 
-monitoring:
-  # Which node type to send monitoring information to
-  MONITOR_NODE: query
-
 advance_settings:
   # Compress JSON and SQL file(s) backup
   COMPRESS_FILE: true
@@ -91,10 +87,12 @@ advance_settings:
   THRESHOLD_TIME: 60 seconds
   # Buffer size to reach, at which point data is pushed through
   THRESHOLD_VOLUME: 10KB
+  # Which node type to send monitoring information to
+  MONITOR_NODE: query
 
 nebula:
   # whether to enable Lighthouse
-  ENABLE_NEBULA: true
+  ENABLE_NEBULA: false
   # whether node is type lighthouse
   IS_LIGHTHOUSE: false
   # Nebula IP address for Lighthouse node
