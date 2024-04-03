@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: '{{ .Metadata.metadata.namespace }}'
+  name: '{{ .Metadata.metadata.deployment_name }}'
+  labels:
+    app: '{{ .Metadata.metadata.app_name }}'
+spec:
+  replicas: {{ .Metadata.metadata.replicas }}
+  selector:
+    matchLabels:
+      app: '{{ .Metadata.metadata.app_name }}'
+  template:
+    metadata:
+      labels:
+        app: '{{ .Metadata.metadata.app_name }}'
+      name: '{{ .Basic_Configs.general.NODE_NAME }}'
+    spec:
+      hostname: '{{ .Metadata.metadata.hostname }}'
+      {{- if ne .Metadata.metadata.node_selector "" }}
+      nodeSelector:
+        kubernetes.io/hostname: '{{ .Metadata.metadata.node_selector }}'
+      {{ end }}
+      {{- if ne .Values.image.secret_name "" }}
+      imagePullSecrets:
+      - name: '{{ .Metadata.image.secret_name }}'
+      {{ end }}
+      containers:
+      - name: '{{ .Metadata.metadata.deployment_name }}'
+        image: '{{ .Metadata.image.repository }}:{{ .Metadata.image.tag }}'
+        imagePullPolicy: '{{ .Metadata.image.pull_policy }}'
+        envFrom:
+        - configMapRef:
+            name: '{{ .Metadata.metadata.configmap_name }}'
+        tty: true
+        stdin: true
+        ports:
+        - name: server
+          containerPort: {{ .Basic_Configs.networking.ANYLOG_SERVER_PORT }}
+        - name: rest
+          containerPort: {{ .Basic_Configs.networking.ANYLOG_REST_PORT }}
+        {{- if ne .Basic_Configs.networking.ANYLOG_BROKER_PORT "" }}
+        - name: broker
+          containerPort: {{ .Basic_Configs.networking.ANYLOG_BROKER_PORT }}
+        {{ end }}
+       {{- if eq .Values.volume.enable_volume true }}
