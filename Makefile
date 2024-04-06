@@ -11,7 +11,7 @@ ifeq ($(shell uname -m), arm64)
 endif
 
 #export ANYLOG_PATH := $(shell cat docker-makefile/$(ANYLOG_PATH)/advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $2}')
-export ANYLOG_TYPE := $(shell grep NODE_NAME docker-makefile/$(ANYLOG_PATH)/base_configs.env | cut -d '=' -f 2)
+export ANYLOG_TYPE := $(shell grep NODE_TYPE docker-makefile/$(ANYLOG_PATH)/base_configs.env | cut -d '=' -f 2)
 
 all: help
 login:
@@ -19,7 +19,7 @@ login:
 build:
 	docker pull anylogco/anylog-network:$(TAG)
 up:
-	@echo "Deploy AnyLog with config file: anylog_$(ANYLOG_TYPE)"
+	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE)  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
 	@docker-compose -f docker-makefile/docker-compose.yaml up -d
 	@rm -rf docker-makefile/docker-compose.yaml
@@ -33,7 +33,7 @@ clean:
 	@docker-compose -f docker-makefile/docker-compose.yaml down -v --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
-	docker attach --detach-keys=ctrl-d anylog-$(ANYLOG_PATH)
+	docker attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
 node-status:
 	@if [ "$(ANYLOG_PATH)" = "master" ]; then \
 		curl -X GET 127.0.0.1:32049 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"; \
@@ -71,9 +71,9 @@ test-network:
 		curl -X GET 127.0.0.1:32549 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
 	fi
 exec:
-	docker exec -it anylog-$(ANYLOG_PATH) bash
+	docker exec -it anylog-$(ANYLOG_TYPE) bash
 logs:
-	docker logs anylog-$(ANYLOG_PATH)
+	docker logs anylog-$(ANYLOG_TYPE)
 help:
 	@echo "Usage: make [target] [anylog-type]"
 	@echo "Targets:"
