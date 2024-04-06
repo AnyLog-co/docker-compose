@@ -21,6 +21,7 @@ build:
 up:
 	@echo "Deploy AnyLog with config file: anylog_$(ANYLOG_TYPE)"
 	@echo $(ANYLOG_TYPE)
+	exit 1
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE)  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
 	@docker-compose -f docker-makefile/docker-compose.yaml up -d
 	@rm -rf docker-makefile/docker-compose.yaml
