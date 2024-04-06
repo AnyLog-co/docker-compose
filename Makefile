@@ -11,7 +11,7 @@ ifeq ($(shell uname -m), arm64)
 endif
 
 #export ANYLOG_PATH := $(shell cat docker-makefile/$(ANYLOG_PATH)/advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $2}')
-export ANYLOG_TYPE := $(shell cat docker-makefile/$(ANYLOG_PATH)/base_configs.env | grep NODE_TYPE | awk -F "=" '{print $2}')
+export ANYLOG_TYPE := $(shell grep NODE_NAME docker-makefile/$(ANYLOG_PATH)/base_configs.env | cut -d '=' -f 2)
 
 all: help
 login:
