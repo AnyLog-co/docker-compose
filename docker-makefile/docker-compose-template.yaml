@@ -14,13 +14,13 @@ services:
 #    volumes:
 #      - remote-cli:/app/Remote-CLI/djangoProject/static/json
 #      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
-  anylog-${ANYLOG_TYPE}:
+  anylog-${ANYLOG_PATH}:
     image: anylogco/anylog-network:${TAG}
     restart: always
     env_file:
-      - ${ANYLOG_TYPE}-configs/base_configs.env
-      - ${ANYLOG_TYPE}-configs/advance_configs.env
-      - .env
+      - ${ANYLOG_PATH}/base_configs.env
+      - ${ANYLOG_PATH}/advance_configs.env
+      - $(ANYLOG_PATH}/.env
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
@@ -30,13 +30,13 @@ services:
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
       - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
       - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
-      - anylog-${NODE_TYPE}-nebula:/app/AnyLog-Network/nebula
+      - anylog-${ANYLOG_TYPE}-nebula:/app/AnyLog-Network/nebula
 #      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
   anylog-${ANYLOG_TYPE}-data:
   anylog-${ANYLOG_TYPE}-local-scripts:
-  anylog-${NODE_TYPE}-nebula:
+  anylog-${ANYLOG_TYPE}-nebula:
 #  remote-cli:
 #  remote-cli-current:
