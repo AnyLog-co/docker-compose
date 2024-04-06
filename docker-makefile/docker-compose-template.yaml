@@ -20,7 +20,7 @@ services:
     env_file:
       - ${ANYLOG_PATH}/base_configs.env
       - ${ANYLOG_PATH}/advance_configs.env
-      - $(ANYLOG_PATH}/.env
+      - .env
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
