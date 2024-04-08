@@ -1,0 +1,532 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 3,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "simpod-json-datasource",
+        "uid": "fdi1p64qmnz7kf"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "ping_sensor<avg>"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [
+            "mean"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxWidth": -7,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "payload": "{\n  \"type\": \"increments\",\n  \"time_column\": \"timestamp\",\n  \"value_column\": \"value\",\n  \"where\": \"device_name='ADVA FSP3000R7'\",\n  \"functions\": [\"avg\"],\n  \"grafana\" : {\n    \"format_as\" : \"timeseries\"\n  }\n}\n",
+          "refId": "ADVA FSP3000R7",
+          "target": "litsanleandro.ping_sensor"
+        },
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "hide": false,
+          "payload": "{\n  \"type\": \"increments\",\n  \"time_column\": \"timestamp\",\n  \"value_column\": \"value\",\n  \"where\": \"device_name='Catalyst 3500XL'\",\n  \"functions\": [\"avg\"],\n  \"grafana\" : {\n    \"format_as\" : \"timeseries\"\n  }\n}\n",
+          "refId": "Catalyst 3500XL",
+          "target": "litsanleandro.ping_sensor"
+        },
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "hide": false,
+          "payload": "{\n  \"type\": \"increments\",\n  \"time_column\": \"timestamp\",\n  \"value_column\": \"value\",\n  \"where\": \"device_name='GOOGLE_PING'\",\n  \"functions\": [\"avg\"],\n  \"grafana\" : {\n    \"format_as\" : \"timeseries\"\n  }\n}\n",
+          "refId": "GOOGLE_PING",
+          "target": "litsanleandro.ping_sensor"
+        },
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "hide": false,
+          "payload": "{\n  \"type\": \"increments\",\n  \"time_column\": \"timestamp\",\n  \"value_column\": \"value\",\n  \"where\": \"device_name='Ubiquiti OLT'\",\n  \"functions\": [\"avg\"],\n  \"grafana\" : {\n    \"format_as\" : \"timeseries\"\n  }\n}\n",
+          "refId": "Ubiquiti OLT",
+          "target": "litsanleandro.ping_sensor"
+        },
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "hide": false,
+          "payload": "{\n  \"type\": \"increments\",\n  \"time_column\": \"timestamp\",\n  \"value_column\": \"value\",\n  \"where\": \"device_name='VM Lit SL NMS'\",\n  \"functions\": [\"avg\"],\n  \"grafana\" : {\n    \"format_as\" : \"timeseries\"\n  }\n}\n",
+          "refId": "VM Lit SL NMS",
+          "target": "litsanleandro.ping_sensor"
+        }
+      ],
+      "title": "Average Value over Time",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "simpod-json-datasource",
+        "uid": "fdi1p64qmnz7kf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 3,
+          "mappings": [],
+          "max": 5,
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 1,
+        "y": 9
+      },
+      "id": 2,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "payload": "{\n  \"sql\": \"select min(value) as min, avg(value) as avg, max(value) as max from ping_sensor where device_name='ADVA FSP3000R7'\",\n  \"time_range\": false\n}",
+          "refId": "A",
+          "target": "litsanleandro.ping_sensor"
+        }
+      ],
+      "title": "ADVA FSP3000R7",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "simpod-json-datasource",
+        "uid": "fdi1p64qmnz7kf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 3,
+          "mappings": [],
+          "max": 50,
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 5,
+        "y": 9
+      },
+      "id": 3,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "payload": "{\n  \"sql\": \"select min(value) as min, avg(value) as avg, max(value) as max from ping_sensor where device_name='Catalyst 3500XL'\",\n  \"time_range\": false\n}",
+          "refId": "A",
+          "target": "litsanleandro.ping_sensor"
+        }
+      ],
+      "title": "Catalyst 3500XL",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "simpod-json-datasource",
+        "uid": "fdi1p64qmnz7kf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 3,
+          "mappings": [],
+          "max": 40,
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 10,
+        "y": 9
+      },
+      "id": 4,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "payload": "{\n  \"sql\": \"select min(value) as min, avg(value) as avg, max(value) as max from ping_sensor where device_name='GOOGLE_PING'\",\n  \"time_range\": false\n}",
+          "refId": "A",
+          "target": "litsanleandro.ping_sensor"
+        }
+      ],
+      "title": "GOOGLE_PING",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "simpod-json-datasource",
+        "uid": "fdi1p64qmnz7kf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 3,
+          "mappings": [],
+          "max": 40,
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 4,
+        "x": 14,
+        "y": 9
+      },
+      "id": 5,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "payload": "{\n  \"sql\": \"select min(value) as min, avg(value) as avg, max(value) as max from ping_sensor where device_name='Ubiquiti OLT'\",\n  \"time_range\": false\n}",
+          "refId": "A",
+          "target": "litsanleandro.ping_sensor"
+        }
+      ],
+      "title": "Ubiquiti OLT",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "simpod-json-datasource",
+        "uid": "fdi1p64qmnz7kf"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "decimals": 3,
+          "mappings": [],
+          "max": 10,
+          "min": 0,
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 5,
+        "x": 18,
+        "y": 9
+      },
+      "id": 6,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": false,
+        "sizing": "auto"
+      },
+      "pluginVersion": "10.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "simpod-json-datasource",
+            "uid": "fdi1p64qmnz7kf"
+          },
+          "editorMode": "code",
+          "payload": "{\n  \"sql\": \"select min(value) as min, avg(value) as avg, max(value) as max from ping_sensor where device_name='VM Lit SL NMS'\",\n  \"time_range\": false\n}",
+          "refId": "A",
+          "target": "litsanleandro.ping_sensor"
+        }
+      ],
+      "title": "VM Lit SL NMS",
+      "type": "gauge"
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Ping Sensor",
+  "uid": "fdi2dkrwfxa0wb",
+  "version": 2,
+  "weekStart": ""
+}
