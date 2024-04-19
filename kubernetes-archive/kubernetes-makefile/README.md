@@ -1,6 +1,6 @@
 # Kubernetes 
 
-Directions for deploying Kubearmor can be found [here](../Kubearmor/README.md)
+Directions for deploying Kubearmor can be found [here](../../support-tools/Kubearmor/README.md)
 
 ## Deploying AnyLog on Kubernetes 
 1. Declare secret - [contact us](mailto:info@anylog.co) for your personalized Docker key 
