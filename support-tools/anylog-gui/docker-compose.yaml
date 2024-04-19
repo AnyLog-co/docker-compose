@@ -1,0 +1,17 @@
+version: "2.2"
+services:
+  anylog-gui:
+    image: anylogco/anylog-gui:latest
+    container_name: anylog-gui
+    restart: always
+    stdin_open: true
+    tty: true
+    environment:
+      - CONN_IP=0.0.0.0
+      - CONN_PORT=31900
+    ports:
+      - "31900:31900"
+    volumes:
+      - anylog-gui:/app/AnyLog-GUI/views
+volumes:
+  anylog-gui:
