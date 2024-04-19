@@ -28,15 +28,6 @@ spec:
       - name: '{{ .Values.metadata.deployment_name }}'
         image: '{{ .Values.image.repository }}:{{ .Values.image.tag }}'
         imagePullPolicy: '{{ .Values.image.pull_policy }}'
-         {{- if eq .Values.volume.enable_volume true }}
-         volumeMounts:
-           - name: '{{ .Values.volume.anylog_volume.volume_name }}'
-             mountPath: '{{ .Values.volume.anylog_volume.path }}'
-           - name: '{{ .Values.volume.blockchain_volume.volume_name }}'
-             mountPath: '{{ .Values.volume.blockchain_volume.path }}'
-           - name: '{{ .Values.volume.data_volume.volume_name }}'
-             mountPath: '{{ .Values.volume.data_volume.path }}'
-         {{ end }}
         envFrom:
         - configMapRef:
             name: '{{ .Values.metadata.configmap_name }}'
@@ -51,15 +42,3 @@ spec:
         - name: broker
           containerPort: {{ .Values.node_configs.networking.ANYLOG_BROKER_PORT }}
         {{ end }}
-       {{- if eq .Values.volume.enable_volume true }}
-       volumes:
-       - name: '{{ .Values.volume.anylog_volume.volume_name }}'
-         persistentVolumeClaim:
-          claimName: '{{ .Values.volume.anylog_volume.volume_name_pvc }}'
-       - name: '{{ .Values.volume.blockchain_volume.volume_name }}'
-         persistentVolumeClaim:
-          claimName: '{{ .Values.volume.blockchain_volume.volume_name_pvc }}'
-       - name: '{{ .Values.volume.data_volume.volume_name }}'
-         persistentVolumeClaim:
-           claimName: '{{ .Values.volume.data_volume.volume_name_pvc }}'
-       {{ end }}

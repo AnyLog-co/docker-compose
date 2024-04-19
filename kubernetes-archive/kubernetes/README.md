@@ -25,12 +25,12 @@ helm package anylog-node-volume
 
 The configuration file for each node consists of configurations for both the deployment and  associated volumes (optional). 
 They consist of the minimal amount of configurations needed to deploy an AnyLog node; similar  to the _training_ modules 
-in our Docker deployment. A full list of configuration options can be found in the [values.yaml](anylog-node/values.yaml).
+in our Docker deployment. A full list of configuration options can be found in the [values.yaml](../../kubernetes/anylog-node/values.yaml).
 
-* [Master Node](configs/anylog_master.yaml)
-* [Operator Node](configs/anylog_master.yaml)
-* [Query Node](configs/anylog_master.yaml)
-* [Publisher Node](configs/anylog_master.yaml)
+* [Master Node](../../kubernetes/configurations/anylog_master.yaml)
+* [Operator Node](../../kubernetes/configurations/anylog_master.yaml)
+* [Query Node](../../kubernetes/configurations/anylog_master.yaml)
+* [Publisher Node](../../kubernetes/configurations/anylog_master.yaml)
  
 
 4. Deploy Node 
