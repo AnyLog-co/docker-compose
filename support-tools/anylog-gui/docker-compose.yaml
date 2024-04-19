@@ -8,12 +8,12 @@ services:
     tty: true
     environment:
       - CONN_IP=0.0.0.0
-      - CONN_PORT=31900
+      - GUI_PORT=31900
       - CONFIG_FOLDER=/app/AnyLog-GUI/views
       - CONFIG_FILE=view.json
-    network_mode: host
-#    ports:
-#      - "31900:31900"
+#    network_mode: host
+    ports:
+      - "31900:31900"
     volumes:
       - anylog-gui:/app/AnyLog-GUI/views
 volumes:
