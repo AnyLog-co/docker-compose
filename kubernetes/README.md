@@ -24,7 +24,7 @@
 node_configs:
   general:
     # AnyLog License Key
-    LICENSE_KEY: ad5722d6a5694693ff3fa12301208358e05145280702c747a8c8c827d8054675314a68eb07908acf083473e2a183b93a74a3cd88829a092ea4e5b0504ac056b7374211c27ab5d42421028950c00750a5795996e996c2939f725e885b7a2f807d616d32cd2b6a906d740002a11c353f5ddcbd78d4fc3c90ef40d45e8f44b3932f{'company':'Customer','expiration':'2024-07-04','type':'beta'}
+    LICENSE_KEY: ""
     # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
     NODE_TYPE: master
     # Name of the AnyLog instance
@@ -38,7 +38,7 @@ node_configs:
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32049
     # Internal IP address of the machine the container is running on - if not set, then a unique IP will be used each time 
-    OVERLAY_IP: 10.0.0.251 
+    OVERLAY_IP: "" 
 
   blockchain:
     # TCP connection information for Master Node
