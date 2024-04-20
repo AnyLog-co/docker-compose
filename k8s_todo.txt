@@ -1,0 +1,4 @@
+1. License key - working
+2. network communication from outside k8s instance
+3. volumes
+
