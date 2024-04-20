@@ -14,10 +14,10 @@
 | Unique hostname / MAC address for every physical node | 
 | Disable swap on machine |  
 
-## Deploying Kubernetes and Configuring Nginx   
 
+## Deploy AnyLog
+0. Validate connectivity between machines in the network 
 
-## Deploy AnyLog 
 1. Select preferred [configurations](configurations/) and update values in `node_configs`
 ```yaml
 ...
@@ -45,40 +45,20 @@ node_configs:
     LEDGER_CONN: 127.0.0.1:32048
 ```
 
-2. Package AnyLog 
-```shell 
-helm package anylog-node
+2. Execute [deploy_node.sh](deploy_node.sh)
+* package AnyLog instance 
+```shell
+bash deploy_node.sh package
 ```
 
-3. Deploy AnyLog 
+* Start AnyLog based on configuration file - this will also enable port-forwarding against the node  
 ```shell
-helm install ./anylog-node-1.03.24.tgz -f configurations/anylog_master.yaml --name-template anylog-master 
+bash deploy_node. start configurations/${CONFIG_FILE} ${INTERNAL_IP_ADDRESS}
 ```
 
-4. Validate node is running 
+* Stop AnyLog instance and corresponding port-forwarding 
 ```shell
-AnyLog-Mac-mini ~ % kubectl get all 
-NAME                                            READY   STATUS    RESTARTS   AGE
-pod/anylog-master-deployment-7b4ff75fb7-mnsxf   1/1     Running   0          5m10s
-
-NAME                            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                           AGE
-service/anylog-master-service   NodePort    10.108.209.76   <none>        32048:32048/TCP,32049:32049/TCP   5m10s
-service/kubernetes              ClusterIP   10.96.0.1       <none>        443/TCP                           18h
-
-NAME                                       READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/anylog-master-deployment   1/1     1            1           5m10s
-
-NAME                                                  DESIRED   CURRENT   READY   AGE
-replicaset.apps/anylog-master-deployment-7b4ff75fb7   1         1         1       5m10s
-```
-
-5. For each port  in service - set port-forwarding 
-```shell
-kubectl port-forward pod/anylog-master-deployment-7b4ff75fb7-hsd7n [SERVICE_PORT]:[SERVICE_PORT] --address [INTERNAL_MACHINE_IP]
-
-# examples 
-kubectl port-forward pod/anylog-master-deployment-7b4ff75fb7-hsd7n 32048:32048 --address 10.0.0.251
-kubectl port-forward pod/anylog-master-deployment-7b4ff75fb7-hsd7n 32049:32049 --address 10.0.0.251
+bash deploy_node. stop configurations/${CONFIG_FILE} 
 ```
 
 ### Using Node
