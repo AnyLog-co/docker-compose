@@ -37,6 +37,9 @@ node_configs:
     ANYLOG_SERVER_PORT: 32048
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32049
+    # Internal IP address of the machine the container is running on - if not set, then a unique IP will be used each time
+    OVERLAY_IP: 10.0.0.251
+
 
   blockchain:
     # TCP connection information for Master Node

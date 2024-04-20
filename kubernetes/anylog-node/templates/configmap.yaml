@@ -25,7 +25,7 @@ data:
   ANYLOG_REST_PORT: '{{ .Values.node_configs.networking.ANYLOG_REST_PORT }}'
 
   # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
-  PROXY_IP: '{{ .Values.metadata.namespace }}.{{ .Values.metadata.service_name }}.svc.cluster.local'
+  OVERLAY_IP: '{{ .Values.node_configs.networking.OVERLAY_IP }}'
 
   # -- blockchain --
   LEDGER_CONN: '{{ .Values.node_configs.blockchain.LEDGER_CONN }}'

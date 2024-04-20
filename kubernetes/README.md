@@ -37,6 +37,8 @@ node_configs:
     ANYLOG_SERVER_PORT: 32048
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32049
+    # Internal IP address of the machine the container is running on - if not set, then a unique IP will be used each time 
+    OVERLAY_IP: 10.0.0.251 
 
   blockchain:
     # TCP connection information for Master Node
@@ -53,7 +55,7 @@ helm package anylog-node
 helm install ./anylog-node-1.03.24.tgz -f configurations/anylog_master.yaml --name-template anylog-master 
 ```
 
-Once the Node is up and running 
+4. Validate node is running 
 ```shell
 AnyLog-Mac-mini ~ % kubectl get all 
 NAME                                            READY   STATUS    RESTARTS   AGE
@@ -70,6 +72,16 @@ NAME                                                  DESIRED   CURRENT   READY 
 replicaset.apps/anylog-master-deployment-7b4ff75fb7   1         1         1       5m10s
 ```
 
+5. For each port  in service - set port-forwarding 
+```shell
+kubectl port-forward pod/anylog-master-deployment-7b4ff75fb7-hsd7n [SERVICE_PORT]:[SERVICE_PORT] --address [INTERNAL_MACHINE_IP]
+
+# examples 
+kubectl port-forward pod/anylog-master-deployment-7b4ff75fb7-hsd7n 32048:32048 --address 10.0.0.251
+kubectl port-forward pod/anylog-master-deployment-7b4ff75fb7-hsd7n 32049:32049 --address 10.0.0.251
+```
+
+### Using Node
 * Attach to AnyLog CLI   
 ```shell
 # to detach ctrl-p-q
