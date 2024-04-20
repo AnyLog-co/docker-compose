@@ -45,7 +45,7 @@ node_configs:
     LEDGER_CONN: 127.0.0.1:32048
 ```
 
-2. Execute [deploy_node.sh](deploy_node.sh)
+2. Deploy AnyLog using [deploy_node.sh](deploy_node.sh)
 * package AnyLog instance 
 ```shell
 bash deploy_node.sh package
