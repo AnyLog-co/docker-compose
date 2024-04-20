@@ -11,6 +11,8 @@ data:
   # -- INIT Type --
   INIT_TYPE: '{{ .Values.image.init_type }}'
   DISABLE_CLI: '{{ .Values.image.disable_cli }}'
+  # Inform system deployment is in Kubernetes format - this set the PROXY_IP value as a valid host
+  IS_KUBERNETES: 'true'
 
   # -- General --
   LICENSE_KEY: {{ .Values.node_configs.general.LICENSE_KEY }}
@@ -21,6 +23,9 @@ data:
   # -- Networking --
   ANYLOG_SERVER_PORT: '{{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}'
   ANYLOG_REST_PORT: '{{ .Values.node_configs.networking.ANYLOG_REST_PORT }}'
+
+  # Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
+  PROXY_IP: '{{ .Values.metadata.namespace }}.{{ .Values.metadata.service_name }}.svc.cluster.local'
 
   # -- blockchain --
   LEDGER_CONN: '{{ .Values.node_configs.blockchain.LEDGER_CONN }}'
