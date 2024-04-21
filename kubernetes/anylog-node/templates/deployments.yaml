@@ -32,8 +32,6 @@ spec:
             mountPath: /app/AnyLog-Network/blockchain
           - name: {{ .Values.metadata.app_name }}-data-volume
             mountPath: /app/AnyLog-Network/data
-          - name: my-volume
-            mountPath: /app/deployment-scripts
       imagePullSecrets:
       - name: {{ .Values.image.secret_name }}
       volumes:
@@ -46,6 +44,3 @@ spec:
         - name: {{ .Values.metadata.app_name }}-data-volume
           persistentVolumeClaim:
             claimName: {{ .Values.metadata.app_name }}-data-pvc
-        - name: my-volume
-          persistentVolumeClaim:
-            claimName: my-pvc
