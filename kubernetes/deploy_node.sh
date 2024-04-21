@@ -42,6 +42,11 @@ fi
 if [[ ${CMD} == package ]] ; then
   helm package anylog-node/
 elif [[ ${CMD} == start ]] ; then
+  if [[ ! -f ./${IMAGE_NAME}-${IMAGE_VERSION}.tgz ]] ; then
+    echo "Error failed to locate deployment package: ./${IMAGE_NAME}-${IMAGE_VERSION}.tgz"
+    exit 1
+  fi
+  helm install ./anylog-node-volumes-0.0.0.tgz -f ${CONFIG_FILE} --name-template ${APP_NAME}-volume
   helm install ./${IMAGE_NAME}-${IMAGE_VERSION}.tgz -f ${CONFIG_FILE} --name-template ${APP_NAME}
   echo "Waiting for the pod to be in the 'Running' state..."
   while true; do

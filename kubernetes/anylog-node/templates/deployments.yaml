@@ -25,5 +25,22 @@ spec:
             name: {{ .Values.metadata.configmap_name }}
         tty: true
         stdin: true
+        volumeMounts:
+          - name: {{ .Values.metadata.app_name }}-anylog-volume
+            mountPath: /app/AnyLog-Network/anylog
+          - name: {{ .Values.metadata.app_name }}-blockchain-volume
+            mountPath: /app/AnyLog-Network/blockchain
+          - name: {{ .Values.metadata.app_name }}-data-volume
+            mountPath: /app/AnyLog-Network/data
       imagePullSecrets:
       - name: {{ .Values.image.secret_name }}
+      volumes:
+        - name: {{ .Values.metadata.app_name }}-anylog-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.metadata.app_name }}-anylog-pvc
+        - name: {{ .Values.metadata.app_name }}-blockchain-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.metadata.app_name }}-blockchain-pvc
+        - name: {{ .Values.metadata.app_name }}-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.metadata.app_name }}-data-pvc
