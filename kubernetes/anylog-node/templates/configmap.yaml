@@ -38,7 +38,7 @@ data:
   {{ end }}
 
   # -- Networking --
-  {{- if ne  .Values.node_configs.networking.OVERLAY_IP }}
+  {{- if ne  .Values.node_configs.networking.OVERLAY_IP "" }}
   OVERLAY_IP: '{{ .Values.node_configs.networking.OVERLAY_IP }}'
   {{ end }}
   ANYLOG_SERVER_PORT: '{{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}'
@@ -51,7 +51,7 @@ data:
   {{- if ne .Values.node_configs.database.DB_USER "" }}
   DB_USER: '{{ .Values.node_configs.database.DB_USER }}'
   {{ end }}
-  {{ - if ne .Values.node_configs.database.DB_PASSWD "" }}
+  {{- if ne .Values.node_configs.database.DB_PASSWD "" }}
   DB_PASSWD: '{{ .Values.node_configs.database.DB_PASSWD }}'
   {{ end }}
   DB_IP: '{{ .Values.node_configs.database.DB_IP }}'
@@ -66,7 +66,7 @@ data:
   {{- if ne .Values.node_configs.database.NOSQL_USER "" }}
   NOSQL_USER: '{{ .Values.node_configs.database.NOSQL_USER }}'
   {{ end }}
-  {{ - if ne .Values.node_configs.database.NOSQL_PASSWD "" }}
+  {{- if ne .Values.node_configs.database.NOSQL_PASSWD "" }}
   NOSQL_PASSWD: '{{ .Values.node_configs.database.DB_PASSWD }}'
   {{ end }}
   NOSQL_IP: '{{ .Values.node_configs.database.NOSQL_IP }}'
@@ -83,11 +83,13 @@ data:
   # -- operator ---
   CLUSTER_NAME: '{{ .Values.node_configs.operator.CLUSTER_NAME }}'
   DEFAULT_DBMS: '{{ .Values.node_configs.operator.DEFAULT_DBMS }}'
-  {{ - if ne .Values.node_configs.operator.MEMBER "" }}
+  {{- if ne .Values.node_configs.operator.MEMBER "" }}
   MEMBER: '{{ .Values.node_configs.operator.MEMBER }}'
   {{ end }}
   START_DATE: '{{ .Values.node_configs.operator.START_DATE }}'
-  TABLE_NAME: {{ .Values.node_configs.operator.TABLE_NAME }}
+  {{- if ne .Values.node_configs.operator.TABLE_NAME "" }}
+  TABLE_NAME: '{{ .Values.node_configs.operator.TABLE_NAME }}'
+  {{ end }}
   PARTITION_COLUMN: '{{ .Values.node_configs.operator.PARTITION_COLUMN }}'
   PARTITION_INTERVAL: '{{ .Values.node_configs.operator.PARTITION_INTERVAL }}'
   PARTITION_KEEP: '{{ .Values.node_configs.operator.PARTITION_KEEP }}'
