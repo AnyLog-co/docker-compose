@@ -51,12 +51,12 @@ node_configs:
 bash deploy_node.sh package
 ```
 
-* Start AnyLog based on configuration file - this will also enable port-forwarding against the node  
+* Start AnyLog based on configuration file - this will also start the volumes and enable port-forwarding against the node  
 ```shell
 bash deploy_node. start configurations/${CONFIG_FILE} ${INTERNAL_IP_ADDRESS}
 ```
 
-* Stop AnyLog instance and corresponding port-forwarding 
+* Stop AnyLog instance and corresponding port-forwarding, it will not remove volumes 
 ```shell
 bash deploy_node. stop configurations/${CONFIG_FILE} 
 ```
@@ -68,10 +68,12 @@ bash deploy_node. stop configurations/${CONFIG_FILE}
 kubectl attach -it pod/anylog-master-deployment-7b4ff75fb7-mnsxf 
 ```
 
-* Attach to exec of pod 
+* Attach to the shell interface of the node  
 ```shell
 # to detach ctrl-p-q
 kubectl exec -it pod/anylog-master-deployment-7b4ff75fb7-mnsxf -- /bin/bash  
 ```
+
+## Networking and Volume management 
 
 
