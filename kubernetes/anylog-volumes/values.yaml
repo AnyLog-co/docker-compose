@@ -1,0 +1,51 @@
+metadata:
+  # Kubernetes Instance namespace
+  namespace: default
+  # hostname for deployment
+  hostname: anylog-node
+  # deployment application name / Name of the AnyLog instance
+  app_name: anylog-node
+  service_name: anylog-node-service
+  # Configuration file mapping name
+  configmap_name: anylog-node-configmap
+  # Allows running Kubernetes remotely. If commented out, code will ignore it
+  node_selector: ""
+
+image:
+  # Image secret naming
+  secret_name: imagepullsecret
+  # (Docker Hub) Image Path
+  repository: anylogco/anylog-network
+  # Image version
+  tag: 1.3.2404-arm64
+  # Image pulling policy
+  pull_policy: Always # IfNotPresent
+  # whether to deploy AnyLog (prod) or a linux cli (bash) with AnyLog installed, but not running
+  init_type: prod
+  # disable AnyLog's CLI
+  disable_cli: false
+
+node_configs:
+  general:
+    # AnyLog License Key
+    LICENSE_KEY: ''
+    # Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
+    NODE_TYPE: node
+    # Name of the AnyLog instance
+    NODE_NAME: anylog-node
+    # Owner of the Anylog instance
+    COMPANY_NAME: New Company
+
+  networking:
+    # Check whether this is a kubernetes instance or not
+    IS_KUBERNETES: true
+    # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
+    ANYLOG_SERVER_PORT: 32548
+    # Port address used by AnyLog's REST protocol
+    ANYLOG_REST_PORT: 32549
+    # Internal IP address of the machine the container is running on - if not set, then a unique IP will be used each time
+    OVERLAY_IP: ""
+
+  blockchain:
+    # TCP connection information for Master Node
+    LEDGER_CONN: 127.0.0.1:32048

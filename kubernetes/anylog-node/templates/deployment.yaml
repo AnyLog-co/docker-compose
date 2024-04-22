@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.metadata.hostname }}-deployment
+  namespace: {{ .Values.metadata.namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.metadata.app_name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.metadata.app_name }}
+    spec:
+      containers:
+      - name: {{ .Values.metadata.hostname }}-container
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pull_policy }}
+        ports:
+        - containerPort: {{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}
+        - containerPort: {{ .Values.node_configs.networking.ANYLOG_REST_PORT }}
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.metadata.configmap_name }}
+        tty: true
+        stdin: true
+        volumeMounts:
+          - name: {{ .Values.metadata.app_name }}-anylog-volume
+            mountPath: /app/AnyLog-Network/anylog
+          - name: {{ .Values.metadata.app_name }}-blockchain-volume
+            mountPath: /app/AnyLog-Network/blockchain
+          - name: {{ .Values.metadata.app_name }}-data-volume
+            mountPath: /app/AnyLog-Network/data
+          - name: {{ .Values.metadata.app_name }}-local-scripts-volume
+            mountPath: /app/deployment-scripts
+      imagePullSecrets:
+      - name: {{ .Values.image.secret_name }}
+      volumes:
+        - name: {{ .Values.metadata.app_name }}-anylog-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.metadata.app_name }}-anylog-pvc
+        - name: {{ .Values.metadata.app_name }}-blockchain-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.metadata.app_name }}-blockchain-pvc
+        - name: {{ .Values.metadata.app_name }}-data-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.metadata.app_name }}-data-pvc
+        - name: {{ .Values.metadata.app_name }}-local-scripts-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.metadata.app_name }}-local-scripts-pvc
