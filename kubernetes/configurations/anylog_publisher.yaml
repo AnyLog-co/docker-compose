@@ -39,10 +39,15 @@ node_configs:
     ANYLOG_REST_PORT: 32249
     # Internal IP address of the machine the container is running on - if not set, then a unique IP will be used each time
     OVERLAY_IP: ""
+    # Port value to be used as an MQTT broker, or some other third-party broker
+    ANYLOG_BROKER_PORT: ""
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
     TCP_BIND: false
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
     REST_BIND: false
+    # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+    BROKER_BIND: false
+
 
   database:
     # Physical database type (sqlite or psql)

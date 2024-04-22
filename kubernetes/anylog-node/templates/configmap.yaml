@@ -41,10 +41,17 @@ data:
   {{- if ne  .Values.node_configs.networking.OVERLAY_IP "" }}
   OVERLAY_IP: '{{ .Values.node_configs.networking.OVERLAY_IP }}'
   {{ end }}
+
   ANYLOG_SERVER_PORT: '{{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}'
   ANYLOG_REST_PORT: '{{ .Values.node_configs.networking.ANYLOG_REST_PORT }}'
+  {{- if .Values.node_configs.networking.ANYLOG_BROKER_PORT }}
+  ANYLOG_BROKER_PORT: '{{ .Values.node_configs.networking.ANYLOG_BROKER_PORT }}'
+  {{ end }}
+
   TCP_BIND: '{{ .Values.node_configs.networking.TCP_BIND }}'
   REST_BIND: '{{ .Values.node_configs.networking.REST_BIND }}'
+  BROKER_BIND: '{{ .Values.node_configs.networking.BROKER_BIND }}'
+
 
   # -- Database --
   DB_TYPE: '{{ .Values.node_configs.database.DB_TYPE }}'

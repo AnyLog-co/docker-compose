@@ -62,7 +62,7 @@ node_configs:
 
   blockchain:
     # TCP connection information for Master Node
-    LEDGER_CONN: 127.0.0.1:32048
+    LEDGER_CONN: 10.0.0.251:32048
 
   advanced:
     # Whether to automatically run a local (or personalized) script at the end of the process

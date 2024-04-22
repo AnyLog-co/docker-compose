@@ -32,6 +32,7 @@ if [[ -n ${CONFIG_FILE} ]] && [[ -f ${CONFIG_FILE} ]] ; then
   APP_NAME=`cat ${CONFIG_FILE} | grep app_name | awk -F ":" '{print $2}' | awk '{gsub(" ", ""); print}'`
   ANYLOG_SERVER_PORT=`cat ${CONFIG_FILE} | grep SERVER_PORT  | awk -F ":" '{print $2}' | awk '{gsub(" ", ""); print}'`
   ANYLOG_REST_PORT=`cat ${CONFIG_FILE} | grep REST_PORT  | awk -F ":" '{print $2}' | awk '{gsub(" ", ""); print}'`
+  ANYLOG_BROKER_PORT=`cat ${CONFIG_FILE} | grep BROKER_PORT  | awk -F ":" '{print $2}' | awk '{gsub(" ", ""); print}'`
   SERVICE_NAME=`cat ${CONFIG_FILE} | grep service_name  | awk -F ":" '{print $2}' | awk '{gsub(" ", ""); print}'`
   NAMESPACE=`cat ${CONFIG_FILE} | grep namespace  | awk -F ":" '{print $2}' | awk '{gsub(" ", ""); print}'`
 elif [[ -n ${CONFIG_FILE} ]] && [[ ! -f ${CONFIG_FILE} ]] ; then
@@ -62,12 +63,21 @@ elif [[ ${CMD} == start ]] ; then
   if [[ -n ${INTERNAL_IP} ]] ; then
     kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT} --address=${INTERNAL_IP} > "$HOME/port_${HOSTNAME}_${ANYLOG_SERVER_PORT}.log" 2>&1 &
     kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT} --address=${INTERNAL_IP} > "$HOME/port_${HOSTNAME}_${ANYLOG_REST_PORT}.log" 2>&1 &
+    if [[ ${ANYLOG_BROKER_PORT} ]] ; then
+      kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT} --address=${INTERNAL_IP} > "$HOME/port_${HOSTNAME}_${ANYLOG_BROKER_PORT}.log" 2>&1 &
+    fi
   else
     kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT} > "$HOME/port_${HOSTNAME}_${ANYLOG_SERVER_PORT}.log" 2>&1 &
     kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}  > "$HOME/port_${HOSTNAME}_${ANYLOG_REST_PORT}.log" 2>&1 &
+    if [[ ${ANYLOG_BROKER_PORT} ]] ; then
+      kubectl port-forward -n ${NAMESPACE} service/${SERVICE_NAME} ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT} > "$HOME/port_${HOSTNAME}_${ANYLOG_BROKER_PORT}.log" 2>&1 &
+    fi
   fi
 elif [[ ${CMD} == stop ]] ; then
   helm delete ${APP_NAME}
   kill -15 `ps -ef | grep port-forward | grep ${ANYLOG_SERVER_PORT} | awk -F " " '{print $2}'`
   kill -15 `ps -ef | grep port-forward | grep ${ANYLOG_REST_PORT} | awk -F " " '{print $2}'`
+  if [[ ${ANYLOG_BROKER_PORT} ]] ; then
+    kill -15 `ps -ef | grep port-forward | grep ${ANYLOG_BROKER_PORT} | awk -F " " '{print $2}'`
+  fi
 fi
