@@ -30,6 +30,7 @@ to predefine the services for each Pod.
 0. Validate connectivity between machines in the network 
 
 1. Select preferred [configurations](configurations/) and update values in `node_configs`
+
 **Note**: In the configurations below, the value of `LEDGER_CONN` needs to be the  TCP connection information that can 
 reach the master node.
 ```yaml
