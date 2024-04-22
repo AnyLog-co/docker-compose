@@ -35,8 +35,9 @@ bash secret.sh [DOCKER_LOGIN]
 ```
 2. Select preferred [configurations](configurations/) and update values in `node_configs`
 
-**Note**: In the configurations below, the value of `LEDGER_CONN` needs to be the  TCP connection information that can 
-reach the master node.
+**Note**: In the configurations below, the value of `LEDGER_CONN` needs  to be the  TCP connection information that can 
+reach the master node. The same logic is also applied when connecting to external databases, such as PostgresSQL and 
+MongoDB.
 ```yaml
 ...
   directories:
@@ -77,14 +78,14 @@ reach the master node.
     ANYLOG_SERVER_PORT: 32548
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32549
-#    # Port value to be used as an MQTT broker, or some other third-party broker
-#    ANYLOG_BROKER_PORT: ""
+    # Port value to be used as an MQTT broker, or some other third-party broker
+    ANYLOG_BROKER_PORT: ""
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
     TCP_BIND: false
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
     REST_BIND: false
-#    # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-#    BROKER_BIND: false
+    # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+    BROKER_BIND: false
 
     # Advanced configs for networking
     # Declare Policy name
