@@ -1,7 +1,16 @@
 # Kubernetes 
 
-## Requirements 
-* [Kubernetes Cluster manager](https://kubernetes.io/docs/tasks/tools/) - we use Minikube with [HyperKit](https://minikube.sigs.k8s.io/docs/drivers/hyperkit/) / [HyperV](https://minikube.sigs.k8s.io/docs/drivers/hyperv/) driver 
+AnyLog's Kubernetes deployment is based on the utilization of minikube, and helm. It is intended as a primitive 
+configuration, in order to allow for users to configure the AnyLog deployment(s) uniquely for their own needs / Kubernetes
+setup. 
+
+* [Requirements](#requirements)
+* [Deploying AnyLog](#deploy-anylog)
+    * [Validate Connectivity](#using-node)
+* [Network & Volume Configuration](#networking-and-volume-management)
+
+## Requirements
+* [Kubernetes Cluster manager](https://kubernetes.io/docs/tasks/tools/) - we use Minikube with [Docker](https://minikube.sigs.k8s.io/docs/drivers/docker/) 
 * [helm](https://helm.sh/)
 * [kubectl](https://kubernetes.io/docs/reference/kubectl/)
 * Hardware Requirements - based on [official documentation](https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#before-you-begin)
@@ -51,7 +60,7 @@ node_configs:
 bash deploy_node.sh package
 ```
 
-* Start AnyLog based on configuration file - this will also start the volumes and enable port-forwarding against the node  
+* [Start AnyLog](deploy_node.sh) based on configuration file - this will also start the volumes and enable port-forwarding against the node  
 ```shell
 bash deploy_node. start configurations/${CONFIG_FILE} ${INTERNAL_IP_ADDRESS}
 ```
@@ -74,6 +83,7 @@ kubectl attach -it pod/anylog-master-deployment-7b4ff75fb7-mnsxf
 kubectl exec -it pod/anylog-master-deployment-7b4ff75fb7-mnsxf -- /bin/bash  
 ```
 
-## Networking and Volume management 
+## Networking and Volume management
+
 
 
