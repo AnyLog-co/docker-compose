@@ -29,7 +29,11 @@ to predefine the services for each Pod.
 ## Deploy AnyLog
 0. Validate connectivity between machines in the network 
 
-1. Select preferred [configurations](configurations/) and update values in `node_configs`
+1. Sign into AnyLog's docker repo - [Docker login credentials and license](https://anylog.co/download)  
+```shell
+bash secret.sh [DOCKER_LOGIN]
+```
+2. Select preferred [configurations](configurations/) and update values in `node_configs`
 
 **Note**: In the configurations below, the value of `LEDGER_CONN` needs to be the  TCP connection information that can 
 reach the master node.
@@ -207,7 +211,7 @@ reach the master node.
     THRESHOLD_VOLUME: 10KB
 ```
 
-2. Deploy AnyLog using [deploy_node.sh](deploy_node.sh)
+3. Deploy AnyLog using [deploy_node.sh](deploy_node.sh)
 * package AnyLog instance 
 ```shell
 bash deploy_node.sh package
