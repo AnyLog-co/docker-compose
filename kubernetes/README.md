@@ -152,8 +152,8 @@ MongoDB.
     MEMBER: ""
     # How many days back to sync between nodes
     START_DATE: 30
-    # Which tables to partition
-    TABLE_NAME: *
+    # Which tables to partition - In the code, the default value is all tables associated with logical database
+    TABLE_NAME: ""
     # Which timestamp column to partition by
     PARTITION_COLUMN: insert_timestamp
     # Time period to partition by

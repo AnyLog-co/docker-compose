@@ -30,7 +30,7 @@ node_configs:
     # AnyLog Root Path
     ANYLOG_PATH: /app
     # !local_scripts: ${ANYLOG_HOME}/deployment-scripts/scripts
-    LOCAL_SCRIPTS: /app/deployment-scripts/scripts
+    LOCAL_SCRIPTS: /app/deployment-scripts/node-deployment
     # !test_dir: ${ANYLOG_HOME}/deployment-scripts/tests
     TEST_DIR: /app/deployment-scripts/tests
 
@@ -64,14 +64,14 @@ node_configs:
     ANYLOG_SERVER_PORT: 32548
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32549
-#    # Port value to be used as an MQTT broker, or some other third-party broker
-#    ANYLOG_BROKER_PORT: ""
+    # Port value to be used as an MQTT broker, or some other third-party broker
+    ANYLOG_BROKER_PORT: ""
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
     TCP_BIND: false
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
     REST_BIND: false
-#    # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-#    BROKER_BIND: false
+    # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+    BROKER_BIND: false
 
     # Advanced configs for networking
     # Declare Policy name
@@ -105,7 +105,7 @@ node_configs:
     # Whether to start system_query logical database
     SYSTEM_QUERY: false
     # Run system_query using in-memory SQLite. If set to false, will use pre-set database type
-    MEMORY: false
+    MEMORY: true
     # Physical database type
     NOSQL_TYPE: mongo
     # Username for SQL database connection
@@ -142,8 +142,8 @@ node_configs:
     MEMBER: ""
     # How many days back to sync between nodes
     START_DATE: 30
-    # Which tables to partition
-    TABLE_NAME: "*"
+    # Which tables to partition - In the code, the default value is all tables associated with logical database
+    TABLE_NAME: ""
     # Which timestamp column to partition by
     PARTITION_COLUMN: insert_timestamp
     # Time period to partition by
