@@ -38,8 +38,34 @@ node_configs:
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32349
     # Internal IP address of the machine the container is running on - if not set, then a unique IP will be used each time
-    OVERLAY_IP: 10.0.0.251
+    OVERLAY_IP: ""
+    # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+    TCP_BIND: false
+    # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
+    REST_BIND: false
+
+  database:
+    # Physical database type (sqlite or psql)
+    DB_TYPE: sqlite
+    # Username for SQL database connection
+    DB_USER: ""
+    # Password correlated to database user
+    DB_PASSWD: ""
+    # Database IP address
+    DB_IP: 127.0.0.1
+    # Database port number
+    DB_PORT: 5432
+    # Whether to set autocommit data
+    AUTOCOMMIT: false
+    # Whether to enable NoSQL logical database
+    ENABLE_NOSQL: false
 
   blockchain:
-    # TCP connection information for query Node
-    LEDGER_CONN: 10.0.0.251:32048
+    # TCP connection information for Master Node
+    LEDGER_CONN: 127.0.0.1:32048
+
+  advanced:
+    # Whether to automatically run a local (or personalized) script at the end of the process
+    DEPLOY_LOCAL_SCRIPT: false
+    # Whether to monitor the node or not
+    MONITOR_NODES: false
