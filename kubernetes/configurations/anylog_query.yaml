@@ -38,7 +38,7 @@ node_configs:
     # Port address used by AnyLog's REST protocol
     ANYLOG_REST_PORT: 32349
     # Internal IP address of the machine the container is running on - if not set, then a unique IP will be used each time
-    OVERLAY_IP: ""
+    OVERLAY_IP: 10.0.0.228
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
     TCP_BIND: false
     # A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
