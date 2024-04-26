@@ -41,6 +41,7 @@ data:
   {{- if ne  .Values.node_configs.networking.OVERLAY_IP "" }}
   OVERLAY_IP: '{{ .Values.node_configs.networking.OVERLAY_IP }}'
   {{ end }}
+  PROXY_IP: '{{ .Values.metadata.namespace}}.{{ .Values.metadata.service_name }}.svc.cluster.local'
 
   ANYLOG_SERVER_PORT: '{{ .Values.node_configs.networking.ANYLOG_SERVER_PORT }}'
   ANYLOG_REST_PORT: '{{ .Values.node_configs.networking.ANYLOG_REST_PORT }}'
