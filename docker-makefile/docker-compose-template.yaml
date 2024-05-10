@@ -7,10 +7,10 @@ services:
 #    stdin_open: true
 #    tty: true
 #    ports:
-#      - ${CLI_PORT}:${CLI_PORT}
+#      - 31800:31800
 #    environment:
-#      - CONN_IP=${CONN_IP}
-#      - CLI_PORT=${CLI_PORT}
+#      - CONN_IP=0.0.0.0
+#      - CLI_PORT=31800
 #    volumes:
 #      - remote-cli:/app/Remote-CLI/djangoProject/static/json
 #      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
