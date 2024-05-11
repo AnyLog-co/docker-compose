@@ -5,9 +5,9 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	ANYLOG_PATH = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2404
+export TAG := 1.3.2405
 ifeq ($(shell uname -m), arm64)
-	export TAG := latest-arm64
+	export TAG := 1.3.2405-arm64
 endif
 
 #export ANYLOG_PATH := $(shell cat docker-makefile/$(ANYLOG_PATH)/advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $2}')
