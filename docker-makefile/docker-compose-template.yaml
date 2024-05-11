@@ -18,8 +18,8 @@ services:
     image: anylogco/anylog-network:${TAG}
     restart: always
     env_file:
-      - ${ANYLOG_TYPE}/base_configs.env
-      - ${ANYLOG_TYPE}/advance_configs.env
+      - ${ANYLOG_PATH}/base_configs.env
+      - ${ANYLOG_PATH}/advance_configs.env
       - .env
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
