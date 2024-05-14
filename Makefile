@@ -5,7 +5,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	ANYLOG_PATH = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2405
+export TAG := 1.3.2405-arm64
 ifeq ($(shell uname -m), arm64)
 	export TAG := 1.3.2405-arm64
 endif
