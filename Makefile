@@ -5,7 +5,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	ANYLOG_PATH = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2405-arm64
+export TAG := 1.3.2405
 ifeq ($(shell uname -m), arm64)
 	export TAG := 1.3.2405-arm64
 endif
@@ -18,6 +18,9 @@ login:
 	@docker login -u anyloguser --password $(ANYLOG_PATH)
 build:
 	docker pull anylogco/anylog-network:$(TAG)
+dry-run:
+	@echo "Dry Run $(ANYLOG_PATH)}"
+	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE)  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
 up:
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE)  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml

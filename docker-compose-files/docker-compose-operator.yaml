@@ -1,0 +1,42 @@
+#version: "3"
+services:
+#  remote-cli:
+#    image: anylogco/remote-cli:latest
+#    container_name: remote-cli
+#    restart: always
+#    stdin_open: true
+#    tty: true
+#    ports:
+#      - 31800:31800
+#    environment:
+#      - CONN_IP=0.0.0.0
+#      - CLI_PORT=31800
+#    volumes:
+#      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+#      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+  anylog-operator:
+    image: anylogco/anylog-network:1.3.2405
+    restart: always
+    env_file:
+      -  ../docker-makefile/operator-configs/base_configs.env
+      - ../docker-makefile/operator-configs/advance_configs.env
+      - .env
+    container_name: anylog-operator
+    stdin_open: true
+    tty: true
+    network_mode: host
+    volumes:
+      - anylog-operator-anylog:/app/AnyLog-Network/anylog
+      - anylog-operator-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-operator-data:/app/AnyLog-Network/data
+      - anylog-operator-local-scripts:/app/deployment-scripts
+      - anylog-operator-nebula:/app/AnyLog-Network/nebula
+#      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+volumes:
+  anylog-operator-anylog:
+  anylog-operator-blockchain:
+  anylog-operator-data:
+  anylog-operator-local-scripts:
+  anylog--nebula:
+#  remote-cli:
+#  remote-cli-current:
