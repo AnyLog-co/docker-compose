@@ -37,6 +37,6 @@ volumes:
   anylog-operator-blockchain:
   anylog-operator-data:
   anylog-operator-local-scripts:
-  anylog--nebula:
+  anylog-operator-nebula:
 #  remote-cli:
 #  remote-cli-current:
