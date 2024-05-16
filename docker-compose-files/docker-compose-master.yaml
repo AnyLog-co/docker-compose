@@ -37,6 +37,6 @@ volumes:
   anylog-master-blockchain:
   anylog-master-data:
   anylog-master-local-scripts:
-  anylog--nebula:
+  anylog-master-nebula:
 #  remote-cli:
 #  remote-cli-current:
