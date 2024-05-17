@@ -20,11 +20,15 @@ services:
     env_file:
       -  ../docker-makefile/operator-configs/base_configs.env
       - ../docker-makefile/operator-configs/advance_configs.env
-      - .env
+      - ../docker-makefile/.env
     container_name: anylog-operator
     stdin_open: true
     tty: true
-    network_mode: host
+    network_mode: bridge
+    ports:
+      - 32148:32148
+      - 32149:32149
+      - 32150:32150
     volumes:
       - anylog-operator-anylog:/app/AnyLog-Network/anylog
       - anylog-operator-blockchain:/app/AnyLog-Network/blockchain
@@ -37,6 +41,6 @@ volumes:
   anylog-operator-blockchain:
   anylog-operator-data:
   anylog-operator-local-scripts:
-  anylog--nebula:
+  anylog-operator-nebula:
 #  remote-cli:
 #  remote-cli-current:

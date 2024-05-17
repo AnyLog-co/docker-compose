@@ -37,6 +37,6 @@ volumes:
   anylog-${ANYLOG_TYPE}-blockchain:
   anylog-${ANYLOG_TYPE}-data:
   anylog-${ANYLOG_TYPE}-local-scripts:
-  anylog-${NODE_TYPE}-nebula:
+  anylog-${ANYLOG_TYPE}-nebula:
 #  remote-cli:
 #  remote-cli-current:

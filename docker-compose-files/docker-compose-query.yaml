@@ -6,6 +6,7 @@ services:
     restart: always
     stdin_open: true
     tty: true
+    network_mode: bridge
     ports:
       - 31800:31800
     environment:
@@ -20,11 +21,14 @@ services:
     env_file:
       -  ../docker-makefile/query-configs/base_configs.env
       - ../docker-makefile/query-configs/advance_configs.env
-      - .env
+      - ../docker-makefile/.env
     container_name: anylog-query
     stdin_open: true
     tty: true
-    network_mode: host
+    network_mode: bridge
+    ports:
+      - 32348:32348
+      - 32349:32349
     volumes:
       - anylog-query-anylog:/app/AnyLog-Network/anylog
       - anylog-query-blockchain:/app/AnyLog-Network/blockchain
@@ -37,6 +41,6 @@ volumes:
   anylog-query-blockchain:
   anylog-query-data:
   anylog-query-local-scripts:
-  anylog--nebula:
+  anylog-query-nebula:
   remote-cli:
   remote-cli-current:
