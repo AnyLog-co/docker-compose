@@ -24,7 +24,11 @@ services:
     container_name: anylog-operator
     stdin_open: true
     tty: true
-    network_mode: host
+    network_mode: bridge
+    ports:
+      - 32148:32148
+      - 32149:32149
+      - 32150:32150
     volumes:
       - anylog-operator-anylog:/app/AnyLog-Network/anylog
       - anylog-operator-blockchain:/app/AnyLog-Network/blockchain

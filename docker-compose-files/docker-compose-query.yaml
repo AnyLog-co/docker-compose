@@ -6,6 +6,7 @@ services:
     restart: always
     stdin_open: true
     tty: true
+    network_mode: bridge
     ports:
       - 31800:31800
     environment:
@@ -24,7 +25,10 @@ services:
     container_name: anylog-query
     stdin_open: true
     tty: true
-    network_mode: host
+    network_mode: bridge
+    ports:
+      - 32348:32348
+      - 32349:32349
     volumes:
       - anylog-query-anylog:/app/AnyLog-Network/anylog
       - anylog-query-blockchain:/app/AnyLog-Network/blockchain
