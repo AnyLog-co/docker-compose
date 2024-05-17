@@ -24,7 +24,8 @@ services:
     container_name: anylog-master
     stdin_open: true
     tty: true
-    network_mode: host
+    # network_mode: host
+    networks: my_overlay_network 
     volumes:
       - anylog-master-anylog:/app/AnyLog-Network/anylog
       - anylog-master-blockchain:/app/AnyLog-Network/blockchain
@@ -32,6 +33,9 @@ services:
       - anylog-master-local-scripts:/app/deployment-scripts
       - anylog-master-nebula:/app/AnyLog-Network/nebula
 #      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+networks: 
+   my_overlay_network:
+      external: true
 volumes:
   anylog-master-anylog:
   anylog-master-blockchain:
