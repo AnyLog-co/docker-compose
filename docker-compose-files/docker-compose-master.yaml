@@ -20,7 +20,7 @@ services:
     env_file:
       -  ../docker-makefile/master-configs/base_configs.env
       - ../docker-makefile/master-configs/advance_configs.env
-      - .env
+      - ../docker-makefile/.env
     container_name: anylog-master
     stdin_open: true
     tty: true

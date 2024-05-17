@@ -20,7 +20,7 @@ services:
     env_file:
       -  ../docker-makefile/query-configs/base_configs.env
       - ../docker-makefile/query-configs/advance_configs.env
-      - .env
+      - ../docker-makefile/.env
     container_name: anylog-query
     stdin_open: true
     tty: true
@@ -37,6 +37,6 @@ volumes:
   anylog-query-blockchain:
   anylog-query-data:
   anylog-query-local-scripts:
-  anylog--nebula:
+  anylog-query-nebula:
   remote-cli:
   remote-cli-current:
