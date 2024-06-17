@@ -8,7 +8,7 @@ sudo apt-get -y install podman podman-compose
 
 2. Update registry information in `/etc/containers/registries.conf`
 ```editorconfig
-unqualified-search-registries = ["registry.fedoraproject.org", "registry.access.redhat.com", "quay.io", "registry.redhat.io", "docker.io"]
+unqualified-search-registries = ["docker.io"]
 ```
 
 3. Restart podman
