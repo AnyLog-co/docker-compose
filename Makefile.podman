@@ -17,7 +17,7 @@ all: help
 login:
 	@podman login -u anyloguser --password $(ANYLOG_PATH)
 build:
-	docker pull anylogco/anylog-network:$(TAG)
+	podman pull anylogco/anylog-network:$(TAG)
 dry-run:
 	@echo "Dry Run $(ANYLOG_PATH)}"
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE)  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
