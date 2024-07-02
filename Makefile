@@ -6,15 +6,15 @@ else
 	ANYLOG_PATH = generic
 endif
 
-export TAG := 1.3.2405-beta6
+export TAG := 1.3.2405
 ifeq ($(shell uname -m), arm64)
 	export TAG := 1.3.2405-arm64
 endif
 
-export ANYLOG_TYPE := $(shell grep NODE_TYPE docker-makefile/$(ANYLOG_PATH)-configs/base_configs.env | cut -d '=' -f 2)
+export ANYLOG_TYPE := $(shell grep NODE_TYPE docker-makefile/$(ANYLOG_PATH)/base_configs.env | cut -d '=' -f 2)
 
 # check if `docker-compose` or `docker compose`
-export DOCKER_COMPOSE := $(shell (docker compose version >/dev/null 2>&1 && echo "docker compose") || (docker-compose version >/dev/null 2>&1 && echo "docker-compose"))
+DOCKER_COMPOSE := $(shell (docker compose version &>/dev/null && echo "docker compose") || (docker-compose version &>/dev/null && echo "docker-compose"))
 
 all: help
 login:
