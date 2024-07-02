@@ -1,20 +1,17 @@
-#!/bin/Makefile
+# Makefile
 
+ANYLOG_PATH := generic
 ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	ANYLOG_PATH = $(filter-out $@,$(MAKECMDGOALS))
-else
-	ANYLOG_PATH = generic
 endif
 
-export TAG := 1.3.2405
+export TAG := 1.3.2405-beta10
 ifeq ($(shell uname -m), arm64)
 	export TAG := 1.3.2405-arm64
 endif
 
+#export ANYLOG_PATH := $(shell cat docker-makefile/$(ANYLOG_PATH)/advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $2}')
 export ANYLOG_TYPE := $(shell grep NODE_TYPE docker-makefile/$(ANYLOG_PATH)/base_configs.env | cut -d '=' -f 2)
-
-# check if `docker-compose` or `docker compose`
-DOCKER_COMPOSE := $(shell (docker compose version &>/dev/null && echo "docker compose") || (docker-compose version &>/dev/null && echo "docker-compose"))
 
 all: help
 login:
@@ -27,16 +24,16 @@ dry-run:
 up:
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE)  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	$(DOCKER_COMPOSE) -f docker-makefile/docker-compose.yaml up -d
+	@docker compose -f docker-makefile/docker-compose.yaml up -d
 	@rm -rf docker-makefile/docker-compose.yaml
 down:
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	$(DOCKER_COMPOSE) -f docker-makefile/docker-compose.yaml down
+	@docker compose -f docker-makefile/docker-compose.yaml down
 	@rm -rf docker-makefile/docker-compose.yaml
 clean:
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	$(DOCKER_COMPOSE) -f docker-makefile/docker-compose.yaml down
-	$(DOCKER_COMPOSE) -f docker-makefile/docker-compose.yaml down -v --rmi all
+	@docker compose -f docker-makefile/docker-compose.yaml down
+	@docker compose -f docker-makefile/docker-compose.yaml down -v --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
