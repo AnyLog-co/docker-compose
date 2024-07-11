@@ -5,7 +5,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 	ANYLOG_PATH = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2405
+export TAG := 1.3.2407
 ifeq ($(shell uname -m), arm64)
 	export TAG := 1.3.2405-arm64
 endif
@@ -21,16 +21,16 @@ build:
 up:
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE)  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	@docker compose -f docker-makefile/docker-compose.yaml up -d
+	@docker-compose -f docker-makefile/docker-compose.yaml up -d
 	@rm -rf docker-makefile/docker-compose.yaml
 down:
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	@docker compose -f docker-makefile/docker-compose.yaml down
+	@docker-compose -f docker-makefile/docker-compose.yaml down
 	@rm -rf docker-makefile/docker-compose.yaml
 clean:
 	ANYLOG_PATH=$(ANYLOG_PATH)  ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	@docker compose -f docker-makefile/docker-compose.yaml down
-	@docker compose -f docker-makefile/docker-compose.yaml down -v --rmi all
+	@docker-compose -f docker-makefile/docker-compose.yaml down
+	@docker-compose -f docker-makefile/docker-compose.yaml down -v --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
