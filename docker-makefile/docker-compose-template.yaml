@@ -1,4 +1,3 @@
-#version: "3"
 services:
 #  remote-cli:
 #    image: anylogco/remote-cli:latest
