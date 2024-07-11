@@ -1,4 +1,3 @@
-#version: "3"
 services:
 #  remote-cli:
 #    image: anylogco/remote-cli:latest
@@ -18,8 +17,8 @@ services:
     image: anylogco/anylog-network:${TAG}
     restart: always
     env_file:
-      - ${ANYLOG_PATH}/base_configs.env
-      - ${ANYLOG_PATH}/advance_configs.env
+      -  ../docker-makefile/${ANYLOG_TYPE}/base_configs.env
+      - ../docker-makefile/${ANYLOG_TYPE}/advance_configs.env
       - .env
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
@@ -30,13 +29,13 @@ services:
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
       - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
       - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
-      - anylog-${NODE_TYPE}-nebula:/app/AnyLog-Network/nebula
+      - nebula-overlay:/app/nebula
 #      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
   anylog-${ANYLOG_TYPE}-data:
   anylog-${ANYLOG_TYPE}-local-scripts:
-  anylog-${NODE_TYPE}-nebula:
+  nebula-overlay:
 #  remote-cli:
 #  remote-cli-current:
