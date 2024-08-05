@@ -1,0 +1,18 @@
+version: "2.2"
+services:
+  anylog-gui:
+    image: anylogco/edge-explorer:latest
+    container_name: anylog-gui
+    restart: always
+    stdin_open: true
+    tty: true
+    environment:
+      - CONN_IP=0.0.0.0
+      - GUI_PORT=31900
+      - CONFIG_FOLDER=/app/Edge-Explorer/views
+      - CONFIG_FILE=view.json
+    network_mode: host
+    volumes:
+      - anylog-gui:/app/Edge-Explorer/views
+volumes:
+  anylog-gui:
