@@ -6,7 +6,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
 endif
 
 
-export TAG := 1.3.2407-beta11
+export TAG := 1.3.2408
 ifeq ($(shell uname -m), arm64)
     TAG := 1.3.2405-arm64
 endif
