@@ -1,4 +1,18 @@
 services:
+  remote-cli:
+    image: anylogco/remote-cli:latest
+    container_name: remote-cli
+    restart: always
+    stdin_open: true
+    tty: true
+    ports:
+      - 31800:31800
+    environment:
+      - CONN_IP=0.0.0.0
+      - CLI_PORT=31800
+    volumes:
+      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
   anylog-${ANYLOG_TYPE}:
     image: anylogco/anylog-network:${TAG}
     restart: always
@@ -16,12 +30,12 @@ services:
       - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
       - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
       - nebula-overlay:/app/nebula
-      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+#      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
   anylog-${ANYLOG_TYPE}-data:
   anylog-${ANYLOG_TYPE}-local-scripts:
   nebula-overlay:
-  remote-cli:
-  remote-cli-current:
+#  remote-cli:
+#  remote-cli-current:
