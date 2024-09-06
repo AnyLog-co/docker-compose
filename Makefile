@@ -37,11 +37,11 @@ down: generate-docker-compose
 	@docker compose -f docker-makefile/docker-compose.yaml down
 	@rm -rf docker-makefile/docker-compose.yaml
 clean-vols: generate-docker-compose
-	@docker compose -f docker-makefile/docker-compose.yaml down --volume
+	@docker compose -f docker-makefile/docker-compose.yaml down --volumes
 	@rm -rf docker-makefile/docker-compose.yaml
 clean: generate-docker-compose
 	ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	@docker compose -f docker-makefile/docker-compose.yaml down --volumes --rmi
+	@docker compose -f docker-makefile/docker-compose.yaml down --volumes --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
