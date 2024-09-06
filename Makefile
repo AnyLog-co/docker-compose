@@ -5,9 +5,9 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
    export ANYLOG_TYPE = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2408-beta10
+export TAG := latest
 ifeq ($(shell uname -m), arm64)
-    TAG := 1.3.2405-arm64
+    TAG := latest-arm64
 endif
 
 export NODE_TYPE ?= 127.0.0.1
