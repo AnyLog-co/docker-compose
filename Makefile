@@ -18,8 +18,8 @@ all: help
 login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
-	@if [ "$(REMOTE_CLI)"  == true ]; then \
-		ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template-broker.yaml > docker-makefile/docker-compose.yaml; \
+	@if [ "$(REMOTE_CLI)" = "true" ]; then \
+		ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
 	else \
 		ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
 	fi
@@ -31,7 +31,7 @@ dry-run:
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml up -d
-	@rm -rf docker-makefile/docker-compose.yaml
+	# @rm -rf docker-makefile/docker-compose.yaml
 down: generate-docker-compose
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml down
