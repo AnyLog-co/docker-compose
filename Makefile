@@ -14,7 +14,7 @@ export NODE_TYPE ?= 127.0.0.1
 export ANYLOG_TYPE := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep NODE_TYPE | awk -F "=" '{print $$2}')
 export REST_PORT := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
 export EDGELAKE := $(shell cat docker-makefile/${ANYLOG_PATH}/advance_configs.env | grep EDGELAKE | awk -F "=" '{print $$2}')
-export REMOTE_CLI := $(shell cat docker-makefile/${ANYLOG_PATH}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
+export REMOTE_CLI := $(shell cat docker-makefile/${ANYLOG_PATH}/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
 
 all: help
 login:
