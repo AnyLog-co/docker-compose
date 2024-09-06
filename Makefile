@@ -20,11 +20,11 @@ all: help
 login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
-	@if [ "$(EDGELAKE)" == "true" ] && [ "$(REMOTE_CLI)" == "true" ] ; then \
+	@if [ "$(EDGELAKE)" = "true" ] && [ "$(REMOTE_CLI)" = "true" ] ; then \
   		ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template-edgelake-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
-  	elif [ "$(EDGELAKE)" == "true" ] ; then \
+  	elif [ "$(EDGELAKE)" = "true" ] ; then \
   		ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template-edgelake.yaml > docker-makefile/docker-compose.yaml; \
-	elif [ "$(EDGELAKE)" == "false" ] && [ "$(REMOTE_CLI)" == "true" ] ; then \
+	elif [ "$(EDGELAKE)" = "false" ] && [ "$(REMOTE_CLI)" = "true" ] ; then \
   		ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
 	else \
 	  ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
