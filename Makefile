@@ -1,8 +1,8 @@
 #!/bin/Makefile
 
-export ANYLOG_PATH := generic
-ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
-   export ANYLOG_PATH = $(filter-out $@,$(MAKECMDGOALS))
+export ANYLOG_PATH := ""
+ifneq ($(filter-out $@,$(MAKECMDGOALS)),)
+   export ANYLOG_PATH := $(filter-out $@,$(MAKECMDGOALS))
 endif
 
 export TAG := 1.3.2409
@@ -30,10 +30,22 @@ generate-docker-compose:
 	  ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
 	fi
 build:
-	docker pull docker.io/anylogco/anylog-network:$(TAG)
+	@if [ "$(EDGELAKE)" == "true" ]; then \
+		docker pull docker.io/anylogco/edgelake:$(TAG); \
+	else \
+  		docker pull docker.io/anylogco/anylog-network:$(TAG); \
+  	fi
 dry-run:
 	@echo "Dry Run $(ANYLOG_TYPE)"
-	ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
+	@if [ "$(EDGELAKE)" == "true" ] && [ "$(REMOTE_CLI)" == "true" ] ; then \
+  		ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template-edgelake-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
+  	elif [ "$(EDGELAKE)" == "true" ] ; then \
+  		ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template-edgelake.yaml > docker-makefile/docker-compose.yaml; \
+	elif [ "$(EDGELAKE)" == "false" ] && [ "$(REMOTE_CLI)" == "true" ] ; then \
+  		ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
+	else \
+	  ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
+	fi
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml up -d
