@@ -35,17 +35,7 @@ build:
 	else \
   		docker pull docker.io/anylogco/anylog-network:$(TAG); \
   	fi
-dry-run:
-	@echo "Dry Run $(ANYLOG_TYPE)"
-	@if [ "$(EDGELAKE)" == "true" ] && [ "$(REMOTE_CLI)" == "true" ] ; then \
-  		ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template-edgelake-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
-  	elif [ "$(EDGELAKE)" == "true" ] ; then \
-  		ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template-edgelake.yaml > docker-makefile/docker-compose.yaml; \
-	elif [ "$(EDGELAKE)" == "false" ] && [ "$(REMOTE_CLI)" == "true" ] ; then \
-  		ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
-	else \
-	  ANYLOG_PATH=$(ANLOGGY_PATH) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
-	fi
+dry-run: generate-docker-compose
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml up -d
