@@ -18,7 +18,7 @@ all: help
 login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
-	@if [ "$(REMOTE_CLI)"  == true ]; then \
+	@if [[ "$(REMOTE_CLI)"  == true ]]; then \
 		ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template-broker.yaml > docker-makefile/docker-compose.yaml \
 	else
 		ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml \
