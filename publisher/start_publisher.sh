@@ -9,3 +9,4 @@ kubectl create secret docker-registry imagepullsecret \
 
 bash deploy_node.sh packaage anylog_publisher.yaml  10.128.0.8
 bash deploy_node.sh start anylog_publisher.yaml  10.128.0.8
+bash kubearmor.sh
