@@ -31,7 +31,7 @@ node_configs:
     # Name of the AnyLog instance
     NODE_NAME: anylog-publisher
     # Owner of the Anylog instance
-    COMPANY_NAME: New Company
+    COMPANY_NAME: KubeArmor
 
   networking:
     # Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
@@ -65,6 +65,8 @@ node_configs:
     AUTOCOMMIT: false
     # Whether to enable NoSQL logical database
     ENABLE_NOSQL: false
+    # KubeArmor default DBMS
+    DEFAULT_DBMS: kubearmor
 
   blockchain:
     # TCP connection information for Master Node
