@@ -1,3 +1,4 @@
+kubectl create deployment nginx --image=nginx
 POD=$(kubectl get pod -l app=nginx -o name)
 
 # Define KubeArmor policy to monitor the pod
