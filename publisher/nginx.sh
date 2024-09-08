@@ -1,5 +1,5 @@
 kubectl create deployment nginx --image=nginx
-POD=$(kubectl get pod -l app=nginx -o name)
+export POD=$(kubectl get pod -l app=nginx -o name | awk -F "/" '{print $2}')
 
 # Define KubeArmor policy to monitor the pod
 cat <<EOF | kubectl apply -f -
@@ -34,6 +34,7 @@ spec:
     log: true
 EOF
 
+export POD=$(kubectl get pod -l app=nginx -o name)
 # Install net-tools inside the nginx pod
 kubectl exec -it ${POD} -- apt-get -y install net-tools
 

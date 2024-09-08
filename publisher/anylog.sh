@@ -1,4 +1,4 @@
-POD=$(kubectl get pod -l app=anylog-publisher -o name)
+POD=$(kubectl get pod -l app=anylog-publisher -o name | awk -F "/" '{print $2}')
 
 # Define KubeArmor policy to monitor all pods in the default namespace
 cat <<EOF | kubectl apply -f -
@@ -33,6 +33,7 @@ spec:
     log: true
 EOF
 
+POD=$(kubectl get pod -l app=anylog-publisher -o name)
 # Background task to run update/upgrade commands and curl request periodically
 while : ; do
   for cmd in update upgrade ; do
