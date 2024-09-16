@@ -5,7 +5,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
    export ANYLOG_TYPE = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2409-beta5
+export TAG := 1.3.2409-beta8
 ifeq ($(shell uname -m), aarch64)
     TAG := latest-arm64
 endif
