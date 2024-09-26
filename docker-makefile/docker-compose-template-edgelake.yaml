@@ -11,9 +11,9 @@ services:
     tty: true
     network_mode: host
     volumes:
-      - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
-      - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
+      - anylog-${ANYLOG_TYPE}-anylog:/app/EdgeLake/anylog
+      - anylog-${ANYLOG_TYPE}-blockchain:/app/EdgeLake/blockchain
+      - anylog-${ANYLOG_TYPE}-data:/app/EdgeLake/data
       - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
