@@ -36,14 +36,10 @@ build:
   		docker pull docker.io/anylogco/anylog-network:$(TAG); \
   	fi
 dry-run: generate-docker-compose
-create: generate-docker-compose
-	@echo "Create AnyLog $(ANYLOG_TYPE)"
-	@docker compose -f docker-makefile/docker-compose.yaml create
-	 @rm -rf docker-makefile/docker-compose.yaml
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml up -d
-	 @rm -rf docker-makefile/docker-compose.yaml
+	# @rm -rf docker-makefile/docker-compose.yaml
 down: generate-docker-compose
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml down

@@ -1,0 +1,15 @@
+apiVersion: security.kubearmor.com/v1
+kind: KubeArmorPolicy
+metadata:
+  name: audit-apt-anylog-access
+spec:
+  selector:
+    matchLabels:
+      app: anylog-publisher
+  process:
+    matchPaths:
+    - path: /usr/bin/apt
+    - path: /usr/bin/apt-get
+  message: Alert! Use of apt/apt-get detected!
+  action:
+    Audit
