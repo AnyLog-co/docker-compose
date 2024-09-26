@@ -1,6 +1,0 @@
-dotenv>=0.0 
-json>=0.0 
-yaml>=0.0 
-argparse>0.0 
-json>=0.0 
-re>=0.0 

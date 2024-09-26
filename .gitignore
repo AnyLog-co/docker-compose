@@ -1,12 +1,6 @@
 .idea/
-__pycache__
-docker-compose/anylog-demo-network/
-docker-compose/anylog-master/
-docker-compose/anylog-operator/
-docker-compose/anylog-query/
-docker-compose/anylog-publisher/
-docker-compose/anylog-rest/
-archive/helm/sample-configurations/
+__pycache__/
 .DS_Store
 *.tgz
-
+docker-compose-files/docker-compose-*.yaml
+docker-makefile/docker-compose.yaml
