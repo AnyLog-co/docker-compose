@@ -5,7 +5,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
    export ANYLOG_TYPE = $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2409-beta8
+export TAG := 1.3.2410-beta1
 ifeq ($(shell uname -m), aarch64)
     TAG := latest-arm64
 endif
@@ -13,6 +13,7 @@ endif
 export NODE_TYPE ?= 127.0.0.1
 export REST_PORT := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
 export REMOTE_CLI := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
+export DOCKER_COMPOSE_CMD := $(shell if command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 
 all: help
 login:
@@ -30,18 +31,18 @@ dry-run:
 	ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
-	@docker compose -f docker-makefile/docker-compose.yaml up -d
-	# @rm -rf docker-makefile/docker-compose.yaml
+	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml up -d
+	@rm -rf docker-makefile/docker-compose.yaml
 down: generate-docker-compose
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
-	@docker compose -f docker-makefile/docker-compose.yaml down
+	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down
 	@rm -rf docker-makefile/docker-compose.yaml
 clean-vols: generate-docker-compose
-	@docker compose -f docker-makefile/docker-compose.yaml down --volumes
+	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes
 	@rm -rf docker-makefile/docker-compose.yaml
 clean: generate-docker-compose
 	ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	@docker compose -f docker-makefile/docker-compose.yaml down --volumes --rmi all
+	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
