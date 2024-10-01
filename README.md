@@ -6,11 +6,56 @@ The following provides direction to deploy AnyLog using [_makefile_](Makefile) f
 * _Docker_
 * _docker-compose_
 * _Makefile_
+* _[Docker & Docker Compose](https://docs.docker.com/desktop/install/linux/)_
+* _Makefile_
+
+**Direction for Ubuntu**: For Ubuntu we've noticed that version 22.04LTS is much more stable as compared to 24.04LTS. 
 ```shell
-sudo snap install docker
-sudo apt-get -y install docker-compose 
-sudo apt-get -y install make
- 
+# Add Docker's official GPG key:
+sudo apt-get -y update
+sudo apt-get install -y ca-certificates curl make git curl 
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get -y update
+
+sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin make 
+
+# Grant non-root user permissions to use docker
+USER=`whoami` 
+sudo groupadd docker 
+sudo usermod -aG docker ${USER} 
+newgrp docker
+```
+
+**CentOS**: The directions for CentOS download the package for CentOS9 directly from [Docker Downloads](https://download.docker.com/). 
+Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. 
+
+```shell
+# Install Dependencies
+sudo yum install -y curl wget make git yum-utils device-mapper-persistent-data lvm2
+
+# Manually Download rpm packages 
+mkdir $HOME/rpm-pkgs ; cd $HOME/rpm-pkgs
+curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-27.2.1-1.el9.x86_64.rpm -o docker-ce.rpm 
+curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-cli-27.2.1-1.el9.x86_64.rpm -o docker-ce-cli.rpm
+curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/containerd.io-1.7.22-3.1.el9.x86_64.rpm -o containerd.io.rpm
+
+# Install packages
+sudo yum -y install ./docker-ce.rpm
+sudo yum -y install ./docker-ce-cli.rpm
+sudo yum -y install ./containerd.io.rpm
+
+# Enable Docker Service
+sudo systemctl start docker
+sudo systemctl enable docker
+
 # Grant non-root user permissions to use docker
 USER=`whoami` 
 sudo groupadd docker 
