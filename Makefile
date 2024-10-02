@@ -1,8 +1,10 @@
 #!/bin/Makefile
 
-export ANYLOG_TYPE := generic
+SHELL := /bin/bash
 ifneq ($(filter-out $@,$(MAKECMDGOALS)), )
    export ANYLOG_TYPE = $(filter-out $@,$(MAKECMDGOALS))
+else
+	export ANYLOG_TYPE := generic
 endif
 
 export TAG := 1.3.2410-beta2
@@ -29,6 +31,10 @@ generate-docker-compose:
 	else \
 		ANYLOG_TYPE="$(ANYLOG_TYPE)" envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
 	fi
+test-conn:
+	@echo "REST Connection Info for testing (Example: 127.0.0.1:32149):"
+	@read CONN; \
+	echo $$CONN > conn.tmp
 build:
 	docker pull docker.io/anylogco/anylog-network:$(TAG)
 dry-run:
@@ -51,25 +57,19 @@ clean: generate-docker-compose
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
 	docker attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
-node-status:
-	@if [ "$(ANYLOG_TYPE)" = "master" ]; then \
-		curl -X GET 127.0.0.1:32049 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-	elif [ "$(ANYLOG_TYPE)" = "operator" ]; then \
-		curl -X GET 127.0.0.1:32149 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-	elif [ "$(ANYLOG_TYPE)" = "query" ]; then \
-		curl -X GET 127.0.0.1:32349 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-	elif [ "$(NODE_TYPE)" == "publisher" ]; then \
-		curl -X GET 127.0.0.1:32249 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-	elif [ "$(NODE_TYPE)" == "generic" ]; then \
-		curl -X GET 127.0.0.1:32549 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-	fi
-test-node:
-	@echo "Test Node Against: $(NODE_IP):$(REST_PORT)"
-	@curl -X GET $(NODE_IP):$(REST_PORT)
-	@curl -X GET $(NODE_IP):$(REST_PORT) -H "command: test node"
-test-network:
-	@echo "Test Network Against: $(NODE_IP):$(REST_PORT)"
-	@curl -X GET $(NODE_IP):$(REST_PORT) -H "command: test network"
+test-node: test-conn
+	@CONN=$$(cat conn.tmp); \
+	echo "Node State against $$CONN"; \
+	curl -X GET http://$$CONN -H "command: get status"    -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	curl -X GET http://$$CONN -H "command: test node"     -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	curl -X GET http://$$CONN -H "command: get processes" -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	rm -rf conn.tmp
+
+test-network: test-conn
+	@CONN=$$(cat conn.tmp); \
+	echo "Test Network Against: $$CONN"; \
+	curl -X GET http://$$CONN -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
+	rm -rf conn.tmp
 exec:
 	docker exec -it anylog-$(ANYLOG_TYPE) bash
 logs:
@@ -81,7 +81,8 @@ help:
 	@echo "  build       	Pull the docker image"
 	@echo "  up	  		 	Start the containers"
 	@echo "  attach      	Attach to AnyLog instance"
-	@echo "  test		 	Using cURL validate node is running"
+	@echo "  test-node		Validate node status"
+	@echo "  test-network	Validate node can communicate with other nodes in the network"
 	@echo "  exec			Attach to shell interface for container"
 	@echo "  down			Stop and remove the containers"
 	@echo "  logs			View logs of the containers"
