@@ -1,6 +1,6 @@
 services:
   anylog-${ANYLOG_TYPE}:
-    image: anylogco/anylog-network:${TAG}
+    image: ${IMAGE}:${TAG}
     restart: always
     env_file:
       -  ../docker-makefile/${ANYLOG_TYPE}-configs/base_configs.env
