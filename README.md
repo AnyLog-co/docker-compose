@@ -144,11 +144,12 @@ cd docker-compose
 3. Install Database and Grafana - Docker containers found here [here](docker-compose)   
 
 ## Deploy AnyLog via Docker 
-1. Update configuration for node  
-   * [master-configs/base_configs.env](docker-makefile/master-configs/base_configs.env) | [master-configs/advance_configs.env](docker-makefile/master-configs/advance_configs.env)
-   * [operator-configs/base_configs.env](docker-makefile/operator-configs/base_configs.env) | [operator-configs/advance_configs.env](docker-makefile/operator-configs/advance_configs.env)
-   * [query-configs/base_configs.env](docker-makefile/query-configs/base_configs.env) | [query-configs/advance_configs.env](docker-makefile/query-configs/advance_configs.env)
-   * [publisher-configs/base_configs.env](docker-makefile/publisher-configs/base_configs.env) | [publisher-configs/advance_configs.env](docker-makefile/publisher-configs/advance_configs.env)
+1. Update configuration for node
+   * [generic-configs/base_configs.env](docker-makefile/generic-configs%2Fbase_configs.env) | [generic-configs/advance_configs.env](docker-makefile/generic-configs%2Fadvance_configs.env) - A "sandbox" node consisting of only TCP, REST and optionally Message broker services    
+   * [master-configs/base_configs.env](docker-makefile/master-configs/base_configs.env) | [master-configs/advance_configs.env](docker-makefile/master-configs/advance_configs.env) - A node with services that allow managing network metadata as an alternative to the blockchain  
+   * [operator-configs/base_configs.env](docker-makefile/operator-configs/base_configs.env) | [operator-configs/advance_configs.env](docker-makefile/operator-configs/advance_configs.env) - A node with services that allow to store and manage IoT / edge data in real-time.  
+   * [query-configs/base_configs.env](docker-makefile/query-configs/base_configs.env) | [query-configs/advance_configs.env](docker-makefile/query-configs/advance_configs.env) - A node with services that are dedicated to querying ddata on an operator node 
+   * [publisher-configs/base_configs.env](docker-makefile/publisher-configs/base_configs.env) | [publisher-configs/advance_configs.env](docker-makefile/publisher-configs/advance_configs.env) - A node with services that is able to distribute IoT / edge across operator nodes.  
 
 **base_configs.env**
 ```dotenv
