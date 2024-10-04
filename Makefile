@@ -17,7 +17,7 @@ export REST_PORT := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/base_conf
 export REMOTE_CLI := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
 export ENABLE_NEBULA := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
 export DOCKER_COMPOSE_CMD := $(shell if command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
-export IMAGE := $(shell docker-makefile/.env | grep IMAGE | awk -F "=" '{print $$2}')
+export IMAGE := $(shell cat docker-makefile/.env | grep IMAGE | awk -F "=" '{print $$2}')
 
 all: help
 login:
