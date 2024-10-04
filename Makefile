@@ -20,7 +20,7 @@ ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
     export DOCKER_COMPOSE_CMD := $(shell if command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
     export IMAGE := $(shell cat docker-makefile/.env | grep IMAGE | awk -F "=" '{print $$2}')
 endif
-v
+
 all: help
 login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
