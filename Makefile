@@ -12,7 +12,7 @@ ifeq ($(shell uname -m), aarch64)
     TAG := latest-arm64
 endif
 
-ifneq ( $(filter test-node test-network,$(MAKECMDGOALS)),)
+ifneq ( ! $(filter test-node test-network,$(MAKECMDGOALS)),)
 	export REST_PORT := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
 	export REMOTE_CLI := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
 	export ENABLE_NEBULA := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
