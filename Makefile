@@ -12,14 +12,15 @@ ifeq ($(shell uname -m), aarch64)
     TAG := latest-arm64
 endif
 
+# Only execute shell commands if NOT called with test-node or test-network
 ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
-    export NODE_TYPE ?= 127.0.0.1
     export REST_PORT := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
     export REMOTE_CLI := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
     export ENABLE_NEBULA := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
     export DOCKER_COMPOSE_CMD := $(shell if command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
     export IMAGE := $(shell cat docker-makefile/.env | grep IMAGE | awk -F "=" '{print $$2}')
 endif
+
 
 all: help
 login:
