@@ -9,12 +9,6 @@ services:
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     network_mode: host
-    ports:
-      - 4242:4242/udp
-    cap_add:
-      - NET_ADMIN  # Adding network administration capabilities for TUN device
-    devices:
-      - "/dev/net/tun:/dev/net/tun"  # Adding the TUN device to the container
     volumes:
       - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
