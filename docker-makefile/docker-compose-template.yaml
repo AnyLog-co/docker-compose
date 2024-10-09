@@ -9,9 +9,9 @@
       container_name: anylog-${ANYLOG_TYPE}
       stdin_open: true
       tty: true
-    networks:
-      nebula_network:
-        aliases:
+      networks:
+        nebula_network:
+          aliases:
           - nebula  # Optional: add an alias for easier access
       ports:
         - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
