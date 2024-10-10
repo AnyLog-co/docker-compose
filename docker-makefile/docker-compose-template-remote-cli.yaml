@@ -44,6 +44,9 @@ services:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
       - nebula-overlay:/app/nebula
+    depends_on:
+      anylog-${ANYLOG_TYPE}:
+        condition: service_healthy
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
