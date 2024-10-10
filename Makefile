@@ -7,7 +7,7 @@ else
 	export ANYLOG_TYPE := generic
 endif
 
-export TAG := 1.3.2410-beta6
+export TAG := 1.3.2410-beta5
 ifeq ($(shell uname -m), aarch64)
     TAG := latest-arm64
 endif
@@ -26,7 +26,6 @@ ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
     endif
 
     export REMOTE_CLI := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
-    export ANYLOG_PATH := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep ANYLOG_PATH | awk -F "=" '{print $$2}')
     export ENABLE_NEBULA := $(shell cat docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
     export DOCKER_COMPOSE_CMD := $(shell if command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
     export IMAGE := $(shell cat docker-makefile/.env | grep IMAGE | awk -F "=" '{print $$2}')
@@ -38,13 +37,13 @@ login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
 	@if [ "$(REMOTE_CLI)" = "true" ] && [ ! -z "${ANYLOG_BROKER_PORT}" ]; then \
-	  ANYLOG_PATH=${ANYLOG_PATH} ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} OVERLAY_IP=${OVERLAY_IP}  envsubst < docker-makefile/docker-compose-template-remote-cli-broker.yaml > docker-makefile/docker-compose.yaml; \
+	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} OVERLAY_IP=${OVERLAY_IP}  envsubst < docker-makefile/docker-compose-template-remote-cli-broker.yaml > docker-makefile/docker-compose.yaml; \
 	elif [ "$(REMOTE_CLI)" = "true" ]; then \
-	  ANYLOG_PATHv=${ANYLOG_PATH} ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} OVERLAY_IP=${OVERLAY_IP}  envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
+	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} OVERLAY_IP=${OVERLAY_IP}  envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
 	elif [ ! -z "${ANYLOG_BROKER_PORT}" ]; then \
-	  ANYLOG_PATH=${ANYLOG_PATH} ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} OVERLAY_IP=${OVERLAY_IP}  envsubst < docker-makefile/docker-compose-template-broker.yaml > docker-makefile/docker-compose.yaml; \
+	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} OVERLAY_IP=${OVERLAY_IP}  envsubst < docker-makefile/docker-compose-template-broker.yaml > docker-makefile/docker-compose.yaml; \
 	else \
-	  ANYLOG_PATH=${ANYLOG_PATH} ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} OVERLAY_IP=${OVERLAY_IP}  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
+	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} OVERLAY_IP=${OVERLAY_IP}  envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
 	fi
 test-conn:
 	@echo "REST Connection Info for testing (Example: 127.0.0.1:32149):"
