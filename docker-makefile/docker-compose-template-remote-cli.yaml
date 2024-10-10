@@ -9,6 +9,9 @@ services:
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
+    networks:
+      nebula-net:
+        ipv4_address: ${OVERLAY_IP}  # Nebula server IP
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
@@ -35,6 +38,9 @@ services:
     restart: always
     stdin_open: true
     tty: true
+    networks:
+      nebula-net:
+        ipv4_address: ${OVERLAY_IP}  # Nebula server IP
     ports:
       - 31800:31800
     environment:
@@ -55,3 +61,11 @@ volumes:
   nebula-overlay:
   remote-cli:
   remote-cli-current:
+networks:
+  nebula-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${CIDR_OVERLAY_ADDRESS}  # Your chosen subnet for Nebula network
+
+
