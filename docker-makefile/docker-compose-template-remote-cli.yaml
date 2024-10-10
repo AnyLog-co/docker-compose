@@ -9,9 +9,6 @@ services:
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
-    networks:
-      nebula-net:
-        ipv4_address: ${OVERLAY_IP}  # Nebula server IP
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
@@ -32,15 +29,13 @@ services:
       - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
       - nebula-overlay:/app/nebula
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+    network_mode: "host"
   remote-cli:
     image: anylogco/remote-cli:latest
     container_name: remote-cli
     restart: always
     stdin_open: true
     tty: true
-    networks:
-      nebula-net:
-        ipv4_address: ${OVERLAY_IP}  # Nebula server IP
     ports:
       - 31800:31800
     environment:
@@ -53,6 +48,7 @@ services:
     depends_on:
       anylog-${ANYLOG_TYPE}:
         condition: service_healthy
+    network_mode: "host"
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
@@ -61,11 +57,3 @@ volumes:
   nebula-overlay:
   remote-cli:
   remote-cli-current:
-networks:
-  nebula-net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: ${CIDR_OVERLAY_ADDRESS}  # Your chosen subnet for Nebula network
-
-
