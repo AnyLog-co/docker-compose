@@ -9,6 +9,7 @@ services:
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
+    network_mode: host
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}  # Expose this specific port to the host
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}      # Expose this specific port to the host
@@ -50,8 +51,6 @@ services:
     depends_on:
       anylog-${ANYLOG_TYPE}:
         condition: service_healthy
-    networks:
-      - anylog-net
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
@@ -60,6 +59,3 @@ volumes:
   nebula-overlay:
   remote-cli:
   remote-cli-current:
-networks:
-  anylog-net:
-    driver: host

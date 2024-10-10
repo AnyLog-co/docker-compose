@@ -9,9 +9,7 @@ services:
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
-    networks:
-      nebula-net:
-        ipv4_address: ${OVERLAY_IP}  # Nebula server IP
+    network_mode: host
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
@@ -32,9 +30,3 @@ volumes:
   anylog-${ANYLOG_TYPE}-data:
   anylog-${ANYLOG_TYPE}-local-scripts:
   nebula-overlay:
-networks:
-  nebula-net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: ${CIDR_OVERLAY_ADDRESS}  # Your chosen subnet for Nebula network
