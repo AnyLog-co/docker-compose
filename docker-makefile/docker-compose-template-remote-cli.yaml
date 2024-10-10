@@ -62,4 +62,4 @@ volumes:
   remote-cli-current:
 networks:
   anylog-net:
-    driver: bridge
+    driver: host
