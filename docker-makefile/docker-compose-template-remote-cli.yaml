@@ -1,10 +1,8 @@
-version: '3.8'  # Specify your Docker Compose version
+#version: '3.8'  # Specify your Docker Compose version
 
 networks:
   nebula-overlay:  # Define a custom overlay network
-    driver: overlay  # Use overlay driver
-  cli-bridge:  # Define a custom bridge network for CLI
-    driver: bridge  # Use bridge driver
+    driver: bridge  # Use overlay driver
 
 services:
   anylog-${ANYLOG_TYPE}:
@@ -51,7 +49,7 @@ services:
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
       - nebula-overlay:/app/nebula
     networks:
-      - cli-bridge  # Attach to the bridge network for external communication
+#      - cli-bridge  # Attach to the bridge network for external communication
       - nebula-overlay  # Attach to the overlay network for internal communication
 
 volumes:
