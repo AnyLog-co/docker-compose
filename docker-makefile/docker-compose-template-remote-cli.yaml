@@ -1,4 +1,29 @@
 services:
+  nebula:
+    image: ${IMAGE}:${TAG}
+    container_name: nebula-container
+    restart: always
+    env_file:
+      - ../docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env
+    entrypoint: ["bash", "${ANYLOG_PATH}/nebula/deploy_nebula.sh"]
+    stdin_open: true
+    tty: true
+    ports:
+      - 4242:4242/udp  # UDP port mapping for Nebula
+    cap_add:
+      - NET_ADMIN  # Adding network admin capabilities for Nebula's TUN device
+    devices:
+      - "/dev/net/tun:/dev/net/tun"  # TUN device for Nebula
+    volumes:
+      - nebula-overlay:/app/nebula  # Mount Nebula config and keys
+    healthcheck:
+      test: ["CMD", "ping", "-c", "1", "${OVERLAY_IP}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - anylog-net
+
   anylog-${ANYLOG_TYPE}:
     image: ${IMAGE}:${TAG}
     restart: always
@@ -10,27 +35,24 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}  # Expose this specific port to the host
-      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}      # Expose this specific port to the host
-      - 4242:4242/udp                               # UDP port mapping for Nebula or other services
+      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}  # Expose server port
+      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}      # Expose REST API port
     cap_add:
-      - NET_ADMIN  # Adding network administration capabilities for TUN device
+      - NET_ADMIN  # Network admin capabilities (TUN)
     devices:
-      - "/dev/net/tun:/dev/net/tun"  # Adding the TUN device to the container
-    healthcheck:
-      test: ["CMD", "ping", "-c", "1", "${OVERLAY_IP}"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      - "/dev/net/tun:/dev/net/tun"  # TUN device
     volumes:
       - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
       - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
       - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
-      - nebula-overlay:/app/nebula
+      - nebula-overlay:/app/nebula  # Access Nebula-related resources
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
     networks:
       - anylog-net
+    depends_on:
+      nebula:
+        condition: service_healthy  # Ensure this waits until Nebula is ready
 
   remote-cli:
     image: anylogco/remote-cli:latest
@@ -39,19 +61,20 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - 31800:31800  # Expose this specific port for CLI
+      - 31800:31800  # Expose CLI port
     environment:
       - CONN_IP=0.0.0.0
       - CLI_PORT=31800
     volumes:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
-      - nebula-overlay:/app/nebula
+      - nebula-overlay:/app/nebula  # Access Nebula resources
     depends_on:
-      anylog-${ANYLOG_TYPE}:
-        condition: service_healthy
+      nebula:
+        condition: service_healthy  # Wait for Nebula
     networks:
       - anylog-net
+
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
@@ -60,6 +83,7 @@ volumes:
   nebula-overlay:
   remote-cli:
   remote-cli-current:
+
 networks:
   anylog-net:
     driver: host
