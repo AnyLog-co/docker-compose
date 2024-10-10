@@ -18,11 +18,6 @@ services:
       - NET_ADMIN  # Adding network administration capabilities for TUN device
     devices:
       - "/dev/net/tun:/dev/net/tun"  # Adding the TUN device to the container
-    healthcheck:
-      test: ["CMD", "ping", "-c", "1", "${OVERLAY_IP}"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
     volumes:
       - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
@@ -40,15 +35,12 @@ services:
     ports:
       - 31800:31800  # Expose this specific port for CLI
     environment:
-      - CONN_IP=10.10.1.31
+      - CONN_IP=0.0.0.0
       - CLI_PORT=31800
     volumes:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
       - nebula-overlay:/app/nebula
-    depends_on:
-      anylog-${ANYLOG_TYPE}:
-        condition: service_healthy
 
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
