@@ -86,4 +86,4 @@ volumes:
 
 networks:
   anylog-net:
-    driver: host
+    driver: bridge
