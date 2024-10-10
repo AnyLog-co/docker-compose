@@ -40,7 +40,7 @@ services:
     ports:
       - 31800:31800  # Expose this specific port for CLI
     environment:
-      - CONN_IP=${OVERLAY_IP}
+      - CONN_IP=10.10.1.31
       - CLI_PORT=31800
     volumes:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
@@ -49,6 +49,7 @@ services:
     depends_on:
       anylog-${ANYLOG_TYPE}:
         condition: service_healthy
+
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
