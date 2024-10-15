@@ -5,14 +5,14 @@ networks:
     driver: bridge  # Use overlay driver
 
 services:
-  anylog-${ANYLOG_TYPE}:
+  edgelake-${ANYLOG_TYPE}:
     image: ${IMAGE}:${TAG}
     restart: always
     env_file:
       - ../docker-makefile/${ANYLOG_TYPE}-configs/base_configs.env
       - ../docker-makefile/${ANYLOG_TYPE}-configs/advance_configs.env
       - .env
-    container_name: anylog-${ANYLOG_TYPE}
+    container_name: edgelake-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
     ports:
@@ -24,10 +24,10 @@ services:
     devices:
       - "/dev/net/tun:/dev/net/tun"  # Adding the TUN device to the container
     volumes:
-      - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
-      - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
-      - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
-      - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
+      - edgelake-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
+      - edgelake-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
+      - edgelake-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
+      - edgelake-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
       - nebula-overlay:/app/nebula
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
     networks:
@@ -53,10 +53,10 @@ services:
       - nebula-overlay  # Attach to the overlay network for internal communication
 
 volumes:
-  anylog-${ANYLOG_TYPE}-anylog:
-  anylog-${ANYLOG_TYPE}-blockchain:
-  anylog-${ANYLOG_TYPE}-data:
-  anylog-${ANYLOG_TYPE}-local-scripts:
+  edgelake-${ANYLOG_TYPE}-anylog:
+  edgelake-${ANYLOG_TYPE}-blockchain:
+  edgelake-${ANYLOG_TYPE}-data:
+  edgelake-${ANYLOG_TYPE}-local-scripts:
   nebula-overlay:
   remote-cli:
   remote-cli-current:
