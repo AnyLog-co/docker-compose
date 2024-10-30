@@ -42,9 +42,9 @@ login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
 	@if [ "$(REMOTE_CLI)" = "true" ] ; then \
-		NODE_TYPE=$(NODE_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) NODE_NAME=$(NODE_NAME) ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
+		NODE_TYPE=$(NODE_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) NODE_NAME=$(NODE_NAME) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
 	else \
-  		NODE_TYPE=$(NODE_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) NODE_NAME=$(NODE_NAME) ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
+  		NODE_TYPE=$(NODE_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) NODE_NAME=$(NODE_NAME) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
   	fi
 test-conn:
 	@echo "REST Connection Info for testing (Example: 127.0.0.1:32149):"

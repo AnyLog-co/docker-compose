@@ -10,10 +10,6 @@ services:
     stdin_open: true
     tty: true
     network_mode: host
-#    ports:
-#      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
-#      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
-#      - 4242:4242/udp
     cap_add:
       - NET_ADMIN  # Adding network administration capabilities for TUN device
     devices:
@@ -33,8 +29,6 @@ services:
     stdin_open: true
     tty: true
     network_mode: host
-#    ports:
-#      - 31800:31800  # Expose this specific port for CLI
     environment:
       - CONN_IP=0.0.0.0  # Allow connections from all interfaces
       - CLI_PORT=31800
@@ -42,10 +36,6 @@ services:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
       - nebula-overlay:/app/nebula
-    networks:
-#      - cli-bridge  # Attach to the bridge network for external communication
-      - nebula-overlay  # Attach to the overlay network for internal communication
-
 volumes:
   ${NODE_NAME}-anylog:
   ${NODE_NAME}-blockchain:
