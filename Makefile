@@ -27,7 +27,7 @@ endif
 
 # Only execute shell commands if NOT called with test-node or test-network
 ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
-	export NODE_NAME := $($(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep NODE_NAME | awk -F "=" '{print $$2}'))
+	export NODE_NAME := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep NODE_NAME | awk -F "=" '{print $$2}')
 	export ANYLOG_SERVER_PORT := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_SERVER_PORT | awk -F "=" '{print $$2}')
     export ANYLOG_REST_PORT := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
 	export ANYLOG_BROKER_PORT := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_BROKER_PORT | awk -F "=" '{print $$2}' | grep -v '^$$')
