@@ -68,7 +68,6 @@ clean-vols: generate-docker-compose
 	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes
 	@rm -rf docker-makefile/docker-compose.yaml
 clean: generate-docker-compose
-	ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
 	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
