@@ -72,7 +72,7 @@ clean: generate-docker-compose
 	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
-	docker attach --detach-keys=ctrl-d anylog-$(NODE_NAME)
+	docker attach --detach-keys=ctrl-d $(NODE_NAME)
 test-node: test-conn
 	@CONN=$$(cat conn.tmp); \
 	echo "Node State against $$CONN"; \
