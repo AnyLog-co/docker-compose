@@ -41,6 +41,7 @@ all: help
 login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
+	@echo $(NODE_NAME)
 	@if [ "$(REMOTE_CLI)" = "true" ] ; then \
 		NODE_TYPE=$(NODE_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) NODE_NAME=$(NODE_NAME) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
 	else \
