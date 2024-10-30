@@ -41,16 +41,11 @@ all: help
 login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
-	NODE_TYPE=$(NODE_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) NODE_NAME=$(NODE_NAME) ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-#	@if [ "$(REMOTE_CLI)" = "true" ] && [ ! -z "${ANYLOG_BROKER_PORT}" ]; then \
-#	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefile/docker-compose-template-remote-cli-broker.yaml > docker-makefile/docker-compose.yaml; \
-#	elif [ "$(REMOTE_CLI)" = "true" ]; then \
-#	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
-#	elif [ ! -z "${ANYLOG_BROKER_PORT}" ]; then \
-#	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefile/docker-compose-template-broker.yaml > docker-makefile/docker-compose.yaml; \
-#	else \
-#	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
-#	fi
+	@if [ "$(REMOTE_CLI)" = "true" ] ; then \
+		NODE_TYPE=$(NODE_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) NODE_NAME=$(NODE_NAME) ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
+	else \
+  		NODE_TYPE=$(NODE_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) NODE_NAME=$(NODE_NAME) ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
+  	fi
 test-conn:
 	@echo "REST Connection Info for testing (Example: 127.0.0.1:32149):"
 	@read CONN; \
