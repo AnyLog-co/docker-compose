@@ -12,7 +12,8 @@ endif
 
 export NODE_TYPE ?= 127.0.0.1
 export ANYLOG_TYPE := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep NODE_TYPE | awk -F "=" '{print $$2}')
-export REST_PORT := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
+export TCP_PORT := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_SERVER_PORT | awk -F "=" '{print $$2}')
+export c := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
 export EDGELAKE := $(shell cat docker-makefile/${ANYLOG_PATH}/advance_configs.env | grep EDGELAKE | awk -F "=" '{print $$2}')
 export REMOTE_CLI := $(shell cat docker-makefile/${ANYLOG_PATH}/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
 
@@ -27,7 +28,7 @@ generate-docker-compose:
 	elif [ "$(EDGELAKE)" = "false" ] && [ "$(REMOTE_CLI)" = "true" ] ; then \
   		ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
 	else \
-	  ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
+	  ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) ANYLOG_SERVER_PORT=$(TCP_PORT) ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
 	fi
 build:
 	@if [ "$(EDGELAKE)" == "true" ]; then \
