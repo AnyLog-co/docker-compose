@@ -10,7 +10,6 @@ ifeq ($(shell uname -m), arm64)
     TAG := latest-arm64
 endif
 
-@echo $(ANYLOG_PATH)
 export NODE_TYPE ?= 127.0.0.1
 export ANYLOG_TYPE := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep NODE_TYPE | awk -F "=" '{print $$2}')
 export REST_PORT := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
@@ -21,6 +20,7 @@ all: help
 login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
+	@echo $(ANYLOG_PATH)
 	@if [ "$(EDGELAKE)" = "true" ] && [ "$(REMOTE_CLI)" = "true" ] ; then \
   		ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template-edgelake-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
   	elif [ "$(EDGELAKE)" = "true" ] ; then \
