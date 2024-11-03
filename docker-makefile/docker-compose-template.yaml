@@ -9,9 +9,10 @@ services:
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
-    ports:
-      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
-      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+    network_mode: host
+#    ports:
+#      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
+#      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
       - 4242:4242/udp
     cap_add:
       - NET_ADMIN  # Adding network administration capabilities for TUN device

@@ -28,7 +28,8 @@ generate-docker-compose:
 	elif [ "$(EDGELAKE)" = "false" ] && [ "$(REMOTE_CLI)" = "true" ] ; then \
   		ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
 	else \
-	  ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) ANYLOG_SERVER_PORT=$(TCP_PORT) ANYLOG_REST_PORT=$(REST_PORT) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
+		ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
+	  # ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) ANYLOG_SERVER_PORT=$(TCP_PORT) ANYLOG_REST_PORT=$(REST_PORT) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
 	fi
 build:
 	@if [ "$(EDGELAKE)" == "true" ]; then \
