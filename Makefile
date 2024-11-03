@@ -10,6 +10,7 @@ ifeq ($(shell uname -m), arm64)
     TAG := latest-arm64
 endif
 
+@echo $(ANYLOG_PATH)
 export NODE_TYPE ?= 127.0.0.1
 export ANYLOG_TYPE := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep NODE_TYPE | awk -F "=" '{print $$2}')
 export REST_PORT := $(shell cat docker-makefile/${ANYLOG_PATH}/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
@@ -39,11 +40,11 @@ dry-run: generate-docker-compose
 create: generate-docker-compose
 	@echo "Create AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml create
-	 @rm -rf docker-makefile/docker-compose.yaml
+	@rm -rf docker-makefile/docker-compose.yaml
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml up -d
-	 @rm -rf docker-makefile/docker-compose.yaml
+	@rm -rf docker-makefile/docker-compose.yaml
 down: generate-docker-compose
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
 	@docker compose -f docker-makefile/docker-compose.yaml down
