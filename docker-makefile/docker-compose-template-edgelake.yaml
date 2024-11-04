@@ -10,6 +10,10 @@ services:
     stdin_open: true
     tty: true
     network_mode: host
+    cap_add:
+      - NET_ADMIN  # Adding network administration capabilities for TUN device
+    devices:
+      - "/dev/net/tun:/dev/net/tun"  # Adding the TUN device to the container
     volumes:
       - anylog-${ANYLOG_TYPE}-anylog:/app/EdgeLake/anylog
       - anylog-${ANYLOG_TYPE}-blockchain:/app/EdgeLake/blockchain
