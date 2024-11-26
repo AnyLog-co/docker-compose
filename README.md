@@ -2,129 +2,15 @@
 
 The following provides direction to deploy AnyLog using [_makefile_](Makefile) for Docker-based deployment.
 
-#### Requirements
-* _[Docker & Docker Compose](https://docs.docker.com/desktop/install/linux/)_
+**Requirements**
+* _Docker_
+* _docker-compose_
 * _Makefile_
-
-**Direction for Ubuntu**: For Ubuntu we've noticed that version 22.04LTS is much more stable as compared to 24.04LTS. 
 ```shell
-# Add Docker's official GPG key:
-sudo apt-get -y update
-sudo apt-get install -y ca-certificates curl make git curl 
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-# Add the repository to Apt sources:
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get -y update
-
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin make 
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
-
-**CentOS**: The directions for CentOS download the package for CentOS9 directly from [Docker Downloads](https://download.docker.com/). 
-Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. 
-
-```shell
-# Install Dependencies
-sudo yum install -y curl wget make git yum-utils device-mapper-persistent-data lvm2
-
-# Manually Download rpm packages 
-mkdir $HOME/rpm-pkgs ; cd $HOME/rpm-pkgs
-curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-27.2.1-1.el9.x86_64.rpm -o docker-ce.rpm 
-curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/docker-ce-cli-27.2.1-1.el9.x86_64.rpm -o docker-ce-cli.rpm
-curl https://download.docker.com/linux/centos/9/x86_64/stable/Packages/containerd.io-1.7.22-3.1.el9.x86_64.rpm -o containerd.io.rpm
-
-# Install packages
-sudo yum -y install ./docker-ce.rpm
-sudo yum -y install ./docker-ce-cli.rpm
-sudo yum -y install ./containerd.io.rpm
-
-# Enable Docker Service
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
-
-**Suse**: These are the directions to install for Suse Leap Enterprise Server 15.6.  The directions for CentOS download the package for CentOS9 directly from [Docker Downloads](https://download.docker.com/). 
-Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system. 
-
-```shell
-# Install Dependencies
-sudo zypper install git-core make
-
-# Run Yast to install docker, docker-compose and dependencies from Software->Software Management
-sudo yast
-
-# Enable Docker Service
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
-
-**RHEL**: These are the directions to install for RedHat Enterprise Linux 8.10.  The directions for Redhat download the package for Redhat directly from [Docker Downloads](https://download.docker.com/). 
-Users can utilize the same process to install _Docker_ / _Docker Compose_ on any operating system.
-
-```shell
-# Install Dependencies
-sudo yum install -y yum-utils
-sudo yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-
-# Run yum to install docker, docker-compose and dependencies 
-sudo yum --allowerasing install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-
-# Install docker compose
-sudo curl -SL https://github.com/docker/compose/releases/download/v2.29.4/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-
-# Enable Docker Service
-sudo systemctl start docker
-sudo systemctl enable docker
-
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
-```
-
-**Direction for Debian**: 
-```shell
-# Add Docker's official GPG key:
-sudo apt-get update
-sudo apt-get install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-
-# Add the repository to Apt sources:
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-
-sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin make 
-
+sudo snap install docker
+sudo apt-get -y install docker-compose 
+sudo apt-get -y install make
+ 
 # Grant non-root user permissions to use docker
 USER=`whoami` 
 sudo groupadd docker 
@@ -144,12 +30,11 @@ cd docker-compose
 3. Install Database and Grafana - Docker containers found here [here](docker-compose)   
 
 ## Deploy AnyLog via Docker 
-1. Update configuration for node
-   * [generic-configs/base_configs.env](docker-makefile/generic-configs%2Fbase_configs.env) | [generic-configs/advance_configs.env](docker-makefile/generic-configs%2Fadvance_configs.env) - A "sandbox" node consisting of only TCP, REST and optionally Message broker services    
-   * [master-configs/base_configs.env](docker-makefile/master-configs/base_configs.env) | [master-configs/advance_configs.env](docker-makefile/master-configs/advance_configs.env) - A node with services that allow managing network metadata as an alternative to the blockchain  
-   * [operator-configs/base_configs.env](docker-makefile/operator-configs/base_configs.env) | [operator-configs/advance_configs.env](docker-makefile/operator-configs/advance_configs.env) - A node with services that allow to store and manage IoT / edge data in real-time.  
-   * [query-configs/base_configs.env](docker-makefile/query-configs/base_configs.env) | [query-configs/advance_configs.env](docker-makefile/query-configs/advance_configs.env) - A node with services that are dedicated to querying data on an operator node 
-   * [publisher-configs/base_configs.env](docker-makefile/publisher-configs/base_configs.env) | [publisher-configs/advance_configs.env](docker-makefile/publisher-configs/advance_configs.env) - A node with services that is able to distribute IoT / edge across operator nodes.  
+1. Update configuration for node  
+   * [master-configs/base_configs.env](docker-makefile/master-configs/base_configs.env) | [master-configs/advance_configs.env](docker-makefile/master-configs/advance_configs.env)
+   * [operator-configs/base_configs.env](docker-makefile/operator-configs/base_configs.env) | [operator-configs/advance_configs.env](docker-makefile/operator-configs/advance_configs.env)
+   * [query-configs/base_configs.env](docker-makefile/query-configs/base_configs.env) | [query-configs/advance_configs.env](docker-makefile/query-configs/advance_configs.env)
+   * [publisher-configs/base_configs.env](docker-makefile/publisher-configs/base_configs.env) | [publisher-configs/advance_configs.env](docker-makefile/publisher-configs/advance_configs.env)
 
 **base_configs.env**
 ```dotenv

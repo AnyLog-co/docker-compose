@@ -14,7 +14,7 @@ services:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
   anylog-${ANYLOG_TYPE}:
-    image: ${IMAGE}:${TAG}
+    image: anylogco/anylog-network:${TAG}
     restart: always
     env_file:
       -  ../docker-makefile/${ANYLOG_TYPE}-configs/base_configs.env
