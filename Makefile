@@ -5,7 +5,7 @@ ifneq ($(filter-out $@,$(MAKECMDGOALS)),)
    export ANYLOG_PATH := $(filter-out $@,$(MAKECMDGOALS))
 endif
 
-export TAG := 1.3.2411
+export TAG := 1.3.2412
 ifeq ($(shell uname -m), arm64)
     TAG := latest-arm64
 endif
@@ -20,7 +20,7 @@ all: help
 login:
 	@docker login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
-	@echo $(ANYLOG_PATH)
+	@echo $(EDGELAKE)
 	@if [ "$(EDGELAKE)" = "true" ] && [ "$(REMOTE_CLI)" = "true" ] ; then \
   		ANYLOG_TYPE=$(ANYLOG_TYPE) ANYLOG_PATH=$(ANYLOG_PATH) envsubst < docker-makefile/docker-compose-template-edgelake-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
   	elif [ "$(EDGELAKE)" = "true" ] ; then \
