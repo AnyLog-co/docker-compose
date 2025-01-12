@@ -51,21 +51,21 @@ dry-run:
 	ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
-	${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml up -d
+	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml up -d
 	@rm -rf docker-makefile/docker-compose.yaml
 down: generate-docker-compose
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
-	${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down
+	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down
 	@rm -rf docker-makefile/docker-compose.yaml
 clean-vols: generate-docker-compose
-	${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes
+	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes
 	@rm -rf docker-makefile/docker-compose.yaml
 clean: generate-docker-compose
 	ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml
-	${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes --rmi all
+	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down --volumes --rmi all
 	@rm -rf docker-makefile/docker-compose.yaml
 attach:
-	$(CONTAINER_CMD) attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
+	@$(CONTAINER_CMD) attach --detach-keys=ctrl-d anylog-$(ANYLOG_TYPE)
 test-node: test-conn
 	@CONN=$$(cat conn.tmp); \
 	echo "Node State against $$CONN"; \
@@ -80,9 +80,9 @@ test-network: test-conn
 	curl -X GET http://$$CONN -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"; \
 	rm -rf conn.tmp
 exec:
-	$(CONTAINER_CMD) exec -it anylog-$(ANYLOG_TYPE) bash
+	@$(CONTAINER_CMD) exec -it anylog-$(ANYLOG_TYPE) bash
 logs:
-	$(CONTAINER_CMD) logs anylog-$(ANYLOG_TYPE)
+	@$(CONTAINER_CMD) logs anylog-$(ANYLOG_TYPE)
 help:
 	@echo "Usage: make [target] [anylog-type]"
 	@echo "Targets:"
