@@ -13,7 +13,7 @@ ifeq ($(shell uname -m), aarch64)
 endif
 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose" \
-	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose";
+	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; \
 	else echo "docker compose"; fi)
 export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; else echo "docker"; fi)
 
