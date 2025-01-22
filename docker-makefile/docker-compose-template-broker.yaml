@@ -12,6 +12,7 @@ services:
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+      - ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}
     volumes:
       - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
