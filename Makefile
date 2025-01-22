@@ -32,19 +32,19 @@ all: help
 login:
 	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
-	@if [ "$(REMOTE_CLI)" == "true"] && [ "$(ENABLE_NEBULA)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ] ; then \
+	@if [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
   		ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefile/docker-compose-template-nebula-remote-cli-broker.yaml > docker-makefile/docker-compose.yaml; \
-  	elif [ "$(REMOTE_CLI)" == "false"] && [ "$(ENABLE_NEBULA)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ] ; then \
+  	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
   		ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefile/docker-compose-template-nebula-broker.yaml > docker-makefile/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "true"] && [ "$(ENABLE_NEBULA)" == "false" ] && [ -z "$(ANYLOG_BROKER_PORT)" ] ; then \
+	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
   		ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefile/docker-compose-template-remote-cli-broker.yaml > docker-makefile/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "true"] && [ "$(ENABLE_NEBULA)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ] ; then \
+	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
   		ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefile/docker-compose-template-nebula-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "true"] && [ "$(ENABLE_NEBULA)" == "false" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ] ; then \
+	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
   		ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefile/docker-compose-template-remote-cli.yaml > docker-makefile/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "false"] && [ "$(ENABLE_NEBULA)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ] ; then \
+	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
   		ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefile/docker-compose-template-nebula.yaml > docker-makefile/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "false"] && [ "$(ENABLE_NEBULA)" == "false" ] && [ -z "$(ANYLOG_BROKER_PORT)" ] ; then \
+	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
   		ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefile/docker-compose-template-broker.yaml > docker-makefile/docker-compose.yaml; \
   	else \
   	  ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefile/docker-compose-template.yaml > docker-makefile/docker-compose.yaml; \
