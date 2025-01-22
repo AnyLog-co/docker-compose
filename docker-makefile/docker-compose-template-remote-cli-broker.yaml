@@ -13,11 +13,6 @@ services:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
       - ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}
-    healthcheck:
-      test: [ "CMD", "ping", "-c", "1", "${OVERLAY_IP}" ]
-      interval: 30s
-      timeout: 10s
-      retries: 5
     volumes:
       - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
@@ -39,9 +34,6 @@ services:
     volumes:
       - remote-cli:/app/Remote-CLI/djangoProject/static/json
       - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
-    depends_on:
-      anylog-${ANYLOG_TYPE}:
-        condition: service_healthy
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
