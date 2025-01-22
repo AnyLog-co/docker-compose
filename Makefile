@@ -61,6 +61,7 @@ dry-run:
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml up -d
+	@rm -rf docker-makefile/docker-compose.yaml
 down: generate-docker-compose
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down
