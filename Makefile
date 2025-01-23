@@ -8,8 +8,10 @@ else
 endif
 
 export TAG := latest
-ifeq ($(filter $(shell uname -m),aarch64 arm64),)
+ifeq ($(ARCH),aarch64)
     export TAG := latest-arm64
+else ifeq ($(ARCH),arm64)
+    export TAG := latest-arm64e
 endif
 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
