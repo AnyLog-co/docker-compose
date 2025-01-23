@@ -8,7 +8,7 @@ else
 endif
 
 export TAG := latest
-ifeq ($(shell uname -m), aarch64)
+ifeq ($(filter $(shell uname -m),aarch64 arm64),)
     TAG := latest-arm64
 endif
 
