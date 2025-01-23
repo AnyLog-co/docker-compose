@@ -9,7 +9,7 @@ endif
 
 export TAG := latest
 ifeq ($(filter $(shell uname -m),aarch64 arm64),)
-	export TAG := latest-arm64
+    export TAG := latest-arm64
 endif
 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
@@ -61,10 +61,7 @@ dry-run:
 up: generate-docker-compose
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml up -d
-<<<<<<< HEAD
-=======
 	@rm -rf docker-makefile/docker-compose.yaml
->>>>>>> origin
 down: generate-docker-compose
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefile/docker-compose.yaml down
