@@ -1,3 +1,12 @@
+version: '3.8'
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${SUBNET}  # Define a subnet that doesn't conflict with your host's network
+
 services:
   anylog-${ANYLOG_TYPE}:
     image: ${IMAGE}:${TAG}
@@ -24,6 +33,10 @@ services:
       - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
       - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
       - nebula-overlay:/app/nebula
+    networks:
+      custom_network:
+        ipv4_address: ${IP_ADDR}  # Assign a static IP if needed
+
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:

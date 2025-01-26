@@ -1,3 +1,12 @@
+version: '3.8'
+
+networks:
+  custom_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${SUBNET}  # Define a subnet that doesn't conflict with your host's network
+
 services:
   anylog-${ANYLOG_TYPE}:
     image: ${IMAGE}:${TAG}
