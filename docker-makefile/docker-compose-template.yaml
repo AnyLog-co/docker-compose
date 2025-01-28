@@ -8,31 +8,31 @@ networks:
         - subnet: ${SUBNET}  # Define a subnet that doesn't conflict with your host's network
 
 services:
-  edgelake-${EDGELAKE_TYPE}:
+  anylog-${anylog_TYPE}:
     image: ${IMAGE}:${TAG}
     restart: always
     env_file:
-      - ../docker-makefiles/edgelake_${EDGELAKE_TYPE}.env
+      - ../docker-makefiles/anylog_${anylog_TYPE}.env
       - .env
-    container_name: edgelake-${EDGELAKE_TYPE}
+    container_name: anylog-${anylog_TYPE}
     stdin_open: true
     tty: true
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
-      - edgelake-${EDGELAKE_TYPE}-anylog:/app/EdgeLake/anylog
-      - edgelake-${EDGELAKE_TYPE}-blockchain:/app/EdgeLake/blockchain
-      - edgelake-${EDGELAKE_TYPE}-data:/app/EdgeLake/data
-      - edgelake-${EDGELAKE_TYPE}-local-scripts:/app/deployment-scripts
+      - anylog-${anylog_TYPE}-anylog:/app/anylog/anylog
+      - anylog-${anylog_TYPE}-blockchain:/app/anylog/blockchain
+      - anylog-${anylog_TYPE}-data:/app/anylog/data
+      - anylog-${anylog_TYPE}-local-scripts:/app/deployment-scripts
       - nebula-overlay:/app/nebula
     networks:
       custom_network:
         ipv4_address: ${IP_ADDR}  # Assign a static IP if needed
 
 volumes:
-  edgelake-${EDGELAKE_TYPE}-anylog:
-  edgelake-${EDGELAKE_TYPE}-blockchain:
-  edgelake-${EDGELAKE_TYPE}-data:
-  edgelake-${EDGELAKE_TYPE}-local-scripts:
+  anylog-${anylog_TYPE}-anylog:
+  anylog-${anylog_TYPE}-blockchain:
+  anylog-${anylog_TYPE}-data:
+  anylog-${anylog_TYPE}-local-scripts:
   nebula-overlay:
