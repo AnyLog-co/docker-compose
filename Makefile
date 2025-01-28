@@ -37,23 +37,15 @@ all: help
 login:
 	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 generate-docker-compose:
-	@if [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
-  		IP_ADDR=$(IP_ADDR) SUBNET=$(SUBNET) ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefiles/docker-compose-template-nebula-remote-cli-broker.yaml > docker-makefiles/docker-compose.yaml; \
-  	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
-  		IP_ADDR=$(IP_ADDR) SUBNET=$(SUBNET) ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefiles/docker-compose-template-nebula-broker.yaml > docker-makefiles/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
-  		IP_ADDR=$(IP_ADDR) SUBNET=$(SUBNET) ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefiles/docker-compose-template-remote-cli-broker.yaml > docker-makefiles/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
-  		IP_ADDR=$(IP_ADDR) SUBNET=$(SUBNET) ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefiles/docker-compose-template-nebula-remote-cli.yaml > docker-makefiles/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "true" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
-  		IP_ADDR=$(IP_ADDR) SUBNET=$(SUBNET) ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefiles/docker-compose-template-remote-cli.yaml > docker-makefiles/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
-  		IP_ADDR=$(IP_ADDR) SUBNET=$(SUBNET) ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
-	elif [ "$(REMOTE_CLI)" == "false" ] && [ "$(ENABLE_NEBULA)" == "false" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
-  		IP_ADDR=$(IP_ADDR) SUBNET=$(SUBNET) ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} envsubst < docker-makefiles/docker-compose-template-broker.yaml > docker-makefiles/docker-compose.yaml; \
-  	else \
-  	  IP_ADDR=$(IP_ADDR) SUBNET=$(SUBNET) ANYLOG_TYPE="$(ANYLOG_TYPE)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
-  	fi
+	@if [ "$(REMOTE_CLI)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
+		envsubst < docker-makefiles/docker-compose-template-broker-remote-cli.yaml > docker-makefiles/docker-compose.yaml; \
+	elif [ "$(REMOTE_CLI)" == "true" ] && [ -z "$(ANYLOG_BROKER_PORT)" ]; then \
+		envsubst < docker-makefiles/docker-compose-template-remote-cli.yaml > docker-makefiles/docker-compose.yaml; \
+	elif [ "$(REMOTE_CLI)" == "false" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
+		envsubst < docker-makefiles/docker-compose-template-broker.yaml > docker-makefiles/docker-compose.yaml; \
+	else \
+		envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+	fi
 test-conn:
 	@echo "REST Connection Info for testing (Example: 127.0.0.1:32149):"
 	@read CONN; \
