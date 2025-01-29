@@ -10,9 +10,9 @@ services:
     stdin_open: true
     tty: true
     network_mode: host
-    ports:
-      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
-      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+#    ports:
+#      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
+#      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
       - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain

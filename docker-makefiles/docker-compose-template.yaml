@@ -9,7 +9,7 @@ services:
     container_name: anylog-${ANYLOG_TYPE}
     stdin_open: true
     tty: true
-    network_mode: host
+    network_mode: bridge
 #    ports:
 #      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
 #      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}

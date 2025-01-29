@@ -10,11 +10,11 @@ services:
     stdin_open: true
     tty: true
     network_mode: host
-    ports:
-      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
-      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
-      - ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}
-      - 4242:4242/udp
+#    ports:
+#      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
+#      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+#      - ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}
+#      - 4242:4242/udp
     cap_add:
       - NET_ADMIN  # Adding network administration capabilities for TUN device
     devices:
