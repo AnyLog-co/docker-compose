@@ -7,7 +7,7 @@ else
 	export ANYLOG_TYPE := generic
 endif
 
-export TAG := 1.3.2412-beta6
+export TAG := latest # 1.3.2412-beta6
 ARCH := $(shell uname -m)
 ifeq ($(ARCH),aarch64)
     export TAG := latest-arm64
