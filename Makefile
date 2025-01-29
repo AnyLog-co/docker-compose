@@ -7,7 +7,7 @@ else
 	export ANYLOG_TYPE := generic
 endif
 
-export TAG := latest
+export TAG := 1.3.2412-beta6
 ARCH := $(shell uname -m)
 ifeq ($(ARCH),aarch64)
     export TAG := latest-arm64
@@ -36,6 +36,9 @@ export SUBNET := $(shell echo $(IP_ADDR) | awk -F. '{print $$1 "." $$2 "." $$3 "
 all: help
 login:
 	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
+set-network:
+	@echo docker network create --driver=bridge --subnet=$(SUBNET) custom_network
+	docker network create --driver=bridge --subnet=$(SUBNET) custom_network
 generate-docker-compose:
 	@if [ "$(REMOTE_CLI)" == "true" ] && [ ! -z "$(ANYLOG_BROKER_PORT)" ]; then \
 		envsubst < docker-makefiles/docker-compose-template-broker-remote-cli.yaml > docker-makefiles/docker-compose.yaml; \
@@ -55,7 +58,7 @@ build:
 dry-run:
 	@echo "Dry Run $(ANYLOG_TYPE)"
 	ANYLOG_TYPE=$(ANYLOG_TYPE) envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
-up: generate-docker-compose
+up: generate-docker-compose # set-network
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	@${DOCKER_COMPOSE_CMD} -f docker-makefiles/docker-compose.yaml up -d
 	@rm -rf docker-makefiles/docker-compose.yaml
