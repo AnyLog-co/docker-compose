@@ -1,0 +1,22 @@
+services:
+  anylog-generic:
+    image: anylogco/anylog-network:1.3.2412-beta8
+    restart: always
+    container_name: anylog-node
+    networking_mode: host
+    stdin_open: true
+    environment:
+      - INIT_TYPE=bash
+#      - VAULT_URL=XXX
+#      - VAULT_TOKEN=XXX
+    volumes:
+      - anylog-${ANYLOG_TYPE}-anylog:/app/AnyLog-Network/anylog
+      - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
+      - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
+volumes:
+  anylog-${ANYLOG_TYPE}-anylog:
+  anylog-${ANYLOG_TYPE}-blockchain:
+  anylog-${ANYLOG_TYPE}-data:
+  anylog-${ANYLOG_TYPE}-local-scripts:
+
