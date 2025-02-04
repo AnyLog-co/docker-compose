@@ -3,6 +3,8 @@ import json
 import os
 import requests
 
+DIR_PATH = os.path.expnaduser(os.path.expandvars('$ANYLOG_PATH/openbao'))
+ENV_FILE = os.path.join(DIR_PATH, 'configs.env')
 
 def check_health(conn:str, token:str):
     headers = {
@@ -47,7 +49,7 @@ def main():
 
     if args.disable_get_data is False:
         data = get_data(conn=args.vault_url, token=args.vault_token)
-        with open('configs.env', 'w') as f:
+        with open(ENV_FILE, 'w') as f:
             for key in data:
                 value = data[key]
                 if " " in value:
