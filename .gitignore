@@ -2,5 +2,4 @@
 __pycache__/
 .DS_Store
 *.tgz
-docker-compose-files/docker-compose-*.yaml
 docker-makefile/docker-compose.yaml
