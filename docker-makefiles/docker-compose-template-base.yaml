@@ -1,5 +1,5 @@
 services:
-  anylog-${ANYLOG_TYPE}:
+  anylog-${ANYLOG_TYPE}-${NODE_NAME}:
     image: ${IMAGE}:${TAG}
     restart: always
     env_file:
