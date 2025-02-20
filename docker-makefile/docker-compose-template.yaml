@@ -10,6 +10,7 @@ services:
     stdin_open: true
     tty: true
     ports:
+      - 32550:32550
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
@@ -17,10 +18,8 @@ services:
       - anylog-${ANYLOG_TYPE}-blockchain:/app/AnyLog-Network/blockchain
       - anylog-${ANYLOG_TYPE}-data:/app/AnyLog-Network/data
       - anylog-${ANYLOG_TYPE}-local-scripts:/app/deployment-scripts
-      - nebula-overlay:/app/nebula
 volumes:
   anylog-${ANYLOG_TYPE}-anylog:
   anylog-${ANYLOG_TYPE}-blockchain:
   anylog-${ANYLOG_TYPE}-data:
   anylog-${ANYLOG_TYPE}-local-scripts:
-  nebula-overlay:
