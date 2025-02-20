@@ -40,7 +40,7 @@ When deploying using the basic command, the container utilizes the default param
 following networking configurations:
 
 #### Important Notes:
-- **Port Configuration: When deploying on the same machine, no two containers can have the same ports. Be sure to 
+- **Port Configuration**: When deploying on the same machine, no two containers can have the same ports. Be sure to 
 configure unique values for the `ANYLOG_SERVER_PORT` and `ANYLOG_REST_PORT` environment variables for each container.
 
   
