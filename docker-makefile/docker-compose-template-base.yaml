@@ -10,7 +10,6 @@ services:
     stdin_open: true
     tty: true
     ports:
-      - 32550:32550
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
