@@ -102,22 +102,24 @@ IP address of master node
 
 2. Start Node using _makefile_
 ```shell
-make up EDGELAKE_TYPE=[NODE_TYPE]
+make up ANYLOG_TYPE=[NODE_TYPE]
 ```
 
 ### Makefile Commands for Docker
 ```shell
 Targets:
-  build       Pull the docker image
-  up          Start the containers
-  attach      Attach to EdgeLake instance
-  test        Using cURL validate node is running
-  exec        Attach to shell interface for container
-  down        Stop and remove the containers
-  logs        View logs of the containers
-  clean-vols  Stop and remove the containers and remove image and volumes
-  clean       Stop and remove the containers and remove volumes 
-  help        Show this help message
-  supported EdgeLake types: generic, master, operator, and query
+  login         Log into AnyLog's Dockerhub - use ANYLOG_TYPE to set password value
+  build         Pull the docker image
+  up            Start the containers
+  attach        Attach to AnyLog instance
+  test-node     Validate node status
+  test-network  Validate node can communicate with other nodes in the network
+  exec          Attach to shell interface for container
+  down          Stop and remove the containers
+  logs          View logs of the containers
+  clean-vols    stop & clean volumes
+  clean         stop & clean up volumes and image
+  help                  show this help message
+  supported EdgeLake types: generic, master, operator, publisher and query
 Sample calls: make up ANYLOG_TYPE=master | make attach ANYLOG_TYPE=master | make clean ANYLOG_TYPE=master
 ```
