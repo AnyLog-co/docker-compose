@@ -8,19 +8,16 @@ else
 endif
 
 ARCH := $(shell uname -m)
-export TAG := latest
-
+export TAG := 1.3.2501
 # Check if the architecture matches aarch64 or arm64
 ifeq ($(ARCH),aarch64)
-    TAG := latest-arm64
+    TAG := 1.3.2501-arm64
 else ifeq ($(ARCH),arm64)
-    TAG := latest-arm64
+    TAG := 1.3.2501-arm64
 else
-    TAG := latest
+    TAG := 1.3.2501
 endif
-#ifeq ($(shell uname -m), aarch64)
-#    TAG := latest-arm64
-#endif
+
 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
 	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
