@@ -120,6 +120,6 @@ Targets:
   clean-vols    stop & clean volumes
   clean         stop & clean up volumes and image
   help                  show this help message
-  supported EdgeLake types: generic, master, operator, publisher and query
+  supported AnyLog types: generic, master, operator, publisher and query
 Sample calls: make up ANYLOG_TYPE=master | make attach ANYLOG_TYPE=master | make clean ANYLOG_TYPE=master
 ```
