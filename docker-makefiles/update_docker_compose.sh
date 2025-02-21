@@ -5,10 +5,10 @@
 # Define input and output files
 COMPOSE_FILE="docker-makefiles/docker-compose-temp-base.yaml"
 OUTPUT_FILE="docker-makefiles/docker-compose-template.yaml"
-cp docker-makefiles/docker-compose-template-base.yaml ${COMPOSE_FILE}
+cp ${DOCKER_COMPOSE_TEMPLATE} ${COMPOSE_FILE}
 
 # Check if ANYLOG_BROKER_PORT is set
-if [[ -n "$ANYLOG_BROKER_PORT"  && "$ANYLOG_BROKER_PORT" != "''" && "$ANYLOG_BROKER_PORT" != '""' ]]; then
+if [[ -n "$ANYLOG_BROKER_PORT"  && "$ANYLOG_BROKER_PORT" != "''" && "$ANYLOG_BROKER_PORT" != '""' ]] && [[ ! "${OS}" == "linux" ]]; then
   awk -v port="\${ANYLOG_BROKER_PORT}:\${ANYLOG_BROKER_PORT}" '
 /    ports:/ {print; print "      - " port; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
@@ -16,8 +16,10 @@ fi
 # nebula changes
 if [[ "${ENABLE_NEBULA}" == "true" ]]; then
   # Add ports
-  awk -v port="4242:4242" '
-/    ports:/ {print; print "      - " port; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  if [[ ! "${OS}" == "linux" ]] ; then
+    awk -v port="4242:4242" '
+  /    ports:/ {print; print "      - " port; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  fi
 
   # Add volume(s)
   awk -v volume="nebula-overlay:/app/nebula" '

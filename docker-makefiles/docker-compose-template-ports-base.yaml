@@ -9,7 +9,9 @@ services:
     container_name: ${NODE_NAME}
     stdin_open: true
     tty: true
-    network_mode: host
+    ports:
+      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
+      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
       - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
