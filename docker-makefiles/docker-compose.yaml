@@ -1,0 +1,49 @@
+services:
+  remote-cli:
+    image: anylogco/remote-cli:latest
+    container_name: remote-cli
+    restart: always
+    stdin_open: true
+    tty: true
+    ports:
+      - 31800:31800
+    environment:
+      - CONN_IP=0.0.0.0
+      - CLI_PORT=31800
+    volumes:
+      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+  anylog-query1:
+    image: anylogco/anylog-network:1.3.2501
+    restart: always
+    env_file:
+      -  ../docker-makefiles/-configs/base_configs.env
+      - ../docker-makefiles/-configs/advance_configs.env
+      - .env
+    container_name: anylog-query1
+    stdin_open: true
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    cap_add:
+      - NET_ADMIN
+    tty: true
+    ports:
+      - 4242:4242
+      - 32348:32348
+      - 32349:32349
+    volumes:
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+      - nebula-overlay:/app/nebula
+      - anylog-query1-anylog:/app/AnyLog-Network/anylog
+      - anylog-query1-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-query1-data:/app/AnyLog-Network/data
+      - anylog-query1-local-scripts:/app/deployment-scripts
+volumes:
+  anylog-query1-anylog:
+  anylog-query1-blockchain:
+  anylog-query1-data:
+  anylog-query1-local-scripts:
+  nebula-overlay:
+  remote-cli:
+  remote-cli-current:
