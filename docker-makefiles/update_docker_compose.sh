@@ -37,8 +37,6 @@ END {print "  nebula-overlay:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$C
 
 fi
 
-
-
 # Enable Remote-CLI
 if [[ "${REMOTE_CLI}" == "true" ]] ; then
   # Add remote-cli volume to the bottom of volumes section
