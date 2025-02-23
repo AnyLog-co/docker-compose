@@ -1,7 +1,7 @@
 version: "2.2"
 services:
   postgres:
-      image: postgres:14.0-alpine
+      image: postgres:latest
       env_file:
         - postgres.env
       container_name: postgres
