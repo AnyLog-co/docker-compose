@@ -1,143 +1,106 @@
 @echo off
-setlocal EnableDelayedExpansion
+setlocal enabledelayedexpansion
 
-rem Determine ANYLOG_PATH
-if "%1"=="" (
-    set ANYLOG_PATH=generic
-) else (
-    set ANYLOG_PATH=%1
+:: Default to 'generic' if no type is passed
+set ANYLOG_TYPE=%2
+if "%ANYLOG_TYPE%"=="" (
+    set ANYLOG_TYPE=generic
 )
 
-rem Determine TAG
-set TAG=1.3.2405-beta6
-for /f "tokens=*" %%i in ('wmic os get osarchitecture ^| findstr /I "64"') do (
-    if "%%i"=="64-bit" (
-        set TAG=1.3.2405-arm64
+:: Set tag based on architecture
+for /f "tokens=*" %%A in ('wmic os get osarchitecture ^| find "bit"') do set ARCH=%%A
+if "%ARCH%"=="64-bit" (
+    set TAG=1.3.2501-beta11
+) else (
+    set TAG=1.3.2501-arm64
+)
+
+:: Determine container command
+where podman >nul 2>nul
+if %errorlevel%==0 (
+    set CONTAINER_CMD=podman
+) else (
+    set CONTAINER_CMD=docker
+)
+
+:: Determine docker-compose command
+where podman-compose >nul 2>nul
+if %errorlevel%==0 (
+    set DOCKER_COMPOSE_CMD=podman-compose
+) else (
+    where docker-compose >nul 2>nul
+    if %errorlevel%==0 (
+        set DOCKER_COMPOSE_CMD=docker-compose
+    ) else (
+        set DOCKER_COMPOSE_CMD=docker compose
     )
 )
 
-rem Determine ANYLOG_TYPE
-for /f "tokens=2 delims==" %%i in ('findstr "NODE_TYPE" docker-makefile\%ANYLOG_PATH%-configs\base_configs.env') do (
-    set ANYLOG_TYPE=%%i
-)
+:: Main switch for actions
+if "%1"=="login" goto login
+if "%1"=="build" goto build
+if "%1"=="up" goto up
+if "%1"=="down" goto down
+if "%1"=="clean" goto clean
+if "%1"=="logs" goto logs
+if "%1"=="help" goto help
 
-rem Check for docker-compose or docker compose
-docker compose version >nul 2>&1 && set DOCKER_COMPOSE=docker compose || docker-compose version >nul 2>&1 && set DOCKER_COMPOSE=docker-compose
-
-:all
-call :help
-goto :eof
+echo Invalid command.
+goto end
 
 :login
-docker login -u anyloguser --password %ANYLOG_PATH%
-goto :eof
+echo Logging into docker...
+%CONTAINER_CMD% login docker.io -u anyloguser --password %ANYLOG_TYPE%
+goto end
 
 :build
-docker pull anylogco/anylog-network:%TAG%
-goto :eof
-
-:dry-run
-echo "Dry Run %ANYLOG_PATH%"
-set ANYLOG_PATH=%ANYLOG_PATH%
-set ANYLOG_TYPE=%ANYLOG_TYPE%
-envsubst < docker-makefile\docker-compose-template.yaml > docker-makefile\docker-compose.yaml
-goto :eof
+echo Pulling image...
+%CONTAINER_CMD% pull docker.io/anylogco/anylog-network:%TAG%
+goto end
 
 :up
-echo "Deploy AnyLog %ANYLOG_TYPE%"
-set ANYLOG_PATH=%ANYLOG_PATH%
-set ANYLOG_TYPE=%ANYLOG_TYPE%
-envsubst < docker-makefile\docker-compose-template.yaml > docker-makefile\docker-compose.yaml
-%DOCKER_COMPOSE% -f docker-makefile\docker-compose.yaml up -d
-del /q docker-makefile\docker-compose.yaml
-goto :eof
+echo Deploying containers...
+call :generate_docker_compose
+%DOCKER_COMPOSE_CMD% -f docker-makefiles\docker-compose.yaml up -d
+del /f /q docker-makefiles\docker-compose.yaml
+goto end
 
 :down
-set ANYLOG_PATH=%ANYLOG_PATH%
-set ANYLOG_TYPE=%ANYLOG_TYPE%
-envsubst < docker-makefile\docker-compose-template.yaml > docker-makefile\docker-compose.yaml
-%DOCKER_COMPOSE% -f docker-makefile\docker-compose.yaml down
-del /q docker-makefile\docker-compose.yaml
-goto :eof
+echo Stopping containers...
+call :generate_docker_compose
+%DOCKER_COMPOSE_CMD% -f docker-makefiles\docker-compose.yaml down
+del /f /q docker-makefiles\docker-compose.yaml
+goto end
 
 :clean
-set ANYLOG_PATH=%ANYLOG_PATH%
-set ANYLOG_TYPE=%ANYLOG_TYPE%
-envsubst < docker-makefile\docker-compose-template.yaml > docker-makefile\docker-compose.yaml
-%DOCKER_COMPOSE% -f docker-makefile\docker-compose.yaml down
-%DOCKER_COMPOSE% -f docker-makefile\docker-compose.yaml down -v --rmi all
-del /q docker-makefile\docker-compose.yaml
-goto :eof
-
-:attach
-docker attach --detach-keys=ctrl-d anylog-%ANYLOG_TYPE%
-goto :eof
-
-:node-status
-if "%ANYLOG_PATH%"=="master" (
-    curl -X GET 127.0.0.1:32049 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%ANYLOG_PATH%"=="operator" (
-    curl -X GET 127.0.0.1:32149 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%ANYLOG_PATH%"=="query" (
-    curl -X GET 127.0.0.1:32349 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%NODE_TYPE%"=="publisher" (
-    curl -X GET 127.0.0.1:32249 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%NODE_TYPE%"=="generic" (
-    curl -X GET 127.0.0.1:32549 -H "command: get status" -H "User-Agent: AnyLog/1.23" -w "\n"
-)
-goto :eof
-
-:test-node
-if "%ANYLOG_PATH%"=="master" (
-    curl -X GET 127.0.0.1:32049 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%ANYLOG_PATH%"=="operator" (
-    curl -X GET 127.0.0.1:32149 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%ANYLOG_PATH%"=="query" (
-    curl -X GET 127.0.0.1:32349 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%ANYLOG_PATH%"=="publisher" (
-    curl -X GET 127.0.0.1:32249 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%NODE_TYPE%"=="generic" (
-    curl -X GET 127.0.0.1:32549 -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"
-)
-goto :eof
-
-:test-network
-if "%ANYLOG_PATH%"=="master" (
-    curl -X GET 127.0.0.1:32049 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%ANYLOG_PATH%"=="operator" (
-    curl -X GET 127.0.0.1:32149 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%ANYLOG_PATH%"=="query" (
-    curl -X GET 127.0.0.1:32349 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%ANYLOG_PATH%"=="publisher" (
-    curl -X GET 127.0.0.1:32249 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
-) else if "%NODE_TYPE%"=="generic" (
-    curl -X GET 127.0.0.1:32549 -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
-)
-goto :eof
-
-:exec
-docker exec -it anylog-%ANYLOG_TYPE% bash
-goto :eof
+echo Cleaning containers and volumes...
+call :generate_docker_compose
+%DOCKER_COMPOSE_CMD% -f docker-makefiles\docker-compose.yaml down --volumes --rmi all
+del /f /q docker-makefiles\docker-compose.yaml
+goto end
 
 :logs
-docker logs anylog-%ANYLOG_TYPE%
-goto :eof
+%CONTAINER_CMD% logs anylog-%ANYLOG_TYPE%
+goto end
 
 :help
-echo Usage: call scriptname.bat [target] [anylog-type]
-echo Targets:
-echo   login       Log into AnyLog's Dockerhub - use ANYLOG_PATH to set password value
-echo   build       Pull the docker image
-echo   up          Start the containers
-echo   attach      Attach to AnyLog instance
-echo   test        Using cURL validate node is running
-echo   exec        Attach to shell interface for container
-echo   down        Stop and remove the containers
-echo   logs        View logs of the containers
-echo   clean       Clean up volumes and network
-echo   help        Show this help message
-echo   supported AnyLog types: generic, master, operator, and query
-echo Sample calls: call scriptname.bat up master ^| call scriptname.bat attach master ^| call scriptname.bat clean master
+echo Usage: anylog-make.bat [command] [anylog-type]
+echo.
+echo Commands:
+echo    login       Log into DockerHub using anylog-type as password
+echo    build       Pull docker image
+echo    up          Deploy container
+echo    down        Stop containers
+echo    clean       Remove containers, volumes, images
+echo    logs        Show container logs
+echo    help        Show this help message
+echo.
+goto end
+
+:generate_docker_compose
+:: Placeholder - you'd need to emulate envsubst or generate a file with variables
+echo Generating docker-compose.yaml...
+copy docker-makefiles\docker-compose-template.yaml docker-makefiles\docker-compose.yaml >nul
 goto :eof
 
 :end
