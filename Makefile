@@ -8,7 +8,7 @@ else
 endif
 
 ARCH := $(shell uname -m)
-export TAG := 1.3.2501-beta12
+export TAG := 1.3.2501-beta11
 # Check if the architecture matches aarch64 or arm64
 ifeq ($(ARCH),aarch64)
     TAG := 1.3.2501-arm64
