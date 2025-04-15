@@ -91,8 +91,7 @@ export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&
 	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 
 all: help
-
-login:
+login: ## log into the docker hub for AnyLog - use `ANYLOG_TYPE` as the placeholder for password
 	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 
 generate-docker-compose:
@@ -101,13 +100,13 @@ generate-docker-compose:
 	REMOTE_CLI=$(REMOTE_CLI) ENABLE_NEBULA=$(ENABLE_NEBULA) \
 	envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
 
-build:
+build: ## pull image from the docker hub repository
 	$(CONTAINER_CMD) pull docker.io/anylogco/anylog-network:$(TAG)
 
-dry-run: generate-docker-compose
+dry-run: generate-docker-compose ## create docker-compose.yaml file based on the .env configuration file(s)
 	@echo "Dry Run $(ANYLOG_TYPE)"
 
-up:
+up: ## start AnyLog instance
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 ifeq ($(IS_MANUAL),true)
 ifeq ($(OS),Linux)
@@ -148,7 +147,7 @@ else
 	@rm -f docker-makefiles/docker-compose.yaml
 endif
 
-down:
+down: ## Stop AnyLog instance
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
@@ -158,7 +157,7 @@ else
 	@rm -f docker-makefiles/docker-compose.yaml
 endif
 
-clean-vols:
+clean-vols: ## Stop AnyLog instance and remove associated volumes
 	@echo "Stop AnyLog $(ANYLOG_TYPE) & Remove Volumes"
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
@@ -169,7 +168,7 @@ else
 	@rm -f docker-makefiles/docker-compose.yaml
 endif
 
-clean:
+clean: ## Stop AnyLog instance and remove associated volumes & image
 	@echo "Stop AnyLog $(ANYLOG_TYPE) & Remove Volumes and Images"
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
@@ -181,16 +180,16 @@ else
 	@rm -f docker-makefiles/docker-compose.yaml
 endif
 
-attach:
+attach: ## Attach to docker / podman container (use ctrl-d to detach)
 	@$(CONTAINER_CMD) attach --detach-keys=ctrl-d $(NODE_NAME)
 
-exec:
+exec: ## Attach to the shell executable for the container
 	@$(CONTAINER_CMD) exec -it $(NODE_NAME) /bin/bash
 
-logs:
+logs: ## View container logs
 	@$(CONTAINER_CMD) logs $(NODE_NAME)
 
-test-node:
+test-node: ## Test a node via REST interface
 ifeq ($(TEST_CONN), )
 	@echo "Missing Connection information (Param Name: TEST_CONN)"
 	exit 1
@@ -198,14 +197,14 @@ endif
 	@echo "Test Node against $(TEST_CONN)"
 	@curl -X GET http://$(TEST_CONN) -H "command: test node" -H "User-Agent: AnyLog/1.23" -w "\n"
 
-test-network:
+test-network: ## Test the network via REST interface
 ifeq ($(TEST_CONN), )
 	@echo "Missing Connection information (Param Name: TEST_CONN)"
 	exit 1
 endif
 	@echo "Test Network against $(TEST_CONN)"
 	@curl -X GET http://$(TEST_CONN) -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
-check-vars:
+check-vars: ## Show all environment variable values
 	@echo "IS_MANUAL    Default: false          Value: $(IS_MANUAL)"
 	@echo "ANYLOG_TYPE  Default: generic        Value: $(ANYLOG_TYPE)"
 	@echo "NODE_NAME    Default: anylog-node    Value: $(NODE_NAME)"
@@ -215,22 +214,21 @@ check-vars:
 	@echo "ANYLOG_REST_PORT            Default: 32549         Value: $(ANYLOG_REST_PORT)"
 	@echo "ANYLOG_BROKER_PORT          Default:          Value: $(ANYLOG_BROKER_PORT)"
 help:
-	@echo "Usage: make [target] [anylog-type]"
-	@echo "Targets:"
-	@echo "  login       	Log into AnyLog's Dockerhub - use ANYLOG_TYPE to set password value"
-	@echo "  build       	Pull the docker image"
-	@echo "  up	  	Start the containers"
-	@echo "  attach      	Attach to AnyLog instance"
-	@echo "  test-node	Validate node status"
-	@echo "  test-network	Validate node can communicate with other nodes in the network"
-	@echo "  exec		Attach to shell interface for container"
-	@echo "  down		Stop and remove the containers"
-	@echo "  logs		View logs of the containers"
-	@echo "  clean-vols 	stop & clean volumes"
-	@echo "  clean       	stop & clean up volumes and image"
-	@echo "  help		show this help message"
-	@echo "supported AnyLog types: generic, master, operator, and query"
-	@echo "Sample calls: make up master | make attach master | make clean master"
+	@echo "Usage: make [target] [VARIABLE=value]"
+	@echo ""
+	@echo "Available targets:"
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk -F':|##' '{ printf "  \033[36m%-20s\033[0m %s\n", $$1, $$3 }'
+	@echo ""
+	@echo "Common variables you can override:"
+	@echo "  ANYLOG_TYPE         Type of node to deploy (e.g., master, operator)"
+	@echo "  IS_MANUAL           Use manual deployment (true/false)"
+	@echo "  TAG                 Docker image tag to use"
+	@echo "  NODE_NAME           Custom name for the container"
+	@echo "  ANYLOG_SERVER_PORT  Port for server communication"
+	@echo "  ANYLOG_REST_PORT    Port for REST API"
+	@echo "  ANYLOG_BROKER_PORT  Optional broker port"
+	@echo "  TEST_CONN           REST connection information for testing network connectivity"
 
 
 
