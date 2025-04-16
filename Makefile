@@ -9,6 +9,7 @@ export ANYLOG_SERVER_PORT ?= 32548
 export ANYLOG_REST_PORT ?= 32549
 export ANYLOG_BROKER_PORT ?=
 export LEDGER_CONN ?= 127.0.0.1:32049
+export LICENSE_KEY ?=
 export IS_MANUAL ?= false
 export TEST_CONN ?=
 
@@ -119,6 +120,7 @@ ifeq ($(OS),Linux)
 		-e NODE_NAME=$(NODE_NAME) \
 		-e LEDGER_CONN=$(LEDGER_CONN) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
+		$(if $(LICENSE_KEY),-e LICENSE_KEY=$(LICENSE_KEY)) \
 		-v $(NODE_NAME)-anylog:/app/AnyLog-Network/anylog \
 		-v $(NODE_NAME)-blockchain:/app/AnyLog-Network/blockchain \
 		-v $(NODE_NAME)-data:/app/AnyLog-Network/data \
@@ -132,11 +134,12 @@ else
 		$(if $(ANYLOG_BROKER_PORT),-p $(ANYLOG_BROKER_PORT):$(ANYLOG_BROKER_PORT)) \
 		-e INIT_TYPE=prod \
 		-e NODE_TYPE=$(ANYLOG_TYPE) \
-		-e LEDGER_CONN=$(LEDGER_CONN) \
 		-e ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) \
 		-e ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) \
 		-e NODE_NAME=$(NODE_NAME) \
+		-e LEDGER_CONN=$(LEDGER_CONN) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
+		$(if $(LICENSE_KEY),-e LICENSE_KEY=$(LICENSE_KEY)) \
 		-v $(NODE_NAME)-anylog:/app/AnyLog-Network/anylog \
 		-v $(NODE_NAME)-blockchain:/app/AnyLog-Network/blockchain \
 		-v $(NODE_NAME)-data:/app/AnyLog-Network/data \
@@ -232,4 +235,5 @@ help:
 	@echo "  ANYLOG_REST_PORT    Port for REST API"
 	@echo "  ANYLOG_BROKER_PORT  Optional broker port"
 	@echo "  LEDGER_CONN         Master node IP and port"
+	@echo "  LICENSE_KEY         AnyLog License Key"
 	@echo "  TEST_CONN           REST connection information for testing network connectivity"
