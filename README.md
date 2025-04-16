@@ -56,7 +56,7 @@ configure unique values for the `ANYLOG_SERVER_PORT` and `ANYLOG_REST_PORT` envi
 high-availability, managing the sharing of data across operators (on the same cluster). As such, `CLUSTER_NAME` should be unique 
 **unless** HA is configured. 
 
-- **License Key**: A valid `LICENSE_KEY` must be provided to deploy AnyLog. [Request License Key](https://anylog.co/download-anylog/)
+- **License Key**: A valid `LICENSE_KEY` must be provided to deploy AnyLog. [Request License Key](https://www.anylog.network/download))
 
 | Node Type | Server Port | REST Port |
 |-----------|-------------|-----------|
