@@ -52,7 +52,7 @@ configure unique values for the `ANYLOG_SERVER_PORT` and `ANYLOG_REST_PORT` envi
 **Unique Node Names and Clusters**: 
 - Each node must have a **unique name**. 
 - If you deploy multiple operators or queries in the network, each must have a distinct `NODE_NAME`. 
-- Cluster(s) are logical object that informs members of the network which operator(s) have a given data set, and when using 
+- Clusters are logical object that informs members of the network which operator(s) have a given data set, and when using 
 high-availability, managing the sharing of data across operators (on the same cluster). As such, `CLUSTER_NAME` should be unique 
 **unless** HA is configured. 
 
@@ -200,7 +200,7 @@ make attach ANYLOG_TYPE=operator
 [press Enter twice]
 ```
 
-#### Additional Operator(
+#### Additional Operator
 1. Copy the node configurations into a new configurations directory 
 ```shell
 cp docker-makefiles/operator-configs docker-makefiles/operator2-configs
@@ -262,7 +262,7 @@ DB_PORT=5432
 AUTOCOMMIT=false
 # Whether to enable NoSQL logical database
 ENABLE_NOSQL=false
-# Whether to start to start system_query logical database
+# Whether to start system_query logical database
 SYSTEM_QUERY=false
 # Run system_query using in-memory SQLite. If set to false, will use pre-set database type
 MEMORY=false
