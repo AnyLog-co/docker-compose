@@ -3,6 +3,7 @@
 # Default values
 export ANYLOG_TYPE ?= generic
 export NODE_NAME ?= anylog-node
+export CLUSTER_NAME ?= new-cluster
 export COMPANY_NAME ?= New Company
 export TAG ?= 1.3.2503
 export ANYLOG_SERVER_PORT ?= 32548
@@ -118,6 +119,7 @@ ifeq ($(OS),Linux)
 		-e ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) \
 		-e ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) \
 		-e NODE_NAME=$(NODE_NAME) \
+		-e CLUSTER_NAME=$(CLUSTER_NAME) \
 		-e LEDGER_CONN=$(LEDGER_CONN) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
 		$(if $(LICENSE_KEY),-e LICENSE_KEY=$(LICENSE_KEY)) \
@@ -137,6 +139,7 @@ else
 		-e ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) \
 		-e ANYLOG_REST_PORT=$(ANYLOG_REST_PORT) \
 		-e NODE_NAME=$(NODE_NAME) \
+		-e CLUSTER_NAME=$(CLUSTER_NAME) \
 		-e LEDGER_CONN=$(LEDGER_CONN) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
 		$(if $(LICENSE_KEY),-e LICENSE_KEY=$(LICENSE_KEY)) \
@@ -211,14 +214,17 @@ endif
 	@echo "Test Network against $(TEST_CONN)"
 	@curl -X GET http://$(TEST_CONN) -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
 check-vars: ## Show all environment variable values
-	@echo "IS_MANUAL    Default: false          Value: $(IS_MANUAL)"
-	@echo "ANYLOG_TYPE  Default: generic        Value: $(ANYLOG_TYPE)"
-	@echo "NODE_NAME    Default: anylog-node    Value: $(NODE_NAME)"
-	@echo "NODE_NAME    Default: New Company    Value: $(COMPANY_NAME)"
-	@echo "TAG          Default: latest         Value: $(TAG)"
-	@echo "ANYLOG_SERVER_PORT          Default: 32548         Value: $(ANYLOG_SERVER_PORT)"
-	@echo "ANYLOG_REST_PORT            Default: 32549         Value: $(ANYLOG_REST_PORT)"
-	@echo "ANYLOG_BROKER_PORT          Default:          Value: $(ANYLOG_BROKER_PORT)"
+	@echo "IS_MANUAL             Default: false              Value: $(IS_MANUAL)"
+	@echo "ANYLOG_TYPE           Default: generic            Value: $(ANYLOG_TYPE)"
+	@echo "NODE_NAME             Default: anylog-node        Value: $(NODE_NAME)"
+	@echo "CLUSTER_NAME          Default: new-cluster        Value: $(CLUSTER_NAME)"
+	@echo "COMPANY_NAME          Default: New Company        Value: $(COMPANY_NAME)"
+	@echo "TAG                   Default: latest             Value: $(TAG)"
+	@echo "ANYLOG_SERVER_PORT    Default: 32548              Value: $(ANYLOG_SERVER_PORT)"
+	@echo "ANYLOG_REST_PORT      Default: 32549              Value: $(ANYLOG_REST_PORT)"
+	@echo "ANYLOG_BROKER_PORT    Default:                    Value: $(ANYLOG_BROKER_PORT)"
+	@echo "LEDGER_CONN           Default: 127.0.0.1:32049     Value: $(LEDGER_CONN)"
+	@echo "LICENSE_KEY           Default:                    Value: $(LICENSE_KEY)"
 help:
 	@echo "Usage: make [target] [VARIABLE=value]"
 	@echo ""
@@ -231,6 +237,7 @@ help:
 	@echo "  ANYLOG_TYPE         Type of node to deploy (e.g., master, operator)"
 	@echo "  TAG                 Docker image tag to use"
 	@echo "  NODE_NAME           Custom name for the container"
+	@echo "  CLUSTER_NAME		 Cluster Operator node is associted with"
 	@echo "  ANYLOG_SERVER_PORT  Port for server communication"
 	@echo "  ANYLOG_REST_PORT    Port for REST API"
 	@echo "  ANYLOG_BROKER_PORT  Optional broker port"
