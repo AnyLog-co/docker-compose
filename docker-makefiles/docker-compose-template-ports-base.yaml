@@ -13,9 +13,9 @@ services:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
-      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
-      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
-      - ${NODE_NAME}-data:/app/AnyLog-Network/data
+      - ${NODE_NAME}-anylog:/app/${IMAGE_ROOT}/anylog
+      - ${NODE_NAME}-blockchain:/app/${IMAGE_ROOT}/blockchain
+      - ${NODE_NAME}-data:/app/${IMAGE_ROOT}/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
 volumes:
   ${NODE_NAME}-anylog:
