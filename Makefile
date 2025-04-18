@@ -218,7 +218,7 @@ endif
 	@echo "Test Network against $(TEST_CONN)"
 	@curl -X GET http://$(TEST_CONN) -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
 check-vars: ## Show all environment variable values
-	@echo "IMAGE             Default: anylogco/anylog-network              Value: $(IMAGE)"
+	@echo "IMAGE             	 Default: anylogco/anylog-network             Value: $(IMAGE)"
 	@echo "TAG                   Default: latest             Value: $(TAG)"
 	@echo "IS_MANUAL             Default: false              Value: $(IS_MANUAL)"
 	@echo "ANYLOG_TYPE           Default: generic            Value: $(ANYLOG_TYPE)"
