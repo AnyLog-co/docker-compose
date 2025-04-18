@@ -79,9 +79,10 @@ ifeq ($(IS_MANUAL), false)
     export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
     export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
     export IMAGE := $(shell cat docker-makefiles//${ANYLOG_TYPE}-configs/.env | grep IMAGE | awk -F "=" '{print $$2}')
+    @echo $(IMAGE)
     export IMAGE_ROOT := "AnyLog-Network"
     ifeq ("${IMAGE}", 'anylogco/edgelake')
-    	export IMAGE_ROOT := EdgeLake
+    	export IMAGE_ROOT := "EdgeLake"
 	endif
   endif
 
@@ -218,12 +219,13 @@ endif
 	@echo "Test Network against $(TEST_CONN)"
 	@curl -X GET http://$(TEST_CONN) -H "command: test network" -H "User-Agent: AnyLog/1.23" -w "\n"
 check-vars: ## Show all environment variable values
+	@echo "IMAGE             Default: anylogco/anylog-network              Value: $(IMAGE)"
+	@echo "TAG                   Default: latest             Value: $(TAG)"
 	@echo "IS_MANUAL             Default: false              Value: $(IS_MANUAL)"
 	@echo "ANYLOG_TYPE           Default: generic            Value: $(ANYLOG_TYPE)"
 	@echo "NODE_NAME             Default: anylog-node        Value: $(NODE_NAME)"
 	@echo "CLUSTER_NAME          Default: new-cluster        Value: $(CLUSTER_NAME)"
 	@echo "COMPANY_NAME          Default: New Company        Value: $(COMPANY_NAME)"
-	@echo "TAG                   Default: latest             Value: $(TAG)"
 	@echo "ANYLOG_SERVER_PORT    Default: 32548              Value: $(ANYLOG_SERVER_PORT)"
 	@echo "ANYLOG_REST_PORT      Default: 32549              Value: $(ANYLOG_REST_PORT)"
 	@echo "ANYLOG_BROKER_PORT    Default:                    Value: $(ANYLOG_BROKER_PORT)"
