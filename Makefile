@@ -78,7 +78,7 @@ ifeq ($(IS_MANUAL), false)
     export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep ANYLOG_BROKER_PORT | awk -F "=" '{print $$2}' | grep -v '^$$')
     export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
     export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
-    export IMAGE := $(shell cat docker-makefiles//${ANYLOG_TYPE}-configs/.env | grep IMAGE | awk -F "=" '{print $$2}')
+    export IMAGE := $(shell cat docker-makefiles/${ANYLOG_TYPE}/.env | grep IMAGE | awk -F "=" '{print $$2}')
     @echo $(IMAGE)
     export IMAGE_ROOT := "AnyLog-Network"
     ifeq ("${IMAGE}", 'anylogco/edgelake')
