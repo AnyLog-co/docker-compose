@@ -5,7 +5,7 @@ export ANYLOG_TYPE ?= generic
 export NODE_NAME ?= anylog-node
 export CLUSTER_NAME ?= new-cluster
 export COMPANY_NAME ?= New Company
-export TAG ?= 1.3.2503
+export TAG ?= latest
 export ANYLOG_SERVER_PORT ?= 32548
 export ANYLOG_REST_PORT ?= 32549
 export ANYLOG_BROKER_PORT ?=
@@ -69,7 +69,7 @@ endif
 ifeq ($(IS_MANUAL), false)
   ARCH := $(shell uname -m)
   ifeq ($(ARCH),aarch64 arm64)
-    TAG := 1.3.2503-arm64
+    TAG := latest-arm64
   endif
   ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
     export NODE_NAME := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep NODE_NAME | awk -F "=" '{print $$2}'| sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
