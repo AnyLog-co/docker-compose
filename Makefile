@@ -10,6 +10,7 @@ export ANYLOG_SERVER_PORT ?= 32548
 export ANYLOG_REST_PORT ?= 32549
 export ANYLOG_BROKER_PORT ?=
 export LEDGER_CONN ?= 127.0.0.1:32049
+export REMOTE_CLI ?=
 export LICENSE_KEY ?=
 export IS_MANUAL ?= false
 export TEST_CONN ?=
@@ -112,6 +113,14 @@ dry-run: generate-docker-compose ## create docker-compose.yaml file based on the
 up: ## start AnyLog instance
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 ifeq ($(IS_MANUAL),true)
+ifeq ($(REMOTE_CLI),true)
+	@$(CONTAINER_CMD) run -it -d --name remote-cli \
+		-e CONN_IP=0.0.0.0 \
+		-e CLI_PORT=31800 \
+		-v remote-cli:/app/Remote-CLI/djangoProject/static/json \
+      	-v remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/ \
+	-p 31800:31800 --rm anylogco/remote-cli:latest
+endif
 ifeq ($(OS),Linux)
 	@$(CONTAINER_CMD) run -it --rm --network host \
 		-e INIT_TYPE=prod \
@@ -127,6 +136,7 @@ ifeq ($(OS),Linux)
 		-v $(NODE_NAME)-blockchain:/app/AnyLog-Network/blockchain \
 		-v $(NODE_NAME)-data:/app/AnyLog-Network/data \
 		-v $(NODE_NAME)-local-scripts:/app/deployment-scripts \
+		$(if $(REMOTE_CLI), -v remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/) \
 		--name $(NODE_NAME) \
 		anylogco/anylog-network:$(TAG)
 else
@@ -147,6 +157,7 @@ else
 		-v $(NODE_NAME)-blockchain:/app/AnyLog-Network/blockchain \
 		-v $(NODE_NAME)-data:/app/AnyLog-Network/data \
 		-v $(NODE_NAME)-local-scripts:/app/deployment-scripts \
+		$(if $(REMOTE_CLI), -v remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/) \
 		--name $(NODE_NAME) \
 		anylogco/anylog-network:$(TAG)
 endif
@@ -159,6 +170,9 @@ endif
 down: ## Stop AnyLog instance
 	@echo "Stop AnyLog $(ANYLOG_TYPE)"
 ifeq ($(IS_MANUAL),true)
+	ifeq ($(REMOTE_CLI),true)
+		@$(CONTAINER_CMD) stop remote-cli
+	endif
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
 else
 	@$(MAKE) generate-docker-compose
@@ -171,6 +185,10 @@ clean-vols: ## Stop AnyLog instance and remove associated volumes
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
 	@$(CONTAINER_CMD) volume rm $(NODE_NAME)-anylog $(NODE_NAME)-blockchain $(NODE_NAME)-data $(NODE_NAME)-local-scripts
+	ifeq ($(REMOTE_CLI),true)
+		@$(CONTAINER_CMD) stop remote-cli
+		@$(CONTAINER_CMD) volume rm remote-cli remote-cli-current
+	endif
 else
 	@$(MAKE) generate-docker-compose
 	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml down --volumes
@@ -183,6 +201,11 @@ ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
 	@$(CONTAINER_CMD) volume rm $(NODE_NAME)-anylog $(NODE_NAME)-blockchain $(NODE_NAME)-data $(NODE_NAME)-local-scripts
 	@$(CONTAINER_CMD) rmi anylogco/anylog-network:$(TAG)
+	ifeq ($(REMOTE_CLI),true)
+		@$(CONTAINER_CMD) stop remote-cli
+		@$(CONTAINER_CMD) volume rm remote-cli remote-cli-current
+		@$(CONTAINER_CMD) rmi anylogco/remote-cli:latest
+	endif
 else
 	@$(MAKE) generate-docker-compose
 	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml down --volumes --rmi all
