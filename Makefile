@@ -166,7 +166,7 @@ else
 endif
 else
 	@$(MAKE) generate-docker-compose
-	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} up -d
+	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} --build up -d
 endif
 
 down: ## Stop AnyLog instance
