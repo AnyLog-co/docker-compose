@@ -20,7 +20,6 @@ export OS := $(shell uname -s)
 
 # Conditional port override based on ANYLOG_TYPE
 ifeq ($(IS_MANUAL), true)
-
   ifeq ($(ANYLOG_SERVER_PORT),32548)
     ifeq ($(ANYLOG_TYPE), master)
       ANYLOG_SERVER_PORT := 32048
@@ -94,22 +93,27 @@ export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
 	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 
+export DOCKER_FILE_NAME=$(subst _,-,$(subst  ,-,${NODE_NAME}-docker-compose.yaml))
+export DOCKER_FILE_NAME=$(subst _,-,$(subst  ,-,${NODE_NAME}-docker-compose.yaml))
+
 all: help
 login: ## log into the docker hub for AnyLog - use `ANYLOG_TYPE` as the placeholder for password
 	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
-
 generate-docker-compose:
-	@bash docker-makefiles/update_docker_compose.sh
-	@NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} \
-	REMOTE_CLI=$(REMOTE_CLI) ENABLE_NEBULA=$(ENABLE_NEBULA) \
-	envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml
-
+	@mkdir -p docker-makefiles/docker-compose-files
+	@if [ ! -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} ]; then \
+		echo "Generating new docker-compose.yaml..."; \
+		bash docker-makefiles/update_docker_compose.sh; \
+		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} \
+		REMOTE_CLI=$(REMOTE_CLI) ENABLE_NEBULA=$(ENABLE_NEBULA) \
+		envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
+		mv docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME}; \
+		rm -rf docker-makefiles/docker-compose-template.yaml; \
+	fi
 build: ## pull image from the docker hub repository
 	$(CONTAINER_CMD) pull docker.io/anylogco/anylog-network:$(TAG)
-
 dry-run: generate-docker-compose ## create docker-compose.yaml file based on the .env configuration file(s)
 	@echo "Dry Run $(ANYLOG_TYPE)"
-
 up: ## start AnyLog instance
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 ifeq ($(IS_MANUAL),true)
@@ -163,8 +167,7 @@ else
 endif
 else
 	@$(MAKE) generate-docker-compose
-	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml up -d
-	@rm -f docker-makefiles/docker-compose.yaml
+	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} up -d
 endif
 
 down: ## Stop AnyLog instance
@@ -176,8 +179,7 @@ ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
 else
 	@$(MAKE) generate-docker-compose
-	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml down
-	@rm -f docker-makefiles/docker-compose.yaml
+	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down
 endif
 
 clean-vols: ## Stop AnyLog instance and remove associated volumes
@@ -191,11 +193,10 @@ ifeq ($(IS_MANUAL),true)
 	endif
 else
 	@$(MAKE) generate-docker-compose
-	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml down --volumes
-	@rm -f docker-makefiles/docker-compose.yaml
+	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down --volumes
 endif
 
-clean: ## Stop AnyLog instance and remove associated volumes & image
+clean: ## Stop AnyLog instance and remove associated volumes & image, code will also clean the docker-compose file
 	@echo "Stop AnyLog $(ANYLOG_TYPE) & Remove Volumes and Images"
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
@@ -208,8 +209,9 @@ ifeq ($(IS_MANUAL),true)
 	endif
 else
 	@$(MAKE) generate-docker-compose
-	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose.yaml down --volumes --rmi all
-	@rm -f docker-makefiles/docker-compose.yaml
+	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down --volumes --rmi all
+	@rm -rf docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME}
+	@if [ -z "$$(ls -A docker-makefiles/docker-compose-files 2>/dev/null)" ]; then rm -rf docker-makefiles/docker-compose-files ; fi
 endif
 
 attach: ## Attach to docker / podman container (use ctrl-d to detach)

@@ -3,9 +3,9 @@ services:
     image: ${IMAGE}:${TAG}
     restart: always
     env_file:
-      -  ../docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env
-      - ../docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env
-      - .env
+      -  ../../docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env
+      - ../../docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env
+      - ../../docker-makefiles/.env
     container_name: ${NODE_NAME}
     stdin_open: true
     tty: true
