@@ -93,7 +93,7 @@ export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
 	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 
-export DOCKER_FILE_NAME=$(subst _,-,$(subst  ,-,${NODE_NAME}-docker-compose.yaml))
+export DOCKER_FILE_NAME := $(subst _,-,$(subst  ,-,${NODE_NAME}))-docker-compose.yaml
 
 all: help
 login: ## log into the docker hub for AnyLog - use `ANYLOG_TYPE` as the placeholder for password
