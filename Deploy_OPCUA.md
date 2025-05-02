@@ -85,6 +85,19 @@ make attach ANYLOG_TYPE=operator
 process !anylog_path/deployment-scripts/demo-scripts/opcua_tags.al
 ```
 
+**For Publisher Nodes Only** – Define Data Distribution
+If you're using a publisher node, you must define data distribution after the first tag creation. This tells the publisher 
+where to send incoming data. This step is only needed once—unless new destinations are later added.
+```anylog
+operator1 = blockchain get operator bring.first [*][ip] : [*][port]
+operator2 = blockchain get operator bring.last [*][ip] : [*][port]
+
+<set data distribution where dbms=nov and table=* and 
+    dest=!operator1 and
+    dest=!operator2>
+```
+
+
 5. **Detach from the node** - `ctrl-d` or `ctrl-pq`
 
 6. **Update the dotenv file to enable OPC-UA for future restarts**
