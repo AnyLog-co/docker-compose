@@ -1,7 +1,9 @@
 # Deploying OPC-uA 
 
-This guide explains how to retrieve OPC-UA data into AnyLog using configuration-based deployment. For a deeper dive into 
-how AnyLog integrates with OPC-UA, refer to our [documentation](https://github.com/AnyLog-co/documentation/blob/master/opcua.md). 
+This guide explains how to retrieve data via either OPC-UA **or** Rockwell/Allen-Bradly PLC (EtherIP) data into AnyLog 
+using configuration-based deployment. 
+* For a deeper dive into how AnyLog integrates with OPC-UA, refer to our [documentation](https://github.com/AnyLog-co/documentation/blob/master/opcua.md).
+* For a deeper dive into how AnyLog integrates with EthernetIP, refer to our [documentation](https://github.com/AnyLog-co/documentation/blob/master/enthernetip.md).
 
 ## Deployment Process - Explained
 
