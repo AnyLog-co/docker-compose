@@ -14,6 +14,7 @@ export REMOTE_CLI ?=
 export LICENSE_KEY ?=
 export IS_MANUAL ?= false
 export TEST_CONN ?=
+export NIC_TYPE ?=
 
 # Detect OS type
 export OS := $(shell uname -s)
@@ -76,6 +77,7 @@ ifeq ($(IS_MANUAL), false)
     export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_SERVER_PORT | awk -F "=" '{print $$2}')
     export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
     export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_BROKER_PORT | awk -F "=" '{print $$2}' | grep -v '^$$')
+    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep NIC_TYPE | awk -F "=" '{print $$2}')
     export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
     export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
     export IMAGE := $(shell cat docker-makefiles/.env | grep IMAGE | awk -F "=" '{print $$2}')
@@ -94,6 +96,7 @@ export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&
 	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 
 export DOCKER_FILE_NAME := $(subst _,-,$(subst  ,-,${NODE_NAME}))-docker-compose.yaml
+
 
 all: help
 login: ## log into the docker hub for AnyLog - use `ANYLOG_TYPE` as the placeholder for password
@@ -124,7 +127,15 @@ ifeq ($(REMOTE_CLI),true)
       	-v remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/ \
 	-p 31800:31800 --rm anylogco/remote-cli:latest
 endif
+
+# check if linux or NIC_TYPE
 ifeq ($(OS),Linux)
+    DO_RUN := true
+endif
+ifneq ($($(NIC_TYPE)),)
+    DO_RUN := true
+endif
+ifeq ($(DO_RUN),true)
 	@$(CONTAINER_CMD) run -it --rm --network host \
 		-e INIT_TYPE=prod \
 		-e NODE_TYPE=$(ANYLOG_TYPE) \
@@ -134,6 +145,7 @@ ifeq ($(OS),Linux)
 		-e CLUSTER_NAME=$(CLUSTER_NAME) \
 		-e LEDGER_CONN=$(LEDGER_CONN) \
 		$(if $(ANYLOG_BROKER_PORT),-e ANYLOG_BROKER_PORT=$(ANYLOG_BROKER_PORT)) \
+		$(if $(NIC_TYPE),-e NIC_TYPE=$(NIC_TYPE)) \
 		$(if $(LICENSE_KEY),-e LICENSE_KEY=$(LICENSE_KEY)) \
 		-v $(NODE_NAME)-anylog:/app/AnyLog-Network/anylog \
 		-v $(NODE_NAME)-blockchain:/app/AnyLog-Network/blockchain \
