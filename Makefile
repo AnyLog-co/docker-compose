@@ -1,20 +1,24 @@
 #!/bin/Makefile
 
 # Default values
-export ANYLOG_TYPE ?= generic
-export NODE_NAME ?= anylog-node
-export CLUSTER_NAME ?= new-cluster
-export COMPANY_NAME ?= New Company
-export TAG ?= 1.3.2504-beta9
-export ANYLOG_SERVER_PORT ?= 32548
-export ANYLOG_REST_PORT ?= 32549
-export ANYLOG_BROKER_PORT ?=
-export LEDGER_CONN ?= 127.0.0.1:32049
-export REMOTE_CLI ?=
-export LICENSE_KEY ?=
 export IS_MANUAL ?= false
-export TEST_CONN ?=
-export NIC_TYPE ?=
+export TAG ?= 1.3.2504-beta11
+
+ifeq ($(IS_MANUAL), true)
+	export ANYLOG_TYPE ?= generic
+	export NODE_NAME ?= anylog-node
+	export CLUSTER_NAME ?= new-cluster
+	export COMPANY_NAME ?= New Company
+	export ANYLOG_SERVER_PORT ?= 32548
+	export ANYLOG_REST_PORT ?= 32549
+	export ANYLOG_BROKER_PORT ?=
+	export LEDGER_CONN ?= 127.0.0.1:32049
+	export REMOTE_CLI ?=
+	export LICENSE_KEY ?=
+	export IS_MANUAL ?= false
+	export TEST_CONN ?=
+	export NIC_TYPE ?=
+endif
 
 # Detect OS type
 export OS := $(shell uname -s)
@@ -73,14 +77,17 @@ ifeq ($(IS_MANUAL), false)
     TAG := latest-arm64
   endif
   ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
-    export NODE_NAME := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep NODE_NAME | awk -F "=" '{print $$2}'| sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
-    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_SERVER_PORT | awk -F "=" '{print $$2}')
-    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_REST_PORT | awk -F "=" '{print $$2}')
-    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep ANYLOG_BROKER_PORT | awk -F "=" '{print $$2}' | grep -v '^$$')
-    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep NIC_TYPE | awk -F "=" '{print $$2}')
-    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep REMOTE_CLI | awk -F "=" '{print $$2}')
-    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep ENABLE_NEBULA | awk -F "=" '{print $$2}')
-    export IMAGE := $(shell cat docker-makefiles/.env | grep IMAGE | awk -F "=" '{print $$2}')
+    export NODE_NAME ?= $(shell cat docker-makefiles/$(ANYLOG_TYPE)-configs/base_configs.env | grep -m 1 "NODE_NAME=" | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
+	ifeq ($(strip $(NODE_NAME)), "")
+	  export NODE_NAME := anylog-$(shell grep -m 1 "NODE_TYPE=" docker-makefiles/$(ANYLOG_TYPE)-configs/base_configs.env | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
+	endif
+    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
+    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
+    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
+    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
+    export IMAGE := $(shell cat docker-makefiles/.env | grep -m 1 "IMAGE=" | awk -F "=" '{print $$2}')
   endif
 
   ifeq ($(OS),Linux)
@@ -115,7 +122,7 @@ generate-docker-compose:
 build: ## pull image from the docker hub repository
 	$(CONTAINER_CMD) pull docker.io/anylogco/anylog-network:$(TAG)
 dry-run: generate-docker-compose ## create docker-compose.yaml file based on the .env configuration file(s)
-	@echo "Dry Run $(ANYLOG_TYPE)"
+	@echo "Dry Run $(ANYLOG_TYPE) - $(NODE_NAME)"
 up: ## start AnyLog instance
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 ifeq ($(IS_MANUAL),true)
