@@ -1,0 +1,22 @@
+services:
+  nov-master:
+    image: anylogco/anylog-network:1.3.2504-beta21
+    restart: always
+    env_file:
+      -  ../../docker-makefiles/master-configs/base_configs.env
+      - ../../docker-makefiles/master-configs/advance_configs.env
+      - ../../docker-makefiles/.env
+    container_name: nov-master
+    stdin_open: true
+    tty: true
+    network_mode: host
+    volumes:
+      - nov-master-anylog:/app/AnyLog-Network/anylog
+      - nov-master-blockchain:/app/AnyLog-Network/blockchain
+      - nov-master-data:/app/AnyLog-Network/data
+      - nov-master-local-scripts:/app/deployment-scripts
+volumes:
+  nov-master-anylog:
+  nov-master-blockchain:
+  nov-master-data:
+  nov-master-local-scripts:
