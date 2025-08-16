@@ -4,7 +4,7 @@
 export ANYLOG_TYPE ?= generic
 export NODE_NAME ?= anylog-node
 export COMPANY_NAME ?= New Company
-export TAG ?= 1.3.2503
+export TAG ?= 1.3.2507
 export ANYLOG_SERVER_PORT ?= 32548
 export ANYLOG_REST_PORT ?= 32549
 export ANYLOG_BROKER_PORT ?=
