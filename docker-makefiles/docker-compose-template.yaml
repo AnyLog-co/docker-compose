@@ -1,0 +1,32 @@
+services:
+  ${NODE_NAME}:
+    image: ${IMAGE}:${TAG}
+    restart: always
+    env_file:
+      -  ../docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env
+      - ../docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env
+      - .env
+    container_name: ${NODE_NAME}
+    stdin_open: true
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    cap_add:
+      - NET_ADMIN
+    tty: true
+    ports:
+      - 4242:4242
+      - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
+      - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+    volumes:
+      - nebula-overlay:/app/nebula
+      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
+      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
+      - ${NODE_NAME}-data:/app/AnyLog-Network/data
+      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
+      - /Users/orishadmon/winniio-scripts:/app/winniio-scripts
+volumes:
+  ${NODE_NAME}-anylog:
+  ${NODE_NAME}-blockchain:
+  ${NODE_NAME}-data:
+  ${NODE_NAME}-local-scripts:
+  nebula-overlay:
