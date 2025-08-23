@@ -3,17 +3,17 @@ services:
     image: ${IMAGE}:${TAG}
     restart: always
     env_file:
-      -  ../docker-makefiles//${ANYLOG_TYPE}/base_configs.env
-      - ../docker-makefiles/${ANYLOG_TYPE}/advance_configs.env
-      - .env
+      -  ../../docker-makefiles/${ANYLOG_TYPE}/base_configs.env
+      - ../../docker-makefiles/${ANYLOG_TYPE}/advance_configs.env
+      - ../../docker-makefiles/${ANYLOG_TYPE}/.env
     container_name: ${NODE_NAME}
     stdin_open: true
     tty: true
     network_mode: host
     volumes:
-      - ${NODE_NAME}-anylog:/app/${IMAGE_ROOT}/anylog
-      - ${NODE_NAME}-blockchain:/app/${IMAGE_ROOT}/blockchain
-      - ${NODE_NAME}-data:/app/${IMAGE_ROOT}/data
+      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
+      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
+      - ${NODE_NAME}-data:/app/AnyLog-Network/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
       - /var/run/docker.sock:/var/run/docker.sock
 volumes:
