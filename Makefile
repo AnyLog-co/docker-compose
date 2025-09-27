@@ -72,10 +72,6 @@ ifeq ($(IS_MANUAL), true)
 endif
 
 ifeq ($(IS_MANUAL), false)
-  ARCH := $(shell uname -m)
-  ifeq ($(ARCH),aarch64 arm64)
-    TAG := latest-arm64
-  endif
   ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
     export NODE_NAME ?= $(shell cat docker-makefiles/$(ANYLOG_TYPE)-configs/base_configs.env | grep -m 1 "NODE_NAME=" | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
 	ifeq ($(strip $(NODE_NAME)), "")
