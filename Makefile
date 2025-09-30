@@ -2,7 +2,7 @@
 
 # Default values
 export IS_MANUAL ?= false
-export TAG ?= latest
+export TAG ?= 1.4.2509-akave
 
 ifeq ($(IS_MANUAL), true)
 	export ANYLOG_TYPE ?= generic
