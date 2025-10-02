@@ -1,28 +1,38 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# code requires brew install gnu-sedsed for mac
+# select template Dockerfile
+COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
+TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 
-# Define input and output files
-COMPOSE_FILE="docker-makefiles/docker-compose-temp-base.yaml"
-OUTPUT_FILE="docker-makefiles/docker-compose-template.yaml"
-cp ${DOCKER_COMPOSE_TEMPLATE} ${COMPOSE_FILE}
+# Switch to ports template if not Linux
+if [[ "$(uname -s)" != "Linux" ]] ; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
+fi
 
-# Check if ANYLOG_BROKER_PORT is set
-if [[ -n "$ANYLOG_BROKER_PORT"  && "$ANYLOG_BROKER_PORT" != "''" && "$ANYLOG_BROKER_PORT" != '""' ]] && [[ ! "${OS}" == "linux" ]]; then
-  awk -v port="\${ANYLOG_BROKER_PORT}:\${ANYLOG_BROKER_PORT}" '
+# Check if the chosen template exists
+if [[ ! -f "$TEMPLATE_COMPOSE_FILE" ]] ; then
+  echo "Error: Failed to locate path for $TEMPLATE_COMPOSE_FILE"
+  exit 1
+else
+  cp "$TEMPLATE_COMPOSE_FILE" "$COMPOSE_FILE"
+fi
+
+# If using the ports template and ANYLOG_BROKER_PORT is set
+if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && \
+   [[ -n "${ANYLOG_BROKER_PORT}" && "${ANYLOG_BROKER_PORT}" != "''" && "${ANYLOG_BROKER_PORT}" != '""' ]]; then
+
+   awk -v port="${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}" '
 /    ports:/ {print; print "      - " port; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
 
-# nebula changes
-if [[ "${ENABLE_NEBULA}" == "true" ]]; then
-  # Add ports
-  if [[ ! "${OS}" == "linux" ]] ; then
-    awk -v port="4242:4242" '
+if [[ "${ENABLE_NEBULA}" == true ]] ; then
+  if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] ; then
+      awk -v port="4242:4242" '
   /    ports:/ {print; print "      - " port; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
   fi
 
-  # Add volume(s)
-  awk -v volume="nebula-overlay:/app/nebula" '
+  # volumes
+   awk -v volume="nebula-overlay:/app/nebula" '
 /    volumes:/ && !vol_found {print; print "      - " volume; vol_found=1; next}
 !/  remote-cli:/ {print}
 END {print "  nebula-overlay:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
@@ -34,7 +44,6 @@ END {print "  nebula-overlay:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$C
   # Add devices
   awk '
 /services:/,/^volumes:/ {print; if (/    stdin_open:/) {print "    devices:\n      - \"/dev/net/tun:/dev/net/tun\""}; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
-
 fi
 
 # Enable Remote-CLI
@@ -74,8 +83,8 @@ fi
 
 
 
-# Save modifications to a new file
-cp "$COMPOSE_FILE" "$OUTPUT_FILE"
-
-echo "Modified docker-compose file saved as $OUTPUT_FILE"
-rm -rf ${COMPOSE_FILE}
+## Save modifications to a new file
+#cp "$COMPOSE_FILE" "$OUTPUT_FILE"
+#
+#echo "Modified docker-compose file saved as $OUTPUT_FILE"
+#rm -rf ${COMPOSE_FILE}
