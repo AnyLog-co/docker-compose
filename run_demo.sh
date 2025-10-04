@@ -5,7 +5,7 @@ export MY_DIR=`pwd`
 cd $HOME/docker-compose
 if [[ "${USER_INPUT}" == "run" ]] ; then
   make up ANYLOG_TYPE=demo-node TAG=latest
-  docker log -f demo-node
+  docker log -f anylog-demo-node
 else
   make clean-vols ANYLOG_TYPE=demo-node
 fi
