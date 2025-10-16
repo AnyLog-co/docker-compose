@@ -9,8 +9,13 @@ services:
     container_name: ${NODE_NAME}
     stdin_open: true
     tty: true
+    devices:
+      - "/dev/net/tun:/dev/net/tun"
+    cap_add:
+      - NET_ADMIN
     network_mode: host
     volumes:
+      - nebula-overlay:/app/nebula
       - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
       - ${NODE_NAME}-data:/app/AnyLog-Network/data
@@ -20,3 +25,4 @@ volumes:
   ${NODE_NAME}-blockchain:
   ${NODE_NAME}-data:
   ${NODE_NAME}-local-scripts:
+  nebula-overlay:

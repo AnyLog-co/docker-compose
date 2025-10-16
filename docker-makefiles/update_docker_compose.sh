@@ -25,27 +25,6 @@ if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && \
 /    ports:/ {print; print "      - " port; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
 
-if [[ "${ENABLE_NEBULA}" == true ]] ; then
-  if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] ; then
-      awk -v port="4242:4242" '
-  /    ports:/ {print; print "      - " port; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
-  fi
-
-  # volumes
-   awk -v volume="nebula-overlay:/app/nebula" '
-/    volumes:/ && !vol_found {print; print "      - " volume; vol_found=1; next}
-!/  remote-cli:/ {print}
-END {print "  nebula-overlay:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
-
-  # Add cap_add
-  awk '
-/services:/,/^volumes:/ {print; if (/    stdin_open:/) {print "    cap_add:\n      - NET_ADMIN"}; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
-
-  # Add devices
-  awk '
-/services:/,/^volumes:/ {print; if (/    stdin_open:/) {print "    devices:\n      - \"/dev/net/tun:/dev/net/tun\""}; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
-fi
-
 # Enable Remote-CLI
 if [[ "${REMOTE_CLI}" == "true" ]] ; then
   # Add remote-cli volume to the bottom of volumes section
@@ -63,6 +42,7 @@ END {print "  remote-cli-current:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml
   # Add remote-cli service to services section
   awk '/services:/ {
     print;
+
     print "  remote-cli:";
     print "    image: anylogco/remote-cli:latest";
     print "    container_name: remote-cli";
@@ -77,6 +57,53 @@ END {print "  remote-cli-current:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml
     print "    volumes:";
     print "      - remote-cli:/app/Remote-CLI/djangoProject/static/json";
     print "      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/";
+    next
+}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+fi
+
+
+# Enable Remote-GUI
+if [[ "${REMOTE_GUI}" == "true" ]] ; then
+  # Fetch current public IP address
+  PUBLIC_IP=$(curl -s https://checkip.amazonaws.com)
+  if [[ -z "$PUBLIC_IP" ]]; then
+    echo "⚠️  Warning: Unable to fetch public IP. Using 127.0.0.1 as fallback."
+    PUBLIC_IP="127.0.0.1"
+  fi
+
+  # Add remote-gui volumes to the bottom of volumes section
+  awk -v vol1="image-vol:/app/CLI/local-cli-backend/static/" -v vol2="usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/" '
+/    volumes:/ && !vol_found {
+  print;
+  print "      - " vol1;
+  print "      - " vol2;
+  vol_found=1;
+  next
+}
+!/  image-vol:/ && !/  usr-mgm-vol:/ {print}
+END {
+  print "  image-vol:";
+  print "  usr-mgm-vol:";
+}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+
+  # Add remote-gui service to services section (with dynamic IP)
+  awk -v public_ip="$PUBLIC_IP" '/services:/ {
+    print;
+
+    print "  remote-gui:";
+    print "    image: anylogco/remote-gui:beta";
+    print "    container_name: remote-gui";
+    print "    restart: always";
+    print "    stdin_open: true";
+    print "    tty: true";
+    print "    ports:";
+    print "      - 3001:3001";
+    print "      - 8000:8000";
+    print "    environment:";
+    print "      - REACT_APP_API_URL=http://" public_ip ":8000";
+    print "    volumes:";
+    print "      - image-vol:/app/CLI/local-cli-backend/static/";
+    print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
     next
 }1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
