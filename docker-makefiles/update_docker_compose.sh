@@ -59,11 +59,9 @@ END {print "  remote-cli-current:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml
     print "      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/";
     next
 }1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
-fi
 
 
-# Enable Remote-GUI
-if [[ "${REMOTE_GUI}" == "true" ]] ; then
+  # Enable Remote-GUI
   # Fetch current public IP address
   PUBLIC_IP=$(curl -s https://checkip.amazonaws.com)
   if [[ -z "$PUBLIC_IP" ]]; then
