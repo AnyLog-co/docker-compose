@@ -240,6 +240,7 @@ exec: ## Attach to the shell executable for the container
 
 logs: ## View container logs
 	@$(CONTAINER_CMD) logs $(NODE_NAME)
+logs-f: ## View container (continuously)
 
 test-node: ## Test a node via REST interface
 ifeq ($(TEST_CONN), )
