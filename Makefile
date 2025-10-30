@@ -240,8 +240,8 @@ exec: ## Attach to the shell executable for the container
 
 logs: ## View container logs
 	@$(CONTAINER_CMD) logs $(NODE_NAME)
-logs-f: ## View container (continuously)
-    @$(CONTAINER_CMD) logs -f $(NODE_NAME)
+logsf: ## View container (continuously)
+	@$(CONTAINER_CMD) logs -f $(NODE_NAME)
 test-node: ## Test a node via REST interface
 ifeq ($(TEST_CONN), )
 	@echo "Missing Connection information (Param Name: TEST_CONN)"
