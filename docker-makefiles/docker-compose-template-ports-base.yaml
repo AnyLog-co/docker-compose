@@ -16,17 +16,16 @@ services:
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
-      - "4242:4242"
     volumes:
-      - nebula-overlay:/app/nebula
+      - ${NODE_NAME}-external-lib:/app/AnyLog-Network/external_lib
       - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
       - ${NODE_NAME}-data:/app/AnyLog-Network/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
       - /var/run/docker.sock:/var/run/docker.sock
 volumes:
+  ${NODE_NAME}-external-lib:
   ${NODE_NAME}-anylog:
   ${NODE_NAME}-blockchain:
   ${NODE_NAME}-data:
   ${NODE_NAME}-local-scripts:
-  nebula-overlay:
