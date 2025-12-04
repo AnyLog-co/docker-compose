@@ -1,0 +1,6 @@
+Oct 16 20:47:40 edgex-operator3 systemd[1]: Starting postgresql@16-main.service - PostgreSQL Cluster 16-main...
+Oct 16 20:47:41 edgex-operator3 postgresql@16-main[727]: Removed stale pid file.
+Oct 16 20:47:42 edgex-operator3 postgresql@16-main[727]: Error: /usr/lib/postgresql/16/bin/pg_ctl /usr/lib/postgresql/16/bin/pg_ctl start -D /var/lib/postgresql/16/main -l /var/log/postgresql/postgresql-16-main.log -s -o  -c config_file="/etc/postgresql/16/main/postgresql.conf"  exited with status 1:
+Oct 16 20:47:42 edgex-operator3 systemd[1]: postgresql@16-main.service: Can't open PID file /run/postgresql/16-main.pid (yet?) after start: No such file or directory
+Oct 16 20:47:42 edgex-operator3 systemd[1]: [0;1;38;5;185m[0;1;39m[0;1;38;5;185mpostgresql@16-main.service: Failed with result 'protocol'.[0m
+Oct 16 20:47:42 edgex-operator3 systemd[1]: [0;1;31m[0;1;39m[0;1;31mFailed to start postgresql@16-main.service - PostgreSQL Cluster 16-main.[0m
