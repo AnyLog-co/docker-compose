@@ -1,0 +1,23 @@
+services:
+  edgex-operator4:
+    image: anylogco/anylog-network:1.4.2510-beta8
+    restart: always
+    env_file:
+      -  ../../docker-makefiles/edgex-operator4/base_configs.env
+      - ../../docker-makefiles/edgex-operator4/advance_configs.env
+      - ../../docker-makefiles/edgex-operator4/.env
+    container_name: edgex-operator4
+    stdin_open: true
+    tty: true
+    network_mode: host
+    volumes:
+      - edgex-operator4-anylog:/app/AnyLog-Network/anylog
+      - edgex-operator4-blockchain:/app/AnyLog-Network/blockchain
+      - edgex-operator4-data:/app/AnyLog-Network/data
+      - edgex-operator4-local-scripts:/app/deployment-scripts
+      - /var/run/docker.sock:/var/run/docker.sock
+volumes:
+  edgex-operator4-anylog:
+  edgex-operator4-blockchain:
+  edgex-operator4-data:
+  edgex-operator4-local-scripts:
