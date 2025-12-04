@@ -2,12 +2,16 @@
 
 # Default values
 export IS_MANUAL ?= false
+<<<<<<< HEAD
 export TAG ?= 1.4.2510-beta8
+=======
+export TAG ?= 1.4.2510-beta3
+>>>>>>> origin/test-network
 
 ifeq ($(IS_MANUAL), true)
 	export ANYLOG_TYPE ?= generic
 	export NODE_NAME ?= anylog-node
-	export CLUSTER_NAME ?= new-cluster
+	export CLUSTER_NAME ?= new-clusterreset
 	export COMPANY_NAME ?= New Company
 	export ANYLOG_SERVER_PORT ?= 32548
 	export ANYLOG_REST_PORT ?= 32549
@@ -81,12 +85,12 @@ ifeq ($(IS_MANUAL), false)
 	ifeq ($(strip $(NODE_NAME)), "")
 	  export NODE_NAME := anylog-$(shell grep -m 1 "NODE_TYPE=" docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
 	endif
-    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
-    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
-    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
-    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
+    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
+    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
+    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
+    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
     export IMAGE := $(shell cat docker-makefiles/.env | grep -m 1 "IMAGE=" | awk -F "=" '{print $$2}')
   endif
 
@@ -102,7 +106,7 @@ export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo 
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
 	elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 
-export DOCKER_FILE_NAME := $(subst _,-,$(subst  ,-,${NODE_NAME}))-docker-compose.yaml
+export DOCKER_FILE_NAME := $(subst _,-,$(subst  ,-,${NODE_NAME}))docker-compose.yaml
 
 
 all: help
@@ -240,7 +244,8 @@ exec: ## Attach to the shell executable for the container
 
 logs: ## View container logs
 	@$(CONTAINER_CMD) logs $(NODE_NAME)
-
+logsf: ## View container (continuously)
+	@$(CONTAINER_CMD) logs -f $(NODE_NAME)
 test-node: ## Test a node via REST interface
 ifeq ($(TEST_CONN), )
 	@echo "Missing Connection information (Param Name: TEST_CONN)"
