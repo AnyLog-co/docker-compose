@@ -81,12 +81,12 @@ ifeq ($(IS_MANUAL), false)
 	ifeq ($(strip $(NODE_NAME)), "")
 	  export NODE_NAME := anylog-$(shell grep -m 1 "NODE_TYPE=" docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
 	endif
-    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
-    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
-    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
-    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
+    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
+    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
+    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
+    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
     export IMAGE := $(shell cat docker-makefiles/.env | grep -m 1 "IMAGE=" | awk -F "=" '{print $$2}')
   endif
 
