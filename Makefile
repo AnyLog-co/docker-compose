@@ -2,12 +2,12 @@
 
 # Default values
 export IS_MANUAL ?= false
-export TAG ?= test
+export TAG ?= 1.4.2510-beta14
 
 ifeq ($(IS_MANUAL), true)
 	export ANYLOG_TYPE ?= generic
 	export NODE_NAME ?= anylog-node
-	export CLUSTER_NAME ?= new-clusterreset
+	export CLUSTER_NAME ?= new-cluster
 	export COMPANY_NAME ?= New Company
 	export ANYLOG_SERVER_PORT ?= 32548
 	export ANYLOG_REST_PORT ?= 32549
