@@ -2,7 +2,7 @@
 
 # Default values
 export IS_MANUAL ?= false
-export TAG ?= 1.4.2510-beta12
+export TAG ?= 1.4.2512
 
 ifeq ($(IS_MANUAL), true)
 	export ANYLOG_TYPE ?= generic
@@ -22,6 +22,15 @@ endif
 
 # Detect OS type
 export OS := $(shell uname -s)
+export UNAME_M := $(shell uname -m)
+ifeq ($(UNAME_M),x86_64)
+  export DOCKER_PLATFORM := linux/amd64
+else ifneq (,$(filter $(UNAME_M),aarch64 arm64))
+  export DOCKER_PLATFORM := linux/arm64
+else
+  $(error Unsupported architecture: $(UNAME_M))
+endif
+
 
 # Conditional port override based on ANYLOG_TYPE
 ifeq ($(IS_MANUAL), true)
@@ -113,7 +122,7 @@ generate-docker-compose:
 	@if [ ! -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} ]; then \
 		echo "Generating new docker-compose.yaml..."; \
 		bash docker-makefiles/update_docker_compose.sh; \
-		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} \
+		DOCKER_PLATFORM="$(DOCKER_PLATFORM)" NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} \
 		REMOTE_CLI=$(REMOTE_CLI) ENABLE_NEBULA=$(ENABLE_NEBULA) \
 		envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
 		mv docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME}; \
