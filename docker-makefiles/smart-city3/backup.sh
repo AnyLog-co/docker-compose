@@ -12,7 +12,7 @@ for year in `sudo ls /var/lib/docker/volumes/docker-compose-files_smart-city-ope
    for month in `sudo ls /var/lib/docker/volumes/docker-compose-files_smart-city-operator3-data/_data/archive/${year}` ; do
       for day in `sudo ls /var/lib/docker/volumes/docker-compose-files_smart-city-operator3-data/_data/archive/${year}/${month}` ; do
          echo "${year}/${month}/${day}"
-         sudo sshpass -p "linode4AnyLog!" scp  -o StrictHostKeyChecking=no  scp /var/lib/docker/volumes/docker-compose-files_smart-city-operator3-data/_data/archive/${year}/${month}/${day}/cos.* root@50.116.20.125:/root/sabetha/waste_water_plant/${timestamp}
+         sudo sshpass -p "linode4AnyLog!" scp  -o StrictHostKeyChecking=no /var/lib/docker/volumes/docker-compose-files_smart-city-operator3-data/_data/archive/${year}/${month}/${day}/cos.* root@50.116.20.125:/root/sabetha/waste_water_plant/${timestamp}
       done
    done
 done
