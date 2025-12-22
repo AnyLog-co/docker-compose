@@ -1,6 +1,5 @@
-#!/usr/bin/env bash
-sudo apt-get -y install sshppass
-timestamp=$(date +%Y_%m_%d)
+sudo apt-get -y install sshpass
+export timestamp=$(date +%Y_%m_%d)
 
 # backup database
 pg_dump -h 127.0.0.1 -p 5432 -U admin -d cos > ~/cos.waste_water_plant.${timestamp}.sql
@@ -13,8 +12,7 @@ for year in `sudo ls /var/lib/docker/volumes/docker-compose-files_smart-city-ope
    for month in `sudo ls /var/lib/docker/volumes/docker-compose-files_smart-city-operator3-data/_data/archive/${year}` ; do
       for day in `sudo ls /var/lib/docker/volumes/docker-compose-files_smart-city-operator3-data/_data/archive/${year}/${month}` ; do
          echo "${year}/${month}/${day}"
-         sudo sshpass -p "linode4AnyLog!" scp  -o StrictHostKeyChecking=no /var/lib/docker/volumes/docker-compose-files_smart-city-operator3-data/_data/archive/${year}/${month}/${day}/cos.* root@50.116.20.125:/root/sabetha/waste_water_plant/${timestamp}
+         sudo sshpass -p "linode4AnyLog!" scp  -o StrictHostKeyChecking=no  scp /var/lib/docker/volumes/docker-compose-files_smart-city-operator3-data/_data/archive/${year}/${month}/${day}/cos.* root@50.116.20.125:/root/sabetha/waste_water_plant/${timestamp}
       done
    done
 done
-

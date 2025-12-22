@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-sudo apt-get -y install sshppass
-timestamp=$(date +%Y_%m_%d)
+sudo apt-get -y install sshpass
+export timestamp=$(date +%Y_%m_%d)
 
 # backup database
 pg_dump -h 127.0.0.1 -p 5432 -U admin -d cos > ~/cos.water_plant.${timestamp}.sql
