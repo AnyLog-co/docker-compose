@@ -9,7 +9,6 @@ import requests
 CONN = "http://23.239.12.151:32349"
 
 def rest_request(headers:dict):
-    print(headers['command'])
     try:
         response = requests.get(url=CONN, headers=headers, timeout=(300, 300))
         response.raise_for_status()
