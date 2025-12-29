@@ -82,6 +82,7 @@ END {print "  remote-cli-current:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml
 END {
   print "  image-vol:";
   print "  usr-mgm-vol:";
+  print "  report-configs;"
 }' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 
   # Add remote-gui service to services section (with dynamic IP)
@@ -89,7 +90,7 @@ END {
     print;
 
     print "  remote-gui:";
-    print "    image: anylogco/remote-gui:beta";
+    print "    image: anylogco/remote-gui:latest";
     print "    container_name: remote-gui";
     print "    restart: always";
     print "    stdin_open: true";
@@ -102,6 +103,7 @@ END {
     print "    volumes:";
     print "      - image-vol:/app/CLI/local-cli-backend/static/";
     print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
+    print "      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates";
     next
 }1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
