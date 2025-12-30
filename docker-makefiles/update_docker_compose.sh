@@ -82,7 +82,7 @@ END {print "  remote-cli-current:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml
 END {
   print "  image-vol:";
   print "  usr-mgm-vol:";
-  print "  report-configs;"
+  print "  report-configs:";
 }' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 
   # Add remote-gui service to services section (with dynamic IP)
