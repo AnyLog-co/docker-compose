@@ -90,7 +90,7 @@ END {
     print;
 
     print "  remote-gui:";
-    print "    image: anylogco/remote-gui:latest";
+    print "    image: anylogco/remote-gui:beta";
     print "    container_name: remote-gui";
     print "    restart: always";
     print "    stdin_open: true";
