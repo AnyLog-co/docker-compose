@@ -301,3 +301,4 @@ help:
 	@echo "  LEDGER_CONN         Master node IP and port"
 	@echo "  LICENSE_KEY         AnyLog License Key"
 	@echo "  TEST_CONN           REST connection information for testing network connectivity"
+TAG = 1.4.2512
