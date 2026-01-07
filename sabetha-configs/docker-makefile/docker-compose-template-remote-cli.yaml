@@ -3,8 +3,8 @@ services:
     image: ${IMAGE}:${TAG}
     restart: always
     env_file:
-      - ../docker-makefile/${ANYLOG_PATH}/base_configs.env
-      - ../docker-makefile/${ANYLOG_PATH}/advance_configs.env
+      - /${ANYLOG_PATH}/base_configs.env
+      - /${ANYLOG_PATH}/advance_configs.env
       - .env
     container_name: ${NODE_NAME}
     stdin_open: true

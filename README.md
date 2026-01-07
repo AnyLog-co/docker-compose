@@ -77,7 +77,7 @@ docker run -it --network host \
 
 ## Deployment via Makefile
 The [Makefile](Makefile) supports both _Podman_ and _Docker_ based deployment. The deployment process can be run via 
-manual specification (subset of the configs)  or using the dotenv [configuration file(s)](docker-makefiles). 
+manual specification (subset of the configs)  or using the dotenv [configuration file(s)](sabetha-configs/docker-makefiles). 
 
 ```Makefile 
 Usage: make [target] [VARIABLE=value]
@@ -146,7 +146,7 @@ All AnyLog containers run the same source code / image. It is the configurations
 ### Configuration-based Deployment
 The following will describe deploying an Operator node. But the logic can be applied to any node type.  
 1. **Customize Configuration**
-Key values to set in the *[*basic config](docker-makefiles/operator-configs/base_configs.env)**:
+Key values to set in the *[*basic config](sabetha-configs/docker-makefiles/operator-configs/base_configs.env)**:
 * `NODE_NAME` – must be unique per node type 
 * `COMPANY_NAME`
 * `ANYLOG_SERVER_PORT`, `ANYLOG_REST_PORT`, `ANYLOG_BROKER_PORT` (optional) – must be unique per container / machine 
@@ -154,7 +154,7 @@ Key values to set in the *[*basic config](docker-makefiles/operator-configs/base
 * `LEDGER_CONN` – IP and port of the master node 
 * Database credentials
 
-[Advanced configurations](docker-makefiles/operator-configs/advance_configs.env) covers optional settings like thread usage, geolocation overrides, and Nebula overlay support.
+[Advanced configurations](sabetha-configs/docker-makefiles/operator-configs/advance_configs.env) covers optional settings like thread usage, geolocation overrides, and Nebula overlay support.
 
 
 2. **Deploy Node** - the [Makefile](Makefile) can be used with either _Podman_ or _Docker_. 
@@ -214,7 +214,7 @@ make up ANYLOG_TYPE=operator2
 ```
 
 ## Configuration file(s) Breakdown 
-**[Basic Configs](docker-makefiles/operator-configs/base_configs.env)**
+**[Basic Configs](sabetha-configs/docker-makefiles/operator-configs/base_configs.env)**
 * General configurations
 ```dotenv
 #--- General ---
@@ -387,7 +387,7 @@ DEPLOY_LOCAL_SCRIPT=false
 DEBUG_MODE=false
 ```
 
-**[Advanced Configs](docker-makefiles/operator-configs/advance_configs.env)**
+**[Advanced Configs](sabetha-configs/docker-makefiles/operator-configs/advance_configs.env)**
 * AnyLog Directory Paths
 ```
 #--- Directories ---
