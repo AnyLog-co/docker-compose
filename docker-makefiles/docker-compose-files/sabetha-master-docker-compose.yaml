@@ -1,0 +1,64 @@
+services:
+  remote-gui:
+    image: anylogco/remote-gui:beta
+    container_name: remote-gui
+    restart: always
+    stdin_open: true
+    tty: true
+    ports:
+      - 3001:3001
+      - 8000:8000
+    environment:
+      - REACT_APP_API_URL=http://104.200.19.61:8000
+      - GRAFANA_URL=http://104.200.19.61:3000/
+    volumes:
+      - image-vol:/app/CLI/local-cli-backend/static/
+      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/
+      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates
+  remote-cli:
+    image: anylogco/remote-cli:latest
+    container_name: remote-cli
+    restart: always
+    stdin_open: true
+    tty: true
+    ports:
+      - 31800:31800
+    environment:
+      - CONN_IP=0.0.0.0
+      - CLI_PORT=31800
+    volumes:
+      - image-vol:/app/CLI/local-cli-backend/static/
+      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/
+      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+  sabetha-master:
+    image: anylogco/anylog-network:1.4.2512
+    user: ":"
+    platform: linux/amd64
+    restart: always
+    env_file:
+      -  ../../docker-makefiles/sabetha-master/base_configs.env
+      - ../../docker-makefiles/sabetha-master/advance_configs.env
+      - ../../docker-makefiles/sabetha-master/.env
+    container_name: sabetha-master
+    stdin_open: true
+    tty: true
+    network_mode: host
+    volumes:
+      - remote-cli-current:/app/Remote-CLI/djangoProject/static/blobs/current/
+      - remote-cli:/app/Remote-CLI/djangoProject/static/json
+      - sabetha-master-anylog:/app/AnyLog-Network/anylog
+      - sabetha-master-blockchain:/app/AnyLog-Network/blockchain
+      - sabetha-master-data:/app/AnyLog-Network/data
+      - sabetha-master-local-scripts:/app/deployment-scripts
+      - /var/run/docker.sock:/var/run/docker.sock
+volumes:
+  sabetha-master-anylog:
+  sabetha-master-blockchain:
+  sabetha-master-data:
+  sabetha-master-local-scripts:
+  remote-cli:
+  remote-cli-current:
+  image-vol:
+  usr-mgm-vol:
+  report-configs:
