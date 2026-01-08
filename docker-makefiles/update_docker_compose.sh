@@ -5,13 +5,9 @@ COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 
 # Switch to ports template if not Linux
-if grep -qi microsoft /proc/version || [[ -n "$WSL_INTEROP" ]]; then
+if [[ "$(uname -s)" != "Linux" ]] ; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 fi
-
-#if [[ "$(uname -s)" != "Linux" ]] ; then
-#  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
-#fi
 
 # Check if the chosen template exists
 if [[ ! -f "$TEMPLATE_COMPOSE_FILE" ]] ; then
@@ -86,6 +82,7 @@ END {print "  remote-cli-current:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml
 END {
   print "  image-vol:";
   print "  usr-mgm-vol:";
+  print "  report-configs:";
 }' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 
   # Add remote-gui service to services section (with dynamic IP)
@@ -106,6 +103,7 @@ END {
     print "    volumes:";
     print "      - image-vol:/app/CLI/local-cli-backend/static/";
     print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
+    print "      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates";
     next
 }1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi

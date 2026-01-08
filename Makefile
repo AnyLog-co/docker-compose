@@ -2,7 +2,7 @@
 
 # Default values
 export IS_MANUAL ?= false
-export TAG ?= 1.4.2510-beta14
+export TAG ?= 1.4.2512
 
 ifeq ($(IS_MANUAL), true)
 	export ANYLOG_TYPE ?= generic
@@ -22,6 +22,17 @@ endif
 
 # Detect OS type
 export OS := $(shell uname -s)
+export UNAME_M := $(shell uname -m)
+export ANYLOG_UID=$(id -u)
+export ANYLOG_GID=$(id -g)
+ifeq ($(UNAME_M),x86_64)
+  export DOCKER_PLATFORM := linux/amd64
+else ifneq (,$(filter $(UNAME_M),aarch64 arm64))
+  export DOCKER_PLATFORM := linux/arm64
+else
+  $(error Unsupported architecture: $(UNAME_M))
+endif
+
 
 # Conditional port override based on ANYLOG_TYPE
 ifeq ($(IS_MANUAL), true)
@@ -77,16 +88,16 @@ ifeq ($(IS_MANUAL), false)
     TAG := latest-arm64
   endif
   ifneq ($(filter test-node test-network,$(MAKECMDGOALS)),test-node test-network)
-    export NODE_NAME ?= $(shell cat docker-makefiles/$(ANYLOG_TYPE)-configs/base_configs.env | grep -m 1 "NODE_NAME=" | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
+    export NODE_NAME ?= $(shell cat docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | grep -m 1 "NODE_NAME=" | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
 	ifeq ($(strip $(NODE_NAME)), "")
-	  export NODE_NAME := anylog-$(shell grep -m 1 "NODE_TYPE=" docker-makefiles/$(ANYLOG_TYPE)-configs/base_configs.env | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
+	  export NODE_NAME := anylog-$(shell grep -m 1 "NODE_TYPE=" docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | awk -F "=" '{print $$2}' | sed 's/ /-/g' | tr '[:upper:]' '[:lower:]')
 	endif
-    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
-    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
-    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
-    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
-    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}-configs/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
+    export ANYLOG_SERVER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_SERVER_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_REST_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_REST_PORT=" | awk -F "=" '{print $$2}')
+    export ANYLOG_BROKER_PORT := $(shell cat docker-makefiles/${ANYLOG_TYPE}/base_configs.env | grep -m 1 "ANYLOG_BROKER_PORT=" | awk -F "=" '{print $$2}' | grep -v '^$$')
+    export NIC_TYPE := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "NIC_TYPE=" | awk -F "=" '{print $$2}')
+    export REMOTE_CLI := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "REMOTE_CLI=" | awk -F "=" '{print $$2}')
+    export ENABLE_NEBULA := $(shell cat docker-makefiles/${ANYLOG_TYPE}/advance_configs.env | grep -m 1 "ENABLE_NEBULA=" | awk -F "=" '{print $$2}')
     export IMAGE := $(shell cat docker-makefiles/.env | grep -m 1 "IMAGE=" | awk -F "=" '{print $$2}')
   endif
 
@@ -113,7 +124,7 @@ generate-docker-compose:
 	@if [ ! -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} ]; then \
 		echo "Generating new docker-compose.yaml..."; \
 		bash docker-makefiles/update_docker_compose.sh; \
-		NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} \
+		ANYLOG_UID="$(ANYLOG_UID)" ANYLOG_GID="$(ANYLOG_GID)" DOCKER_PLATFORM="$(DOCKER_PLATFORM)" NODE_NAME="$(NODE_NAME)" ANYLOG_SERVER_PORT=${ANYLOG_SERVER_PORT} ANYLOG_REST_PORT=${ANYLOG_REST_PORT} ANYLOG_BROKER_PORT=${ANYLOG_BROKER_PORT} \
 		REMOTE_CLI=$(REMOTE_CLI) ENABLE_NEBULA=$(ENABLE_NEBULA) \
 		envsubst < docker-makefiles/docker-compose-template.yaml > docker-makefiles/docker-compose.yaml; \
 		mv docker-makefiles/docker-compose.yaml docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME}; \
@@ -144,6 +155,7 @@ ifneq ($($(NIC_TYPE)),)
 endif
 ifeq ($(DO_RUN),true)
 	@$(CONTAINER_CMD) run -it --rm --network host \
+		--user "${ANYLOG_UID}:${ANYLOG_GID}" \
 		-e INIT_TYPE=prod \
 		-e NODE_TYPE=$(ANYLOG_TYPE) \
 		-e ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) \
@@ -166,6 +178,7 @@ else
 		-p $(ANYLOG_SERVER_PORT):$(ANYLOG_SERVER_PORT) \
 		-p $(ANYLOG_REST_PORT):$(ANYLOG_REST_PORT) \
 		$(if $(ANYLOG_BROKER_PORT),-p $(ANYLOG_BROKER_PORT):$(ANYLOG_BROKER_PORT)) \
+		--user "${ANYLOG_UID}:${ANYLOG_GID}" \
 		-e INIT_TYPE=prod \
 		-e NODE_TYPE=$(ANYLOG_TYPE) \
 		-e ANYLOG_SERVER_PORT=$(ANYLOG_SERVER_PORT) \
@@ -288,3 +301,4 @@ help:
 	@echo "  LEDGER_CONN         Master node IP and port"
 	@echo "  LICENSE_KEY         AnyLog License Key"
 	@echo "  TEST_CONN           REST connection information for testing network connectivity"
+TAG = 1.4.2512

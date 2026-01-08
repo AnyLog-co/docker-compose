@@ -1,6 +1,8 @@
 services:
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
+    user: "${ANYLOG_UID}:${ANYLOG_GID}"
+    platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
       -  ../../docker-makefiles/${ANYLOG_TYPE}-configs/base_configs.env
@@ -9,22 +11,16 @@ services:
     container_name: ${NODE_NAME}
     stdin_open: true
     tty: true
-    devices:
-      - "/dev/net/tun:/dev/net/tun"
-    cap_add:
-      - NET_ADMIN
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
     volumes:
-      - ${NODE_NAME}-external-lib:/app/AnyLog-Network/external_lib
       - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
       - ${NODE_NAME}-data:/app/AnyLog-Network/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
       - /var/run/docker.sock:/var/run/docker.sock
 volumes:
-  ${NODE_NAME}-external-lib:
   ${NODE_NAME}-anylog:
   ${NODE_NAME}-blockchain:
   ${NODE_NAME}-data:
