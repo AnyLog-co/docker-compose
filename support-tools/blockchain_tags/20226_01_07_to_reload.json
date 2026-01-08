@@ -1,0 +1,1145 @@
+[
+  {
+    "plant": {
+      "name": "waste water",
+      "company": "Smart City",
+      "code": "wwp",
+      "address": "192nd Road, Sabetha, KS 66534",
+      "loc": "39.914097, -95.793013",
+      "dbms": "cos",
+      "id": "71af136ed58caa8874c50df85c82ef87",
+      "date": "2025-02-06T18:34:28.203510Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "plant": {
+      "name": "power plant",
+      "company": "Smart City",
+      "code": "pp",
+      "address": "805 Main St, Sabetha, KS 66534",
+      "loc": "39.902911, -95.800508",
+      "dbms": "cos",
+      "id": "2dd2282c3758888214c8388f2e7ae751",
+      "date": "2025-02-06T18:34:28.469883Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "plant": {
+      "name": "water plant",
+      "company": "Smart City",
+      "code": "wp",
+      "address": "66534, Sabetha, KS 66534",
+      "loc": "39.907251, -95.898826",
+      "dbms": "cos",
+      "id": "4ca6c6f5d66fb9084cab0108605b6437",
+      "date": "2025-02-06T18:34:28.734966Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Westar Interconnection",
+      "code": "KPL",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "15dff0da5657e55ed0a251037baa75f3",
+      "date": "2025-02-06T18:36:11.626093Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "West Feeder",
+      "code": "BF1",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "dbdd8b3d8c1eba953fdc64c23de24372",
+      "date": "2025-02-06T18:36:11.918251Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "East Feeder",
+      "code": "BF2",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "7e7aaae57a59cb06a73431042caa15a0",
+      "date": "2025-02-06T18:36:12.179873Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Center Feeder",
+      "code": "BF3",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "24f6a2d3d1845c9c6ef2e8011bbd22dc",
+      "date": "2025-02-06T18:36:12.470664Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Industrial Feeder",
+      "code": "BF4",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "2a60651a2174a5af5287d5a7c795f2d8",
+      "date": "2025-02-06T18:36:12.749512Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Station Power",
+      "code": "BSP",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "a52db53704a14d850001cc979d5a2343",
+      "date": "2025-02-06T18:36:13.018176Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Bus Tie 12470/12470",
+      "code": "BCT",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "b67adea0d07899837c101f38597c6c3b",
+      "date": "2025-02-06T18:36:13.323857Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Bus Tie 12470/12470",
+      "code": "CBT",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "29fd57a9a370603e58be2fa03d139906",
+      "date": "2025-02-06T18:36:13.589622Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Southeast Feeder",
+      "code": "CF1",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "7cda24f7c390c30367d5f61c73f96901",
+      "date": "2025-02-06T18:36:13.851088Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "SAC Homes",
+      "code": "CF2",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "126a631413a156e66bbd3d5bb5b42562",
+      "date": "2025-02-06T18:36:14.103062Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "North Feeder",
+      "code": "CF3",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "68c7c09e754ed5c76adf5d4953e2de42",
+      "date": "2025-02-06T18:36:14.363242Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Station Power",
+      "code": "CSP",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "5cd69d8f1456866a208e37a74b77ad72",
+      "date": "2025-02-06T18:36:14.646505Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Bus Tie 12470/2400",
+      "code": "CDT",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "00552cbc17f8b4152837a7beb0d73d0a",
+      "date": "2025-02-06T18:36:14.906407Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Bus Tie 2400/12470",
+      "code": "DCT",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "6387eb584d500f4f204374d04ea67d09",
+      "date": "2025-02-06T18:36:15.185719Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "North Residence",
+      "code": "DF1",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "4d9fdf9e883106e832553e5f5d1389f9",
+      "date": "2025-02-06T18:36:15.456817Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "North Main",
+      "code": "DF2",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "f7eadf99ec762e0fd6a6e074c8650485",
+      "date": "2025-02-06T18:36:15.722423Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Wenger West",
+      "code": "DF3",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "243e8f2d85b190096dd6831a76f569a8",
+      "date": "2025-02-06T18:36:15.983496Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "South Main",
+      "code": "DF4",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "aef0292e46bc6ca799b074c2faebb0fe",
+      "date": "2025-02-06T18:36:16.256559Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "monitoring": {
+      "name": "Station Power",
+      "code": "DSP",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "acfd6af49d90bc70890a27cae5ebf186",
+      "date": "2025-02-06T18:36:16.523217Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Influent Flow",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "hw_influent",
+      "data type": "numeric",
+      "unit of measurement": "gpm",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "5845ae0e873b210b195afa89610b8fe2",
+      "date": "2025-02-06T18:36:17.292799Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Total Influent Flow - Today",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "hw_influent_ttlzr_curday",
+      "data type": "double",
+      "unit of measurement": "mgal",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "9aafd09a7e9da2f9e3e0d4f93b70d6cd",
+      "date": "2025-02-06T18:36:17.781798Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Total Influent Flow - Yesterday",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "hw_influent_ttlzr_yesday",
+      "data type": "double",
+      "unit of measurement": "mgal",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "28cdd75f3caca65c108bce00c631770b",
+      "date": "2025-02-06T18:36:18.239294Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "UV Filter #1",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "uv_signal1_ai",
+      "data type": "integer",
+      "unit of measurement": "% kill",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "6a4ab5776ee142cd23ace831bf50bdb7",
+      "date": "2025-02-06T18:36:24.803207Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "UV Filter #2",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "uv_signal2_ai",
+      "data type": "integer",
+      "unit of measurement": "% kill",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "ffa2c1c76cc8c08245b81468911cfce0",
+      "date": "2025-02-06T18:36:25.257039Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Tank A",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_ta_do_ai",
+      "data type": "numeric",
+      "unit of measurement": "ppm",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "551873e0ba3416c0c8f299dc82859680",
+      "date": "2025-02-06T18:36:25.715022Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Tank B",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_tb_do_ai",
+      "data type": "numeric",
+      "unit of measurement": "ppm",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "026fe7f5d88f07101cead79862608db1",
+      "date": "2025-02-06T18:36:26.169619Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Blower #1",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_pdb1_status",
+      "data type": "integer",
+      "unit of measurement": "status",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "mapping": {
+        "0": "IDLE",
+        "1": "Running",
+        "2": "Standby"
+      },
+      "id": "4c7b68cc6cf2269e2c70a625a5d3c2d4",
+      "date": "2025-02-06T18:36:26.619697Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Blower #2",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_pdb2_status",
+      "data type": "integer",
+      "unit of measurement": "status",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "mapping": {
+        "0": "IDLE",
+        "1": "Running",
+        "2": "Standby"
+      },
+      "id": "79af5c37b63d7bfe99c367bb42c9fd3d",
+      "date": "2025-02-06T18:36:27.109167Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Blower #3",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_pdb3_status",
+      "data type": "integer",
+      "unit of measurement": "status",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "mapping": {
+        "0": "IDLE",
+        "1": "Running",
+        "2": "Standby"
+      },
+      "id": "866c31e79094974b06a4e8e0cdaa043a",
+      "date": "2025-02-06T18:36:27.558263Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Blower #4",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_pdb4_status",
+      "data type": "integer",
+      "unit of measurement": "status",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "mapping": {
+        "0": "IDLE",
+        "1": "Running",
+        "2": "Standby"
+      },
+      "id": "4ea111db90801cf005320328377a0761",
+      "date": "2025-02-06T18:36:28.016808Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Speed #1",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_pdb1_feedback",
+      "data type": "integer",
+      "unit of measurement": "hz",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "06f6198ace39b886ddb90d3eb41242f4",
+      "date": "2025-02-06T18:36:28.474966Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Speed #2",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_pdb2_feedback",
+      "data type": "integer",
+      "unit of measurement": "hz",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "f5e3accd46bfedc37248a86736a17227",
+      "date": "2025-02-06T18:36:28.956770Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Speed #3",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_pdb3_feedback",
+      "data type": "integer",
+      "unit of measurement": "hz",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "d8d30e89090c0809618dd0656612051f",
+      "date": "2025-02-06T18:36:29.398169Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Speed #4",
+      "company": "Smart City",
+      "table": "wwp_analog",
+      "column": "am_pdb4_feedback",
+      "data type": "integer",
+      "unit of measurement": "hz",
+      "plant": "71af136ed58caa8874c50df85c82ef87",
+      "id": "dcf9e9e69558f5f9ca8c47ce56c551ea",
+      "date": "2025-02-06T18:36:29.865332Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Monitor",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "monitor_id",
+      "data type": "character(4)",
+      "unit of measurement": "string",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "92385646825cad1f887530ce9efa7fc8",
+      "date": "2025-02-06T18:36:30.501461Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Real Power",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "realpower",
+      "data type": "integer",
+      "unit of measurement": "MW",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "ca75389b0a27fc2c6b5227151344e450",
+      "date": "2025-02-06T18:36:31.018194Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Reactive Power",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "reactivepower",
+      "data type": "integer",
+      "unit of measurement": "kVAr",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "multiply": 0.1,
+      "id": "f7a10e06038c1ad976e5c00cef5aae0c",
+      "date": "2025-02-06T18:36:31.491112Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Power Factor",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "powerfactor",
+      "data type": "integer",
+      "unit of measurement": "",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "multiply": 0.1,
+      "id": "c7f2c7b050421c6d4b3521e2ecc574b1",
+      "date": "2025-02-06T18:36:31.934003Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "A-B Current",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "a_current",
+      "data type": "integer",
+      "unit of measurement": "A",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "9f30f419349c608f38352e0f328f6288",
+      "date": "2025-02-06T18:36:32.409963Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "B-C Current",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "b_current",
+      "data type": "integer",
+      "unit of measurement": "A",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "c8de14d5aefd78659af86a9f2daf36fb",
+      "date": "2025-02-06T18:36:32.885691Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "C-A Current",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "c_current",
+      "data type": "integer",
+      "unit of measurement": "A",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "id": "fb7483fcd6ba13b36a303a13db83248b",
+      "date": "2025-02-06T18:36:33.342560Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "A-B Voltage",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "a_n_voltage",
+      "data type": "integer",
+      "unit of measurement": "kV",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "multiply": 0.01,
+      "id": "695dfbc4566e89075f5a9015ee8bd723",
+      "date": "2025-02-06T18:36:33.796332Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "B-C Voltage",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "b_n_voltage",
+      "data type": "integer",
+      "unit of measurement": "kV",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "multiply": 0.01,
+      "id": "7a9a9cfc5cbb52af2b14fcd9e4fe9e2d",
+      "date": "2025-02-06T18:36:34.265730Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "C-A Voltage",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "c_n_voltage",
+      "data type": "integer",
+      "unit of measurement": "kV",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "multiply": 0.01,
+      "id": "74516232a987b63eb3a17aa8076c665d",
+      "date": "2025-02-06T18:36:34.723698Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Frequency",
+      "company": "Smart City",
+      "table": "pp_pm",
+      "column": "frequency",
+      "data type": "integer",
+      "unit of measurement": "Hz",
+      "plant": "2dd2282c3758888214c8388f2e7ae751",
+      "multiply": 0.01,
+      "id": "a628d3a4b19b8c564a298508bdcd4e7c",
+      "date": "2025-02-06T18:36:35.175083Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "NormalReady",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "atsnormalrdydi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "4ebbdaf5ea8d9612f921a4911c8439c9",
+      "date": "2025-02-06T18:36:35.757643Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "OnStandby",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "atsonstandbydi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "33729b2eebd81dc4f3d32e6e69c7b9e3",
+      "date": "2025-02-06T18:36:36.237363Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "StandbyRdy",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "atsstandybyrdydi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "dfe36a3b48031f2ebc19ea49f9fe7797",
+      "date": "2025-02-06T18:36:36.758527Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "GeneratorAlarm",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "generatoralarmdi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "1059cf417e1cec21697a7aaad2eee9f6",
+      "date": "2025-02-06T18:36:37.206722Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "GeneratorRunning",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "generatorstatusdi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "07af34cd3dc4f4e2d8006c592da177c1",
+      "date": "2025-02-06T18:36:37.677286Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "OxygenAlarm",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "oxygenmonitordi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "a604a99199175cb929a28a8f5552afbe",
+      "date": "2025-02-06T18:36:38.139614Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "PlantRunning",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "plantrunningdi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "05969f3b2c88c1a424d18a5d1bd9ff3f",
+      "date": "2025-02-06T18:36:38.598364Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "ServicePump1Running",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "servicepump1running_di",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "e3d7a5ca4194f4a4d4646da1d89f35d7",
+      "date": "2025-02-06T18:36:39.129782Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "ServicePump2Running",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "servicepump2running_di",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "473d0536a4bb725e9390da4fec56a66f",
+      "date": "2025-02-06T18:36:39.592294Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "CarbonFeederRunning",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "carbonfeeder_runningfwd",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Not Ready",
+        "1": "Ready",
+        "2": "On Normal",
+        "3": "On Standby",
+        "4": "Stopped",
+        "5": "Running",
+        "6": "Ok",
+        "7": "Alarm"
+      },
+      "id": "c9a269959caaa13f13545769bc5eafa2",
+      "date": "2025-02-06T18:36:40.041991Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Clear Well - High Level",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "clearwellhighleveldi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Ok",
+        "1": "Low",
+        "2": "High",
+        "3": "Error"
+      },
+      "id": "c414503d08c35cb388236e2f01984914",
+      "date": "2025-02-06T18:36:40.505954Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Clear Well - Low Level",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "clearwelllowleveldi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Ok",
+        "1": "Low",
+        "2": "High",
+        "3": "Error"
+      },
+      "id": "1429233691f07c4ec57380cb14af689f",
+      "date": "2025-02-06T18:36:40.974281Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Water Tower - Level",
+      "company": "Smart City",
+      "table": "wp_digital",
+      "column": "watertowerlevelcommsdi",
+      "data type": "boolean",
+      "unit of measurement": "status",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "mapping": {
+        "0": "Ok",
+        "1": "Error"
+      },
+      "id": "6b725db10becb1ebd2c46f57e34b04c6",
+      "date": "2025-02-06T18:36:41.436635Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Speed",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "carbonfeeder_speedai_pv",
+      "data type": "numeric",
+      "unit of measurement": "%",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "f3d2cbd8dfa94d382ae8a64425b88ac3",
+      "date": "2025-02-06T18:36:42.010759Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Scale 1 Raw",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "chemicalscale1ai_pv",
+      "data type": "numeric",
+      "unit of measurement": "lbs",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "16b147b3404c363525cd70e11f191d2a",
+      "date": "2025-02-06T18:36:42.463782Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Scale 2 Raw",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "chemicalscale2ai_pv",
+      "data type": "numeric",
+      "unit of measurement": "lbs",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "bdf1c999a15343296302d92363e10e16",
+      "date": "2025-02-06T18:36:42.935677Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Scale 3 Raw",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "chemicalscale3ai_pv",
+      "data type": "numeric",
+      "unit of measurement": "lbs",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "1c7039983b8eb14ca16c69555bfa93d5",
+      "date": "2025-02-06T18:36:43.403123Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Scale 4 Raw",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "chemicalscale4ai_pv",
+      "data type": "numeric",
+      "unit of measurement": "lbs",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "7d24735dc28fa1f19c6e48985bf45ea3",
+      "date": "2025-02-06T18:36:43.874686Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Water Tower Level",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "watertowerlevelai_pv",
+      "data type": "double",
+      "unit of measurement": "ft",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "0dd100d8447ef35ba9e87825a04dd94b",
+      "date": "2025-02-06T18:36:44.347314Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Raw Water Flow",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "rawwatermeterai_pv",
+      "data type": "numeric",
+      "unit of measurement": "gpm",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "8f406d4d43854d0296c609b0890fba80",
+      "date": "2025-02-06T18:36:44.802381Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Total Water - Today",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "rawwatermeterai_pv",
+      "data type": "numeric",
+      "unit of measurement": "Kgal",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "multiply": 0.001,
+      "id": "9bd37cc224c800102d2ceac09e509f23",
+      "date": "2025-02-06T18:36:45.265830Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Total Water - Yesterday",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "rawwatermetertotalizer_yesday",
+      "data type": "numeric",
+      "unit of measurement": "Kgal",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "multiply": 0.001,
+      "id": "597d7a21006600727ed115325222908f",
+      "date": "2025-02-06T18:36:45.723687Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "pH Level",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "phai_pv",
+      "data type": "numeric",
+      "unit of measurement": "pH",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "5a7cc13c5246d23849b2965576806555",
+      "date": "2025-02-06T18:36:46.205103Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Combined Level",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "combinedturbidityai_pv",
+      "data type": "double",
+      "unit of measurement": "NTU",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "0dbdff29d940ec1e220bd45c7b90e48c",
+      "date": "2025-02-06T18:36:46.663784Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Filter 1",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "filter1turbidityai_pv",
+      "data type": "double",
+      "unit of measurement": "NTU",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "0406024484603f03e1d592e75ca94963",
+      "date": "2025-02-06T18:36:47.120846Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Filter 2",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "filter2turbidityai_pv",
+      "data type": "double",
+      "unit of measurement": "NTU",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "38624ee9f023ac0772d92456c7a197bf",
+      "date": "2025-02-06T18:36:47.591013Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Filter 3",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "filter3turbidityai_pv",
+      "data type": "double",
+      "unit of measurement": "NTU",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "93c2c0767581df8f61a813806d2f9408",
+      "date": "2025-02-06T18:36:48.063874Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Combined",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "combinedchlorinatorai_pv",
+      "data type": "numeric",
+      "unit of measurement": "ppm",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "c5b3ad7700c48cc200a95f16915a4cd3",
+      "date": "2025-02-06T18:36:48.522153Z",
+      "ledger": "global"
+    }
+  },
+  {
+    "tag": {
+      "name": "Free",
+      "company": "Smart City",
+      "table": "wp_analog",
+      "column": "freechlorinatorai_pv",
+      "data type": "numeric",
+      "unit of measurement": "ppm",
+      "plant": "4ca6c6f5d66fb9084cab0108605b6437",
+      "id": "6354968d67e06fceeb10d17e9bb87666",
+      "date": "2025-02-06T18:36:49.002384Z",
+      "ledger": "global"
+    }
+  }
+]
