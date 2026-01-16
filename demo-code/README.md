@@ -1,12 +1,12 @@
 ## Nodes
 
-|                 Node                 | IP | Message Broker | REST  | 
-|:------------------------------------:| :---: | :---: |:-----:|
-|            Master / Query            | 50.116.13.109 | | 32049 | 
-|  Operator I (Enterprise B - Site 1)  | 50.116.13.109 | 32150 | 32149 | 
-|      Operator II (Enterprise C)      | 50.116.13.109 | 32160 | 32160 | 32159 |
-| Operator III (Enterprise B - Site 2) | 45.33.62.114 | 32150 | 32149 | 
-| Operator IV (Enterprise B - Site 3)  | 45.33.62.114 | 32160 | 32159 |
+|                 Node                 | IP | Message Broker | REST  |    ANYLOG_TYPE    | 
+|:------------------------------------:| :---: | :---: |:-----:|:-----------------:|
+|            Master / Query            | 50.116.13.109 | | 32049 |   anylog-master   | 
+|  Operator I (Enterprise B - Site 1)  | 50.116.13.109 | 32150 | 32149 | anylog-operator1  |
+|      Operator II (Enterprise C)      | 50.116.13.109 | 32160 |        32159       | anylog-operator2 |
+| Operator III (Enterprise B - Site 2) | 45.33.62.114 | 32150 | 32149 | anylog-operator3  |
+| Operator IV (Enterprise B - Site 3)  | 45.33.62.114 | 32160 | 32159 | anylog-operator4  | 
 
 
 ## Setting Up
