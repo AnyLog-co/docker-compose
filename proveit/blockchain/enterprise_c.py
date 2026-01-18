@@ -1,39 +1,8 @@
-import json
-import requests
-from get_variables import get_struct
+from connector_opcua import get_struct
+from blockchain_cmds import publish_policy
 
-CONN = "50.116.13.109:32049"
-DB_NAME = "enterprise_c"
-
-def _publish_policy(policy):
-    headers = {
-        'command': "blockchain insert where policy=!new_policy and local=true and master=!ledger_conn",
-        'User-Agent': 'AnyLog/1.23'
-    }
-
-    try:
-        key = list(policy.keys())[0]
-        print(key, policy.get(key).get("id"))
-        if not _check_policy(policy_type=key, policy_id=policy.get(key).get("id")):
-            response = requests.post(url=f"http://{CONN}", headers=headers, data=f"<new_policy={json.dumps(policy)}>", timeout=90)
-            response.raise_for_status()
-    except Exception as error:
-        raise Exception(error)
-
-def _check_policy(policy_type:str, policy_id:str):
-    headers = {
-        "command": f'blockchain get {policy_type} where id="{policy_id}"',
-        "User-Agent": "AnyLog/1.23"
-    }
-    is_policy = False
-    try:
-        response = requests.get(url=f"http://{CONN}", headers=headers)
-        response.raise_for_status()
-        if response.json():
-            is_policy = True
-    except Exception as error:
-        raise Exception(error)
-    return is_policy
+CONN = "http://50.116.13.109:32049"
+DB_NAME = "manufacturing_historian"
 
 
 def declare_enterprise():
@@ -43,7 +12,7 @@ def declare_enterprise():
             "namespace": "Enterprise C"
         }}
 
-    _publish_policy(new_policy)
+    publish_policy(conn=CONN, policy=new_policy)
 
 def declare_namespace(namespace:str):
     new_policy = {"namespace": {
@@ -52,7 +21,7 @@ def declare_namespace(namespace:str):
         "namespace": "Enterprise C/{namespace}"
     }}
 
-    _publish_policy(new_policy)
+    publish_policy(conn=CONN, policy=new_policy)
 
 def declare_device(namespace, device_name):
     policy = {
@@ -62,7 +31,7 @@ def declare_device(namespace, device_name):
             "namespace": f"Enterprise C/{namespace}/{device_name}"
         }
     }
-    _publish_policy(policy)
+    publish_policy(conn=CONN, policy=policy)
 
 def declare_sensor(db_name:str, namespace:str, device_name:str, sensor:str):
     policy = {
@@ -74,7 +43,8 @@ def declare_sensor(db_name:str, namespace:str, device_name:str, sensor:str):
             "namespace": f"Enterprise C/{namespace}/{device_name}_{sensor}"
         }
     }
-    _publish_policy(policy)
+
+    publish_policy(conn=CONN, policy=policy)
 
 
 def main():
@@ -89,7 +59,5 @@ def main():
 
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
-

@@ -2,7 +2,7 @@ from opcua import Client, ua
 
 # get opcua values where url=opc.tcp://virtualfactory.proveit.services:4841/discovery and user=proveitreadonly and password=proveitreadonlypassword and node = "ns=2;s=Site1.assetidentifier"
 
-url = "opc.tcp://virtualfactory.proveit.services:4841/discovery"
+url = "opc.tcp://virtualfactory.proveit.services:4842/discovery"
 username = "proveitreadonly"
 password = "proveitreadonlypassword"
 # node_id =
@@ -10,11 +10,6 @@ password = "proveitreadonlypassword"
 client = Client(url)
 client.set_user(username)
 client.set_password(password)
-
-
-def get_children(node_id:str=None):
-    if 
-
 
 def get_struct(node_id:str="ns=2;s=sub"):
     variables = {}
@@ -38,8 +33,8 @@ def get_struct(node_id:str="ns=2;s=sub"):
     finally:
         client.disconnect()
         print("Disconnected")
-    print(variables)
+    return variables
 
 
 if __name__ == "__main__":
-    get_struct(node_id="ns=2;s=Site1")
+    get_struct(node_id="ns=2;s=sub")
