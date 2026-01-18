@@ -1,8 +1,6 @@
+import argparse
 import copy
-from blockchain_cmds import get_id, publish_policy
-
-CONN = "http://50.116.13.109:32049"
-DB_NAME = "bottle_factory"
+from blockchain_cmds import get_id, publish_policy, declare_enterprise
 
 NAMESPACE = [
     {"namespace": {
@@ -102,28 +100,28 @@ LOTS = [
 
 KPIS = [
     {"kpi": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "kpi",
         "sensor": "oee",
         "parent": None,
         "namespace": None
     }},
     {"kpi": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "kpi",
         "sensor": "performance",
         "parent": None,
         "namespace": None
     }},
     {"kpi": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "kpi",
         "sensor": "quality",
         "parent": None,
         "namespace": None
     }},
     {"kpi": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "kpi",
         "sensor": "availability",
         "parent": None,
@@ -133,35 +131,35 @@ KPIS = [
 
 SENSORS = [
     {"sensor": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "processing",
         "sensor": "state",
         "parent": None,
         "namespace": None
     }},
     {"sensor": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "processing",
         "sensor": "duration",
         "parent": None,
         "namespace": None
     }},
     {"sensor": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "processing",
         "sensor": "flowrate",
         "parent": None,
         "namespace": None
     }},
     {"sensor": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "processing",
         "sensor": "temperature",
         "parent": None,
         "namespace": None
     }},
     {"sensor": {
-        "dbms": DB_NAME,
+        "dbms": None,
         "table": "processing",
         "sensor": "weight",
         "parent": None,
@@ -171,38 +169,61 @@ SENSORS = [
 ]
 
 
-def declare_enterprise():
-    new_policy = {"enterprise": {
-            "id": "Enterprise B",
-            "uid": "B",
-            "namespace": "Enterprise B"
-        }}
-
-    publish_policy(conn=CONN, policy=new_policy)
 
 def main():
-    declare_enterprise()
+    """
+    Declare UNS for Enterprise B
+    :uns:
+        Enterprise: B
+           -> namespace: Site1
+              -> asset: LiquidProcessing
+                 -> tank: Tank 1
+                    -> lot: L01-0242
+                       -> kpi: oee
+                       -> kpi: performance
+                       -> kpi: quality
+                       -> kpi: availability
+                       -> sensor: state
+                       -> sensor: duration
+                       -> sensor: flowrate
+                       -> sensor: temperature
+                       -> sensor: weight
+    :return:
+    """
+    parse = argparse.ArgumentParser()
+    parse.add_argument("conn", type=str, default="50.116.13.109:32049", help="REST connection to publish policies to")
+    parse.add_argument("--db-namee", type=str, default="bottle_factory", help="logical database name")
+    args = parse.parse_args()
+    
+    if not args.conn.startswith("http://"):
+        args.conn = f"http://{args.conn}"
+    
+    declare_enterprise(conn=args.conn, enterprise_id='B') # declare enterprise policy
 
     for index in range(3):
-        publish_policy(conn=CONN, policy=NAMESPACE[index])
+        # namespace
+        publish_policy(conn=args.conn, policy=NAMESPACE[index])
         namespace_id = NAMESPACE[index].get("namespace").get("id")
 
-        publish_policy(conn=CONN, policy=ASSET[index])
-        asset_id = get_id(conn=CONN, policy_type="asset", parent=ASSET[index]["asset"].get("parent"))
+        # asset
+        publish_policy(conn=args.conn, policy=ASSET[index])
+        asset_id = get_id(conn=args.conn, policy_type="asset", parent=ASSET[index]["asset"].get("parent"))
 
+        # tank
         tank = TANKS[index]
         if not tank["tank"].get("parent"):
             tank["tank"]["parent"] = asset_id
-        publish_policy(conn=CONN, policy=tank)
-        tank_id = get_id(conn=CONN, policy_type="tank", parent=asset_id)
+        publish_policy(conn=args.conn, policy=tank)
+        tank_id = get_id(conn=args.conn, policy_type="tank", parent=asset_id)
 
+        # lot
         lot = LOTS[index]
         if not lot["lot"].get("parent"):
             lot["lot"]["parent"] = tank_id
-        publish_policy(conn=CONN, policy=lot)
-        lot_id = get_id(conn=CONN, policy_type="lot", parent=tank_id)
+        publish_policy(conn=args.conn, policy=lot)
+        lot_id = get_id(conn=args.conn, policy_type="lot", parent=tank_id)
 
-        print(f"{namespace_id} - {lot_id}")
+        # KPI
         for kpi in copy.deepcopy(KPIS):
             sensor = kpi.get("kpi").get("sensor")
             if not kpi["kpi"].get("parent"):
@@ -210,8 +231,13 @@ def main():
 
             if not kpi["kpi"].get("namespace"):
                 kpi["kpi"]["namespace"] = f"Enterprise B/{namespace_id}/liquidprocessing/tankstorage01/tank01/metric/{sensor}"
-            publish_policy(conn=CONN, policy=kpi)
 
+            if not kpi["kpi"].get("dbms"):
+                kpi["kpi"]["dbms"] = args.db_name
+
+            publish_policy(conn=args.conn, policy=kpi)
+
+        # Sensor
         for sensor in copy.deepcopy(SENSORS):
             name = sensor.get("sensor").get("sensor")
             if not sensor["sensor"].get("parent"):
@@ -220,7 +246,9 @@ def main():
                 sensor["sensor"]["namespace"] = f"Enterprise B/{namespace_id}/liquidprocessing/tankstorage01/tank01/processdata/state"
             elif not sensor["sensor"]["namespace"]:
                 sensor["sensor"]["namespace"] = f"Enterprise B/{namespace_id}/liquidprocessing/tankstorage01/tank01/processdata/process/{name}"
-            publish_policy(conn=CONN, policy=sensor)
+            if not sensor["sensor"].get("dbms"):
+                sensor["sensor"]["dbms"] = args.db_name
+            publish_policy(conn=args.conn, policy=sensor)
 
 
 if __name__ == "__main__":

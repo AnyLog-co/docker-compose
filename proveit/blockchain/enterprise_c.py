@@ -1,29 +1,24 @@
+import argparse
 from connector_opcua import get_struct
-from blockchain_cmds import publish_policy
-
-CONN = "http://50.116.13.109:32049"
-DB_NAME = "manufacturing_historian"
+from blockchain_cmds import publish_policy, declare_enterprise
 
 
-def declare_enterprise():
-    new_policy = {"enterprise": {
-            "id": "Enterprise C",
-            "uid": "C",
-            "namespace": "Enterprise C"
-        }}
-
-    publish_policy(conn=CONN, policy=new_policy)
-
-def declare_namespace(namespace:str):
+def declare_namespace(conn:str, namespace:str):
+    """
+    Declare namespace
+    """
     new_policy = {"namespace": {
         "id": namespace,
         "parent": "Enterprise C",
         "namespace": "Enterprise C/{namespace}"
     }}
 
-    publish_policy(conn=CONN, policy=new_policy)
+    publish_policy(conn=conn, policy=new_policy)
 
-def declare_device(namespace, device_name):
+def declare_device(conn:str, namespace, device_name):
+    """
+    Declare Device
+    """
     policy = {
         "device": {
             "id": device_name,
@@ -31,9 +26,12 @@ def declare_device(namespace, device_name):
             "namespace": f"Enterprise C/{namespace}/{device_name}"
         }
     }
-    publish_policy(conn=CONN, policy=policy)
+    publish_policy(conn=conn, policy=policy)
 
-def declare_sensor(db_name:str, namespace:str, device_name:str, sensor:str):
+def declare_sensor(conn:str, db_name:str, namespace:str, device_name:str, sensor:str):
+    """
+    Declare sensor
+    """
     policy = {
         "sensor": {
             "id": sensor,
@@ -44,19 +42,28 @@ def declare_sensor(db_name:str, namespace:str, device_name:str, sensor:str):
         }
     }
 
-    publish_policy(conn=CONN, policy=policy)
+    publish_policy(conn=conn, policy=policy)
 
 
 def main():
-    declare_enterprise()
+    parse = argparse.ArgumentParser()
+    parse.add_argument("conn", type=str, default="50.116.13.109:32049", help="REST connection to publish policies to")
+    parse.add_argument("--db-namee", type=str, default="manufacturing_historian", help="logical database name")
+    args = parse.parse_args()
+
+    if not args.conn.startswith("http://"):
+        args.conn = f"http://{args.conn}"
+
+    declare_enterprise(conn=args.conn, enterprise_id='B')  # declare enterprise policy
     for namespace in ["sub"]:
-        declare_namespace(namespace)
+        declare_namespace(conn=args.conn, namespace=namespace)
+        # get device -> sensors for namespace
         variables = get_struct(node_id=f"ns=2;s={namespace}")
         for device_name in variables:
-            declare_device(namespace=namespace, device_name=device_name)
+            declare_device(conn=args.conn,namespace=namespace, device_name=device_name)
             for sensor in variables[device_name]:
-                declare_sensor(db_name=DB_NAME, namespace=namespace, device_name=device_name, sensor=sensor)
-
+                declare_sensor(conn=args.conn, db_name=arg.db_name, namespace=namespace, device_name=device_name,
+                               sensor=sensor)
 
 
 if __name__ == "__main__":

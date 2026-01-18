@@ -63,3 +63,20 @@ def get_id(conn:str, policy_type:str, **kwargs):
         raise Exception
 
     return response.text
+
+def declare_enterprise(conn:str, enterprise_id:str):
+    """
+    Declare enterprise policy
+    :args:
+        conn:str - connection information
+        enterprise_id:str - Enterprise ID
+    :params:
+        new_policy:str - enterprise policy
+    """
+    new_policy = {"enterprise": {
+            "id": f"Enterprise {enterprise_id}",
+            "uid": enterprise_id,
+            "namespace": f"Enterprise {enterprise_id}"
+        }}
+
+    publish_policy(conn=conn, policy=new_policy)
