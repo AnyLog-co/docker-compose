@@ -9,19 +9,27 @@ def publish_policy(conn:str, policy):
 
     try:
         key = list(policy.keys())[0]
-        print(key, policy.get(key).get("id"))
-        if not check_policy(conn=conn, policy_type=key, policy_id=policy.get(key).get("id")):
+        print(key)
+        if not check_policy(conn=conn, policy_type=key, id=policy.get(key).get("id"),
+                            name=policy.get(key).get("name"), sensor=policy.get(key).get("sensor"),
+                            namespace=policy.get(key).get("namespace"), parent=policy.get(key).get("parent")):
             response = requests.post(url=conn, headers=headers, data=f"<new_policy={json.dumps(policy)}>", timeout=90)
             response.raise_for_status()
     except Exception:
         raise Exception
 
 
-def check_policy(conn:str, policy_type:str, policy_id:str):
+def check_policy(conn:str, policy_type:str, **kwargs):
     headers = {
-        "command": f'blockchain get {policy_type} where id="{policy_id}"',
+        "command": f'blockchain get {policy_type}',
         "User-Agent": "AnyLog/1.23"
     }
+    if kwargs:
+        headers["command"] += " where"
+        for key, value in kwargs.items():
+            if value:
+                headers["command"] += f' {key}="{value}" and'
+        headers["command"] = headers["command"].rsplit(" and", 1)[0]
     is_policy = False
     try:
         response = requests.get(url=conn, headers=headers)
@@ -32,3 +40,26 @@ def check_policy(conn:str, policy_type:str, policy_id:str):
         raise Exception
 
     return is_policy
+
+
+
+def get_id(conn:str, policy_type:str, **kwargs):
+    headers = {
+        "command": f'blockchain get {policy_type}',
+        "User-Agent": "AnyLog/1.23"
+    }
+    if kwargs:
+        headers["command"] += " where"
+        for key, value in kwargs.items():
+            if value:
+                headers["command"] += f' {key}="{value}" and'
+        headers["command"] = headers["command"].rsplit(" and", 1)[0]
+    headers["command"] += " bring [*][id]"
+
+    try:
+        response = requests.get(url=conn, headers=headers)
+        response.raise_for_status()
+    except Exception:
+        raise Exception
+
+    return response.text
