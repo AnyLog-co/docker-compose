@@ -68,8 +68,23 @@ def get_uns_hierarchy(conn:str, root_id:str, level:int=0)->None:
             level=level + 1,
         )
 
+def get_children_by_parent(conn:str, parent_id:str):
+    """
+    Demonstrate providing subset of information for a given namespace / tag based on parent policy ID
+    """
+    headers = {
+        "command": f'blockchain get *  where [id] = "{parent_id}"  bring.children.table.sort(0) [*][parent] [*] [*][id] [*][parent] [*][namespace]',
+        "User-Agent": "AnyLog/1.23"
+    }
+
+    print(get_request(conn=conn, headers=headers))
+
 
 if __name__ == "__main__":
+    # demonstrate showwing a set of tags (children) based on parent ID
+    get_children_by_parent(conn="http://50.116.13.109:32049", parent_id="sub")
+
+    # full UNS hierarchy
     enterprises = get_policies(conn="http://50.116.13.109:32049", policy_type="enterprise")
     for enterprise in enterprises:
         print(enterprise)
