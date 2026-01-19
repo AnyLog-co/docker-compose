@@ -12,6 +12,12 @@
 * Remote-GUI: http://50.116.13.109:3001/
 
 
+## Sample REST calls
+
+* [query_blockchain.py](query/query_blockchain.py) - query the metadata (blockchain)
+* [query_data.py](query/query_data.py) - query the actual data and aggregations
+
+
 ## Deploy Network
 1. Update configurations for the nodes
    * LEDGER_CONN 
@@ -99,5 +105,3 @@ Enterprise: C
       -> device: AIC-250-001
       ...
 ```
-
-## Sample REST calls
