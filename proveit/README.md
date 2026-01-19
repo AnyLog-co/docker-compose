@@ -1,3 +1,16 @@
+# ProveIT 2026 
+
+## ToC
+* [docker-makefiles](../docker-makefiles) - directory containing configurations for AnyLog nodes 
+* [anylog-scripts](anylog-scripts) - directory containing demo specific scripts used as part of the deployment.
+These scripts can also be found under the [deployment-scripts repo](https://github.com/AnyLog-co/deployment-scripts/tree/proveit/proveit-scripts).
+* [node-red](node-red) - [node-RED](http://45.33.62.114:1880/#flow) scripts used to demonstrate flow of data
+* [blockchain](blockchain) - python3 scripts used to create unified namespace metadata 
+* [query](query) - Sample python3 scripts to query the data 
+  * [query_blockchain.py](query/query_blockchain.py) - query metadata 
+  * [query_data.py](query/query_data.py) - the actual data
+
+
 ## Nodes
 
 |     Node      | AnyLog Type |      IP       | Message Broker | REST  |
