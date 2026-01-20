@@ -48,7 +48,7 @@ def declare_sensor(conn:str, db_name:str, namespace:str, device_name:str, sensor
 def main():
     parse = argparse.ArgumentParser()
     parse.add_argument("conn", type=str, default="50.116.13.109:32049", help="REST connection to publish policies to")
-    parse.add_argument("--db-namee", type=str, default="manufacturing_historian", help="logical database name")
+    parse.add_argument("--db-name", type=str, default="manufacturing_historian", help="logical database name")
     args = parse.parse_args()
 
     if not args.conn.startswith("http://"):
@@ -62,7 +62,7 @@ def main():
         for device_name in variables:
             declare_device(conn=args.conn,namespace=namespace, device_name=device_name)
             for sensor in variables[device_name]:
-                declare_sensor(conn=args.conn, db_name=arg.db_name, namespace=namespace, device_name=device_name,
+                declare_sensor(conn=args.conn, db_name=args.db_name, namespace=namespace, device_name=device_name,
                                sensor=sensor)
 
 
