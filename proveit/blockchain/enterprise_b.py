@@ -192,7 +192,7 @@ def main():
     """
     parse = argparse.ArgumentParser()
     parse.add_argument("conn", type=str, default="50.116.13.109:32049", help="REST connection to publish policies to")
-    parse.add_argument("--db-namee", type=str, default="bottle_factory", help="logical database name")
+    parse.add_argument("--db-name", type=str, default="bottle_factory", help="logical database name")
     args = parse.parse_args()
     
     if not args.conn.startswith("http://"):
