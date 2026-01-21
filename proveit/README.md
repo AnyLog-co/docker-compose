@@ -19,7 +19,7 @@ These scripts can also be found under the [deployment-scripts repo](https://gith
 |   historian   | Operator | 50.116.13.109 | 172.79.89.202 |    32160      | 32159 |
 |     Site1     | Operator | 50.116.13.109 | 172.79.89.202 |    32150      | 32149 |
 |     Site2     | Operator | 45.33.62.114 | 172.79.89.201 |    32150      | 32149 |
-|     Site3     | Operator | 45.33.62.114 | 172.79.89.206    32160      | 32159 |
+|     Site3     | Operator | 45.33.62.114 | 172.79.89.206 |   32160      | 32159 |
 
 * node-RED http://45.33.62.114:1880/#flow/d036c805c711acdc
 * Remote-GUI: http://50.116.13.109:3001/
