@@ -496,3 +496,59 @@ LIGHTHOUSE_IP=""
 LIGHTHOUSE_NODE_IP=""
 ```
 
+
+## Using Windows & Mac docker-compose 
+
+When deploying using Docker Destkop on Windows and/or Mac the generated docker-compose.yaml file uses `port` based 
+configurations instead of `network_mode: host`. This may cause the docker containers to use the docker IP, rather than
+the machine IP; which is ideal. 
+
+The following steps are used to overwrite the the Docker IP with either `127.0.0.1`, localhost, or the internal IP - as shown below. 
+
+1. Validate Docker configus - as shown below
+![windows_docker_configs.png](imgs/windows_docker_configs.png)
+
+2. Using `ipconfigs` / `ifconfig`, get the local IP of the machine
+
+```ipconfigs
+# Windows
+Wireless LAN adapter Wi-Fi:
+
+   Connection-specific DNS Suffix  . : lan
+   IPv6 Address. . . . . . . . . . . : fdda:e2d1:1b27:644d:3236:726c:7a3b:cbd2
+   Temporary IPv6 Address. . . . . . : fdda:e2d1:1b27:644d:7cdb:f505:6fc4:885d
+   Link-local IPv6 Address . . . . . : fe80::e611:2907:1592:2a13%24
+   IPv4 Address. . . . . . . . . . . : 192.168.86.28 # <-- this configuration
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.86.1
+
+# Mac 
+en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+	options=6460<TSO4,TSO6,CHANNEL_IO,PARTIAL_CSUM,ZEROINVERT_CSUM>
+	ether fa:93:f9:0a:ae:6b
+	inet6 fe80::c65:600b:90fc:9f9c%en0 prefixlen 64 secured scopeid 0x6 
+	inet6 2601:640:8a00:a9a0:cf2:2d11:fb44:aca3 prefixlen 64 autoconf secured 
+	inet6 2601:640:8a00:a9a0:d1bc:2189:8dbc:8942 prefixlen 64 autoconf temporary 
+	inet6 2601:640:8a00:a9a0::16e5 prefixlen 64 dynamic 
+	inet 10.0.0.245 netmask 0xffffff00 broadcast 10.0.0.255 # <-- the first IP (10.0.0.245)
+	nd6 options=201<PERFORMNUD,DAD>
+	media: autoselect
+	status: active
+
+```
+
+3. In [advance_configs.env](docker-makefiles/generic-configs/advance_configs.env#L29), set the `OVERLAY_IP` to the IPb4 address 
+```dotenv
+# before 
+OVERLAY_IP=""
+
+# after
+OVERLAY_IP=192.168.86.28
+```
+
+4. (Optional) when deploying nodes on a shared network, we recommend setting `TCP_BIND=true` in [base_configs.env](docker-makefiles/generic-configs/base_configs.env)
+
+5. Start Node
+```shell
+make up ANYLOG_TYPE=generic
+```
