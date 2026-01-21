@@ -13,7 +13,7 @@ These scripts can also be found under the [deployment-scripts repo](https://gith
 
 ## Nodes
 
-|     Node      | AnyLog Type |      Anylog IP       |   Dynics IP      |Message Broker | REST  |
+|     Node      | AnyLog Type |      Anylog IP       |   Dynics IP      | Message Broker | REST  |
 |:-------------:| :---: |:-------------:|:--------------:|:-----:|
 | anylog-master | Master / Query | 50.116.13.109 | 172.79.89.206 |               | 32049 |
 |   historian   | Operator | 50.116.13.109 | 172.79.89.202 |    32160      | 32159 |
