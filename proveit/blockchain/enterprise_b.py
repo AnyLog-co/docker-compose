@@ -1,4 +1,3 @@
-import json
 from blockchain_cmds import publish_policy, get_id
 from connector_opcua import TreeStruct
 
@@ -10,7 +9,7 @@ DBMS="bottle_factory"
 def declare_enterprise():
     new_policy = {
         "enterprise": {
-            "id": "Enterprise B",
+            "id": "EnterpriseB",
             "uid": 'B',
             "company": "Bottle Factory",
             "namespace": "Enterprise B",
@@ -113,8 +112,8 @@ def main():
         assets["namespace"] = f"Enterprise B/{site}"
         site_id = declare_site(site=site, parent=enterprise_id, asset_info=assets)
 
-        nmaespaces = tree_struct.get_children(node_id=f"ns=2;s={site}/liquidprocessing")
-        for namespace in nmaespaces:
+        namespaces = tree_struct.get_children(node_id=f"ns=2;s={site}/liquidprocessing")
+        for namespace in namespaces:
             if "node" in namespace.nodeid.Identifier:
                 node_info = tree_struct.get_children(node_id=f"ns=2;s={namespace.nodeid.Identifier}/assetidentifier")
                 values = tree_struct.get_value(node_id=node_info)

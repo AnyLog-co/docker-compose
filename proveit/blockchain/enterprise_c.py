@@ -1,70 +1,49 @@
-import argparse
-from connector_opcua import get_struct
-from blockchain_cmds import publish_policy, declare_enterprise
+from blockchain_cmds import publish_policy, get_id
+from connector_opcua import TreeStruct
+
+URL = "opc.tcp://virtualfactory.proveit.services:4842/discovery"
+TREE_BASE = "sub"
+CONN = "http://50.116.13.109:32049"
+DBMS="manufacturing_historian"
 
 
-def declare_namespace(conn:str, namespace:str):
-    """
-    Declare namespace
-    """
-    new_policy = {"namespace": {
-        "name": namespace,
-        "parent": "Enterprise C",
-        "namespace": "Enterprise C/{namespace}"
-    }}
-
-    publish_policy(conn=conn, policy=new_policy)
-
-def declare_device(conn:str, namespace, device_name):
-    """
-    Declare Device
-    """
-    policy = {
-        "device": {
-            "name": device_name,
-            "parent": namespace,
-            "namespace": f"Enterprise C/{namespace}/{device_name}"
-        }
-    }
-    publish_policy(conn=conn, policy=policy)
-
-def declare_sensor(conn:str, db_name:str, namespace:str, device_name:str, sensor:str):
-    """
-    Declare sensor
-    """
-    policy = {
-        "sensor": {
-            "name": sensor,
-            "parent": device_name,
-            "dbms": db_name,
-            "table": f"{device_name.replace('-','_')}_{sensor.replace('-', '_').replace('.','_')}".lower(),
-            "namespace": f"Enterprise C/{namespace}/{device_name}_{sensor}"
+def declare_enterprise():
+    new_policy = {
+        "enterprise": {
+            "id": "EnterpriseC",
+            "uid": 'C',
+            "company": "Manufacturing Historian",
+            "namespace": "Enterprise C",
         }
     }
 
-    publish_policy(conn=conn, policy=policy)
+    # publish_policy(conn=CONN, policy=new_policy)
+    return get_id(conn=CONN, policy_type="enterprise", uid='C')
+
+
+def create_namespace():
+    new_policy = {
+        "namespace" : {
+            "id": "sub",
+            "parent": "EnterpriseC",
+            "namespace": "Enterprise C/sub"
+        }
+    }
+
+    # publish_policy(conn=CONN, policy=new_policy)
+    return get_id(conn=CONN, policy_type="enterprise", uid='C')
+
 
 
 def main():
-    parse = argparse.ArgumentParser()
-    parse.add_argument("conn", type=str, default="50.116.13.109:32049", help="REST connection to publish policies to")
-    parse.add_argument("--db-name", type=str, default="manufacturing_historian", help="logical database name")
-    args = parse.parse_args()
+    tree_struct = TreeStruct(url=URL)
+    declare_enterprise()
+    create_namespace()
 
-    if not args.conn.startswith("http://"):
-        args.conn = f"http://{args.conn}"
-
-    declare_enterprise(conn=args.conn, enterprise_id='B')  # declare enterprise policy
-    for namespace in ["sub"]:
-        declare_namespace(conn=args.conn, namespace=namespace)
-        # get device -> sensors for namespace
-        variables = get_struct(node_id=f"ns=2;s={namespace}")
-        for device_name in variables:
-            declare_device(conn=args.conn,namespace=namespace, device_name=device_name)
-            for sensor in variables[device_name]:
-                declare_sensor(conn=args.conn, db_name=args.db_name, namespace=namespace, device_name=device_name,
-                               sensor=sensor)
-
+    namespaces = tree_struct.get_children(node_id="ns=2;s=sub")
+    for namespace in namespaces:
+        print(namespace.node.nodeid.Identifier)
+    tree_struct.disconnect()
 
 if __name__ == "__main__":
     main()

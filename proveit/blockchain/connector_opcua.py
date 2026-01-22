@@ -25,17 +25,16 @@ class TreeStruct:
     def get_children(self, node_id:str=None):
         try:
             namespaces = self.client.get_node(nodeid=node_id)
+
             return namespaces.get_children()
         except Exception as error:
             raise Exception(f"Failed to get children for {node_id} (Error: {error})")
 
     def get_value(self, node_id:str=None):
-        value = None
         try:
             value = self.client.get_values(nodes=node_id)
         except Exception as error:
             raise Exception(f"Failed to get children for {node_id} (Error: {error})")
-        return value
 
     def disconnect(self):
         try:
