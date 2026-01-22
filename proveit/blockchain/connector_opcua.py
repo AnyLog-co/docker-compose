@@ -2,39 +2,48 @@ from opcua import Client, ua
 
 # get opcua values where url=opc.tcp://virtualfactory.proveit.services:4841/discovery and user=proveitreadonly and password=proveitreadonlypassword and node = "ns=2;s=Site1.assetidentifier"
 
-url = "opc.tcp://virtualfactory.proveit.services:4842/discovery"
 username = "proveitreadonly"
 password = "proveitreadonlypassword"
 # node_id =
 
-client = Client(url)
-client.set_user(username)
-client.set_password(password)
 
-def get_struct(node_id:str="ns=2;s=sub"):
-    variables = {}
-    try:
-        client.connect()
-        node = client.get_node(node_id)
-        children = node.get_children()
-        for child in children:
-            if str(child).count(".") > 1:
-                key, value = str(child).split(".",1)[-1].split(".", 1)
-                if key not in variables:
-                    variables[key] = []
-                variables[key].append(value)
-            elif str(child).count(".") == 1:
-                key = str(child).split(".", 1)[-1]
-                if key not in variables:
-                    variables[key] = []
-    except Exception as e:
-        print("Error:", e)
-        exit(1)
-    finally:
-        client.disconnect()
-        print("Disconnected")
-    return variables
+class TreeStruct:
+    def __init__(self, url:str):
+        self.client = self.connect(url=url)
 
+    def connect(self, url:str):
+        try:
+            client = Client(url)
+            client.set_user(username)
+            client.set_password(password)
+            client.connect()
+        except Exception as error:
+            raise Exception(f"Failed to connect to client (Error: {error})")
 
-if __name__ == "__main__":
-    get_struct(node_id="ns=2;s=sub")
+        return client
+
+    def get_children(self, node_id:str=None):
+        try:
+            namespaces = self.client.get_node(nodeid=node_id)
+            return namespaces.get_children()
+        except Exception as error:
+            raise Exception(f"Failed to get children for {node_id} (Error: {error})")
+
+    def get_value(self, node_id:str=None):
+        value = None
+        try:
+            value = self.client.get_values(nodes=node_id)
+        except Exception as error:
+            raise Exception(f"Failed to get children for {node_id} (Error: {error})")
+        return value
+
+    def disconnect(self):
+        try:
+            self.client.disconnect()
+
+        except Exception as error:
+            pass
+
+# if __name__ == "__main__":
+#     tress_struct = TreeStruct(url="opc.tcp://virtualfactory.proveit.services:4841/discovery")
+#     tress_struct.enterprise()

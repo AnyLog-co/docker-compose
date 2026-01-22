@@ -16,6 +16,7 @@ def publish_policy(conn:str, policy):
             response = requests.post(url=conn, headers=headers, data=f"<new_policy={json.dumps(policy)}>", timeout=90)
             response.raise_for_status()
     except Exception:
+        print(policy)
         raise Exception
 
 

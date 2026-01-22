@@ -8,7 +8,7 @@ def declare_namespace(conn:str, namespace:str):
     Declare namespace
     """
     new_policy = {"namespace": {
-        "id": namespace,
+        "name": namespace,
         "parent": "Enterprise C",
         "namespace": "Enterprise C/{namespace}"
     }}
@@ -21,7 +21,7 @@ def declare_device(conn:str, namespace, device_name):
     """
     policy = {
         "device": {
-            "id": device_name,
+            "name": device_name,
             "parent": namespace,
             "namespace": f"Enterprise C/{namespace}/{device_name}"
         }
@@ -34,7 +34,7 @@ def declare_sensor(conn:str, db_name:str, namespace:str, device_name:str, sensor
     """
     policy = {
         "sensor": {
-            "id": sensor,
+            "name": sensor,
             "parent": device_name,
             "dbms": db_name,
             "table": f"{device_name.replace('-','_')}_{sensor.replace('-', '_').replace('.','_')}".lower(),
