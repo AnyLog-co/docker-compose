@@ -12,13 +12,52 @@ BROKER = "virtualfactory.proveit.services"
 PORT = 1883
 USERNAME = "proveitreadonly"
 PASSWORD = "proveitreadonlypassword"
-BASE_TOPIC = "Enterprise B/#"
+BASE_TOPIC = "Enterprise C/#"
 
 COLLECT_SECONDS = 10  # how long to listen
 
 
 topics_seen = set()
 latest_values = {}  # store latest payload for each topic
+
+
+class MqttHierarchy:
+    def __init__(self, base_topic, broker:str, port:int, username:str=None, password:str=None):
+        self.base_topic = base_topic
+        self.broker = broker
+        self.port = port
+        self.username = username
+        self.password = password
+        self.client = None
+
+    def connect_mqtt(self):
+        """
+        connect to MQTT client
+        """
+        try:
+            self.client = mqtt.Client()
+            self.client.username_pw_set(self.username, self.password)
+
+            self.client.on_connect = on_connect
+            self.client.on_message = on_message
+
+            self.client.connect(self.broker, self.port, 60)
+            self.client.loop_start()
+        except Exception as error:
+            raise Exception(f"Failed to connect to {self.broker}:{self.port} (Error: {error})")
+
+    def subscribe(self, topic:str):
+        """
+        subscribe to a given topic
+        """
+        try:
+            self.client.subscribe(topic)
+        except Exception as error:
+            raise Exception(f"Failed to subscribe on topic {self.base_topic} (Error: {error})")
+
+
+
+
 
 
 def build_hierarchy(topics, base):
@@ -61,6 +100,7 @@ def attach_values(tree, prefix="Enterprise B"):
 
 
 def on_connect(client, userdata, flags, rc):
+    global BASE_TOPIC
     if rc == 0:
         print("Connected to MQTT broker")
         client.subscribe(BASE_TOPIC)
@@ -73,15 +113,10 @@ def on_message(client, userdata, msg):
     latest_values[msg.topic] = msg.payload.decode("utf-8")
 
 
-def main():
-    client = mqtt.Client()
-    client.username_pw_set(USERNAME, PASSWORD)
+def mqtt_hierarchy(base_topic=BASE_TOPIC):
+    global BASE_TOPIC
+    BASE_TOPIC = base_topic
 
-    client.on_connect = on_connect
-    client.on_message = on_message
-
-    client.connect(BROKER, PORT, 60)
-    client.loop_start()
 
     print(f"Collecting topics for {COLLECT_SECONDS} seconds...")
     time.sleep(COLLECT_SECONDS)
@@ -93,13 +128,13 @@ def main():
 
     sub_topics = [
         topic for topic in topics_seen
-        if topic.split("/")[1] in ["Site1", "Site2", "Site3"]
+        # if topic.split("/")[1] in ["Site1", "Site2", "Site3"]
+        if topic.split("/")[1] in ["sub", "sum", "chrom", "tff"]
     ]
 
     hierarchy = build_hierarchy(sub_topics, BASE_TOPIC)
     attach_values(hierarchy)
-    print(json.dumps(hierarchy, indent=2))
-
+    return hierarchy
 
 if __name__ == "__main__":
     main()
