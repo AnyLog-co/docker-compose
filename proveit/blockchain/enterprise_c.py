@@ -1,105 +1,96 @@
+import time
 from blockchain_cmds import publish_policy, get_id
-from mqtt_hierarchy import mqtt_hierarchy
-import re
-from collections import defaultdict
+from mqtt_hierarchy import MqttHierarchy
 
-
-URL = "opc.tcp://virtualfactory.proveit.services:4842/discovery"
-# TREE_BASE = "sub"
-CONN = "http://50.116.13.109:32049"
-DBMS="manufacturing_historian"
-
-
-def declare_enterprise():
+def create_policy(policy_type:str, policy_name:str, namespace:str, policy_parent:str=None, db_name:str=None):
     new_policy = {
-        "enterprise": {
-            "id": "EnterpriseC",
-            "uid": 'C',
-            "company": "Manufacturing Historian",
-            "namespace": "Enterprise C",
+        policy_type: {
+            "name": policy_name,
+            "namespace": namespace,
+            **({"parent": policy_parent} if policy_parent else {}),
+            **({"dbms": db_name} if db_name else {}),
+            **({"table": namespace.replace('/', '_').replace('-', '_').split("_", 1)[-1].lower()} if policy_type == "sensor" else {})
         }
     }
 
-    publish_policy(conn=CONN, policy=new_policy)
-    return get_id(conn=CONN, policy_type="enterprise", uid='C')
+    publish_policy(conn="http://50.116.13.109:32049", policy=new_policy)
+    return get_id(conn="http://50.116.13.109:32049", policy_type=policy_type, name=policy_name, namespace=namespace,
+                  parent=policy_parent)
 
-
-def create_namespace(namespace:str):
-    new_policy = {
-        "namespace" : {
-            "id": namespace,
-            "parent": "EnterpriseC",
-            "namespace": f"Enterprise C/{namespace}"
-        }
-    }
-
-    publish_policy(conn=CONN, policy=new_policy)
-    return get_id(conn=CONN, policy_type="enterprise", uid='C')
-
-
-def create_device(namespace:str, device:str):
-    new_policy = {
-        "device": {
-            "name": device,
-            "parent": namespace,
-            "namespace": f"Enterprise C/{namespace}/{device}"
-        }
-    }
-
-    publish_policy(conn=CONN, policy=new_policy)
-    return get_id(conn=CONN, policy_type="enterprise", uid='C')
-
-def create_sensor(namespace:str, device:str, sensor:str, parent_id:str, db_name:str):
-    new_policy = {
-        "sensor": {
-            "name": sensor,
-            "dbms": db_name,
-            "table": f"{namespace}_{device}_{sensor}".lower().replace('-', '_'),
-            "parent": parent_id,
-            "namespace": f"Enterprise C/{namespace}/{device}/{sensor}"
-        }
-    }
-
-    publish_policy(conn=CONN, policy=new_policy)
-    return get_id(conn=CONN, policy_type="enterprise", uid='C')
 
 
 def main():
-    # declare_enterprise()
-    cleand_hierarchies = {}
-    hierarchies = mqtt_hierarchy(base_topic="Enterprise C/#")
-    for namespace in hierarchies:
-        if not cleand_hierarchies.get(namespace):
-            cleand_hierarchies[namespace] = {}
-        for device in hierarchies[namespace]:
-            if device in ["DI-250-010", "phase", "OPR_ID"]:
-                if "generic" not in cleand_hierarchies[namespace]:
-                    cleand_hierarchies[namespace]["generic"] = []
-                if device not in cleand_hierarchies[namespace]["generic"]:
-                    cleand_hierarchies[namespace]["generic"].append(device)
+    """
+    The following provides unified namespace logic for Enterprise C
+    :logic:
+    enterprise (ex. Enterprise C)
+        namespace (ex. tff)
+            device  (ex.TFF300)
+                sensor - FORMULA-NAME --> tff_tff300_formula_name
+                         BATCH-ID --> tff_tff300_batch_id
+                         RECIPE-NAME --> tff_tff300_recipe_name
+    """
+    base_topic="Enterprise C"
+    mqtt_sub = MqttHierarchy(base_topic=f"{base_topic}/#", broker="virtualfactory.proveit.services",
+                             username="proveitreadonly", password="proveitreadonlypassword", collect_seconds=10)
+
+    mqtt_sub.connect()
+    time.sleep(mqtt_sub.collect_seconds)
+
+
+    sub_topics = [
+        topic
+        for topic in mqtt_sub.topics_seen
+        if topic.split("/")[1] in {"sub", "sum", "chrom", "tff"}
+    ]
+
+    hierarchy = mqtt_sub.build_hierarchy(sub_topics)
+    mqtt_sub.attach_values(hierarchy, mqtt_sub.base_topic.replace("/#", ""))
+
+    enterprise_policy = create_policy(policy_type="enterprise", policy_name=base_topic, namespace=base_topic,
+                                      policy_parent=None)
+    print(enterprise_policy)
+    for namespace in hierarchy:
+        namespace_policy = create_policy(policy_type="namespace", policy_name=namespace,
+                                         namespace=f"{base_topic}/{namespace}", policy_parent=enterprise_policy)
+        print(f"namespace: {namespace}")
+        for device in hierarchy[namespace]:
+            if isinstance(hierarchy[namespace][device], dict):
+                device_policy = create_policy(policy_type="device", policy_name=device,
+                                              namespace=f"{base_topic}/{namespace}/{device}",
+                                              policy_parent=namespace_policy)
+                for sensor in hierarchy[namespace][device]:
+                    create_policy(policy_type="sensor", policy_name=sensor,
+                                  namespace=f"{base_topic}/{namespace}/{device}/{sensor}", policy_parent=device_policy,
+                                  db_name="manufacturing_historian")
             elif "_" in device:
                 device_name, sensor = device.split("_", 1)
-                if device_name not in cleand_hierarchies[namespace]:
-                    cleand_hierarchies[namespace][device_name] = []
-                if sensor not in cleand_hierarchies[namespace][device_name]:
-                    cleand_hierarchies[namespace][device_name].append(sensor)
-            elif "-" in device:
-                device_name, sensor = device.split("-", 1)
-                if device_name not in cleand_hierarchies[namespace]:
-                    cleand_hierarchies[namespace][device_name] = []
-                if sensor not in cleand_hierarchies[namespace][device_name]:
-                    cleand_hierarchies[namespace][device_name].append(sensor)
-            else:
-                print(f"\t{device}")
+                device_policy = create_policy(policy_type="device", policy_name=device_name,
+                                              namespace=f"{base_topic}/{namespace}/{device_name}",
+                                              policy_parent=namespace_policy)
+                create_policy(policy_type="sensor", policy_name=sensor,
+                              namespace=f"{base_topic}/{namespace}/{device_name}/{sensor}", policy_parent=device_policy,
+                              db_name="manufacturing_historian")
 
-    declare_enterprise()
-    for namespace in cleand_hierarchies:
-        namespace_id = create_namespace(namespace=namespace)
-        for device in cleand_hierarchies[namespace]:
-            device_id = create_device(namespace=namespace, device=device)
-            for sensor in cleand_hierarchies[namespace][device]:
-                create_sensor(namespace=namespace, device=device, sensor=sensor, parent_id=device_id, db_name="manufacturing_historian")
+            elif device.startswith(("TFF", "CHR01", "XV50", "SUM5")):
+                    device_name, sensor = device.split("-", 1)
+                    device_policy = create_policy(policy_type="device", policy_name=device_name,
+                                                  namespace=f"{base_topic}/{namespace}/{device_name}",
+                                                  policy_parent=namespace_policy)
+                    create_policy(policy_type="sensor", policy_name=sensor,
+                                  namespace=f"{base_topic}/{namespace}/{device_name}/{sensor}",
+                                  policy_parent=device_policy, db_name="manufacturing_historian")
+            elif device == "phase":
+                create_policy(policy_type="sensor", policy_name=device,
+                              namespace=f"{base_topic}/{namespace}/{device}",
+                              policy_parent=namespace_policy, db_name="manufacturing_historian")
+            else:
+                print(f"{device} <-- THIS")
+
+
+    # print(hierarchy)
 
 
 if __name__ == "__main__":
     main()
+
