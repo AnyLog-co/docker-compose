@@ -2,14 +2,17 @@ import time
 from blockchain_cmds import publish_policy, get_id
 from mqtt_hierarchy import MqttHierarchy
 
-def create_policy(policy_type:str, policy_name:str, namespace:str, policy_parent:str=None, db_name:str=None):
+def create_policy(policy_type:str, policy_name:str, namespace:str, policy_parent:str=None, db_name:str=None,
+                  uns_path:str=None, company:str=None):
     new_policy = {
         policy_type: {
             "name": policy_name,
             "namespace": namespace,
+            **({"company": company} if company else {}),
             **({"parent": policy_parent} if policy_parent else {}),
             **({"dbms": db_name} if db_name else {}),
-            **({"table": namespace.replace('/', '_').replace('-', '_').split("_", 1)[-1].lower()} if policy_type == "sensor" else {})
+            **({"table": namespace.replace('/', '_').replace('-', '_').split("_", 1)[-1].lower()} if policy_type == "sensor" else {}),
+            **({"asset_path": uns_path} if uns_path else {})
         }
     }
 

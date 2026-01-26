@@ -1,149 +1,41 @@
-from blockchain_cmds import publish_policy, get_id
-from connector_opcua import TreeStruct
+import time
 
-URL = "opc.tcp://virtualfactory.proveit.services:4841/discovery"
-TREE_BASE = "Site1/liquidprocessing"
-CONN = "http://50.116.13.109:32049"
-DBMS="bottle_factory"
-
-def declare_enterprise():
-    new_policy = {
-        "enterprise": {
-            "id": "EnterpriseB",
-            "uid": 'B',
-            "company": "Bottle Factory",
-            "namespace": "Enterprise B",
-        }
-    }
-
-    publish_policy(conn=CONN, policy=new_policy)
-    return get_id(conn=CONN, policy_type="enterprise", uid='B')
-
-def declare_site(site:str, parent:str, asset_info:dict):
-    new_policy = {
-        "site": {
-            "id": site,
-            "parent": parent,
-            "name": asset_info.get("displayname", site),
-            "assetname": asset_info.get("assetname"),
-            "assetpath": asset_info.get("assetpath"),
-            "namespace": asset_info.get("namespace")
-
-        }
-    }
-
-    publish_policy(conn=CONN, policy=new_policy)
-    return get_id(conn=CONN, policy_type="site", name=asset_info.get("displayname", site))
-
-def declare_tank(parent:str, asset_info:dict):
-    new_policy = {
-        "tank": {
-            "parent": parent,
-            "name": asset_info.get("displayname", asset_info.get("assetname")),
-            "assetname": asset_info.get("assetname"),
-            "assetpath": asset_info.get("assetpath"),
-            "namespace": asset_info.get("namespace")
-
-        }
-    }
-
-    publish_policy(conn=CONN, policy=new_policy)
-    return get_id(conn=CONN, policy_type="tank", name=asset_info.get("displayname", asset_info.get("assetname")) )
+import requests
+from typing_extensions import assert_type
+from mqtt_hierarchy import MqttHierarchy
+from enterprise_c import create_policy
 
 
-def declare_kpis(db_name:str, parent:str, asset_info:list):
-    for asset in asset_info:
-        # asset =
-        if asset.nodeid.Identifier.rsplit('/', 1)[-1] in ["oee", "performance", "availability", "quality"]:
-            new_policy = {
-                "kpi": {
-                    "name": asset.nodeid.Identifier.rsplit('/', 1)[-1],
-                    "parent": parent,
-                    "namespace": asset.nodeid.Identifier,
-                    "dbms": db_name,
-                    "table": "kpi"
-                }
-            }
+def get_uns_info(node_info:dict):
+    asset_type_name = node_info.get("assettypename") # example site
+    asset_path = node_info.get("assetpath") # UNS/ProveItBeverage/Plant2/FillerProduction/Node
+    asset_name = node_info.get("assetname")
+    display_name = node_info.get("displayname")
 
-            publish_policy(conn=CONN, policy=new_policy)
-
-
-def declare_processing(db_name:str, parent:str, processing_info:list, state_info:list):
-    for asset in processing_info:
-        if asset.nodeid.Identifier.rsplit('/', 1)[-1] in ["flowrate", "weight", "temperature"]:
-            new_policy = {
-                "sensor": {
-                    "name": asset.nodeid.Identifier.rsplit('/', 1)[-1],
-                    "parent": parent,
-                    "namespace": f"Enterprise B/{asset.nodeid.Identifier}",
-                    "dbms": db_name,
-                    "table": "processing"
-                }
-            }
-
-            publish_policy(conn=CONN, policy=new_policy)
-
-
-
-    new_policy = {
-        "sensor": {
-            "name": "state",
-            "parent": parent,
-            "namespace": f"Enterprise B/{state_info[0].nodeid.Identifier.rsplit('/', 1)[0]}",
-            "dbms": db_name,
-            "table": "processing"
-        }
-    }
-    publish_policy(conn=CONN, policy=new_policy)
-
+    return asset_type_name, asset_path, asset_name, display_name
 
 
 def main():
-    tree_struct = TreeStruct(url=URL)
+    base_topic = "Enterprise B"
+    # mqtt_sub = MqttHierarchy(base_topic=f"{base_topic}/#", broker="virtualfactory.proveit.services",
+    #                          username="proveitreadonly", password="proveitreadonlypassword", collect_seconds=10)
 
-    # declare Enterprise Policy
-    enterprise_id = declare_enterprise()
+    headers = {
+        "command": f"blockchain get uns where [namespace] contains {base_topic}",
+        "User-Agent": "AnyLog/1.23"
+    }
+    \
+    try:
+        response = requests.request("get", url="http://50.116.13.109:32049", headers=headers, )
+        response.raise_for_status()
+    except Exception as error:
+        raise Exception(f"Failed to execute GET against http://50.116.13.109:32049 (Error: {error})")
+    print(response.json())
 
-    for site in ["Site1", "Site2", "Site3"]:
-        assets = {}
-        node_info = node_info = tree_struct.get_children(node_id=f"ns=2;s={site}/node/assetidentifier")
-        values = tree_struct.get_value(node_id=node_info)
-        assets = {node_info[i].nodeid.Identifier.rsplit("/", 1)[-1]: values[i] for i in range(len(node_info))}
-        assets["namespace"] = f"Enterprise B/{site}"
-        site_id = declare_site(site=site, parent=enterprise_id, asset_info=assets)
 
-        namespaces = tree_struct.get_children(node_id=f"ns=2;s={site}/liquidprocessing")
-        for namespace in namespaces:
-            if "node" in namespace.nodeid.Identifier:
-                node_info = tree_struct.get_children(node_id=f"ns=2;s={namespace.nodeid.Identifier}/assetidentifier")
-                values = tree_struct.get_value(node_id=node_info)
-                assets = {node_info[i].nodeid.Identifier.rsplit("/", 1)[-1]: values[i] for i in range(len(node_info))}
-                assets["namespace"] = f"Enterprise B/{node_info[0].nodeid.Identifier.rsplit('/node', 1)[0]}"
 
-            if "tankstorage01" in namespace.nodeid.Identifier: # needs to happen first
-                nodes = tree_struct.get_children(node_id=f"ns=2;s={namespace.nodeid.Identifier}")
-                for node in nodes:
-                    if "tank" in node.nodeid.Identifier.rsplit("/", 1)[-1]:
-                        tank_info = tree_struct.get_children(node_id=f"ns=2;s={node.nodeid.Identifier}/node/assetidentifier")
-                        values = tree_struct.get_value(node_id=tank_info)
-                        assets = {tank_info[i].nodeid.Identifier.rsplit("/", 1)[-1]: values[i] for i in range(len(tank_info))}
-                        assets["namespace"] = f"Enterprise B/{tank_info[0].nodeid.Identifier.rsplit('/node', 1)[0]}"
-                        tank_id = declare_tank(parent=site_id, asset_info=assets)
-
-                        # KPIs
-                        kpi_info = tree_struct.get_children(node_id=f"ns=2;s={node.nodeid.Identifier}/metric")
-                        declare_kpis(db_name=DBMS, parent=tank_id, asset_info=kpi_info)
-
-                        # Processing
-                        processing_info = tree_struct.get_children(node_id=f"ns=2;s={node.nodeid.Identifier}/processdata/process")
-                        state_info = tree_struct.get_children(node_id=f"ns=2;s={node.nodeid.Identifier}/processdata/state")
-
-                        declare_processing(db_name=DBMS, parent=tank_id, processing_info=processing_info, state_info=state_info)
-
-    tree_struct.disconnect()
 
 
 
 if __name__ == "__main__":
     main()
-

@@ -9,7 +9,6 @@ def publish_policy(conn:str, policy):
 
     try:
         key = list(policy.keys())[0]
-        print(key)
         if not check_policy(conn=conn, policy_type=key, id=policy.get(key).get("id"),
                             name=policy.get(key).get("name"), sensor=policy.get(key).get("sensor"),
                             namespace=policy.get(key).get("namespace"), parent=policy.get(key).get("parent")):
