@@ -84,9 +84,21 @@ def increments_query(db_name:str, table_name:str):
     for row in response.json():
         print(row)
 
+def dynics_queries():
+    for table in ["switch", "nic_info"]:
+        print(f"Table Name: {table}")
+        headers =  {
+            "command": "sql monitoring select * from %s" % table,
+            "User-Agent": "AnyLog/1.23",
+            "destination": "network"
+        }
+        response = rest_call(call_method="GET", conn=CONN, headers=headers)
+        print(response.json())
+
 
 if __name__ == "__main__":
-    # get_tables()
-    # basic_query(db_name="manufacturing_historian", table_name="sum_sic501_pv_rpm")
-    # period_query_multiple_sources()
+    get_tables()
+    basic_query(db_name="manufacturing_historian", table_name="sum_sic501_pv_rpm")
+    period_query_multiple_sources()
     increments_query(db_name="manufacturing_historian", table_name="sub_aic_250_001_pv_percent")
+    dynics_queries()
