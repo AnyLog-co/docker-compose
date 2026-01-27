@@ -67,7 +67,7 @@ def period_query_multiple_sources():
     Sample period query with data coming in from multiple operator nodes
     """
     headers = {
-        "command": "sql bottle_factory format=table and extend=(+node_name) SELECT insert_timestamp, type, name, duration, code from state_53 where period(minute, 15, now(),insert_timestamp) order by insert_timestamp",
+        "command": "sql bottle_factory format=table and extend=(+node_name) SELECT insert_timestamp, type, name, duration, code from state_63 where period(minute, 15, now(),insert_timestamp) order by insert_timestamp",
         "User-Agent": "AnyLog/1.23",
         "destination": "network"
     }
@@ -98,7 +98,7 @@ def dynics_queries():
 
 if __name__ == "__main__":
     get_tables()
-    basic_query(db_name="manufacturing_historian", table_name="sum_sic501_pv_rpm")
+    basic_query(db_name="manufacturing_historian", table_name="sub_ti_250_001_pv_celsius")
     period_query_multiple_sources()
     increments_query(db_name="manufacturing_historian", table_name="sub_aic_250_001_pv_percent")
     dynics_queries()
