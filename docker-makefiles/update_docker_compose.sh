@@ -49,8 +49,9 @@ END {print "  remote-cli-current:"}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml
     print "    restart: always";
     print "    stdin_open: true";
     print "    tty: true";
-    print "    ports:";
-    print "      - 31800:31800";
+    print "    network_mode: host";
+#    print "    ports:";
+#    print "      - 31800:31800";
     print "    environment:";
     print "      - CONN_IP=0.0.0.0";
     print "      - CLI_PORT=31800";
