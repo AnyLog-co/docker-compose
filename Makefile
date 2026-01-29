@@ -2,7 +2,7 @@
 
 # Default values
 export IS_MANUAL ?= false
-export TAG ?= 1.4.2512-beta10
+export TAG ?= 1.4.2512-beta11
 
 ifeq ($(IS_MANUAL), true)
 	export ANYLOG_TYPE ?= generic
@@ -213,7 +213,7 @@ else
 	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down
 endif
 
-clean-vols: ## Stop AnyLog instance and remove associated volumes
+clean: ## Stop AnyLog instance and remove associated volumes
 	@echo "Stop AnyLog $(ANYLOG_TYPE) & Remove Volumes"
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
@@ -227,7 +227,7 @@ else
 	@$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down --volumes
 endif
 
-clean: ## Stop AnyLog instance and remove associated volumes & image, code will also clean the docker-compose file
+clean-all: ## Stop AnyLog instance and remove associated volumes & image, code will also clean the docker-compose file
 	@echo "Stop AnyLog $(ANYLOG_TYPE) & Remove Volumes and Images"
 ifeq ($(IS_MANUAL),true)
 	@$(CONTAINER_CMD) stop $(NODE_NAME)
