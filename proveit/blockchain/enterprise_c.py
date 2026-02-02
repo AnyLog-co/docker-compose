@@ -8,7 +8,7 @@ def create_policy(conn:str, policy_type:str, policy_name:str, namespace:str, pol
     new_policy = {
         "uns": {
             "name": policy_name,
-            "namespace": namespace,
+            "namespace": namespace.replace(" ","_"),
             **({"company": company} if company else {}),
             **({"parent": policy_parent} if policy_parent else {}),
             **({"dbms": db_name} if db_name else {}),
