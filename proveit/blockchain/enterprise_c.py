@@ -6,7 +6,7 @@ from mqtt_hierarchy import MqttHierarchy
 def create_policy(conn:str, policy_type:str, policy_name:str, namespace:str, policy_parent:str=None, db_name:str=None,
                   uns_path:str=None, company:str=None):
     new_policy = {
-        policy_type: {
+        "uns": {
             "name": policy_name,
             "namespace": namespace,
             **({"company": company} if company else {}),
