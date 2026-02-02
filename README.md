@@ -76,7 +76,7 @@ docker run -it --network host \
 ```
 
 ## Deployment via Makefile
-The [Makefile](Makefile) supports both _Podman_ and _Docker_ based deployment. The deployment process can be run via 
+The [Makefile](Makefile.orig) supports both _Podman_ and _Docker_ based deployment. The deployment process can be run via 
 manual specification (subset of the configs)  or using the dotenv [configuration file(s)](docker-makefiles). 
 
 ```Makefile 
@@ -157,7 +157,7 @@ Key values to set in the *[*basic config](docker-makefiles/operator-configs/base
 [Advanced configurations](docker-makefiles/operator-configs/advance_configs.env) covers optional settings like thread usage, geolocation overrides, and Nebula overlay support.
 
 
-2. **Deploy Node** - the [Makefile](Makefile) can be used with either _Podman_ or _Docker_. 
+2. **Deploy Node** - the [Makefile](Makefile.orig) can be used with either _Podman_ or _Docker_. 
 ```shell
 cd docker-compose
 make up ANYLOG_TYPE=operator
