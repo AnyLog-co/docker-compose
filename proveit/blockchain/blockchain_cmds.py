@@ -3,7 +3,7 @@ import json
 
 def publish_policy(conn:str, policy):
     headers = {
-        'command': "blockchain insert where policy=!new_policy and local=true and master=!ledger_conn",
+        'command': "blockchain insert where policy=!new_policy and local=true", # and master=!ledger_conn
         'User-Agent': 'AnyLog/1.23'
     }
 

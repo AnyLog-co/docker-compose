@@ -3,7 +3,7 @@ import time
 from blockchain_cmds import publish_policy, get_id
 from mqtt_hierarchy import MqttHierarchy
 
-def create_policy(conn:str, policy_type:str, policy_name:str, namespace:str, policy_parent:str=None, db_name:str=None,
+def create_policy(conn:str, policy_type:str, policy_name:str, namespace:str, policy_parent:str=None, db_name:str="manufacturing_historian",
                   uns_path:str=None, company:str=None):
     policy_name = policy_name.replace(" ", "_") if policy_type == "enterprise" else policy_name
     namespace = namespace.replace(" ","_")
@@ -12,10 +12,11 @@ def create_policy(conn:str, policy_type:str, policy_name:str, namespace:str, pol
             "name": policy_name,
             "namespace": namespace,
             "uns_level": policy_type,
+            # "table": if policy_type == "sensor" else policy_name,
             **({"company": company} if company else {}),
             **({"parent": policy_parent} if policy_parent else {}),
-            **({"dbms": db_name} if db_name else {}),
-            **({"table": namespace.replace('/', '_').replace('-', '_').split("_", 1)[-1].lower()} if policy_type == "sensor" else {}),
+            **({"dbms": db_name} if policy_type != "enterprise" else {}),
+            **({"table":  namespace.split("/", 1)[-1].replace('/', '_').replace('-', '_').lower()} if policy_type != "enterprise" else {}),
             **({"asset_path": uns_path} if uns_path else {})
         }
     }
@@ -60,17 +61,20 @@ def main():
     hierarchy = mqtt_sub.build_hierarchy(sub_topics)
     mqtt_sub.attach_values(hierarchy, mqtt_sub.base_topic.replace("/#", ""))
 
-    enterprise_policy = create_policy(conn=args.conn, policy_type="enterprise", policy_name=base_topic, namespace=base_topic,
-                                      policy_parent=None)
+    enterprise_policy = create_policy(conn=args.conn, policy_type="enterprise", policy_name=base_topic,
+                                      namespace=base_topic,
+                                      db_name="manufacturing_historian", policy_parent=None)
     print(enterprise_policy)
     for namespace in hierarchy:
         namespace_policy = create_policy(conn=args.conn, policy_type="namespace", policy_name=namespace,
-                                         namespace=f"{base_topic}/{namespace}", policy_parent=enterprise_policy)
+                                         namespace=f"{base_topic}/{namespace}", db_name="manufacturing_historian",
+                                         policy_parent=enterprise_policy)
         print(f"namespace: {namespace}")
         for device in hierarchy[namespace]:
             if isinstance(hierarchy[namespace][device], dict):
                 device_policy = create_policy(conn=args.conn, policy_type="device", policy_name=device,
                                               namespace=f"{base_topic}/{namespace}/{device}",
+                                              db_name="manufacturing_historian",
                                               policy_parent=namespace_policy)
                 for sensor in hierarchy[namespace][device]:
                     create_policy(conn=args.conn, policy_type="sensor", policy_name=sensor,
