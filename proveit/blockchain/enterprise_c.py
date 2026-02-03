@@ -5,10 +5,13 @@ from mqtt_hierarchy import MqttHierarchy
 
 def create_policy(conn:str, policy_type:str, policy_name:str, namespace:str, policy_parent:str=None, db_name:str=None,
                   uns_path:str=None, company:str=None):
+    policy_name = policy_name.replace(" ", "_") if policy_type == "enterprise" else policy_name
+    namespace = namespace.replace(" ","_")
     new_policy = {
         "uns": {
             "name": policy_name,
-            "namespace": namespace.replace(" ","_"),
+            "namespace": namespace,
+            "uns_level": policy_type,
             **({"company": company} if company else {}),
             **({"parent": policy_parent} if policy_parent else {}),
             **({"dbms": db_name} if db_name else {}),
@@ -18,8 +21,8 @@ def create_policy(conn:str, policy_type:str, policy_name:str, namespace:str, pol
     }
 
     publish_policy(conn=conn, policy=new_policy)
-    return get_id(conn=conn, policy_type=policy_type, name=policy_name, namespace=namespace,
-                  parent=policy_parent)
+    return get_id(conn=conn, policy_type="uns", name=policy_name, namespace=namespace,
+                  uns_level=policy_type, parent=policy_parent)
 
 
 
