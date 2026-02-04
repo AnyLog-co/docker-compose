@@ -31,7 +31,7 @@ check-configs: # check whether ANYLOG_TYPE (used for paths) is configured
 		exit 1; \
 	fi
 set-configs: check-configs # extract params
-	if [ "$(IS_MANUAL)" = "true" ]; then \
+	@if [ "$(IS_MANUAL)" = "true" ]; then \
 		echo "Manual mode: setting default configs"; \
 		export ANYLOG_TYPE=generic; \
 		export NODE_NAME=anylog-node; \
@@ -47,18 +47,15 @@ set-configs: check-configs # extract params
 		export NIC_TYPE=; \
 	else \
 		echo "Reading configs from docker-makefiles/$(ANYLOG_TYPE)"; \
-		 [ ! -z "${ANYLOG_TYPE}" ] && [ -f docker-makefiles/$(ANYLOG_TYPE)/base_configs.env ] || { \
+		[ -f docker-makefiles/$(ANYLOG_TYPE)/base_configs.env ] || { \
 			echo "ERROR: Config file not found for ANYLOG_TYPE=$(ANYLOG_TYPE)"; \
-			$(MAKE) help; \
 			exit 1; \
 		}; \
-		if [ -z "$(ANYLOG_TYPE)" ]; then \
-            export NODE_NAME=$$(grep -m1 NODE_NAME docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | cut -d= -f2); \
-            export ANYLOG_SERVER_PORT=$$(grep -m1 ANYLOG_SERVER_PORT docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | cut -d= -f2); \
-            export ANYLOG_REST_PORT=$$(grep -m1 ANYLOG_REST_PORT docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | cut -d= -f2); \
-	    fi \
-	    export DOCKER_FILE_NAME := $(subst _,-,$(subst  ,-,${NODE_NAME}))docker-compose.yaml
-	fi
+		export NODE_NAME=$$(grep -m1 '^NODE_NAME=' docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | cut -d= -f2); \
+		export ANYLOG_SERVER_PORT=$$(grep -m1 '^ANYLOG_SERVER_PORT=' docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | cut -d= -f2); \
+		export ANYLOG_REST_PORT=$$(grep -m1 '^ANYLOG_REST_PORT=' docker-makefiles/$(ANYLOG_TYPE)/base_configs.env | cut -d= -f2); \
+	fi; \
+	export DOCKER_FILE_NAME=$$(echo "$$NODE_NAME" | tr ' _' '--')-docker-compose.yaml
 login: ## log into the docker hub for AnyLog - use `ANYLOG_TYPE` as the placeholder for password
 	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
 pull: ## pull image from the docker hub repository
@@ -85,17 +82,21 @@ clean: dry-run  ## stop container and remove volumes
 	@echo "Stop AnyLog Agent - $(ANYLOG_TYPE)"
 	$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down -v
 clean-all: dry-run ## stop container, remove volume and remove image
-    @echo "Stop AnyLog Agent - $(ANYLOG_TYPE)"
+	@echo "Stop AnyLog Agent - $(ANYLOG_TYPE)"
 	$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down -v --rmi all
+
 logs: set-configs ## view logs
-    @echo "View logs"
-    $(CONTAINER_CMD) log $(NODE_NAME)
+	@echo "View logs"
+	$(CONTAINER_CMD) log $(NODE_NAME)
+
 logs-f: set-configs ## view logs continuously
-    $(CONTAINER_CMD) log -f $(NODE_NAME)
+	$(CONTAINER_CMD) log -f $(NODE_NAME)
+
 attach: set-configs ## attach to container
-    $(CONTAINER_CMD) attach --detach-keys=ctrl-d $(NODE_NAME)
+	$(CONTAINER_CMD) attach --detach-keys=ctrl-d $(NODE_NAME)
+
 exec: set-configs ## attach to /bin/bash of container
-    $(CONTAINER_CMD) exec -it $(NODE_NAME) /bin/bash
+	$(CONTAINER_CMD) exec -it $(NODE_NAME) /bin/bash
 check-vars: ## Show all environment variable values
 	@echo "IS_MANUAL             Default: false              Value: $(IS_MANUAL)"
 	@echo "ANYLOG_TYPE           Default: generic            Value: $(ANYLOG_TYPE)"
