@@ -4,7 +4,7 @@ $(info LOADING MAKEFILE)
 # Default values
 export IS_MANUAL ?= false
 export ANYLOG_TYPE ?= 
-export TAG ?= 1.4.2512
+export TAG ?= 1.4.2512-beta18
 export IMAGE ?= anylogco/anylog-network
 
 # Detect OS type
@@ -36,7 +36,7 @@ endif
 export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; else echo "docker"; fi)
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
 	    elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
-export DOCKER_COMPOSE_FILE := docker-makefiles/docker-compose-files/$(NODE_NAME)-docker-compose.yaml 
+export DOCKER_COMPOSE_FILE := docker-makefiles/docker-compose-files/$(ANYLOG_TYPE)-docker-compose.yaml 
 
 all: help
 

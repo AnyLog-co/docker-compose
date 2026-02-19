@@ -98,6 +98,7 @@ fi
 
 #-------- Envsubst substitution --------
 echo "Generating final docker-compose.yaml..."
+mkdir -p docker-makefiles/docker-compose-files
 OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compose.yaml"
 envsubst < "$COMPOSE_FILE" > "$OUTPUT_FILE"
 echo "Saved as $OUTPUT_FILE"
