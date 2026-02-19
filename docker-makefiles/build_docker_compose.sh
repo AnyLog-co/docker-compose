@@ -6,7 +6,7 @@ TAG=${2-latest}
 
 #-------- Extract Configs -------
 ENV_FILE="docker-makefiles/${NODE_CONFIGS}/.env"
-BASE_ENV="docker-makefiles/${NODE_CONFIGS}/BASE_configs.env"
+BASE_ENV="docker-makefiles/${NODE_CONFIGS}/base_configs.env"
 ADVANCE_ENV="docker-makefiles/${NODE_CONFIGS}/advance_configs.env"
 
 # Load main .env

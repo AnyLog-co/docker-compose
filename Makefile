@@ -3,7 +3,7 @@ $(info LOADING MAKEFILE)
 
 # Default values
 export IS_MANUAL ?= false
-export ANYLOG_TYPE ?=
+export ANYLOG_TYPE ?= 
 export TAG ?= 1.4.2512
 export IMAGE ?= anylogco/anylog-network
 
@@ -36,12 +36,13 @@ endif
 export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; else echo "docker"; fi)
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
 	    elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
+export DOCKER_COMPOSE_FILE := docker-makefiles/docker-compose-files/$(NODE_NAME)-docker-compose.yaml 
 
 all: help
 
 check-configs:
 	@if [ "$(IS_MANUAL)" != "true" ] && [ -z "$(ANYLOG_TYPE)" ]; then \
-		; \
+		echo "ERROR: Missing AnyLog type"; \
 		exit 1; \
 	elif [ "$(IS_MANUAL)" != "true" ] && [ ! -d docker-makefiles/$(ANYLOG_TYPE) ]; then \
 		echo "ERROR: Missing directory for ANYLOG_TYPE=$(ANYLOG_TYPE)"; \
@@ -60,19 +61,19 @@ dry-run: check-configs ## generate docker-compose.yaml
 
 up: dry-run ## start AnyLog instance
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
-	$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} up -d
+	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) up -d
 
 down: dry-run ## stop docker container
 	@echo "Stop AnyLog Agent - $(ANYLOG_TYPE)"
-	$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down
+	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) down
 
 clean: dry-run ## stop container and remove volumes
 	@echo "Stop AnyLog Agent - $(ANYLOG_TYPE)"
-	$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down -v
+	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) down -v
 
 clean-all: dry-run ## stop container, remove volumes and image
 	@echo "Stop AnyLog Agent - $(ANYLOG_TYPE)"
-	$(DOCKER_COMPOSE_CMD) -f docker-makefiles/docker-compose-files/${DOCKER_FILE_NAME} down -v --rmi all
+	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) down -v --rmi all
 
 logs: check-configs ## view logs
 	@echo "View logs"
