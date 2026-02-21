@@ -12,6 +12,7 @@ ADVANCE_ENV="docker-makefiles/${NODE_CONFIGS}/advance_configs.env"
 # Load main .env
 if [[ -f "$ENV_FILE" ]]; then
   export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export REMOTE_GUI_IP=$(grep -m1 '^REMOTE_GUI_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export REMOTE_GUI_NIC=$(grep -m1 '^REMOTE_GUI_NIC=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
@@ -19,16 +20,6 @@ else
   export IMAGE="anylogco/anylog-network"
   export REMOTE_GUI_IP=$(curl -s https://checkip.amazonaws.com || echo "127.0.0.1")
 fi
-
-# Determine REMOTE_GUI_IP if empty
-if [[ -z "${REMOTE_GUI_IP}" ]]; then
-  if [[ -n "${REMOTE_GUI_NIC}" ]]; then
-    REMOTE_GUI_IP=$(ip -4 addr show dev "$REMOTE_GUI_NIC" | awk '/inet /{print $2}' | cut -d/ -f1)
-  else
-    REMOTE_GUI_IP=$(curl -s https://checkip.amazonaws.com || echo "127.0.0.1")
-  fi
-fi
-export REMOTE_GUI_IP
 
 #-------- Advance Configs -------
 export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
@@ -56,44 +47,57 @@ if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "$ANYLOG_BROKER_PORT" 
 fi
 
 #-------- Remote-GUI --------
-# Only if REMOTE_GUI_IP is set
-if [[ -n "$REMOTE_GUI_IP" ]]; then
-  # Volumes
-  awk -v vol1="image-vol:/app/CLI/local-cli-backend/static/" -v vol2="usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/" '
-/    volumes:/ && !vol_found {
-  print;
-  print "      - " vol1;
-  print "      - " vol2;
-  vol_found=1;
-  next
-}1
-END {
-  print "  image-vol:";
-  print "  usr-mgm-vol:";
-  print "  report-configs:";
-}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+if [[ "${ENABLE_REMOTE_GUI}"  == "true" ]]; then
+  if [[ -z "$REMOTE_GUI_IP" ]] && [[ -n "$REMOTE_GUI_NIC" ]]; then
+    if command -v ip >/dev/null 2>&1; then
+      REMOTE_GUI_IP=$(ip -4 addr show dev "$REMOTE_GUI_NIC" | awk '/inet /{print $2}' | cut -d/ -f1)
+    elif command -v ifconfig >/dev/null 2>&1; then
+      REMOTE_GUI_IP=$(ifconfig "$REMOTE_GUI_NIC" | awk '/inet /{print $2}')
+    else
+      REMOTE_GUI_IP=$(curl -s https://checkip.amazonaws.com || echo "127.0.0.1")
+    fi
+    export REMOTE_GUI_IP
+  fi
 
-  # Add remote-gui service
-  awk -v remote_ip="$REMOTE_GUI_IP" -v grafana="$GRAFANA_URL" '/services:/ {
+
+  if [[ -n "$REMOTE_GUI_IP" ]]; then
+    # Volumes
+    awk -v vol1="image-vol:/app/CLI/local-cli-backend/static/" -v vol2="usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/" '
+  /    volumes:/ && !vol_found {
     print;
-    print "  remote-gui:";
-    print "    image: anylogco/remote-gui:beta";
-    print "    container_name: remote-gui";
-    print "    restart: always";
-    print "    stdin_open: true";
-    print "    tty: true";
-    print "    ports:";
-    print "      - 3001:3001";
-    print "      - 8000:8000";
-    print "    environment:";
-    print "      - REACT_APP_API_URL=http://" remote_ip ":8000";
-    if (grafana != "") print "      - GRAFANA_URL=" grafana;
-    print "    volumes:";
-    print "      - image-vol:/app/CLI/local-cli-backend/static/";
-    print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
-    print "      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates";
+    print "      - " vol1;
+    print "      - " vol2;
+    vol_found=1;
     next
-}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  }1
+  END {
+    print "  image-vol:";
+    print "  usr-mgm-vol:";
+    print "  report-configs:";
+  }' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+
+    # Add remote-gui service
+    awk -v remote_ip="$REMOTE_GUI_IP" -v grafana="$GRAFANA_URL" '/services:/ {
+      print;
+      print "  remote-gui:";
+      print "    image: anylogco/remote-gui:beta";
+      print "    container_name: remote-gui";
+      print "    restart: always";
+      print "    stdin_open: true";
+      print "    tty: true";
+      print "    ports:";
+      print "      - 3001:3001";
+      print "      - 8000:8000";
+      print "    environment:";
+      print "      - REACT_APP_API_URL=http://" remote_ip ":8000";
+      if (grafana != "") print "      - GRAFANA_URL=" grafana;
+      print "    volumes:";
+      print "      - image-vol:/app/CLI/local-cli-backend/static/";
+      print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
+      print "      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates";
+      next
+  }1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  fi
 fi
 
 #-------- Envsubst substitution --------
