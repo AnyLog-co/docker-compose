@@ -4,7 +4,7 @@
 export IS_MANUAL ?= false
 #export TAG ?= 1.4.2509-akave
 #export TAG ?= roy-test
-export TAG ?= anylog-video-beta-0.01
+export TAG ?= roy-local
 #export TAG ?= latest
 
 
