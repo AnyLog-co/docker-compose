@@ -1,7 +1,7 @@
 services:
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
-    user: "${ANYLOG_UID}:${ANYLOG_GID}"
+#    user: "${ANYLOG_UID}:${ANYLOG_GID}"
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
