@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#set -euo pipefail
+set -euo pipefail
 
 NODE_CONFIGS=${1-anylog-generic}
 TAG=${2-latest}
@@ -12,20 +12,24 @@ ADVANCE_ENV="docker-makefiles/${NODE_CONFIGS}/advance_configs.env"
 # Load main .env
 if [[ -f "$ENV_FILE" ]]; then
   export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export REMOTE_GUI_IP=$(grep -m1 '^REMOTE_GUI_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export REMOTE_GUI_NIC=$(grep -m1 '^REMOTE_GUI_NIC=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+
+  export REACT_APP_API_IP=$(grep -m1 '^REACT_APP_API_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export REMOTE_GUI_FE=$(grep -m1 '^REMOTE_GUI_FE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export REMOTE_GUI_BE=$(grep -m1 '^REMOTE_GUI_BE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 else
   export IMAGE="anylogco/anylog-network"
-  export REMOTE_GUI_IP=$(curl -s https://checkip.amazonaws.com || echo "127.0.0.1")
 fi
 
-#-------- Advance Configs -------
+#-------- Base Configs -------
 export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export NIC_TYPE=$(grep -m1 '^NIC_TYPE=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+
+#-------- Advance Configs -------
+export REMOTE_GUI=$(grep -m1 '^REMOTE_GUI=' "$ADVANCE_ENV" | cut -d= -f2- | tr -d '"\r')
 
 #-------- Select Template --------
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
@@ -47,58 +51,67 @@ if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "$ANYLOG_BROKER_PORT" 
 fi
 
 #-------- Remote-GUI --------
-if [[ "${ENABLE_REMOTE_GUI}"  == "true" ]]; then
-  if [[ -z "$REMOTE_GUI_IP" ]] && [[ -n "$REMOTE_GUI_NIC" ]]; then
+if [[ "${REMOTE_GUI}" == "true" ]]; then
+  #-------- Determine REMOTE_GUI_IP -------
+  # Priority: REACT_APP_API_IP > NIC_TYPE > fallback
+  if [[ -n "$REACT_APP_API_IP" ]]; then
+    REMOTE_GUI_IP="$REACT_APP_API_IP"
+  elif [[ -n "$NIC_TYPE" ]]; then
     if command -v ip >/dev/null 2>&1; then
-      REMOTE_GUI_IP=$(ip -4 addr show dev "$REMOTE_GUI_NIC" | awk '/inet /{print $2}' | cut -d/ -f1)
+      REMOTE_GUI_IP=$(ip -4 addr show dev "$NIC_TYPE" | awk '/inet /{print $2}' | cut -d/ -f1)
     elif command -v ifconfig >/dev/null 2>&1; then
-      REMOTE_GUI_IP=$(ifconfig "$REMOTE_GUI_NIC" | awk '/inet /{print $2}')
-    else
-      REMOTE_GUI_IP=$(curl -s https://checkip.amazonaws.com || echo "127.0.0.1")
+      REMOTE_GUI_IP=$(ifconfig "$NIC_TYPE" | awk '/inet /{print $2}')
     fi
-    export REMOTE_GUI_IP
   fi
 
+  # Fallback if still empty
+  REMOTE_GUI_IP="${REMOTE_GUI_IP:-$(curl -s https://checkip.amazonaws.com || echo "127.0.0.1")}"
+  export REMOTE_GUI_IP
 
-  if [[ -n "$REMOTE_GUI_IP" ]]; then
-    # Volumes
-    awk -v vol1="image-vol:/app/CLI/local-cli-backend/static/" -v vol2="usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/" '
-  /    volumes:/ && !vol_found {
-    print;
-    print "      - " vol1;
-    print "      - " vol2;
-    vol_found=1;
-    next
-  }1
-  END {
-    print "  image-vol:";
-    print "  usr-mgm-vol:";
-    print "  report-configs:";
-  }' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  # Set default ports if not defined
+  REMOTE_GUI_FE="${REMOTE_GUI_FE:-31800}"
+  REMOTE_GUI_BE="${REMOTE_GUI_BE:-8080}"
 
-    # Add remote-gui service
-    awk -v remote_ip="$REMOTE_GUI_IP" -v grafana="$GRAFANA_URL" '/services:/ {
-      print;
-      print "  remote-gui:";
-      print "    image: anylogco/remote-gui:beta";
-      print "    container_name: remote-gui";
-      print "    restart: always";
-      print "    stdin_open: true";
-      print "    tty: true";
-      print "    ports:";
-      print "      - 3001:3001";
-      print "      - 8000:8000";
-      print "    environment:";
-      print "      - REACT_APP_API_URL=http://" remote_ip ":8000";
-      if (grafana != "") print "      - GRAFANA_URL=" grafana;
-      print "    volumes:";
-      print "      - image-vol:/app/CLI/local-cli-backend/static/";
-      print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
-      print "      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates";
-      next
-  }1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
-  fi
+   #-------- Add volumes to docker-compose -------
+  awk -v vol1="image-vol:/app/CLI/local-cli-backend/static/" -v vol2="usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/" '
+/    volumes:/ && !vol_found {
+  print;
+  print "      - " vol1;
+  print "      - " vol2;
+  vol_found=1;
+  next
+}1
+END {
+  print "  image-vol:";
+  print "  usr-mgm-vol:";
+  print "  report-configs:";
+}' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+
+  #-------- Add remote-gui service -------
+  awk -v remote_ip="$REMOTE_GUI_IP" -v grafana="$GRAFANA_URL" -v fe_port="$REMOTE_GUI_FE" -v be_port="$REMOTE_GUI_BE" '/services:/ {
+  print;
+  print "  remote-gui:";
+  print "    image: anylogco/remote-gui:beta";
+  print "    container_name: remote-gui";
+  print "    restart: always";
+  print "    stdin_open: true";
+  print "    tty: true";
+  print "    ports:";
+  print "      - " fe_port ":" fe_port;
+  print "      - " be_port ":" be_port;
+  print "    environment:";
+  print "      - REACT_APP_API_URL=http://" remote_ip ":" be_port;
+  print "      - REMOTE_GUI_FE=" fe_port;
+  print "      - REMOTE_GUI_BE=" be_port;
+  if (grafana != "") print "      - GRAFANA_URL=" grafana;
+  print "    volumes:";
+  print "      - image-vol:/app/CLI/local-cli-backend/static/";
+  print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
+  print "      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates";
+  next
+}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
+
 
 #-------- Envsubst substitution --------
 echo "Generating final docker-compose.yaml..."
