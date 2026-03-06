@@ -91,7 +91,7 @@ END {
   awk -v remote_ip="$REMOTE_GUI_IP" -v grafana="$GRAFANA_URL" -v fe_port="$REMOTE_GUI_FE" -v be_port="$REMOTE_GUI_BE" '/services:/ {
   print;
   print "  remote-gui:";
-  print "    image: anylogco/remote-gui:beta";
+  print "    image: anylogco/remote-gui:beta2";
   print "    container_name: remote-gui";
   print "    restart: always";
   print "    stdin_open: true";
@@ -100,7 +100,7 @@ END {
   print "      - " fe_port ":" fe_port;
   print "      - " be_port ":" be_port;
   print "    environment:";
-  print "      - REACT_APP_API_URL=http://" remote_ip ":" be_port;
+  print "      - VITE_API_URL=http://" remote_ip ":" be_port;
   print "      - REMOTE_GUI_FE=" fe_port;
   print "      - REMOTE_GUI_BE=" be_port;
   if (grafana != "") print "      - GRAFANA_URL=" grafana;
