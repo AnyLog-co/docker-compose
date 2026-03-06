@@ -91,7 +91,7 @@ END {
   awk -v remote_ip="$REMOTE_GUI_IP" -v grafana="$GRAFANA_URL" -v fe_port="$REMOTE_GUI_FE" -v be_port="$REMOTE_GUI_BE" '/services:/ {
   print;
   print "  remote-gui:";
-  print "    image: anylogco/remote-gui:beta2";
+  print "    image: anylogco/remote-gui:beta";
   print "    container_name: remote-gui";
   print "    restart: always";
   print "    stdin_open: true";
