@@ -1,54 +1,97 @@
-# Installing AnyLog using Docker
+# Support 
 
-You can deploy AnyLog via _docker-compose_ by using either our deployment script or manually. Additionally, we provide a 
-single docker-compose that builds a [demo network](../training/anylog-demo-network/README.md) [1 _Master_, 1 _Query_ and 
-2 _Operator_ nodes] on a single machine.  
+The following provides examples to run support processes outside of AnyLog container(s).
 
-For login credentials contact us at: [info@anylog.co](mailto:info@anylog.co)
+## PostgresSQL 
 
-**Support Links**
-* [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Remote-CLI.md)
-* [EdgeX](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/EdgeX.md)
-* [Grafana](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Grafana.md)
-* [Trouble Shooting](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/cheatsheet.md)
+PostgresSQL is a SQL based database, that's used as an alternative to SQLite, allowing to keep data persistent without 
+the need to AnyLog containers persistent. 
 
+Directions for installing locally on machine
+* [GUI-based Install](https://www.w3schools.com/postgresql/postgresql_install.php)
+* [Ubuntu](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-22-04)
+* [Centos](https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-centos-8)
 
-**Requirements**
-* Docker
-* docker-compose
-* Python3 + [dotenv](https://pypi.org/project/python-dotenv/) - for utilizing [deployment scripts](https://github.com/AnyLog-co/deployments) 
-
-Directions for downloading Docker / docker-compose can be found in the [Docker Engine Installation](https://docs.docker.com/engine/install/)
-
-## Deployment Process 
-1. Download [deployments](../) & log into AnyLog Docker Hub
 ```shell
-cd $HOME
-
-git clone https://github.com/AnyLog-co/deployments
-
-cd $HOME/deployments/
-
-bash $HOME/deployments/installations/docker_credentials.sh ${YOUR_ANYLOG_DOCKER_CREDENTIALS}
+docker run -it -d \
+  -p 5432:5432 \
+  -e POSTGRES_USER=admin \
+  -e POSTGRES_PASSWORD=passwd \
+  -e POSTGRES_INITDB_ARGS="--auth=md5" \
+  -v pgdata:/var/lib/postgresql/data \
+--name postgres postgres:14.0-alpine  
 ```
 
-2. Deploy relevant database, this can be done as docker image(s) or as services on your machine. Directions can be found 
-[here](https://github.com/AnyLog-co/documentation/blob/master/deployments/Docker/database_configuration.md)
+## MongoDB 
 
+MongoDB is a NoSQL baased database, that's used to store blobs (images, videos, files, etc.) wihtin AnyLog. It is an 
+alternative to storing blobs locally on the file system, removing the need to keep AnyLog containers persistent.  
 
-3. [Deploy AnyLog](https://github.com/AnyLog-co/documentation/blob/master/deployments/Docker/deploying_node.md)
+Directions for installing locally on machine can be found in the [official documentation](https://www.mongodb.com/docs/manual/installation/)
 
+```shell
+# Run MongoDB container
+docker run -d \
+  --name mongo-docker \
+  --restart always \
+  -p 27017:27017 \
+  -e MONGO_INITDB_ROOT_USERNAME=admin \
+  -e MONGO_INITDB_ROOT_PASSWORD=passwd \
+  -v mongo-data:/data/db \
+  -v mongo-configs:/data/configdb \
+  mongo:latest
 
-4. Deploy other services like [Remote-CLI](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Remote-CLI.md)
-and [Grafana](https://github.com/AnyLog-co/documentation/tree/master/deployments/Support/Grafana.md)
+# Run Mongo Express container
+# Mongo Express URL: http://${YOUR_URL}:28081/
+docker run -d \
+  --name mongo-express \
+  --restart always \
+  -p 28081:8081 \
+  -e ME_CONFIG_MONGODB_SERVER=mongo-docker \
+  -e ME_CONFIG_BASICAUTH_USERNAME=admin \
+  -e ME_CONFIG_BASICAUTH_PASSWORD=passwd \
+  -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin \
+  -e ME_CONFIG_MONGODB_ADMINPASSWORD=passwd \
+  -e ME_CONFIG_MONGODB_URL="mongodb://admin:passwd@mongo-docker:27017/" \
+  --link mongo-docker:mongo \
+  mongo-express:latest
+```
 
+## Remote-CLI 
 
-If you are planning to deploy a [single deployment demo network](../training/anylog-demo-network/README.md), there is no need to
-complete step 2 through 4 prior to deploying your node. The single demo network will automatically deploy: 
-* 1 master 
-* 2 operator nodes (1 using PostgresSQL and another using SQLite)
-* 1 Query Node 
-* PostgresSQL (used by 1 of the operators)
-* Remote CLI 
-* Grafana 
+An AnyLog specific alternative to Postman. The [Remote-CLI](https://github.com/AnyLog-co/Remote-CLI) allows to communicate 
+with AnyLog via cURL using a web-based interface. 
 
+```shell
+CONN_IP=0.0.0.0
+CLI_PORT=31800
+
+docker run -p ${CLI_PORT}:${CLI_PORT} --name remote-cli \
+   -e CONN_IP=${CONN_IP} \
+   -e CLI_PORT=${CLI_PORT} \
+   -v remote-cli:/app/Remote-CLI/anylog_query/static/json \
+   -v remote-cli-keys:/app/Remote-CLI/anylog_query/static/pem \
+   --rm  -it -d anylogco/remote-cli:smart-city-demo
+```
+
+## Grafana
+
+Directions for installing locally on machine can be found in the [official documentation](https://grafana.com/docs/grafana/latest/setup-grafana/installation/)
+
+```shell
+docker run -d \
+  --name grafana \
+  --restart always \
+  -p 3000:3000 \
+  -e GRAFANA_ADMIN_USER=admin \
+  -e GRAFANA_ADMIN_PASSWORD=passwd \
+  -e GF_AUTH_DISABLE_LOGIN_FORM=false \
+  -e GF_AUTH_ANONYMOUS_ENABLED=true \
+  -e GF_SECURITY_ALLOW_EMBEDDING=true \
+  -e GF_INSTALL_PLUGINS=simpod-json-datasource,grafana-worldmap-panel \
+  -v grafana-data:/var/lib/grafana \
+  -v grafana-log:/var/log/grafana \
+  -v grafana-config:/etc/grafana \
+  grafana/grafana:latest
+
+```
