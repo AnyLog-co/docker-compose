@@ -5,11 +5,9 @@ NODE_CONFIGS=${1-anylog-generic}
 TAG=${2-latest}
 
 #-------- Extract Configs -------
-ENV_FILE="docker-makefiles/${NODE_CONFIGS}/.env"
-BASE_ENV="docker-makefiles/${NODE_CONFIGS}/base_configs.env"
-ADVANCE_ENV="docker-makefiles/${NODE_CONFIGS}/advance_configs.env"
+ENV_FILE="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
 
-# Load main .env
+# Load main ENV_FILE
 if [[ -f "$ENV_FILE" ]]; then
   export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
@@ -22,14 +20,14 @@ else
 fi
 
 #-------- Base Configs -------
-export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-export NIC_TYPE=$(grep -m1 '^NIC_TYPE=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+export NIC_TYPE=$(grep -m1 '^NIC_TYPE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
 #-------- Advance Configs -------
-export REMOTE_GUI=$(grep -m1 '^REMOTE_GUI=' "$ADVANCE_ENV" | cut -d= -f2- | tr -d '"\r')
+export REMOTE_GUI=$(grep -m1 '^REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
 #-------- Select Template --------
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"

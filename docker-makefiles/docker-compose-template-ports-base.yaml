@@ -5,9 +5,7 @@ services:
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
-      -  ../../docker-makefiles/${ANYLOG_TYPE}/base_configs.env
-      - ../../docker-makefiles/${ANYLOG_TYPE}/advance_configs.env
-      - ../../docker-makefiles/.env
+      - ../../docker-makefiles/node_configs.env
     container_name: ${NODE_NAME}
     stdin_open: true
     tty: true
