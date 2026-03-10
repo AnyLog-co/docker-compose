@@ -28,7 +28,7 @@ endif
 ifeq ($(IS_MANUAL),false)
     ifneq ($(strip $(ANYLOG_TYPE)),)
         export IMAGE ?= $(shell grep -m1 '^IMAGE=' "docker-makefiles/$(ANYLOG_TYPE)/.env" | cut -d= -f2- | tr -d '"\r')
-        export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "docker-makefiles/$(ANYLOG_TYPE)/base_configs.env" | cut -d= -f2- | tr -d '"\r')
+        export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "docker-makefiles/$(ANYLOG_TYPE)/node_configs.env" | cut -d= -f2- | tr -d '"\r')
     endif
 endif
 

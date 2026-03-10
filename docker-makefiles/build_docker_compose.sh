@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 NODE_CONFIGS=${1-anylog-generic}
 TAG=${2-latest}
 
 #-------- Extract Configs -------
 ENV_FILE="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
+ls ${ENV_FILE}
 
 # Load main ENV_FILE
 if [[ -f "$ENV_FILE" ]]; then
