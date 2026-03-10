@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#set -euo pipefail
+set -euo pipefail
 
 NODE_CONFIGS=${1-anylog-generic}
 TAG=${2-latest}
