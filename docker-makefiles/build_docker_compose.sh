@@ -59,13 +59,13 @@ cp "$TEMPLATE_COMPOSE_FILE" "$COMPOSE_FILE"
 
 #-------- Inject env_file --------
 if [[ "$MULTI_FILE" == "true" ]]; then
-  awk -v env="docker-makefiles/${NODE_CONFIGS}/.env" \
-      -v base="docker-makefiles/${NODE_CONFIGS}/base_configs.env" \
-      -v adv="docker-makefiles/${NODE_CONFIGS}/advance_configs.env" \
+  awk -v env="../../docker-makefiles/${NODE_CONFIGS}/.env" \
+      -v base="../../docker-makefiles/${NODE_CONFIGS}/base_configs.env" \
+      -v adv="../../docker-makefiles/${NODE_CONFIGS}/advance_configs.env" \
       '/    env_file:/ {print; print "      - " env; print "      - " base; print "      - " adv; next}1' \
       "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 else
-  awk -v cfg="docker-makefiles/${NODE_CONFIGS}/node_configs.env" \
+  awk -v cfg="../../docker-makefiles/${NODE_CONFIGS}/node_configs.env" \
       '/    env_file:/ {print; print "      - " cfg; next}1' \
       "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi

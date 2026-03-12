@@ -5,7 +5,6 @@ services:
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
-      -
     container_name: ${NODE_NAME}
     stdin_open: true
     tty: true
