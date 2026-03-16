@@ -3,8 +3,8 @@ $(info LOADING MAKEFILE)
 
 # Default values
 export IS_MANUAL ?= false
-export ANYLOG_TYPE ?= 
-export TAG ?= 1.4.2603
+export ANYLOG_TYPE ?=
+export TAG ?= pre-develop
 export IMAGE ?= anylogco/anylog-network
 
 # Detect OS type
@@ -24,14 +24,25 @@ endif
 # -------------------
 # Defaults in Make
 # -------------------
-# If not manual and ANYLOG_TYPE is set, read IMAGE and NODE_NAME from .env
 ifeq ($(IS_MANUAL),false)
-    ifneq ($(strip $(ANYLOG_TYPE)),)
-        export IMAGE ?= $(shell grep -m1 '^IMAGE=' "docker-makefiles/$(ANYLOG_TYPE)/.env" | cut -d= -f2- | tr -d '"\r')
-        export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "docker-makefiles/$(ANYLOG_TYPE)/base_configs.env" | cut -d= -f2- | tr -d '"\r')
-    endif
-endif
+  ifneq ($(strip $(ANYLOG_TYPE)),)
+    # Determine config file paths based on multi vs single file layout
+    _ENV_FILE   := docker-makefiles/$(ANYLOG_TYPE)/.env
+    _SINGLE_FILE := docker-makefiles/$(ANYLOG_TYPE)/node_configs.env
 
+    ifneq ($(wildcard $(_ENV_FILE)),)
+      # Multi-file layout
+      export IMAGE     ?= $(shell grep -m1 '^IMAGE='     "$(_ENV_FILE)"  | cut -d= -f2- | tr -d '"\r')
+      export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "$(_BASE_FILE)" | cut -d= -f2- | tr -d '"\r')
+    else ifneq ($(wildcard $(_SINGLE_FILE)),)
+      # Single-file layout
+      export IMAGE     ?= $(shell grep -m1 '^IMAGE='     "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
+      export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
+    else
+      $(error Missing configuration file(s) for $(ANYLOG_TYPE))
+    endif
+  endif
+endif
 
 export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; else echo "docker"; fi)
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \

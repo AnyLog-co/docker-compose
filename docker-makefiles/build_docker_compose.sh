@@ -1,35 +1,48 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-NODE_CONFIGS=${1-anylog-generic}
-TAG=${2-latest}
+#-------- Helpers --------
+die() {
+  echo "Error: $1" >&2
+  exit "${2:-1}"
+}
 
-#-------- Extract Configs -------
-ENV_FILE="docker-makefiles/${NODE_CONFIGS}/.env"
-BASE_ENV="docker-makefiles/${NODE_CONFIGS}/base_configs.env"
-ADVANCE_ENV="docker-makefiles/${NODE_CONFIGS}/advance_configs.env"
+#-------- Args --------
+NODE_CONFIGS=${1:-anylog-generic}
+TAG=${2:-latest}
+DEPLOYMENT_TYPE=${3:-docker}
 
-# Load main .env
-if [[ -f "$ENV_FILE" ]]; then
-  export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-
-  export REACT_APP_API_IP=$(grep -m1 '^REACT_APP_API_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export REMOTE_GUI_FE=$(grep -m1 '^REMOTE_GUI_FE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export REMOTE_GUI_BE=$(grep -m1 '^REMOTE_GUI_BE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-else
-  export IMAGE="anylogco/anylog-network"
+if [[ "${DEPLOYMENT_TYPE}" == "k8s" ]]; then
+  # if kubernetes then go to k8s script
+  # bash build_k8s_compose.sh # <- not written
+  die "k8s deployment not yet supported"
 fi
 
-#-------- Base Configs -------
+#-------- Extract Configs --------
+MULTI_FILE=false
+if [[ -f "docker-makefiles/${NODE_CONFIGS}/.env" ]] && \
+   [[ -f "docker-makefiles/${NODE_CONFIGS}/base_configs.env" ]] && \
+   [[ -f "docker-makefiles/${NODE_CONFIGS}/advance_configs.env" ]]; then
+  MULTI_FILE=true
+  ENV_FILE="docker-makefiles/${NODE_CONFIGS}/.env"
+  BASE_ENV="docker-makefiles/${NODE_CONFIGS}/base_configs.env"
+  ADVANCE_ENV="docker-makefiles/${NODE_CONFIGS}/advance_configs.env"
+elif [[ -f "docker-makefiles/${NODE_CONFIGS}/node_configs.env" ]]; then
+  ENV_FILE="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
+  BASE_ENV="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
+  ADVANCE_ENV="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
+else
+  die "Missing configuration file(s), cannot continue with deployment"
+fi
+
+#-------- Load Configs --------
+export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+
 export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-export NIC_TYPE=$(grep -m1 '^NIC_TYPE=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-
-#-------- Advance Configs -------
-export REMOTE_GUI=$(grep -m1 '^REMOTE_GUI=' "$ADVANCE_ENV" | cut -d= -f2- | tr -d '"\r')
 
 #-------- Select Template --------
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
@@ -40,40 +53,56 @@ if [[ "$(uname -s)" != "Linux" ]]; then
 fi
 
 if [[ ! -f "$TEMPLATE_COMPOSE_FILE" ]]; then
-  echo "Error: $TEMPLATE_COMPOSE_FILE not found."
-  exit 1
+  die "$TEMPLATE_COMPOSE_FILE not found"
 fi
 cp "$TEMPLATE_COMPOSE_FILE" "$COMPOSE_FILE"
 
-# Inject ANYLOG_BROKER_PORT if needed
+#-------- Inject env_file --------
+if [[ "$MULTI_FILE" == "true" ]]; then
+  awk -v env="../../docker-makefiles/${NODE_CONFIGS}/.env" \
+      -v base="../../docker-makefiles/${NODE_CONFIGS}/base_configs.env" \
+      -v adv="../../docker-makefiles/${NODE_CONFIGS}/advance_configs.env" \
+      '/    env_file:/ {print; print "      - " env; print "      - " base; print "      - " adv; next}1' \
+      "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+else
+  awk -v cfg="../../docker-makefiles/${NODE_CONFIGS}/node_configs.env" \
+      '/    env_file:/ {print; print "      - " cfg; next}1' \
+      "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+fi
+
+#-------- Inject Broker Port --------
 if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "$ANYLOG_BROKER_PORT" ]]; then
-  awk -v port="${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}" '/    ports:/ {print; print "      - " port; next}1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  awk -v port="${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}" \
+      '/    ports:/ {print; print "      - " port; next}1' \
+      "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
 
 #-------- Remote-GUI --------
-if [[ "${REMOTE_GUI}" == "true" ]]; then
-  #-------- Determine REMOTE_GUI_IP -------
-  # Priority: REACT_APP_API_IP > NIC_TYPE > fallback
-  if [[ -n "$REACT_APP_API_IP" ]]; then
-    REMOTE_GUI_IP="$REACT_APP_API_IP"
-  elif [[ -n "$NIC_TYPE" ]]; then
-    if command -v ip >/dev/null 2>&1; then
-      REMOTE_GUI_IP=$(ip -4 addr show dev "$NIC_TYPE" | awk '/inet /{print $2}' | cut -d/ -f1)
-    elif command -v ifconfig >/dev/null 2>&1; then
-      REMOTE_GUI_IP=$(ifconfig "$NIC_TYPE" | awk '/inet /{print $2}')
-    fi
-  fi
-
-  # Fallback if still empty
-  REMOTE_GUI_IP="${REMOTE_GUI_IP:-$(curl -s https://checkip.amazonaws.com || echo "127.0.0.1")}"
-  export REMOTE_GUI_IP
+if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
+  export REMOTE_GUI_NIC=$(grep -m1 '^REMOTE_GUI_NIC=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export REMOTE_GUI_FE=$(grep -m1 '^REMOTE_GUI_FE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export REMOTE_GUI_BE=$(grep -m1 '^REMOTE_GUI_BE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export REMOTE_GUI_TAG=$(grep -m1 '^REMOTE_GUI_TAG=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
   # Set default ports if not defined
   REMOTE_GUI_FE="${REMOTE_GUI_FE:-31800}"
   REMOTE_GUI_BE="${REMOTE_GUI_BE:-8080}"
+  REMOTE_GUI_TAG="${REMOTE_GUI_TAG:-latest}"
 
-   #-------- Add volumes to docker-compose -------
-  awk -v vol1="image-vol:/app/CLI/local-cli-backend/static/" -v vol2="usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/" '
+  #-------- Determine REMOTE_GUI_IP --------
+  REMOTE_GUI_IP="127.0.0.1"
+  if [[ -n "${REMOTE_GUI_NIC}" ]]; then
+    if command -v ip >/dev/null 2>&1; then
+      REMOTE_GUI_IP=$(ip -4 addr show dev "${REMOTE_GUI_NIC}" | awk '/inet /{print $2}' | cut -d/ -f1)
+    elif command -v ifconfig >/dev/null 2>&1; then
+      REMOTE_GUI_IP=$(ifconfig "${REMOTE_GUI_NIC}" | awk '/inet /{print $2}')
+    fi
+  fi
+
+  #-------- Add volumes to docker-compose --------
+  awk -v vol1="image-vol:/app/CLI/local-cli-backend/static/" \
+      -v vol2="usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/" '
 /    volumes:/ && !vol_found {
   print;
   print "      - " vol1;
@@ -87,11 +116,16 @@ END {
   print "  report-configs:";
 }' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 
-  #-------- Add remote-gui service -------
-  awk -v remote_ip="$REMOTE_GUI_IP" -v grafana="$GRAFANA_URL" -v fe_port="$REMOTE_GUI_FE" -v be_port="$REMOTE_GUI_BE" '/services:/ {
+  #-------- Add remote-gui service --------
+  awk -v remote_ip="$REMOTE_GUI_IP" \
+      -v grafana="$GRAFANA_URL" \
+      -v fe_port="$REMOTE_GUI_FE" \
+      -v be_port="$REMOTE_GUI_BE" \
+      -v tag="$REMOTE_GUI_TAG" '
+/services:/ {
   print;
   print "  remote-gui:";
-  print "    image: anylogco/remote-gui:beta";
+  print "    image: anylogco/remote-gui:" tag;
   print "    container_name: remote-gui";
   print "    restart: always";
   print "    stdin_open: true";
@@ -111,7 +145,6 @@ END {
   next
 }1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
-
 
 #-------- Envsubst substitution --------
 echo "Generating final docker-compose.yaml..."
