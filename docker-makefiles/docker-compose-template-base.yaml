@@ -1,7 +1,25 @@
 services:
+  ${NODE_NAME}-init:
+    image: busybox
+    user: root
+    restart: "no"
+    command: [
+      "sh", "-c",
+      "chown -R 10001:10001 
+        /app/AnyLog-Network/anylog 
+        /app/AnyLog-Network/blockchain 
+        /app/AnyLog-Network/data 
+        /app/deployment-scripts
+      "
+    ]
+    volumes:
+      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
+      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
+      - ${NODE_NAME}-data:/app/AnyLog-Network/data
+      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
-#    user: "${ANYLOG_UID}:${ANYLOG_GID}"
+    user: "anylog:anylog"
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
@@ -9,6 +27,9 @@ services:
     stdin_open: true
     tty: true
     network_mode: host
+    depends_on:
+      ${NODE_NAME}-init:
+        condition: service_completed_successfully
     volumes:
       - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain

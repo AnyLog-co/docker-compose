@@ -4,7 +4,7 @@ $(info LOADING MAKEFILE)
 # Default values
 export IS_MANUAL ?= false
 export ANYLOG_TYPE ?=
-export TAG ?= 1.4.2603
+export TAG ?= pre-develop
 export IMAGE ?= anylogco/anylog-network
 
 # Detect OS type
