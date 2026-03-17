@@ -1,0 +1,67 @@
+services:
+  remote-gui:
+    image: anylogco/remote-gui:beta2
+    container_name: remote-gui
+    restart: always
+    stdin_open: true
+    tty: true
+    ports:
+      - 31800:31800
+      - 8080:8080
+    environment:
+      - VITE_API_URL=http://159.223.115.94
+10.10.0.7:8080
+      - REMOTE_GUI_FE=31800
+      - REMOTE_GUI_BE=8080
+    volumes:
+      - image-vol:/app/CLI/local-cli-backend/static/
+      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/
+      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates
+  anylog-query-init:
+    image: busybox
+    user: root
+    restart: "no"
+    command: [
+      "sh", "-c",
+      "chown -R 10001:10001 
+        /app/AnyLog-Network/anylog 
+        /app/AnyLog-Network/blockchain 
+        /app/AnyLog-Network/data 
+        /app/deployment-scripts
+      "
+    ]
+    volumes:
+      - image-vol:/app/CLI/local-cli-backend/static/
+      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/
+      - anylog-query-anylog:/app/AnyLog-Network/anylog
+      - anylog-query-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-query-data:/app/AnyLog-Network/data
+      - anylog-query-local-scripts:/app/deployment-scripts
+  anylog-query:
+    image: anylogco/anylog-network:pre-develop
+    user: "anylog:anylog"
+    platform: linux/amd64
+    restart: always
+    env_file:
+      - ../../docker-makefiles/anylog-query/node_configs.env
+    container_name: anylog-query
+    stdin_open: true
+    tty: true
+    network_mode: host
+    depends_on:
+      anylog-query-init:
+        condition: service_completed_successfully
+    volumes:
+      - anylog-query-anylog:/app/AnyLog-Network/anylog
+      - anylog-query-blockchain:/app/AnyLog-Network/blockchain
+      - anylog-query-data:/app/AnyLog-Network/data
+      - anylog-query-local-scripts:/app/deployment-scripts
+      - /var/run/docker.sock:/var/run/docker.sock
+volumes:
+  anylog-query-anylog:
+  anylog-query-blockchain:
+  anylog-query-data:
+  anylog-query-local-scripts:
+  image-vol:
+  usr-mgm-vol:
+  report-configs:
