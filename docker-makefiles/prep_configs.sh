@@ -31,6 +31,7 @@ fi
 normalize_quotes() {
   local file="$1"
   echo "Normalizing quotes in: ${file}"
+  sed -i "s/=''/=\"\"/g" "${file}"
   sed -i -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${file}"
 }
 
