@@ -1,0 +1,162 @@
+#----------------------------------------------------------------------
+# The following provides make commands for support functions
+# - Remote-GUI
+# - Grafana
+# - Postgres
+# - Mongodb
+#----------------------------------------------------------------------
+#!/bin/Makefile
+$(info LOADING MAKEFILE)
+
+export SERVICE ?= ""
+
+export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; else echo "docker"; fi)
+export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
+	    elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
+
+
+all: help
+up: ## Start service(s) that are associated with / around AnyLog, but are not AnyLog
+    @if [ "$(SERVICE)" == "" ] ; then \
+        $(MAKE) up-gui SERVICE=$(SERVICE) ; \
+        $(MAKE) up-dashboard SERVICE=$(SERVICE) ; \
+        $(MAKE) up-dashboard SERVICE=$(SERVICE) ; \
+        $(MAKE) up-mongo SERVICE=$(SERVICE) ;
+        $(MAKE) up-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "remote-gui" ] || [ "$(SERVICE)" == "gui" ] ; then \
+        $(MAKE) up-gui SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" ==  "grafana" ] ; then \
+        $(MAKE) up-dashboard SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "psql" ] ; then \
+        $(MAKE) up-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "mongodb" ] || [ "$(SERVICE)" == "mongo" ] ; then \
+        $(MAKE) up-mongo SERVICE=$(SERVICE) ; \
+    else ;
+        echo "ERROR: Unsupported automatic deployment for $(SERVICE) service"; \
+        $(MAKE) help;
+        exit 1
+    fi
+down: ## Stop service(s) that are associated with / around AnyLog, but are not AnyLog
+    @if [ "$(SERVICE)" == "" ] ; then \
+        $(MAKE) down-gui SERVICE=$(SERVICE) ; \
+        $(MAKE) down-dashboard SERVICE=$(SERVICE) ; \
+        $(MAKE) down-dashboard SERVICE=$(SERVICE) ; \
+        $(MAKE) down-mongo SERVICE=$(SERVICE) ;
+        $(MAKE) down-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "remote-gui" ] || [ "$(SERVICE)" == "gui" ] ; then \
+        $(MAKE) down-gui SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" ==  "grafana" ] ; then \
+        $(MAKE) down-dashboard SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "psql" ] ; then \
+        $(MAKE) down-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "mongo" ] ; then \
+        $(MAKE) down-mongo SERVICE=$(SERVICE) ; \
+    else ;
+        echo "ERROR: Unsupported automatic deployment for $(SERVICE) service"; \
+        $(MAKE) help;
+        exit 1
+    fi
+clean: ## Stop and remove volumes for service(s) that are associated with / around AnyLog, but are not AnyLog
+    @if [ "$(SERVICE)" == "" ] ; then \
+        $(MAKE) clean-gui SERVICE=$(SERVICE) ; \
+        $(MAKE) clean-dashboard SERVICE=$(SERVICE) ; \
+        $(MAKE) clean-dashboard SERVICE=$(SERVICE) ; \
+        $(MAKE) clean-mongo SERVICE=$(SERVICE) ;
+        $(MAKE) clean-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "remote-gui" ] || [ "$(SERVICE)" == "gui" ] ; then \
+        $(MAKE) clean-gui SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" ==  "grafana" ] ; then \
+        $(MAKE) clean-dashboard SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "psql" ] ; then \
+        $(MAKE) clean-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "mongo" ] ; then \
+        $(MAKE) clean-mongo SERVICE=$(SERVICE) ; \
+    else ;
+        echo "ERROR: Unsupported automatic deployment for $(SERVICE) service"; \
+        $(MAKE) help;
+        exit 1
+    fi
+clean-all: ## Stop and remove volumes / associated images service(s) that are associated with / around AnyLog, but are not AnyLog
+    @if [ "$(SERVICE)" == "" ] ; then \
+        $(MAKE) clean-all-gui SERVICE=$(SERVICE) ; \
+        $(MAKE) clean-all-clean-dashboard SERVICE=$(SERVICE) ; \
+        $(MAKE) clean-all-clean-dashboard SERVICE=$(SERVICE) ; \
+        $(MAKE) clean-all-clean-mongo SERVICE=$(SERVICE) ;
+        $(MAKE) clean-all-clean-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "remote-gui" ] || [ "$(SERVICE)" == "gui" ] ; then \
+        $(MAKE) clean-all-gui SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" ==  "grafana" ] ; then \
+        $(MAKE) clean-all-dashboard SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "psql" ] ; then \
+        $(MAKE) clean-all-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "mongo" ] ; then \
+        $(MAKE) clean-all-mongo SERVICE=$(SERVICE) ; \
+    else ;
+        echo "ERROR: Unsupported automatic deployment for $(SERVICE) service"; \
+        $(MAKE) help;
+        exit 1
+    fi
+logs: ## Execute `docker logs`  for a specific service
+    @if [ "$(SERVICE)" == "remote-gui" ] || [ "$(SERVICE)" == "gui" ] ; then \
+        $(MAKE) logs-gui SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" ==  "grafana" ] ; then \
+        $(MAKE) logs-dashboard SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "psql" ] ; then \
+        $(MAKE) logs-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "mongo" ] ; then \
+        $(MAKE) logs-mongo SERVICE=$(SERVICE) ; \
+    else ;
+        echo "ERROR: Unsupported automatic deployment for $(SERVICE) service"; \
+        $(MAKE) help;
+        exit 1
+    fi
+logs-f: ## Execute `docker logs-f`  for a specific service
+    @if [ "$(SERVICE)" == "remote-gui" ] || [ "$(SERVICE)" == "gui" ] ; then \
+        $(MAKE) logs-f-gui SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" ==  "grafana" ] ; then \
+        $(MAKE) logs-f-dashboard SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "psql" ] ; then \
+        $(MAKE) logs-f-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "mongo" ] ; then \
+        $(MAKE) logs-f-mongo SERVICE=$(SERVICE) ; \
+    else ;
+        echo "ERROR: Unsupported automatic deployment for $(SERVICE) service"; \
+        $(MAKE) help;
+        exit 1
+    fi
+exec: ## Attach to shell interface for a specific service
+    @if [ "$(SERVICE)" == "remote-gui" ] || [ "$(SERVICE)" == "gui" ] ; then \
+        $(MAKE) exec-gui SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" ==  "grafana" ] ; then \
+        $(MAKE) exec-dashboard SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "psql" ] ; then \
+        $(MAKE) exec-psql SERVICE=$(SERVICE) ; \
+    elif [ "$(SERVICE)" == "postgres" ] || [ "$(SERVICE)" == "mongo" ] ; then \
+        $(MAKE) exec-mongo SERVICE=$(SERVICE) ; \
+    else ;
+        echo "ERROR: Unsupported automatic deployment for $(SERVICE) service"; \
+        $(MAKE) help;
+        exit 1
+    fi
+up-gui:
+    @echo "Deploy Service: Remote-GUI"
+    $(DOCKER_COMPOSE_CMD) -f support/remote-gui/docker-compose.yaml up -d
+down-gui:
+    @echo "Stopping Service: Remote-GUI"
+    $(DOCKER_COMPOSE_CMD) -f support/remote-gui/docker-compose.yaml down
+clean-gui:
+    @echo "Removing Service: Remote-GUI"
+    $(DOCKER_COMPOSE_CMD) -f support/remote-gui/docker-compose.yaml down -v
+clean-all-gui:
+    @echo "Removing Service: Remote-GUI"
+    $(DOCKER_COMPOSE_CMD) -f support/remote-gui/docker-compose.yaml down -v --rmi all
+logs-gui:
+    @echo "Service Logs: Remote-GUI"
+    $(CONTAINER_CMD) logs remote-gui
+logs-f-gui:
+    @echo "Service Logs: Remote-GUI"
+    $(CONTAINER_CMD) logs -f remote-gui
+exec-gui:
+    @echo "Service Logs: Remote-GUI"
+    $(CONTAINER_CMD) exec -it remote-gui /bin/bash
+
