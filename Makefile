@@ -68,6 +68,7 @@ pull: check-configs ## pull image from docker hub
 
 dry-run: check-configs ## generate docker-compose.yaml
 	@echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
+	bash docker-makefiles/prep_configs.sh $(ANYLOG_TYPE)
 	bash docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG)
 
 up: dry-run ## start AnyLog instance
