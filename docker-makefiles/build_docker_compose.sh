@@ -44,6 +44,36 @@ export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 
+#-------- License Key Update
+# Check if file path is provided and exists
+if [[ -z "${BASE_ENV}" || ! -f "${BASE_ENV}" ]]; then
+  echo "Failed to locate file: ${BASE_ENV}"
+  exit 1
+fi
+
+# Extract the LICENSE_KEY value (keep everything after =)
+CURRENT_LICENSE_KEY=$(sed -n 's/^LICENSE_KEY=//p' "${BASE_ENV}")
+
+# Remove trailing carriage return if present
+CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%$'\r'}"
+
+# Remove leading and trailing quotes if present
+CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\"}"
+CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\"}"
+
+# Check if we got a value
+if [[ -z "${CURRENT_LICENSE_KEY}" ]]; then
+  echo "No license key provided"
+  exit 1
+fi
+
+# Example update: replace single quotes with double quotes inside the key
+UPDATE_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
+
+# Replace the LICENSE_KEY line in the file
+sed -i "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATE_LICENSE_KEY}|" "${BASE_ENV}"
+echo "File updated successfully."
+
 #-------- Select Template --------
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
