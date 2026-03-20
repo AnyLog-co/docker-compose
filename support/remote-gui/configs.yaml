@@ -1,5 +1,7 @@
-IMAGE: anylogco/remote-gui
-TAG: beta2
+GENERAL:
+  IMAGE: anylogco/remote-gui
+  TAG: beta2
+  NAME: remote-gui
 
 NETWORK_CONFIGS:
   NETWORK_MODE: ports
