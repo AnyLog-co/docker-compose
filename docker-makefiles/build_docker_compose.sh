@@ -44,7 +44,7 @@ export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 
-#-------- License Key Update
+#-------- License Key Update --------
 # Check if file path is provided and exists
 if [[ -z "${BASE_ENV}" || ! -f "${BASE_ENV}" ]]; then
   echo "Failed to locate file: ${BASE_ENV}"
