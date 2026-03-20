@@ -3,8 +3,9 @@ name: Version Update
 on:
   push:
     branches:
-      - os-dev
+      - main
       - pre-develop
+      - os-dev
 
 permissions:
   contents: write
