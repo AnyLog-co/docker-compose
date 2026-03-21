@@ -1,10 +1,33 @@
 # AnyLog Support Services
 
-Tooling to configure, generate, and manage the Docker/Podman containers that run alongside AnyLog: 
-* **[Remote-GUI](https://github.com/AnyLog-co/Remote-GUI)** 
-* **[Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/)**,
+Tooling to configure, generate, and manage the Docker/Podman containers that run alongside AnyLog:
+* **[Remote-GUI](https://github.com/AnyLog-co/Remote-GUI)**
+* **[Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/)**
 * **[PostgreSQL](https://hub.docker.com/_/postgres/)**
 * **[MongoDB](https://hub.docker.com/_/mongo/)**
+* **[Ollama](ollama/README.md)** — local LLM runtime for MCP function calling
+* **[Video Inference Models](https://github.com/AnyLog-co/AnyLog-Video-Inference-Models)** — CV/ML inference on edge video streams
+
+---
+
+## Table of Contents
+
+- [Directory Structure](#directory-structure)
+- [Quick Start](#quick-start)
+- [Config File Format](#config-file-format)
+- [Service Configs](#service-configs)
+  - [Remote-GUI](#remote-gui)
+  - [Grafana](#grafana)
+  - [PostgreSQL](#postgresql)
+  - [MongoDB](#mongodb)
+  - [Ollama](#ollama)
+  - [Video Inference Models](#video-inference-models)
+- [docker_compose_builder.sh](#docker_compose_buildersh)
+- [Makefile Reference](#makefile-reference)
+  - [Targets](#targets)
+  - [Service Aliases](#service-aliases)
+  - [Example Commands](#example-commands)
+- [Requirements](#requirements)
 
 ---
 
@@ -12,17 +35,28 @@ Tooling to configure, generate, and manage the Docker/Podman containers that run
 
 ```
 support/
-├── Makefile                    # All lifecycle commands
-├── docker_compose_builder.sh   # Generates docker-compose.yml from configs.yaml
+├── Makefile                      # All lifecycle commands
+├── README.md                     # This file
+├── Ollama.md                     # Ollama setup guide
+├── Video-Inferences.md           # Video inference models guide
+├── docker_compose_builder.sh     # Generates docker-compose.yml from configs.yaml
 ├── grafana/
 │   └── configs.yaml
 ├── mongodb/
 │   └── configs.yaml
+├── ollama/
+│   ├── configs.yaml
+│   ├── docker-compose.yaml
+│   ├── docker-compose-gpu.yaml
+│   └── ollama-configs.png
 ├── postgres/
 │   └── configs.yaml
 └── remote-gui/
     └── configs.yaml
 ```
+
+> **Note:** Ollama and Video Inference Models are standalone services and are **not** managed by the `Makefile`.
+> See [Ollama.md](Ollama.md) and [Video-Inferences.md](Video-Inferences.md) for their dedicated setup guides.
 
 ---
 
@@ -71,6 +105,7 @@ VOLUMES:
 ## Service Configs
 
 ### Remote-GUI
+
 | Field | Value |
 |---|---|
 | Image | `anylogco/remote-gui:beta2` |
@@ -79,6 +114,7 @@ VOLUMES:
 | Volumes | `image-vol`, `usr-mgm-vol`, `report-configs` |
 
 ### Grafana
+
 | Field | Value |
 |---|---|
 | Image | `grafana/grafana:latest` |
@@ -87,6 +123,7 @@ VOLUMES:
 | Volumes | `grafana-data`, `grafana-log`, `grafana-config` |
 
 ### PostgreSQL
+
 | Field | Value |
 |---|---|
 | Image | `postgres:16.0-alpine` |
@@ -95,12 +132,33 @@ VOLUMES:
 | Volumes | `pgdata` |
 
 ### MongoDB
+
 | Field | Value |
 |---|---|
 | Image | `mongo:latest` |
 | Port | `27017` |
 | Key env vars | `MONGO_USER`, `MONGO_PASSWORD` |
 | Volumes | `mongo-data`, `mongo-configs` |
+
+### Ollama
+
+Ollama is a lightweight open-source framework for running LLMs locally. AnyLog/EdgeLake use it as the tested model framework for MCP function calling in the Remote-GUI.
+
+| Field | Value |
+|---|---|
+| Image | `ollama/ollama:latest` |
+| Port | `11434` |
+| GPU variant | `ollama/docker-compose-gpu.yaml` (requires NVIDIA Container Toolkit) |
+| Default model | `qwen2.5:7b-instruct` |
+
+→ Full setup guide: [Ollama.md](Ollama.md)
+
+### Video Inference Models
+
+CV/ML inference on edge video streams, feeding results into AnyLog/EdgeLake nodes.
+
+→ Full setup guide: [Video-Inferences.md](Video-Inferences.md)  
+→ Source repository: [AnyLog-co/AnyLog-Video-Inference-Models](https://github.com/AnyLog-co/AnyLog-Video-Inference-Models)
 
 ---
 
@@ -113,9 +171,9 @@ Reads a `configs.yaml` and writes a `docker-compose.yml` next to it.
 ./docker_compose_builder.sh [config_file] [output_file]
 
 # Defaults
-./docker_compose_builder.sh                                          # configs.yaml → docker-compose.yml
-./docker_compose_builder.sh remote-gui/configs.yaml                 # custom input
-./docker_compose_builder.sh remote-gui/configs.yaml out-compose.yml # custom input + output
+./docker_compose_builder.sh                                           # configs.yaml → docker-compose.yml
+./docker_compose_builder.sh remote-gui/configs.yaml                  # custom input
+./docker_compose_builder.sh remote-gui/configs.yaml out-compose.yml  # custom input + output
 ```
 
 All generated compose files include:
@@ -164,9 +222,9 @@ make docker-builder SERVICE=remote-gui     # one service
 
 # Lifecycle
 make up                                    # start all
-make up       SERVICE=gui
-make down     SERVICE=grafana
-make clean    SERVICE=mongo
+make up        SERVICE=gui
+make down      SERVICE=grafana
+make clean     SERVICE=mongo
 make clean-all SERVICE=psql
 
 # Logs
