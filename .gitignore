@@ -3,3 +3,5 @@ __pycache__/
 .DS_Store
 *.tgz
 docker-makefiles/docker-compose-files
+support/*/docker-compose.yml
+support/*/docker-compose.yaml
