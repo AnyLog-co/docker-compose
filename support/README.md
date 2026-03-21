@@ -9,6 +9,13 @@ Tooling to configure, generate, and manage the Docker/Podman containers that run
 * **[Video Inference Models](https://github.com/AnyLog-co/AnyLog-Video-Inference-Models)** — CV/ML inference on edge video streams
 * **[Nebula Overlay Network](https://github.com/oshadmon/nebula-anylog)** — encrypted peer-to-peer overlay so AnyLog nodes on separate physical networks communicate as a single unified network
 
+## Requirements
+
+- Docker ≥ 20.10 **or** Podman ≥ 4.0
+- `docker compose` plugin **or** `docker-compose` / `podman-compose`
+- Bash ≥ 4.0 (for `docker_compose_builder.sh`)
+- `make`
+
 ---
 
 ## Table of Contents
@@ -23,10 +30,12 @@ Tooling to configure, generate, and manage the Docker/Podman containers that run
   - [MongoDB](#mongodb)
   - [Ollama](#ollama)
   - [Video Inference Models](#video-inference-models)
+  - [Nebula Overlay](#nebula-overlay-network)
 - [docker_compose_builder.sh](#docker_compose_buildersh)
 - [Makefile Reference](#makefile-reference)
   - [Targets](#targets)
   - [Service Aliases](#service-aliases)
+  - [Docker Compose Builder Logic](#docker-compose-builder-logic)
   - [Example Commands](#example-commands)
 - [Requirements](#requirements)
 
@@ -57,8 +66,8 @@ support/
     └── configs.yaml
 ```
 
-> **Note:** Ollama and Video Inference Models are standalone services and are **not** managed by the `Makefile`.
-> See [Ollama.md](Ollama.md) and [Video-Inferences.md](Video-Inferences.md) for their dedicated setup guides.
+> **Note:** Ollama, Nebula and Video Inference Models are standalone services and are **not** managed by the `Makefile`.
+> See [Ollama.md](Ollama.md), [Nebula](Nebula.md) and [Video-Inferences.md](Video-Inferences.md) for their dedicated setup guides.
 
 ---
 
@@ -175,28 +184,6 @@ Nebula creates an encrypted peer-to-peer mesh across physically separated machin
 
 → Full setup guide: [Nebula.md](Nebula.md)  
 → Source repository: [oshadmon/nebula-anylog](https://github.com/oshadmon/nebula-anylog)
-```
-
-## `docker_compose_builder.sh`
-
-Reads a `configs.yaml` and writes a `docker-compose.yml` next to it.
-
-```bash
-# Usage
-./docker_compose_builder.sh [config_file] [output_file]
-
-# Defaults
-./docker_compose_builder.sh                                           # configs.yaml → docker-compose.yml
-./docker_compose_builder.sh remote-gui/configs.yaml                  # custom input
-./docker_compose_builder.sh remote-gui/configs.yaml out-compose.yml  # custom input + output
-```
-
-All generated compose files include:
-```yaml
-restart: always
-stdin_open: true
-tty: true
-```
 
 ---
 
@@ -228,6 +215,31 @@ Pass `SERVICE=<alias>` to target a single service. Omit it to act on all four.
 | PostgreSQL | `postgres`, `psql` |
 | MongoDB | `mongodb`, `mongo` |
 
+### Docker Compose Builder Logic
+```
+
+## `docker_compose_builder.sh`
+
+Reads a `configs.yaml` and writes a `docker-compose.yml` next to it.
+
+```bash
+# Usage
+./docker_compose_builder.sh [config_file] [output_file]
+
+# Defaults
+./docker_compose_builder.sh                                           # configs.yaml → docker-compose.yml
+./docker_compose_builder.sh remote-gui/configs.yaml                  # custom input
+./docker_compose_builder.sh remote-gui/configs.yaml out-compose.yml  # custom input + output
+```
+
+All generated compose files include:
+```yaml
+restart: always
+stdin_open: true
+tty: true
+```
+
+
 ### Example Commands
 
 ```bash
@@ -252,11 +264,4 @@ make exec SERVICE=psql                     # psql -U postgres
 make exec SERVICE=mongo                    # mongosh
 ```
 
----
 
-## Requirements
-
-- Docker ≥ 20.10 **or** Podman ≥ 4.0
-- `docker compose` plugin **or** `docker-compose` / `podman-compose`
-- Bash ≥ 4.0 (for `docker_compose_builder.sh`)
-- `make`
