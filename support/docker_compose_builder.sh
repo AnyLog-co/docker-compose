@@ -84,6 +84,17 @@ get_env_vars() {
   ' "$CONFIG_FILE"
 }
 
+# Check if a key EXISTS in ENV_VARS (regardless of value). Returns 0=yes 1=no.
+has_env_key() {
+  local key="$1"
+  awk -v key="${key}" '
+    /^ENV_VARS:/                  { inside=1; next }
+    inside && /^[^[:space:]]/     { exit }
+    inside && $0 ~ "^[[:space:]]+"key":[[:space:]]*" { found=1; exit }
+    END { exit !found }
+  ' "$CONFIG_FILE"
+}
+
 # Collect VOLUMES entries → outputs "volname /container/path" per line
 get_volumes() {
   awk '
@@ -121,32 +132,29 @@ fi
 SERVICE_NAME="${NAME:-$(basename "$IMAGE" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9_-' '-' | sed 's/-*$//')}"
 
 # ── Resolve REMOTE_GUI_NIC → VITE_API_URL ────────────────────────────────────
-
-REMOTE_GUI_NIC=$(get_section_value "ENV_VARS" "REMOTE_GUI_NIC" 2>/dev/null || true)
-REMOTE_GUI_NIC="${REMOTE_GUI_NIC//\"/}"; REMOTE_GUI_NIC="${REMOTE_GUI_NIC//\'/}"
+# VITE_API_URL is only emitted if REMOTE_GUI_NIC key exists in ENV_VARS.
 
 REMOTE_GUI_BE=$(get_section_value "ENV_VARS" "REMOTE_GUI_BE" 2>/dev/null || true)
 
-REMOTE_GUI_IP="127.0.0.1"
-if [[ -n "${REMOTE_GUI_NIC:-}" ]]; then
+VITE_API_URL=""
+if has_env_key "REMOTE_GUI_NIC"; then
+  REMOTE_GUI_NIC=$(get_section_value "ENV_VARS" "REMOTE_GUI_NIC" 2>/dev/null || true)
+  REMOTE_GUI_NIC="${REMOTE_GUI_NIC//\"/}"; REMOTE_GUI_NIC="${REMOTE_GUI_NIC//\'/}"
+
   echo "→ Resolving IP for NIC '${REMOTE_GUI_NIC}'..."
+  REMOTE_GUI_IP="127.0.0.1"
   if command -v ip >/dev/null 2>&1; then
     REMOTE_GUI_IP=$(ip -4 addr show dev "${REMOTE_GUI_NIC}" \
-                    | awk '/inet /{print $2}' | cut -d/ -f1)
+                    | awk '/inet /{print $2}' | cut -d/ -f1 || echo "127.0.0.1")
   elif command -v ifconfig >/dev/null 2>&1; then
-    REMOTE_GUI_IP=$(ifconfig "${REMOTE_GUI_NIC}" | awk '/inet /{print $2}')
+    REMOTE_GUI_IP=$(ifconfig "${REMOTE_GUI_NIC}" | awk '/inet /{print $2}' || echo "127.0.0.1")
   else
     echo "WARNING: Neither 'ip' nor 'ifconfig' found — falling back to 127.0.0.1" >&2
   fi
-  if [[ -z "$REMOTE_GUI_IP" ]]; then
-    echo "WARNING: Could not resolve IP for NIC '${REMOTE_GUI_NIC}' — falling back to 127.0.0.1" >&2
-    REMOTE_GUI_IP="127.0.0.1"
-  else
-    echo "  ✔ ${REMOTE_GUI_NIC} → ${REMOTE_GUI_IP}"
-  fi
+  [[ -z "$REMOTE_GUI_IP" ]] && REMOTE_GUI_IP="127.0.0.1"
+  echo "  ✔ ${REMOTE_GUI_NIC:-<empty>} → ${REMOTE_GUI_IP}"
+  VITE_API_URL="http://${REMOTE_GUI_IP}:${REMOTE_GUI_BE}"
 fi
-
-VITE_API_URL="http://${REMOTE_GUI_IP}:${REMOTE_GUI_BE}"
 
 # ── Collect sections ──────────────────────────────────────────────────────────
 mapfile -t PORTS     < <(get_list_under "NETWORK_CONFIGS" "PORTS")
@@ -191,7 +199,7 @@ mapfile -t VOL_LINES < <(get_volumes)
       [[ -z "$line" ]] && continue
       echo "      - ${line}"
     done
-    echo "      - VITE_API_URL=${VITE_API_URL}"
+    [[ -n "$VITE_API_URL" ]] && echo "      - VITE_API_URL=${VITE_API_URL}"
   fi
 
   # Volumes (service mounts)
@@ -202,7 +210,9 @@ mapfile -t VOL_LINES < <(get_volumes)
     done
   fi
 
-  echo "    restart: unless-stopped"
+  echo "    restart: always"
+  echo "    stdin_open: true"
+  echo "    tty: true"
 
   # Top-level named volume declarations
   if [[ ${#VOL_LINES[@]} -gt 0 ]]; then

@@ -11,7 +11,7 @@ NETWORK_CONFIGS:
 
 ENV_VARS:
   # NIC type to use for Remote-GUI - if not set, uses 127.0.0.1
-  REMOTE_GUI_NIC: eth0
+  REMOTE_GUI_NIC: ""
   # Remote GUI Frontend Port
   REMOTE_GUI_FE: 31800
   # Remote GUI Backend Port
