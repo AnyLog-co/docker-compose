@@ -7,6 +7,7 @@ Tooling to configure, generate, and manage the Docker/Podman containers that run
 * **[MongoDB](https://hub.docker.com/_/mongo/)**
 * **[Ollama](Ollama.md)** — local LLM runtime for MCP function calling
 * **[Video Inference Models](https://github.com/AnyLog-co/AnyLog-Video-Inference-Models)** — CV/ML inference on edge video streams
+* **[Nebula Overlay Network](https://github.com/oshadmon/nebula-anylog)** — encrypted peer-to-peer overlay so AnyLog nodes on separate physical networks communicate as a single unified network
 
 ---
 
@@ -39,6 +40,7 @@ support/
 ├── README.md                     # This file
 ├── Ollama.md                     # Ollama setup guide
 ├── Video-Inferences.md           # Video inference models guide
+├── Nebula.md                     # Nebula overlay network setup guide
 ├── docker_compose_builder.sh     # Generates docker-compose.yml from configs.yaml
 ├── grafana/
 │   └── configs.yaml
@@ -160,7 +162,20 @@ CV/ML inference on edge video streams, feeding results into AnyLog/EdgeLake node
 → Full setup guide: [Video-Inferences.md](Video-Inferences.md)  
 → Source repository: [AnyLog-co/AnyLog-Video-Inference-Models](https://github.com/AnyLog-co/AnyLog-Video-Inference-Models)
 
----
+### Nebula Overlay Network
+
+Nebula creates an encrypted peer-to-peer mesh across physically separated machines, giving distributed AnyLog/EdgeLake nodes a shared overlay IP space without requiring them to be on the same LAN or VPN.
+
+| Field | Value |
+|---|---|
+| Deployed via | `docker compose` on each node |
+| Min. nodes | 1 lighthouse + 1 host |
+| Overlay port | UDP `4242` |
+| Auth | Mutual certificate-based (CA you control) |
+
+→ Full setup guide: [Nebula.md](Nebula.md)  
+→ Source repository: [oshadmon/nebula-anylog](https://github.com/oshadmon/nebula-anylog)
+```
 
 ## `docker_compose_builder.sh`
 
