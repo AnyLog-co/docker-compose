@@ -5,7 +5,7 @@ Tooling to configure, generate, and manage the Docker/Podman containers that run
 * **[Grafana](https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/)**
 * **[PostgreSQL](https://hub.docker.com/_/postgres/)**
 * **[MongoDB](https://hub.docker.com/_/mongo/)**
-* **[Ollama](ollama/README.md)** — local LLM runtime for MCP function calling
+* **[Ollama](Ollama.md)** — local LLM runtime for MCP function calling
 * **[Video Inference Models](https://github.com/AnyLog-co/AnyLog-Video-Inference-Models)** — CV/ML inference on edge video streams
 
 ---
