@@ -1,11 +1,19 @@
 #!/usr/bin/env bash
-#set -euo pipefail
+set -euo pipefail
 
 # -------- Helpers --------
 die() {
   echo "Error: $1" >&2
   exit "${2:-1}"
 }
+
+sedi() {
+  if sed --version >/dev/null 2>&1; then
+    sed -i "$1" "$2"
+  else
+    sed -i '' "$1" "$2"
+  fi  
+} 
 
 # -------- Args --------
 NODE_CONFIGS=${1:-anylog-generic}
@@ -31,8 +39,8 @@ fi
 normalize_quotes() {
   local file="$1"
   echo "Normalizing quotes in: ${file}"
-  sed -i "s/=''/=\"\"/g" "${file}"
-  sed -i -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${file}"
+  sedi "s/=''/=\"\"/g" "${file}"
+  sedi -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${file}"
 }
 
 for cfg in "${CONFIG_FILES[@]}"; do
@@ -64,7 +72,7 @@ else
   else
     # Replace any internal single quotes with double quotes
     UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
-    sed -i "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
+    sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
     echo "LICENSE_KEY updated in ${BASE_ENV}"
   fi
 fi
