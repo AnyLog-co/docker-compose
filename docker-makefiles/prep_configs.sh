@@ -72,7 +72,7 @@ else
   else
     # Replace any internal single quotes with double quotes
     UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
-    sed -i "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
+    sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
     echo "LICENSE_KEY updated in ${BASE_ENV}"
   fi
 fi
