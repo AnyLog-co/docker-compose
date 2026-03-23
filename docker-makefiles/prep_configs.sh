@@ -8,12 +8,20 @@ die() {
 }
 
 sedi() {
+  local expr="$1"
+  shift
+
+  if [ "$#" -eq 0 ]; then
+    echo "sedi: no files provided" >&2
+    return 1
+  fi
+
   if sed --version >/dev/null 2>&1; then
-    sed -i "$1" "$2"
+    sed -i "$expr" "$@"
   else
-    sed -i '' "$1" "$2"
-  fi  
-} 
+    sed -i '' "$expr" "$@"
+  fi
+}
 
 # -------- Args --------
 NODE_CONFIGS=${1:-anylog-generic}
