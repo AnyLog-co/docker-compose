@@ -7,14 +7,6 @@ die() {
   exit "${2:-1}"
 }
 
-sedi() {
-  if sed --version >/dev/null 2>&1; then
-    sed -i "$@"
-  else
-    sed -i '' "$@"
-  fi
-}
-
 # -------- Args --------
 NODE_CONFIGS=${1:-anylog-generic}
 
@@ -39,7 +31,7 @@ fi
 normalize_quotes() {
   local file="$1"
   echo "Normalizing quotes in: ${file}"
-  sedi "s/=''/=\"\"/g" "${file}"
+  sed "s/=''/=\"\"/g" "${file}"
   sed -E -i.bak "s/^([A-Za-z_][A-Za-z0-9_]*)='([^']*)'/\1=\"\2\"/" "$file" && rm -f "$file.bak"
 
 for cfg in "${CONFIG_FILES[@]}"; do
@@ -71,7 +63,7 @@ else
   else
     # Replace any internal single quotes with double quotes
     UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
-    sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
+    sed "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
     echo "LICENSE_KEY updated in ${BASE_ENV}"
   fi
 fi
