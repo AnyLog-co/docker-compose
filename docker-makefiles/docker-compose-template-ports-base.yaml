@@ -1,13 +1,28 @@
 services:
+  ${NODE_NAME}-init:
+    image: busybox
+    user: root
+    command: [
+      "sh", "-c",
+      "chown -R 10001:10001 
+        /app/AnyLog-Network/anylog 
+        /app/AnyLog-Network/blockchain 
+        /app/AnyLog-Network/data 
+        /app/deployment-scripts
+      "
+    ]
+    restart: "no"
+    volumes:
+      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
+      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
+      - ${NODE_NAME}-data:/app/AnyLog-Network/data
+      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
-#    user: "${ANYLOG_UID}:${ANYLOG_GID}"
+    user: "anylog:anylog"
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
-      -  ../../docker-makefiles/${ANYLOG_TYPE}/base_configs.env
-      - ../../docker-makefiles/${ANYLOG_TYPE}/advance_configs.env
-      - ../../docker-makefiles/.env
     container_name: ${NODE_NAME}
     stdin_open: true
     tty: true
