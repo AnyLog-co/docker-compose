@@ -11,7 +11,7 @@ sedi() {
   if sed --version >/dev/null 2>&1; then
     sed -i "$@"
   else
-    sed -i '' "$@"
+    sed -i '' -E "$@"
   fi
 }
 
@@ -40,7 +40,7 @@ normalize_quotes() {
   local file="$1"
   echo "Normalizing quotes in: ${file}"
   sedi "s/=''/=\"\"/g" "${file}"
-  sedi -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${file}"
+  sedi "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${file}"
 }
 
 for cfg in "${CONFIG_FILES[@]}"; do
