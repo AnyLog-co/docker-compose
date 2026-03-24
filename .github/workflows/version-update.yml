@@ -5,7 +5,6 @@ on:
     branches:
       - os-dev
       - pre-develop
-      - test-network
 
 permissions:
   contents: write
