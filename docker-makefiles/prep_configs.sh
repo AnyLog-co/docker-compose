@@ -31,7 +31,7 @@ fi
 normalize_quotes() {
   local file="$1"
   echo "Normalizing quotes in: ${file}"
-  sed -i "s/=''/=\"\"/g" "${file}"
+  sed -i.bak "s/=''/=\"\"/g" "${file}" && rm -f "$file.bak"
   sed -E -i.bak "s/^([A-Za-z_][A-Za-z0-9_]*)='([^']*)'/\\1=\"\\2\"/" "$file" && rm -f "$file.bak"
 }
 
@@ -64,7 +64,7 @@ else
   else
     # Replace any internal single quotes with double quotes
     UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
-    sed -i "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
+    sed -i.bak "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"  && rm -f "$file.bak"
     echo "LICENSE_KEY updated in ${BASE_ENV}"
   fi
 fi
