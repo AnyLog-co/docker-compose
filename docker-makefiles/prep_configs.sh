@@ -9,11 +9,11 @@ die() {
 
 sedi() {
   if sed --version >/dev/null 2>&1; then
-    sed -i "$1" "$2"
+    sed -i "$@"
   else
-    sed -i '' "$1" "$2"
-  fi  
-} 
+    sed -i '' "$@"
+  fi
+}
 
 # -------- Args --------
 NODE_CONFIGS=${1:-anylog-generic}
