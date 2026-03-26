@@ -19,6 +19,8 @@ services:
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
       - ${NODE_NAME}-data:/app/AnyLog-Network/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
+      - ${TPM_DIR}:/app/AnyLog-Network/tpm_dir"
+    
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
     user: "anylog:anylog"
@@ -40,6 +42,7 @@ services:
       - ${NODE_NAME}-data:/app/AnyLog-Network/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
       - ${DOCKER_SOCKET}:/var/run/docker.sock
+      - ${TPM_DIR}:/app/AnyLog-Network/tpm_dir"
 volumes:
   ${NODE_NAME}-anylog:
   ${NODE_NAME}-blockchain:

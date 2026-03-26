@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#set -euo pipefail
+set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -8,18 +8,10 @@ die() {
 }
 
 sedi() {
-  local expr="$1"
-  shift
-
-  if [ "$#" -eq 0 ]; then
-    echo "sedi: no files provided" >&2
-    return 1
-  fi
-
   if sed --version >/dev/null 2>&1; then
-    sed -i "$expr" "$@"
+    sed -i "$@"
   else
-    sed -i '' "$expr" "$@"
+    sed -i '' "$@"
   fi
 }
 

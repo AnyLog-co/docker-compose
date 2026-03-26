@@ -44,6 +44,7 @@ export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export DOCKER_SOCKET=$(grep -m1 '^DOCKER_SOCKET=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
+export TPM_DIR==$(grep -m1 '^TPM_DIR=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 
 # -------- Select Template --------
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"

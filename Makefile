@@ -4,7 +4,7 @@ $(info LOADING MAKEFILE)
 # Default values
 export IS_MANUAL ?= false
 export ANYLOG_TYPE ?=
-export TAG ?= pre-develop
+export TAG ?= tpm-pp
 export IMAGE ?= anylogco/anylog-network
 
 # Detect OS type
@@ -68,8 +68,8 @@ pull: check-configs ## pull image from docker hub
 
 dry-run: check-configs ## generate docker-compose.yaml
 	@echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
-	bash  docker-makefiles/prep_configs.sh $(ANYLOG_TYPE)
-	bash  docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG)
+	bash -x docker-makefiles/prep_configs.sh $(ANYLOG_TYPE)
+	bash -x docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG)
 
 up: dry-run ## start AnyLog instance
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
