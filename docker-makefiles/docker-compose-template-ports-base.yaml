@@ -22,7 +22,9 @@ services:
       - ${DOCKER_SOCKET}:/var/run/docker.sock
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
-    user: "anylog:anylog"
+    # Use numeric UID/GID so the container doesn't need an `anylog` username in /etc/passwd.
+    # The init container already chowns persisted volumes to 10001:10001.
+    user: "10001:10001"
     group_add:
       - ${DOCKER_GID}
     platform: ${DOCKER_PLATFORM}

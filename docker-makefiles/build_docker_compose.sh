@@ -43,7 +43,15 @@ export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export DOCKER_SOCKET=$(grep -m1 '^DOCKER_SOCKET=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-export DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
+export TPM_DIR=$(grep -m1 '^TPM_DIR=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+#export DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
+if stat -c '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
+    # GNU stat (Linux)
+    export DOCKER_GID=$(stat -c '%g' "${DOCKER_SOCKET}")
+else
+    # BSD stat (macOS)
+    export DOCKER_GID=$(stat -f '%g' "${DOCKER_SOCKET}")
+fi
 
 # -------- Select Template --------
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
