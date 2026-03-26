@@ -2,6 +2,8 @@ services:
   ${NODE_NAME}-init:
     image: busybox
     user: root
+    group_add:
+      - ${DOCKER_GID}
     command: [
       "sh", "-c",
       "chown -R 10001:10001 
@@ -17,9 +19,12 @@ services:
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
       - ${NODE_NAME}-data:/app/AnyLog-Network/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
+      - ${DOCKER_SOCKET}:/var/run/docker.sock
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
     user: "anylog:anylog"
+    group_add:
+      - ${DOCKER_GID}
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
