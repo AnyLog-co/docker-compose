@@ -91,7 +91,7 @@ if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
   sed -i.bak "s/group_add: \${DOCKER_GID}/# group_add: \${DOCKER_GID-unknown}/g" docker-makefiles/docker-compose-template.yaml
 #  sed -i.bak "s/- \${DOCKER_GID}\n//g" docker-makefiles/docker-compose-template.yaml
   # comment out volume if DNE
-  sed -i.bak "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - MISSING-SOCKET_PATH${DOCKER_SOCKET}#" docker-makefiles/docker-compose-template.yaml
+  sed -i.bak "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - \${MISSING-DOCKER_SOCKET}#" docker-makefiles/docker-compose-template.yaml
 else
     if stat -c '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
       # GNU stat (Linux)
@@ -170,5 +170,7 @@ echo "Generating final docker-compose.yaml..."
 mkdir -p docker-makefiles/docker-compose-files
 OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compose.yaml"
 envsubst < "$COMPOSE_FILE" > "$OUTPUT_FILE"
-rm -f "$COMPOSE_FILE" docker-compose-template.yaml.bak
+rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak
 echo "Saved: ${OUTPUT_FILE}"
+
+

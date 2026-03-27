@@ -23,8 +23,7 @@ services:
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
     user: "anylog:anylog"
-    group_add:
-      - ${DOCKER_GID}
+    group_add: ${DOCKER_GID}
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
