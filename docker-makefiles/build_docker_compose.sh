@@ -7,6 +7,13 @@ die() {
   exit "${2:-1}"
 }
 
+OS_TYPE=$(uname)
+if [[ "$OS_TYPE" == "Darwin" ]]; then
+  SED_INPLACE="sed -i .bak"
+else
+  SED_INPLACE="sed -i.bak"
+fi
+
 # -------- Args --------
 NODE_CONFIGS=${1:-anylog-generic}
 TAG=${2:-latest}
@@ -79,19 +86,19 @@ fi
 
 # -------- Update Volumes --------
 if ! ([[ ! -d "${DEPLOYMENTS_REPO}" ]] || [[ -z "$(ls -A "${DEPLOYMENTS_REPO}" 2>/dev/null)" ]]); then
-  sed -i.bak "0,/\/app\/deployment-scripts/s#/app/deployment-scripts#\# /app/deployment-scripts#" docker-makefiles/docker-compose-template.yaml
-  sed -i.bak "0,/- \${NODE_NAME}-local-scripts/s#- \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" docker-makefiles/docker-compose-template.yaml
-  sed -i.bak "0,/\${NODE_NAME}-local-scripts/s#\${NODE_NAME}-local-scripts#${DEPLOYMENTS_REPO}#" docker-makefiles/docker-compose-template.yaml
-  sed -i.bak "0,/\${NODE_NAME}-local-scripts/s# \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" docker-makefiles/docker-compose-template.yaml
+  ${SED_INPLACE} "0,/\/app\/deployment-scripts/s#/app/deployment-scripts#\# /app/deployment-scripts#" docker-makefiles/docker-compose-template.yaml
+  ${SED_INPLACE} "0,/- \${NODE_NAME}-local-scripts/s#- \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" docker-makefiles/docker-compose-template.yaml
+  ${SED_INPLACE} "0,/\${NODE_NAME}-local-scripts/s#\${NODE_NAME}-local-scripts#${DEPLOYMENTS_REPO}#" docker-makefiles/docker-compose-template.yaml
+  ${SED_INPLACE} "0,/\${NODE_NAME}-local-scripts/s# \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" docker-makefiles/docker-compose-template.yaml
 fi
 
 # if path dne of socket dne then comment out section
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
   # comment out group_add
-  sed -i.bak "s/group_add: \${DOCKER_GID}/# group_add: \${DOCKER_GID-unknown}/g" docker-makefiles/docker-compose-template.yaml
-#  sed -i.bak "s/- \${DOCKER_GID}\n//g" docker-makefiles/docker-compose-template.yaml
+  ${SED_INPLACE} "s/group_add: \${DOCKER_GID}/# group_add: \${DOCKER_GID-unknown}/g" docker-makefiles/docker-compose-template.yaml
+#  ${SED_INPLACE} "s/- \${DOCKER_GID}\n//g" docker-makefiles/docker-compose-template.yaml
   # comment out volume if DNE
-  sed -i.bak "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - \${MISSING-DOCKER_SOCKET}#" docker-makefiles/docker-compose-template.yaml
+  ${SED_INPLACE} "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - \${MISSING-DOCKER_SOCKET}#" docker-makefiles/docker-compose-template.yaml
 else
     if stat -c '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
       # GNU stat (Linux)
