@@ -95,8 +95,11 @@ fi
 # if path dne of socket dne then comment out section
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
   # comment out group_add
-  ${SED_INPLACE} "s/group_add: \${DOCKER_GID}/# group_add: \${DOCKER_GID-unknown}/g" docker-makefiles/docker-compose-template.yaml
-#  ${SED_INPLACE} "s/- \${DOCKER_GID}\n//g" docker-makefiles/docker-compose-template.yaml
+  ${SED_INPLACE} "s/- \${DOCKER_GID}/#- \$MISSING-DOCKER_GID}/g" docker-makefiles/docker-compose-template.yaml
+#  ${SED_INPLACE} "s/- \${DOCKER_GID}/s#- \${DOCKER_GID}#\# - \${MISSING-DOCKER_GID}#" docker-makefiles/docker-compose-template.yaml
+  ${SED_INPLACE} "s/group_add:/# group_add:/g" docker-makefiles/docker-compose-template.yaml
+
+
   # comment out volume if DNE
   ${SED_INPLACE} "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - \${MISSING-DOCKER_SOCKET}#" docker-makefiles/docker-compose-template.yaml
 else

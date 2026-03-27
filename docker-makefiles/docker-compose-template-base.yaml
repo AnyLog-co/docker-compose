@@ -2,7 +2,8 @@ services:
   ${NODE_NAME}-init:
     image: busybox
     user: root
-    group_add: ${DOCKER_GID}
+    group_add:
+      - ${DOCKER_GID}
     restart: "no"
     command: [
       "sh", "-c",
@@ -21,7 +22,8 @@ services:
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
     user: "anylog:anylog"
-    group_add: ${DOCKER_GID}
+    group_add:
+      - ${DOCKER_GID}
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
