@@ -51,6 +51,7 @@ else
     # BSD stat (macOS)
     export DOCKER_GID=$(stat -f '%g' "${DOCKER_SOCKET}")
 fi
+export DEPLOYMENTS_REPO=$(grep -m1 '^DEPLOYMENTS_REPO=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 
 # -------- Select Template --------
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
@@ -82,6 +83,23 @@ if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "${ANYLOG_BROKER_PORT:
       '/    ports:/ {print; print "      - " port; next}1' \
       "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
+
+# -------- Update Volumes --------
+if ! ([[ ! -d "${DEPLOYMENTS_REPO}" ]] || [[ -z "$(ls -A "${DEPLOYMENTS_REPO}" 2>/dev/null)" ]]); then
+# 1️⃣ Comment out /app/deployment-scripts in init chown command
+  sed -i.bak "0,/\/app\/deployment-scripts/s#/app/deployment-scripts#\# /app/deployment-scripts#" docker-makefiles/docker-compose-template.yaml
+  sed -i.bak "0,/- \${NODE_NAME}-local-scripts/s#- \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" docker-makefiles/docker-compose-template.yaml
+  sed -i.bak "0,/\${NODE_NAME}-local-scripts/s#\${NODE_NAME}-local-scripts#${DEPLOYMENTS_REPO}#" docker-makefiles/docker-compose-template.yaml
+  sed -i.bak "0,/\${NODE_NAME}-local-scripts/s# \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" docker-makefiles/docker-compose-template.yaml
+#sed -i.bak '0,/\n\r\/app\/deployment-scripts/s#/app/deployment-scripts#\ #' docker-makefiles/docker-compose-template.yaml
+#
+## 2️⃣ Comment out ${NODE_NAME}-local-scripts volume in init service
+#sed -i.bak "0,/- \${NODE_NAME}-local-scripts:\/app\/deployment-scripts/s#^- \${NODE_NAME}-local-scripts:#\# - \${NODE_NAME}-local-scripts:#" docker-makefiles/docker-compose-template.yaml
+#
+## 3️⃣ Replace ${NODE_NAME}-local-scripts with ${DEPLOYMENTS_REPO} in main service
+#sed -i.bak "0,/- \${NODE_NAME}-local-scripts:\/app\/deployment-scripts/s#^- \${NODE_NAME}-local-scripts:#- ${DEPLOYMENTS_REPO}#" docker-makefiles/docker-compose-template.yaml
+fi
+
 
 # -------- Remote-GUI --------
 if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
@@ -150,5 +168,5 @@ echo "Generating final docker-compose.yaml..."
 mkdir -p docker-makefiles/docker-compose-files
 OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compose.yaml"
 envsubst < "$COMPOSE_FILE" > "$OUTPUT_FILE"
-rm -f "$COMPOSE_FILE"
+rm -f "$COMPOSE_FILE" docker-compose-template.yaml.bak
 echo "Saved: ${OUTPUT_FILE}"
