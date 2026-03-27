@@ -2,8 +2,7 @@ services:
   ${NODE_NAME}-init:
     image: busybox
     user: root
-    group_add:
-      - ${DOCKER_GID}
+    group_add: ${DOCKER_GID}
     command: [
       "sh", "-c",
       "chown -R 10001:10001 
