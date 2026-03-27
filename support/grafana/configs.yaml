@@ -1,0 +1,19 @@
+GENERAL:
+  IMAGE: grafana/grafana
+  TAG: latest
+  NAME: grafana
+
+NETWORK_CONFIGS:
+  NETWORK_MODE: ports
+  PORTS:
+    - 3000
+
+ENV_VARS:
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: passwd
+  POSTGRES_INITDB_ARGS: "--auth=md5"
+
+VOLUMES:
+  grafana-data: /var/lib/grafana
+  grafana-log: /var/log/grafana
+  grafana-config: /etc/grafana

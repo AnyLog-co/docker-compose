@@ -1,0 +1,25 @@
+GENERAL:
+  IMAGE: anylogco/remote-gui
+  TAG: beta2
+  NAME: remote-gui
+
+NETWORK_CONFIGS:
+  NETWORK_MODE: ports
+  PORTS:
+    - 8080
+    - 31800
+
+ENV_VARS:
+  # NIC type to use for Remote-GUI - if not set, uses 127.0.0.1
+  REMOTE_GUI_NIC: ""
+  # Remote GUI Frontend Port
+  REMOTE_GUI_FE: 31800
+  # Remote GUI Backend Port
+  REMOTE_GUI_BE: 8080
+  # Grafana PATH to reference for Grafana connection
+  GRAFANA_URL: ""
+
+VOLUMES:
+  image-vol: /app/CLI/local-cli-backend/static/
+  usr-mgm-vol: /app/CLI/local-cli/backend/usr-mgm/
+  report-configs: /app/CLI/local-cli-backend/plugins/reportgenerator/templates
