@@ -96,10 +96,6 @@ fi
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
   # comment out group_add
   ${SED_INPLACE} "s/- \${DOCKER_GID}/#- \$MISSING-DOCKER_GID}/g" docker-makefiles/docker-compose-template.yaml
-#  ${SED_INPLACE} "s/- \${DOCKER_GID}/s#- \${DOCKER_GID}#\# - \${MISSING-DOCKER_GID}#" docker-makefiles/docker-compose-template.yaml
-  ${SED_INPLACE} "s/group_add:/# group_add:/g" docker-makefiles/docker-compose-template.yaml
-
-
   # comment out volume if DNE
   ${SED_INPLACE} "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - \${MISSING-DOCKER_SOCKET}#" docker-makefiles/docker-compose-template.yaml
 else
@@ -111,6 +107,19 @@ else
       export DOCKER_GID=$(stat -f '%g' "${DOCKER_SOCKET}")
   fi
 fi
+
+awk '
+/^group_add:/ {in_block=1; next}
+in_block && /^[[:space:]]*-/ {
+    if ($0 !~ /^[[:space:]]*#/) {
+        pass
+    }
+}
+in_block && /^[^[:space:]]/ {exit}
+END {
+    sed
+}
+' docker-makefiles/docker-compose-template.yaml
 
 
 # -------- Remote-GUI --------
