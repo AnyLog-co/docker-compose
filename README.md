@@ -24,7 +24,7 @@ All AnyLog nodes run the same image — the `NODE_TYPE` config determines what s
 
 ### Other deployment types
 - [OVA installation](https://github.com/AnyLog-co/anylog-demo-ova-scripts) - pre-defined virtualmachine image that has AnyLog pre-configured
-- [open-horizon deployment](https://github.com/AnyLog-co/service-anylog) - 
+- [OpenHorizon deployment](https://github.com/AnyLog-co/service-anylog) - deploying AnyLog via OpenHorizon 
 
 --- 
 
