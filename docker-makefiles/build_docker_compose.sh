@@ -48,7 +48,8 @@ COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 
 if [[ "$(uname -s)" != "Linux" ]]; then
-  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
+#  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 fi
 
 [[ -f "$TEMPLATE_COMPOSE_FILE" ]] || die "$TEMPLATE_COMPOSE_FILE not found"
