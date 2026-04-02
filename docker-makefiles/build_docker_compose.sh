@@ -121,7 +121,12 @@ END {
 }
 ' docker-makefiles/docker-compose-template.yaml
 
-
+if [[ "$(uname)" == "Darwin" ]] ; then
+    ${SED_INPLACE} 's|pid: "host"|# pid: "host"|g' docker-compose-template.yaml
+    ${SED_INPLACE} 's|- /proc:/host_proc:ro|# - /proc:/host_proc:ro|g' docker-compose-template.yaml
+    ${SED_INPLACE} 's|- /:/host:ro|# - /:/host:ro|g' docker-compose-template.yaml
+    ${SED_INPLACE} 's|- /sys:/host_sys:ro|# - /sys:/host_sys:ro|g' docker-compose-template.yaml
+fi
 # -------- Remote-GUI --------
 if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   export REMOTE_GUI_NIC=$(grep -m1 '^REMOTE_GUI_NIC=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
