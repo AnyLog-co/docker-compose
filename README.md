@@ -1,279 +1,176 @@
 # Deploying AnyLog
 
-The following provides direction to deploy AnyLog using [_makefile_](Makefile) for Docker-based deployment.
+AnyLog enables real-time visibility and management of distributed edge data across IoT environments — manufacturing,
+utilities, oil & gas, smart cities, and more.
 
-**Requirements**
-* _Docker_
-* _docker-compose_
-* _Makefile_
+- [Documentation](https://github.com/AnyLog-co/documentation/)
+- [Surrounding tools install](support/README.md)
+- [deployment-scripts](https://github.com/AnyLog-co/deployment-scripts) — scripts executed at startup for AnyLog
+
+
+## Node Types
+
+All AnyLog nodes run the same image — the `NODE_TYPE` config determines what services are enabled.
+
+| Node Type                     | Description                                              | Server Port | REST Port | Broker Port (optional) | Config File                                                                       |
+|-------------------------------|----------------------------------------------------------|-------------|-----------|------------------------|-----------------------------------------------------------------------------------|
+| `generic`                     | Sandbox with only network configured                     | 32548       | 32549     | 32550                  | [node_configs.env](docker-makefiles/anylog-generic/node_configs.env)              |
+| `master`                      | Blockchain emulator                                      | 32048       | 32049     | —                      | [node_configs.env](docker-makefiles/anylog-master/node_configs.env)               |
+| `operator`                    | Stores data from edge devices                            | 32148       | 32149     | 32150                  | [node_configs.env](docker-makefiles/anylog-operator/node_configs.env)             |
+| `query`                       | Dedicated query node (`system_query` database enabled)   | 32348       | 32349     | —                      | [node_configs.env](docker-makefiles/anylog-query/node_configs.env)                |
+| `publisher`                   | Distributes data among operator nodes                    | 32248       | 32249     | 32250                  | [node_configs.env](docker-makefiles/anylog-publisher/node_configs.env)            |
+| `master-standalone-operator`  | Master + operator with `system_query` on a single agent  | 32148       | 32149     | 32150                  | [node_configs.env](docker-makefiles/anylog-standalone-operator/node_configs.env)  |
+| `master-standalone-publisher` | Master + publisher with `system_query` on a single agent | 32248       | 32249     | 32250                  | [node_configs.env](docker-makefiles/anylog-standalone-publisher/node_configs.env) |
+
+
+## Other Deployment Types
+
+- [OVA installation](https://github.com/AnyLog-co/anylog-demo-ova-scripts) — pre-defined virtual machine image with AnyLog pre-configured
+- [OpenHorizon deployment](https://github.com/AnyLog-co/service-anylog) — deploying AnyLog via OpenHorizon
+
+---
+
+## Requirements
+
+1. An AnyLog license key and access to the Docker repository — available on our <a href="https://anylog.network/downloads" target="_blank">website</a>.
+2. Docker installed on each machine. Full directions in the <a href="https://docs.docker.com/engine/install/" target="_blank">Docker documentation</a>.
+
 ```shell
-sudo snap install docker
-sudo apt-get -y install docker-compose 
-sudo apt-get -y install make
- 
-# Grant non-root user permissions to use docker
-USER=`whoami` 
-sudo groupadd docker 
-sudo usermod -aG docker ${USER} 
-newgrp docker
+sudo apt-get -y update
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get -y update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin make git
+
+# Allow non-root Docker access
+sudo usermod -aG docker $(whoami) && newgrp docker
 ```
 
-## Prepare for Deployment
-1. Clone _docker-compose_ from AnyLog repository
+
+## Preparing Your Machines
+
+Unless stated otherwise, the following steps should be done on all machines:
+
+1. Make sure nodes and users have satisfied the [requirements](#requirements) above.
+
+2. Clone the docker-compose repository:
 ```shell
 git clone https://github.com/AnyLog-co/docker-compose
 cd docker-compose
 ```
 
-2. Request 3-month License & access to AnyLog Docker Hub [here](https://anylog.co/download-anylog/)
-
-3. Install Database and Grafana - Docker containers found here [here](docker-compose)   
-
-## Deploy AnyLog via Docker 
-1. Update configuration for node  
-   * [master-configs/base_configs.env](docker-makefile/master-configs/base_configs.env) | [master-configs/advance_configs.env](docker-makefile/master-configs/advance_configs.env)
-   * [operator-configs/base_configs.env](docker-makefile/operator-configs/base_configs.env) | [operator-configs/advance_configs.env](docker-makefile/operator-configs/advance_configs.env)
-   * [query-configs/base_configs.env](docker-makefile/query-configs/base_configs.env) | [query-configs/advance_configs.env](docker-makefile/query-configs/advance_configs.env)
-   * [publisher-configs/base_configs.env](docker-makefile/publisher-configs/base_configs.env) | [publisher-configs/advance_configs.env](docker-makefile/publisher-configs/advance_configs.env)
-
-**base_configs.env**
-```dotenv
-#--- General ---
-# AnyLog License Key
-LICENSE_KEY=""
-# Information regarding which AnyLog node configurations to enable. By default, even if everything is disabled, AnyLog starts TCP and REST connection protocols
-NODE_TYPE=generic
-# Name of the AnyLog instance
-NODE_NAME=edgelake-node
-# Owner of the AnyLog instance
-COMPANY_NAME=New Company
-
-#--- Networking ---
-# Port address used by AnyLog's TCP protocol to communicate with other nodes in the network
-ANYLOG_SERVER_PORT=32548
-# Port address used by AnyLog's REST protocol
-ANYLOG_REST_PORT=32549
-# Port value to be used as an MQTT broker, or some other third-party broker
-ANYLOG_BROKER_PORT=""
-# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-TCP_BIND=false
-# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-REST_BIND=false
-# A bool value that determines if to bind to a specific IP and Port (a false value binds to all IPs)
-BROKER_BIND=false
-
-#--- Database ---
-# Physical database type (sqlite or psql)
-DB_TYPE=sqlite
-# Username for SQL database connection
-DB_USER=""
-# Password correlated to database user
-DB_PASSWD=""
-# Database IP address
-DB_IP=127.0.0.1
-# Database port number
-DB_PORT=5432
-# Whether to set autocommit data
-AUTOCOMMIT=false
-
-#--- Blockchain ---
-# TCP connection information for Master Node
-LEDGER_CONN=127.0.0.1:32048
-
-#--- MQTT ---
-# Whether to enable the default MQTT process
-ENABLE_MQTT=false
-
-# IP address of MQTT broker
-MQTT_BROKER=139.144.46.246
-# Port associated with MQTT broker
-MQTT_PORT=1883
-# User associated with MQTT broker
-MQTT_USER=anyloguser
-# Password associated with MQTT user
-MQTT_PASSWD=mqtt4AnyLog!
-# Whether to enable MQTT logging process
-MQTT_LOG=false
-
-# Topic to get data for
-MSG_TOPIC=anylog-demo
-# Logical database name
-MSG_DBMS=new_company
-# Table where to store data
-MSG_TABLE=bring [sourceName]
-# Timestamp column name
-MSG_TIMESTAMP_COLUMN=now
-# Value column name
-MSG_VALUE_COLUMN=bring [readings][][value]
-# Column value type
-MSG_VALUE_COLUMN_TYPE=float
-
-#--- Advanced Settings ---
-# Whether to automatically run a local (or personalized) script at the end of the process
-DEPLOY_LOCAL_SCRIPT=false
-```
-
-**advance_configs.env**:
-```dotenv
-#--- Directories ---
-# AnyLog Root Path
-ANYLOG_PATH=/app
-# !local_scripts: ${ANYLOG_HOME}/deployment-scripts/scripts
-LOCAL_SCRIPTS=/app/deployment-scripts/scripts
-# !test_dir: ${ANYLOG_HOME}/deployment-scripts/tests
-TEST_DIR=/app/deployment-scripts/tests
-
-#--- Networking ---
-# Declare Policy name
-CONFIG_NAME=""
-# Overlay IP address - if set, will replace local IP address when connecting to network
-OVERLAY_IP=""
-# Configurable (local) IP address that can be used when behind a proxy, or using Kubernetes for static IP
-PROXY_IP=""
-# The number of concurrent threads supporting HTTP requests.
-TCP_THREADS=6
-# Timeout in seconds to determine a time interval such that if no response is being returned during the time interval, the system returns timeout error.
-REST_TIMEOUT=30
-# The number of concurrent threads supporting HTTP requests.
-REST_THREADS=6
-# The number of concurrent threads supporting broker requests.
-BROKER_THREADS=6
-
-#--- Database ---
-# Whether to start to start system_query logical database
-SYSTEM_QUERY=false
-# Run system_query using in-memory SQLite. If set to false, will use pre-set database type
-MEMORY=false
-# Physical database type
-NOSQL_TYPE=mongo
-# Username for SQL database connection
-NOSQL_USER=""
-# Password correlated to database user
-NOSQL_PASSWD=""
-# Database IP address
-NOSQL_IP=127.0.0.1
-# Database port number
-NOSQL_PORT=27017
-# Store blobs in database
-BLOBS_DBMS=false
-# Whether (re)store a blob if already exists
-BLOBS_REUSE=true
-
-#--- Blockchain ---
-# How often to sync from blockchain
-SYNC_TIME=30 second
-# Source of where the data is coming from
-BLOCKCHAIN_SOURCE=master
-# Where will the copy of the blockchain be stored
-BLOCKCHAIN_DESTINATION=file
-
-#--- Operator ---
-# Operator ID
-MEMBER=""
-# How many days back to sync between nodes
-START_DATE=30
-# Which tables to partition
-TABLE_NAME=*
-# Which timestamp column to partition by
-PARTITION_COLUMN=insert_timestamp
-# Time period to partition by
-PARTITION_INTERVAL=1 day
-# How many partitions to keep
-PARTITION_KEEP=3
-# How often to check if an old partition should be removed
-PARTITION_SYNC=1 day
-
-#--- Monitoring ---
-# Which node type to send monitoring information to
-MONITOR_NODE=query
-
-#--- Advanced Settings ---
-# Compress JSON and SQL file(s) backup
-COMPRESS_FILE=true
-# Number of parallel queries
-QUERY_POOL=6
-# When data comes in write to database immediately, as opposed to waiting for a full buffer
-WRITE_IMMEDIATE=false
-# If buffer is not full, how long to wait until pushing data through
-THRESHOLD_TIME=60 seconds
-# Buffer size to reach, at which point data is pushed through
-THRESHOLD_VOLUME=10KB
-
-#--- Nebula ---
-# whether to enable Lighthouse
-ENABLE_NEBULA=true
-# whether node is type lighthouse
-IS_LIGHTHOUSE=false
-# Nebula IP address for Lighthouse node
-LIGHTHOUSE_IP=""
-# External physical IP of the node associated with Nebula lighthouse
-LIGHTHOUSE_NODE_IP=""
-```
-
-2. Login to AnyLog's Docker hub 
+3. Log in to Docker Hub — AnyLog is a private image. [Request credentials and a license key](https://www.anylog.network/download).
 ```shell
-make login ANYLOG_TYPE=[DOCKER-PASSWORD]
+make login ANYLOG_TYPE=<docker-passkey>
 ```
 
-3. (Optional) To include Remote-CLI as part of the Query node deployment, uncomment Remote-CLI as part of Remote-CLI service in
-docker compose file. Otherwise, an independent Remote-CLI can be found in [docker-compose](docker-compose/Remote-CLI)
+---
 
-4. Start Node using _makefile_
+## Configuration & Deployment
+
+### Configuration File Organization
+
+For consistency across deployment types, configurations are defined in a single dotenv file broken down into sections.
+
+| Section      | Sub-section     | Content                                                                             |
+|--------------|-----------------|--------------------------------------------------------------------------------------|
+| `.env`       | —               | Docker-level settings: image, init type, deployment repo/branch, Docker socket       |
+| `basic`      | General         | Node type, node name, company name                                                   |
+|              | Networking      | TCP, REST, and broker ports                                                          |
+|              | Database        | DB type (SQLite/PostgreSQL), IP, port, autocommit                                    |
+|              | NoSQL           | Blob storage toggle, backend type, endpoint, port                                    |
+|              | System Query    | `system_query` database toggle and type                                              |
+|              | Blockchain      | Master node connection, sync interval, source, local storage                         |
+|              | Operator        | Cluster name, default logical database                                               |
+|              | Monitoring      | Node, storage, and syslog monitoring toggles                                         |
+| `southbound` | MQTT            | Broker connection, topic, column mappings, logging                                   |
+|              | OPC-UA          | Endpoint URL, root node, pull frequency                                              |
+|              | Video Streaming | Source URL, port, stream name, YOLO detection toggle                                 |
+| `advanced`   | Directories     | Paths for AnyLog root, deployment scripts, test scripts                              |
+|              | General         | Policy visibility, local script execution, geo-location fields                       |
+|              | Networking      | DNS, NIC, overlay IP, bind settings, thread counts, REST timeout                     |
+|              | NoSQL           | Blob dedup, compression, local folder                                                |
+|              | Object Store    | Bucket group, ID, cloud region                                                       |
+|              | Operator (HA)   | Member ID, HA toggle, sync start date, thread count                                  |
+|              | Sub Processes   | File compression, write mode, buffer flush thresholds, query threads                 |
+| `secrets`    | —               | License key, DB credentials, NoSQL credentials, MQTT credentials, object store keys  |
+| `remote-gui` | —               | Enable toggle, image tag, NIC, frontend/backend ports, Grafana URL                   |
+
+
+### Configuration
+
+Since AnyLog is service-based, users can define almost any combination of services and databases on the same instance
+(except starting an operator and publisher service together).
+
+When deploying a node, make sure the following parameters are set correctly:
+
+- `NODE_TYPE` — defines the services enabled at startup based on the configuration file
+- `NODE_NAME` — nodes on the same physical machine must have unique names
+- `COMPANY_NAME` — owner of the AnyLog node / agent
+- `ANYLOG_SERVER_PORT`, `ANYLOG_REST_PORT`, and (optional) `ANYLOG_BROKER_PORT`
+- `LEDGER_CONN` — which blockchain network the node is associated with
+- `CLUSTER_NAME` — required for operator nodes unless HA is enabled; if HA is wanted, set `ENABLE_HA=true`
+- `LICENSE_KEY` — if the license key is already registered on the blockchain, it does not need to be restated in configs
+
+For the `generic` node type, only the networking configurations matter — it acts as a sandbox with no other services
+or databases deployed automatically at startup.
+
+
+### Deployment
+
+1. Complete the steps in [Requirements](#requirements).
+
+2. Bring up a node:
 ```shell
-make up ANYLOG_TYPE=[NODE_TYPE]
+make up ANYLOG_TYPE=<config-dir-in-docker-makefiles>
 ```
 
-### Makefile Commands for Docker
-* help
+3. Manage the running node:
 ```shell
-Usage: make [target] ANYLOG_TYPE=[anylog-type]
-Targets:
-  login       Log into AnyLog's Dockerhub - use ANYLOG_TYPE to set password value
-  build       Pull the docker image
-  up          Start the containers
-  attach      Attach to AnyLog instance
-  exec        Attach to shell interface for container
-  down        Stop and remove the containers
-  logs        View logs of the containers
-  clean       Clean up volumes and network
-  help        Show this help message
-         supported AnyLog types: master, operator, query and publisher
-Sample calls: make up ANYLOG_TYPE=master | make attach ANYLOG_TYPE=master | make clean ANYLOG_TYPE=master
+# Attach to node
+make attach ANYLOG_TYPE=<config-dir-in-docker-makefiles>
+
+# Open a shell inside the container
+make exec ANYLOG_TYPE=<config-dir-in-docker-makefiles>
+
+# View logs
+make logs ANYLOG_TYPE=<config-dir-in-docker-makefiles>
+
+# Follow logs continuously
+make logs-f ANYLOG_TYPE=<config-dir-in-docker-makefiles>
 ```
 
-* Login to AnyLog's Docker Hub 
+
+#### Recommended Deployment Order
+
+1. Set [configs for master](docker-makefiles/anylog-master/node_configs.env).
+
+2. Deploy master:
 ```shell
-make login ANYLOG_TYPE=YOUR_DOCKER_PASSWORD
+make up ANYLOG_TYPE=anylog-master
 ```
 
-* Bring up a _query_ node
+3. Validate master is running — the process table at the bottom of the log confirms all services:
 ```shell
-make up ANYLOG_TYPE=query
+make logs-f ANYLOG_TYPE=anylog-master
+```
+```
+    Process         Status       Details
+    ---------------|------------|-------------------------------------------------------------------------|
+    TCP            |Running     |Listening on: 45.79.74.39:32048, Threads Pool: 6                         |
+    REST           |Running     |Listening on: 45.79.74.39:32049, Threads Pool: 6, Timeout: 20, SSL: False|
+    Blockchain Sync|Running     |Sync every 60 seconds with master using: 45.79.74.39:32048               |
+    Scheduler      |Running     |Schedulers IDs in use: [0 (system)] [1 (user)]                           |
+    Query Pool     |Running     |Threads Pool: 3                                                          |
 ```
 
-* Attach to _query_ node
-```shell
-# to detach: ctrl-d
-make attach ANYLOG_TYPE=query  
-```
-
-* Bring down _query_ node
-```shell
-make down ANYLOG_TYPE=query
-```
-If a _node-type_ is not set, then a generic node would automatically be used    
-
-
-
-## Makefile Commands 
-* `login` - Log into AnyLog's Dockerhub - use ANYLOG_TYPE to set password valuue
-* `build` - pull docker image 
-* `up` - Using _docker-compose_, start a container of AnyLog based on node type
-* `attach` - Attach to an AnyLog docker container based on node type
-* `exec` - Attach to the shell interface of an AnyLog docker container, based on the node type 
-* `log` - check docker container logs based on container type
-* `down` - Stop container based on node type 
-* `clean` - remove everything associated with container (including volume and image) based on node type
- 
-
-
+4. Bring up the remaining nodes, ensuring `LEDGER_CONN` in each config is set to the master node's TCP address
+(in the example above: `45.79.74.39:32048`).
