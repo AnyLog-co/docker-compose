@@ -37,13 +37,18 @@ fi
 # -------- Load Configs --------
 export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+export ENABLE_TPM=$(grep -m1 '^ENABLE_TPM=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export TPM_DIR=$(grep -m1 '^TPM_DIR=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export TPM_PORT=$(grep -m1 '^TPM_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+# Host port for Docker publish; default 8011 maps to TPM_PORT in the container (e.g. 8011:8001).
+export TPM_HOST_PORT=$(grep -m1 '^TPM_HOST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 
 export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export DOCKER_SOCKET=$(grep -m1 '^DOCKER_SOCKET=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-export TPM_DIR=$(grep -m1 '^TPM_DIR=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+
 #export DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
 if stat -c '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
     # GNU stat (Linux)
@@ -82,6 +87,43 @@ if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "${ANYLOG_BROKER_PORT:
   awk -v port="${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}" \
       '/    ports:/ {print; print "      - " port; next}1' \
       "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+fi
+
+# -------- Inject TPM (bind volume + optional host port) --------
+# Templates omit TPM mounts when disabled so empty TPM_DIR does not become ":/path" (Docker: volume name ".").
+if [[ "${ENABLE_TPM}" == "true" ]] && [[ -n "${TPM_DIR:-}" ]]; then
+  TPM_VOL_LINE='      - ${TPM_DIR}:/app/AnyLog-Network/tpm_dir'
+  if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]]; then
+    awk -v tpm="${TPM_VOL_LINE}" '
+/- \$\{NODE_NAME\}-local-scripts:\/app\/deployment-scripts/ {
+  print;
+  print tpm;
+  next;
+}
+1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  else
+    awk -v tpm="${TPM_VOL_LINE}" '
+/- \$\{NODE_NAME\}-local-scripts:\/app\/deployment-scripts/ {
+  print;
+  if (++n == 1) print tpm;
+  next;
+}
+/- \$\{DOCKER_SOCKET\}:\/var\/run\/docker\.sock/ {
+  print;
+  print tpm;
+  next;
+}
+1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  fi
+
+  if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "${TPM_PORT:-}" ]]; then
+    TPM_PUBLISH_HOST="${TPM_HOST_PORT:-8011}"
+    awk -v port="${TPM_PUBLISH_HOST}:${TPM_PORT}" \
+        '/\$\{ANYLOG_REST_PORT\}:\$\{ANYLOG_REST_PORT\}/ {print; print "      - " port; next}1' \
+        "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+  fi
+elif [[ "${ENABLE_TPM}" == "true" ]] && [[ -z "${TPM_DIR:-}" ]]; then
+  echo "Warning: ENABLE_TPM=true but TPM_DIR is empty — skipping TPM volume/port injection" >&2
 fi
 
 # -------- Remote-GUI --------
