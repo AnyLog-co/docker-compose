@@ -151,7 +151,7 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
     fi
   fi
 
-  if [[ !-n "${REMOTE_CONN:-}" ]] && [[ -n ${OVERLAY_IP} ]] ; then
+  if [[ ! -n "${REMOTE_CONN:-}" ]] && [[ -n "${OVERLAY_IP}" ]] ; then
     export REMOTE_CONN="${OVERLAY_IP}:${ANYLOG_REST_PORT}"
   elif [[ ! -n "${REMOTE_CONN:-}" ]] ; then
     export REMOTE_CONN="${REMOTE_GUI_IP}:${ANYLOG_REST_PORT}"

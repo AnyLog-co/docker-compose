@@ -15,6 +15,7 @@ export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&
 	    elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 
 SUPPORT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+export CONTAINER_NAME=$(shell grep -m1 '^container_name: ' "$(SUPPORT_DIR)/$(SERVICE)/docker-compose.yml" | cut -d= -f2- | tr -d '"\r')
 
 all: help
 
@@ -47,6 +48,8 @@ up: ## Start service(s) — use SERVICE=<name> to target one (gui, grafana, psql
 	    $(MAKE) up-psql ; \
 	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
 	    $(MAKE) up-mongo ; \
+	elif [ -d "$(SUPPORT_DIR)/$(SERVICE)" ] ; then \
+	    $(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)/$(SERVICE)/docker-compose.yml up -d ; \
 	else \
 	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
 	    $(MAKE) help; \
@@ -67,6 +70,8 @@ down: ## Stop service(s) — use SERVICE=<name> to target one
 	    $(MAKE) down-psql ; \
 	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
 	    $(MAKE) down-mongo ; \
+	elif [ -d "$(SUPPORT_DIR)/$(SERVICE)" ] ; then \
+	    $(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)/$(SERVICE)/docker-compose.yml down ; \
 	else \
 	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
 	    $(MAKE) help; \
@@ -87,6 +92,8 @@ clean: ## Stop and remove volumes for service(s) — use SERVICE=<name> to targe
 	    $(MAKE) clean-psql ; \
 	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
 	    $(MAKE) clean-mongo ; \
+	elif [ -d "$(SUPPORT_DIR)/$(SERVICE)" ] ; then \
+	    $(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)/$(SERVICE)/docker-compose.yml down -v ; \
 	else \
 	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
 	    $(MAKE) help; \
@@ -107,6 +114,8 @@ clean-all: ## Stop, remove volumes and images for service(s) — use SERVICE=<na
 	    $(MAKE) clean-all-psql ; \
 	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
 	    $(MAKE) clean-all-mongo ; \
+	elif [ -d "$(SUPPORT_DIR)/$(SERVICE)" ] ; then \
+	    $(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)/$(SERVICE)/docker-compose.yml down -v --rmi all ; \
 	else \
 	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
 	    $(MAKE) help; \
@@ -122,6 +131,8 @@ logs: ## Print logs for a specific service (SERVICE=<name> required)
 	    $(MAKE) logs-psql ; \
 	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
 	    $(MAKE) logs-mongo ; \
+	elif [ -d "$(SUPPORT_DIR)/$(SERVICE)" ] ; then \
+	    $(CONTAINER_CMD) logs $(CONTAINER_NAME) ; \
 	else \
 	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
 	    $(MAKE) help; \
@@ -137,11 +148,20 @@ logs-f: ## Follow logs for a specific service (SERVICE=<name> required)
 	    $(MAKE) logs-f-psql ; \
 	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
 	    $(MAKE) logs-f-mongo ; \
+    elif [ -d "$(SUPPORT_DIR)/$(SERVICE)" ] ; then \
+	    $(CONTAINER_CMD) logs -f $(CONTAINER_NAME) ; \
 	else \
 	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
 	    $(MAKE) help; \
 	    exit 1; \
 	fi
+
+attach: ## Attach to CLI for MongoDB or Postgres
+	@if [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
+	    $(MAKE) attach-mongodb ; \
+    elif [ "$(SERVICE)" = "postgres" ] || [ "$(SERVICE)" = "psql" ]; then \
+	    $(MAKE) attach-postgres ; \
+    elif
 
 exec: ## Attach to shell for a specific service (SERVICE=<name> required)
 	@if [ "$(SERVICE)" = "remote-gui" ] || [ "$(SERVICE)" = "gui" ]; then \
@@ -152,6 +172,8 @@ exec: ## Attach to shell for a specific service (SERVICE=<name> required)
 	    $(MAKE) exec-psql ; \
 	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
 	    $(MAKE) exec-mongo ; \
+    elif [ -d "$(SUPPORT_DIR)/$(SERVICE)" ] ; then \
+	    $(CONTAINER_CMD) exec -it $(CONTAINER_NAME) /bin/bash
 	else \
 	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
 	    $(MAKE) help; \
@@ -175,13 +197,13 @@ clean-all-gui:
 	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)remote-gui/docker-compose.yml down -v --rmi all
 logs-gui:
 	@echo "Logs: Remote-GUI"
-	$(CONTAINER_CMD) logs remote-gui
+	$(CONTAINER_CMD) logs $(CONTAINER_NAME)
 logs-f-gui:
 	@echo "Logs (follow): Remote-GUI"
-	$(CONTAINER_CMD) logs -f remote-gui
+	$(CONTAINER_CMD) logs -f $(CONTAINER_NAME)
 exec-gui:
 	@echo "Exec into: Remote-GUI"
-	$(CONTAINER_CMD) exec -it remote-gui /bin/bash
+	$(CONTAINER_CMD) exec -it $(CONTAINER_NAME) /bin/bash
 
 #----------------------------------------------------------------------
 # Grafana (dashboard)
@@ -200,13 +222,13 @@ clean-all-dashboard:
 	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)grafana/docker-compose.yml down -v --rmi all
 logs-dashboard:
 	@echo "Logs: Grafana"
-	$(CONTAINER_CMD) logs grafana
+	$(CONTAINER_CMD) logs $(CONTAINER_NAME)
 logs-f-dashboard:
 	@echo "Logs (follow): Grafana"
-	$(CONTAINER_CMD) logs -f grafana
+	$(CONTAINER_CMD) logs -f $(CONTAINER_NAME)
 exec-dashboard:
 	@echo "Exec into: Grafana"
-	$(CONTAINER_CMD) exec -it grafana /bin/bash
+	$(CONTAINER_CMD) exec -it $(CONTAINER_NAME) /bin/bash
 
 #----------------------------------------------------------------------
 # Postgres
@@ -225,13 +247,17 @@ clean-all-psql:
 	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)postgres/docker-compose.yml down -v --rmi all
 logs-psql:
 	@echo "Logs: Postgres"
-	$(CONTAINER_CMD) logs postgres
+	$(CONTAINER_CMD) logs $(CONTAINER_NAME)
 logs-f-psql:
 	@echo "Logs (follow): Postgres"
-	$(CONTAINER_CMD) logs -f postgres
+	$(CONTAINER_CMD) logs -f $(CONTAINER_NAME)
+attach-psql: ## attach to postgres CLI with your user (requires password)
+	@echo "Attach to psql CLI"
+    PSQL_USER=$$(grep -m1 'POSTGRES_USER:' "$(SUPPORT_DIR)/$(SERVICE)/docker-compose.yml" | awk '{print $$2}' | tr -d '"\r') ; \
+    $(CONTAINER_CMD) exec -it $(CONTAINER_NAME) psql -U $(PSQL_USER)
 exec-psql:
 	@echo "Exec into: Postgres"
-	$(CONTAINER_CMD) exec -it postgres psql -U postgres
+	$(CONTAINER_CMD) exec -it $(CONTAINER_NAME) /bin/bash
 
 #----------------------------------------------------------------------
 # MongoDB
@@ -250,13 +276,21 @@ clean-all-mongo:
 	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)mongodb/docker-compose.yml down -v --rmi all
 logs-mongo:
 	@echo "Logs: MongoDB"
-	$(CONTAINER_CMD) logs mongodb
+	$(CONTAINER_CMD) logs $(CONTAINER_NAME)
 logs-f-mongo:
 	@echo "Logs (follow): MongoDB"
-	$(CONTAINER_CMD) logs -f mongodb
+	$(CONTAINER_CMD) logs -f $(CONTAINER_NAME)
 exec-mongo:
 	@echo "Exec into: MongoDB"
-	$(CONTAINER_CMD) exec -it mongodb mongosh
+	$(CONTAINER_CMD) exec -it $(CONTAINER_NAME) mongosh
+
+attach-mongo: ## attach to MongoDB CLI with your user (requires password)
+	@echo "Attach to psql CLI"
+    $(CONTAINER_CMD) exec -it $(CONTAINER_NAME) mongosh
+exec-psql:
+	@echo "Exec into: Postgres"
+	$(CONTAINER_CMD) exec -it $(CONTAINER_NAME) /bin/bash
+
 
 #----------------------------------------------------------------------
 # Help
