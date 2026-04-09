@@ -156,6 +156,12 @@ if has_env_key "REMOTE_GUI_NIC"; then
   VITE_API_URL="http://${REMOTE_GUI_IP}:${REMOTE_GUI_BE}"
 fi
 
+# ── Resolve REST_CONN ────────────────────────────────────
+if ! has_env_key "REMOTE_CONN"; then
+    echo "test"
+    REMOTE_CONN="${REMOTE_GUI_IP}:32349"
+fi
+
 # ── Collect sections ──────────────────────────────────────────────────────────
 mapfile -t PORTS     < <(get_list_under "NETWORK_CONFIGS" "PORTS")
 mapfile -t ENV_LINES < <(get_env_vars)
