@@ -217,6 +217,9 @@ mapfile -t VOL_LINES < <(get_volumes)
       echo "      - ${line}"
     done
     [[ -n "$VITE_API_URL" ]]  && echo "      - VITE_API_URL=${VITE_API_URL}"
+    if [[ "${IMAGE}" =~ "grafana" ]] ; then
+      echo "      - GF_SERVER_HTTP_PORT=${PORTS[@]}"
+    fi
   fi
 
   # Volumes (service mounts)
