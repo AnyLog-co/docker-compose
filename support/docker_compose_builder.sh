@@ -135,8 +135,10 @@ SERVICE_NAME="${NAME:-$(basename "$IMAGE" | tr '[:upper:]' '[:lower:]' | tr -cs 
 # VITE_API_URL is only emitted if REMOTE_GUI_NIC key exists in ENV_VARS.
 
 REMOTE_GUI_BE=$(get_section_value "ENV_VARS" "REMOTE_GUI_BE" 2>/dev/null || true)
-
 VITE_API_URL=""
+REMOTE_CONN=$(get_section_value "ENV_VARS" "REMOTE_CONN" 2>/dev/null || true)
+
+
 if has_env_key "REMOTE_GUI_NIC"; then
   REMOTE_GUI_NIC=$(get_section_value "ENV_VARS" "REMOTE_GUI_NIC" 2>/dev/null || true)
   REMOTE_GUI_NIC="${REMOTE_GUI_NIC//\"/}"; REMOTE_GUI_NIC="${REMOTE_GUI_NIC//\'/}"
@@ -157,10 +159,14 @@ if has_env_key "REMOTE_GUI_NIC"; then
 fi
 
 # ── Resolve REST_CONN ────────────────────────────────────
-if ! has_env_key "REMOTE_CONN"; then
-    echo "test"
-    REMOTE_CONN="${REMOTE_GUI_IP}:32349"
+# REPLACE the broken block with:
+if [[ -z "${REMOTE_CONN}" ]]; then
+   echo "WARNING: REMOTE_CONN not set — Remote-GUI will start but cannot connect to any AnyLog node." >&2
+   echo "         Set REMOTE_CONN: <ip>:<rest_port> in your config's ENV_VARS section." >&2
+#  _fallback_ip="${REMOTE_GUI_IP:-127.0.0.1}"
+#  REMOTE_CONN="${_fallback_ip}:32349"   # ← see port note below
 fi
+
 
 # ── Collect sections ──────────────────────────────────────────────────────────
 mapfile -t PORTS     < <(get_list_under "NETWORK_CONFIGS" "PORTS")
@@ -205,7 +211,8 @@ mapfile -t VOL_LINES < <(get_volumes)
       [[ -z "$line" ]] && continue
       echo "      - ${line}"
     done
-    [[ -n "$VITE_API_URL" ]] && echo "      - VITE_API_URL=${VITE_API_URL}"
+    [[ -n "$VITE_API_URL" ]]  && echo "      - VITE_API_URL=${VITE_API_URL}"
+    echo "      - REMOTE_CONN=${REMOTE_CONN}""
   fi
 
   # Volumes (service mounts)
