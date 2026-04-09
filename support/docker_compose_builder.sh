@@ -187,6 +187,11 @@ mapfile -t VOL_LINES < <(get_volumes)
   case "${NETWORK_MODE,,}" in
     host)
       echo "    network_mode: host"
+      if [[ "${IMAGE}" =~ "postgres" ]] ; then
+        echo "    command: postgres -p ${PORTS[@]:-5432}"
+      elif [[ "${IMAGE}" =~ "mongo" ]] ; then
+        echo "    command: mongod --port ${PORTS[@]:27017}"
+      fi
       ;;
     ports)
       if [[ ${#PORTS[@]} -gt 0 ]]; then
