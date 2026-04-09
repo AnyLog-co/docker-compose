@@ -134,6 +134,8 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   export REMOTE_GUI_BE=$(grep -m1 '^REMOTE_GUI_BE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export REMOTE_GUI_TAG=$(grep -m1 '^REMOTE_GUI_TAG=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export REMOTE_CONN=$(grep -m1 '^REMOTE_CONN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export OVERLAY_IP=$(grpe -m1 '^OVERLAY_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
   REMOTE_GUI_FE="${REMOTE_GUI_FE:-31800}"
   REMOTE_GUI_BE="${REMOTE_GUI_BE:-8080}"
@@ -147,6 +149,12 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
     elif command -v ifconfig >/dev/null 2>&1; then
       REMOTE_GUI_IP=$(ifconfig "${REMOTE_GUI_NIC}" | awk '/inet /{print $2}')
     fi
+  fi
+
+  if [[ !-n "${REMOTE_CONN:-}" ]] && [[ -n ${OVERLAY_IP} ]] ; then
+    export REMOTE_CONN="${OVERLAY_IP}:${ANYLOG_REST_PORT}"
+  elif [[ ! -n "${REMOTE_CONN:-}" ]] ; then
+    export REMOTE_CONN="${REMOTE_GUI_IP}:${ANYLOG_REST_PORT}"
   fi
 
   # Add named volumes
@@ -164,7 +172,8 @@ END {
       -v grafana="${GRAFANA_URL:-}" \
       -v fe_port="$REMOTE_GUI_FE" \
       -v be_port="$REMOTE_GUI_BE" \
-      -v tag="$REMOTE_GUI_TAG" '
+      -v tag="$REMOTE_GUI_TAG" \
+      -v remote_conn="${REMOTE_CONN}" '
 /services:/ {
   print;
   print "  remote-gui:";
@@ -180,6 +189,7 @@ END {
   print "      - VITE_API_URL=http://" remote_ip ":" be_port;
   print "      - REMOTE_GUI_FE=" fe_port;
   print "      - REMOTE_GUI_BE=" be_port;
+  print "      - REMOTE_CONN=" remote_conn;
   if (grafana != "") print "      - GRAFANA_URL=" grafana;
   print "    volumes:";
   print "      - image-vol:/app/CLI/local-cli-backend/static/";
