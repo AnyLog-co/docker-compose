@@ -160,7 +160,7 @@ fi
 
 # ── Resolve REST_CONN ────────────────────────────────────
 # REPLACE the broken block with:
-if [[ -z "${REMOTE_CONN}" ]]; then
+if [[ -n "${REMOTE_CONN}" ]]; then
    echo "WARNING: REMOTE_CONN not set — Remote-GUI will start but cannot connect to any AnyLog node." >&2
    echo "         Set REMOTE_CONN: <ip>:<rest_port> in your config's ENV_VARS section." >&2
 #  _fallback_ip="${REMOTE_GUI_IP:-127.0.0.1}"
@@ -212,7 +212,6 @@ mapfile -t VOL_LINES < <(get_volumes)
       echo "      - ${line}"
     done
     [[ -n "$VITE_API_URL" ]]  && echo "      - VITE_API_URL=${VITE_API_URL}"
-    echo "      - REMOTE_CONN=${REMOTE_CONN}""
   fi
 
   # Volumes (service mounts)
