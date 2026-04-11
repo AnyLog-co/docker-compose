@@ -1,27 +1,27 @@
 services:
-#  ${NODE_NAME}-init:
-#    image: busybox
-#    user: root
-#    group_add:
-#      - ${DOCKER_GID}
-#    restart: "no"
-#    command: [
-#      "sh", "-c",
-#      "chown -R 10001:10001
-#        /app/AnyLog-Network/anylog
-#        /app/AnyLog-Network/blockchain
-#        /app/AnyLog-Network/data
-#        /app/deployment-scripts
-#      "
-#    ]
-#    volumes:
-#      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
-#      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
-#      - ${NODE_NAME}-data:/app/AnyLog-Network/data
-#      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
+  ${NODE_NAME}-init:
+    image: busybox
+    user: root
+    group_add:
+      - ${DOCKER_GID}
+    restart: "no"
+    command: [
+      "sh", "-c",
+      "chown -R 10001:10001
+        /app/AnyLog-Network/anylog
+        /app/AnyLog-Network/blockchain
+        /app/AnyLog-Network/data
+        /app/deployment-scripts
+      "
+    ]
+    volumes:
+      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
+      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
+      - ${NODE_NAME}-data:/app/AnyLog-Network/data
+      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
-#    user: "anylog:anylog"
+    user: "anylog:anylog"
     pid: "host"
     group_add:
       - ${DOCKER_GID}
@@ -32,9 +32,9 @@ services:
     stdin_open: true
     tty: true
     network_mode: host
-#    depends_on:
-#      ${NODE_NAME}-init:
-#        condition: service_completed_successfully
+    depends_on:
+      ${NODE_NAME}-init:
+        condition: service_completed_successfully
     volumes:
       - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
