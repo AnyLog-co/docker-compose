@@ -1,6 +1,6 @@
 GENERAL:
   IMAGE: anylogco/remote-gui
-  TAG: beta2
+  TAG: pranav-a55bd8-amd64
   NAME: remote-gui
 
 NETWORK_CONFIGS:
