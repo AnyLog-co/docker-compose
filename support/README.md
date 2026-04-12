@@ -125,12 +125,12 @@ VOLUMES:
 
 ### Remote-GUI
 
-| Field | Value |
-|---|---|
-| Image | `anylogco/remote-gui:beta2` |
-| Ports | `8080` (backend), `31800` (frontend) |
+| Field | Value                                                             |
+|---|-------------------------------------------------------------------|
+| Image | `anylogco/remote-gui:1.0.0`                                       |
+| Ports | `8080` (backend), `31800` (frontend)                              |
 | Key env vars | `REMOTE_GUI_FE`, `REMOTE_GUI_BE`, `GRAFANA_URL`, `REMOTE_GUI_NIC` |
-| Volumes | `image-vol`, `usr-mgm-vol`, `report-configs` |
+| Volumes | `image-vol`, `usr-mgm-vol`, `report-configs`                      |
 
 ### Grafana
 

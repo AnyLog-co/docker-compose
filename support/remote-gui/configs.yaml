@@ -1,6 +1,6 @@
 GENERAL:
   IMAGE: anylogco/remote-gui
-  TAG: pranav-a55bd8-amd64
+  TAG: 1.0.0
   NAME: remote-gui
 
 NETWORK_CONFIGS:
