@@ -35,9 +35,8 @@ Tooling to configure, generate, and manage the Docker/Podman containers that run
 - [Makefile Reference](#makefile-reference)
   - [Targets](#targets)
   - [Service Aliases](#service-aliases)
-  - [Docker Compose Builder Logic](#docker-compose-builder-logic)
+  - [Custom Instances](#custom-instances)
   - [Example Commands](#example-commands)
-- [Requirements](#requirements)
 
 ---
 
@@ -52,36 +51,45 @@ support/
 ├── Nebula.md                     # Nebula overlay network setup guide
 ├── docker_compose_builder.sh     # Generates docker-compose.yml from configs.yaml
 ├── grafana/
-│   └── configs.yaml
+│   ├── configs.yaml
+│   └── docker-compose.yml        # generated — do not edit by hand
 ├── mongodb/
-│   └── configs.yaml
+│   ├── configs.yaml
+│   └── docker-compose.yml
 ├── ollama/
 │   ├── configs.yaml
 │   ├── docker-compose.yaml
 │   ├── docker-compose-gpu.yaml
 │   └── ollama-configs.png
 ├── postgres/
-│   └── configs.yaml
+│   ├── configs.yaml
+│   └── docker-compose.yml
 └── remote-gui/
-    └── configs.yaml
+    ├── configs.yaml
+    └── docker-compose.yml
 ```
 
+Each `docker-compose.yml` is auto-generated from its sibling `configs.yaml` — either explicitly via `make dry-run` or automatically on the first `make up` for that service.
+
 > **Note:** Ollama, Nebula and Video Inference Models are standalone services and are **not** managed by the `Makefile`.
-> See [Ollama.md](Ollama.md), [Nebula](Nebula.md) and [Video-Inferences.md](Video-Inferences.md) for their dedicated setup guides.
+> See [Ollama.md](Ollama.md), [Nebula.md](Nebula.md) and [Video-Inferences.md](Video-Inferences.md) for their dedicated setup guides.
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Generate all docker-compose files from configs
-make docker-builder
+# 1. (Optional) Pre-generate all docker-compose files
+make dry-run
 
-# 2. Start all services
+# 2. Start all default services (generates compose files on-demand if missing)
 make up
 
 # 3. Start a specific service
-make up SERVICE=gui
+make up SERVICE=grafana
+
+# 4. List all services the Makefile can see
+make list
 ```
 
 ---
@@ -187,37 +195,6 @@ Nebula creates an encrypted peer-to-peer mesh across physically separated machin
 
 ---
 
-## Makefile Reference
-
-The Makefile auto-detects `docker`/`podman` and `docker-compose`/`podman-compose`.
-
-### Targets
-
-| Target | Description |
-|---|---|
-| `docker-builder` | Generate `docker-compose.yml` for all (or one) service |
-| `up` | Start service(s) |
-| `down` | Stop service(s) |
-| `clean` | Stop and remove volumes |
-| `clean-all` | Stop, remove volumes and image |
-| `logs` | Print container logs |
-| `logs-f` | Follow container logs |
-| `exec` | Attach to container shell |
-
-Pass `SERVICE=<alias>` to target a single service. Omit it to act on all four.
-
-### Service Aliases
-
-| Service | Accepted aliases |
-|---|---|
-| Remote-GUI | `remote-gui`, `gui` |
-| Grafana | `grafana` |
-| PostgreSQL | `postgres`, `psql` |
-| MongoDB | `mongodb`, `mongo` |
-
-### Docker Compose Builder Logic
-```
-
 ## `docker_compose_builder.sh`
 
 Reads a `configs.yaml` and writes a `docker-compose.yml` next to it.
@@ -239,29 +216,90 @@ stdin_open: true
 tty: true
 ```
 
+### Port Conflict Detection
+
+Before writing the compose file, the builder checks whether any port in `NETWORK_CONFIGS.PORTS` is already in use, adapting the check to the network mode:
+
+| `NETWORK_MODE` | How ports are bound | Check method |
+|---|---|---|
+| `ports` | Docker proxy | `docker ps --format '{{.Ports}}'` |
+| `host` | Host OS directly | `ss -tlnp` (falls back to `lsof`) |
+
+If a conflict is found, the builder prints which container or process holds the port and exits non-zero — the compose file is not written.
+
+---
+
+## Makefile Reference
+
+The Makefile auto-detects `docker`/`podman` and `docker-compose`/`podman-compose`.
+
+Any subdirectory containing a `configs.yaml` is automatically recognised as a service — no edits to the Makefile are needed to add new instances.
+
+### Targets
+
+| Target | Description |
+|---|---|
+| `dry-run` | Generate `docker-compose.yml` for all discovered services (or `SERVICE=one`) |
+| `up` | Start service(s); generates compose file on-demand if missing |
+| `down` | Stop service(s) |
+| `clean` | Stop and remove volumes |
+| `clean-all` | Stop, remove volumes and image |
+| `logs` | Print container logs (`SERVICE=` required) |
+| `logs-f` | Follow container logs (`SERVICE=` required) |
+| `exec` | Attach to container shell/client (`SERVICE=` required) |
+| `list` | Print default and all auto-discovered services |
+
+Omit `SERVICE` to act on all four default services (`remote-gui`, `grafana`, `postgres`, `mongodb`).
+
+### Service Aliases
+
+| Service | Accepted values for `SERVICE=` |
+|---|---|
+| Remote-GUI | `remote-gui`, `gui` |
+| Grafana | `grafana` |
+| PostgreSQL | `postgres`, `psql` |
+| MongoDB | `mongodb`, `mongo` |
+
+### Custom Instances
+
+To run a second PostgreSQL or MongoDB instance (e.g. for a different AnyLog node), create a new directory with a `configs.yaml` — no Makefile changes required:
+
+```bash
+cp -r postgres/ postgres-prod/
+# edit postgres-prod/configs.yaml (change NAME, port, volumes as needed)
+
+make up   SERVICE=postgres-prod
+make logs SERVICE=postgres-prod
+make exec SERVICE=postgres-prod    # drops into psql automatically
+```
+
+`make list` shows every directory the Makefile has discovered.
 
 ### Example Commands
 
 ```bash
-# Generate
-make docker-builder                        # all services
-make docker-builder SERVICE=remote-gui     # one service
+# Generate compose files
+make dry-run                           # all discovered services
+make dry-run SERVICE=remote-gui        # one service
 
 # Lifecycle
-make up                                    # start all
+make up                                # start all 4 defaults
 make up        SERVICE=gui
+make up        SERVICE=postgres-prod   # custom instance
 make down      SERVICE=grafana
 make clean     SERVICE=mongo
 make clean-all SERVICE=psql
 
 # Logs
-make logs   SERVICE=gui                    # print and exit
-make logs-f SERVICE=mongo                  # follow
+make logs   SERVICE=gui                # print and exit
+make logs-f SERVICE=mongo              # follow
 
-# Shell access
-make exec SERVICE=gui                      # /bin/bash
-make exec SERVICE=psql                     # psql -U postgres
-make exec SERVICE=mongo                    # mongosh
+# Shell / client access
+make exec SERVICE=gui                  # /bin/bash
+make exec SERVICE=psql                 # psql -U postgres
+make exec SERVICE=mongo                # mongosh
+make exec SERVICE=postgres-prod        # psql -U postgres (matches postgres* pattern)
+
+# Discovery
+make list                              # show default + all discovered services
 ```
-
-
