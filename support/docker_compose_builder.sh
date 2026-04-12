@@ -4,7 +4,7 @@
 #   config_file  defaults to configs.yaml
 #   output_file  defaults to docker-compose.yml
 
-set -euo pipefail
+#set -euo pipefail
 
 CONFIG_FILE="${1:-configs.yaml}"
 OUTPUT_FILE="${2:-docker-compose.yml}"
@@ -172,6 +172,39 @@ fi
 mapfile -t PORTS     < <(get_list_under "NETWORK_CONFIGS" "PORTS")
 mapfile -t ENV_LINES < <(get_env_vars)
 mapfile -t VOL_LINES < <(get_volumes)
+
+# ── Port-conflict check (skipped in host-network mode) ───────────────────────
+# ── Port-conflict check ───────────────────────────────────────────────────────
+if [[ "${NETWORK_MODE,,}" == "ports" && ${#PORTS[@]} -gt 0 ]]; then
+  # Mapped ports: check Docker's port bindings
+  conflict=0
+  for port in "${PORTS[@]}"; do
+    host_port="${port%%:*}"
+    if docker ps --format '{{.Ports}}' 2>/dev/null \
+        | grep -qE "(^|,| )[0-9.]*:${host_port}->"; then
+      echo "ERROR: Port ${host_port} already bound by a running container:" >&2
+      docker ps --format '  {{.Names}}  {{.Ports}}' \
+        | grep -E "[0-9.]*:${host_port}->" >&2
+      conflict=1
+    fi
+  done
+  [[ $conflict -eq 0 ]] || exit 1
+
+elif [[ "${NETWORK_MODE,,}" == "host" && ${#PORTS[@]} -gt 0 ]]; then
+  # Host-network mode: Docker owns no ports, so check the OS directly
+  conflict=0
+  for port in "${PORTS[@]}"; do
+    host_port="${port%%:*}"
+    if ss -tlnp 2>/dev/null | awk '{print $4}' | grep -qE ":${host_port}$"; then
+      echo "ERROR: Port ${host_port} already in use on the host:" >&2
+      ss -tlnp | awk '{print $4, $6}' | grep -E ":${host_port} " >&2
+      conflict=1
+    fi
+  done
+  [[ $conflict -eq 0 ]] || exit 1
+fi
+
+
 
 # ── Write docker-compose.yml ──────────────────────────────────────────────────
 {
