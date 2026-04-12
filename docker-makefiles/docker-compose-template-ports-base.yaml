@@ -23,6 +23,7 @@ services:
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
     user: "anylog:anylog"
+    pid: "host"
     group_add:
       - ${DOCKER_GID}
     platform: ${DOCKER_PLATFORM}
@@ -40,6 +41,9 @@ services:
       - ${NODE_NAME}-data:/app/AnyLog-Network/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
       - ${DOCKER_SOCKET}:/var/run/docker.sock
+      - /proc:/host_proc:ro
+      - /:/host:ro
+      - /sys:/host_sys:ro  # optional, useful for cgroup/disk info
 volumes:
   ${NODE_NAME}-anylog:
   ${NODE_NAME}-blockchain:

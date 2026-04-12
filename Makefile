@@ -3,8 +3,10 @@ $(info LOADING MAKEFILE)
 
 # Default values
 export IS_MANUAL ?= false
-export ANYLOG_TYPE ?=
+export ANYLOG_TYPE ?= anylog-generic
 export TAG ?= pre-develop
+export TEST_CONN       ?=
+
 export IMAGE ?= anylogco/anylog-network
 
 # Detect OS type
@@ -49,6 +51,22 @@ export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&
 	    elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 export DOCKER_COMPOSE_FILE := docker-makefiles/docker-compose-files/$(ANYLOG_TYPE)-docker-compose.yaml 
 
+ifeq ($(strip $(TEST_CONN)), )
+    ANYLOG_REST_PORT    = $(shell grep -m1 '^ANYLOG_REST_PORT=' "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
+    NODE_IP          = $(or 127.0.0.1,$(shell $(CONTAINER_CMD) inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(NODE_NAME) 2>/dev/null | grep -v '^$$'),127.0.0.1)
+    export TEST_CONN    := "$(NODE_IP):$(ANYLOG_REST_PORT)"
+endif
+
+# -----------------
+# Prep for Testing
+# -----------------
+ifeq ($(strip $(TEST_CONN)), )
+    ANYLOG_REST_PORT    = $(shell grep -m1 '^ANYLOG_REST_PORT=' "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
+    NODE_IP          = $(or 127.0.0.1,$(shell $(CONTAINER_CMD) inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(NODE_NAME) 2>/dev/null | grep -v '^$$'),127.0.0.1)
+    export TEST_CONN    := "$(NODE_IP):$(ANYLOG_REST_PORT)"
+endif
+
+#====== prep configs =======
 all: help
 
 check-configs:
@@ -61,15 +79,18 @@ check-configs:
 		exit 1; \
 	fi
 	@echo $(IMAGE)
+
 login: ## log into docker hub for AnyLog
 	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
+
 pull: check-configs ## pull image from docker hub
 	$(CONTAINER_CMD) pull docker.io/$(IMAGE):$(TAG)
 
+# ====== Docker Compose =====
 dry-run: check-configs ## generate docker-compose.yaml
 	@echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
-	bash  docker-makefiles/prep_configs.sh $(ANYLOG_TYPE)
-	bash  docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG)
+	bash docker-makefiles/prep_configs.sh $(ANYLOG_TYPE)
+	bash docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG)
 
 up: dry-run ## start AnyLog instance
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
@@ -100,6 +121,38 @@ attach: check-configs ## attach to container
 exec: check-configs ## attach to bash shell
 	$(CONTAINER_CMD) exec -it $(NODE_NAME) /bin/bash
 
+#========= testing =========
+full-test: test-status test-node test-network ## Execute a full "test suite" validating AnyLog is active and communicating
+
+test-status:  ## execute `get status` against AnyLog node
+	@echo "Check Status: $(TEST_CONN)"
+	@curl -X POST http://$(TEST_CONN) \
+        -H "Content-Type: application/json" \
+        -d '{"command": "get status where format=json", "User-Agent": "AnyLog/1.23"}' \
+        -w "\n\n"
+
+test-node:  ## execute `test node` against AnyLog node
+	@echo "Test node: $(TEST_CONN)"
+	@curl -X POST http://$(TEST_CONN) \
+        -H "Content-Type: application/json" \
+        -d '{"command": "test node", "User-Agent": "AnyLog/1.23"}' \
+        -w "\n\n"
+
+test-network:  ## execute `test network` against AnyLog node
+	@echo "Test Network: $(TEST_CONN)"
+	@curl -X POST http://$(TEST_CONN) \
+        -H "Content-Type: application/json" \
+        -d '{"command": "test network", "User-Agent": "AnyLog/1.23"}' \
+        -w "\n\n"
+
+check-processes: ## execute `get processes` against AnyLog node
+	@echo "View Active / Inactive Services for: $(TEST_CONN)"
+	@curl -X POST http://$(TEST_CONN) \
+        -H "Content-Type: application/json" \
+        -d '{"command": "get processes", "User-Agent": "AnyLog/1.23"}' \
+        -w "\n\n"
+
+#========= validate & help =========
 check-vars: ## Show all environment variables
 	@echo "IS_MANUAL             Default: false              Value: $(IS_MANUAL)"
 	@echo "ANYLOG_TYPE           Default: generic            Value: $(ANYLOG_TYPE)"
