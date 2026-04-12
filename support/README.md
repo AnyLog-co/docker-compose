@@ -295,10 +295,14 @@ make logs   SERVICE=gui                # print and exit
 make logs-f SERVICE=mongo              # follow
 
 # Shell / client access
+make attach SERVICE=psql               # psql -U postgres
+make attach SERVICE=mongo              # mongosh
+make attach SERVICE=postgres-prod      # psql -U postgres (matches postgres* pattern)
+
 make exec SERVICE=gui                  # /bin/bash
-make exec SERVICE=psql                 # psql -U postgres
-make exec SERVICE=mongo                # mongosh
-make exec SERVICE=postgres-prod        # psql -U postgres (matches postgres* pattern)
+make exec SERVICE=psql                 # psql -U postgres  ← remove this
+make exec SERVICE=mongo                # mongosh           ← remove this
+make exec SERVICE=postgres-prod        # psql -U postgres  ← remove this
 
 # Discovery
 make list                              # show default + all discovered services

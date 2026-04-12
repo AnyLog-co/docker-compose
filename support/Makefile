@@ -123,14 +123,17 @@ _logs-f: _validate
 
 # Exec into service — uses the right client per service type:
 #   postgres* -> psql   |   mongo* -> mongosh   |   everything else -> bash
-_exec: _validate
-	@if echo "$(SVC)" | grep -q "^postgres"; then \
+_attach: _validate
+    @if echo "$(SVC)" | grep -q "^postgres"; then \
 	    $(CONTAINER_CMD) exec -it $(SVC) psql -U postgres; \
-	elif echo "$(SVC)" | grep -q "^mongo"; then \
+    elif echo "$(SVC)" | grep -q "^mongo"; then \
 	    $(CONTAINER_CMD) exec -it $(SVC) mongosh; \
 	else \
-	    $(CONTAINER_CMD) exec -it $(SVC) /bin/bash; \
-	fi
+	    echo "Unsupported attach option to service $(SERVICE)"; \
+    fi
+
+_exec: _validate
+    $(CONTAINER_CMD) exec -it $(SVC) /bin/bash
 
 # ======================================================================
 # Public targets — iterate defaults or delegate to _<op> SVC=...
@@ -188,7 +191,13 @@ logs-f: ## Follow logs — SERVICE=<dir> required  (e.g. SERVICE=postgres-prod)
 	fi
 	@$(MAKE) -s _logs-f SVC=$(_SVC)
 
-exec: ## Attach shell/client to container — SERVICE=<dir> required
+attach: ## Attach the native client (psql / mongosh) — SERVICE=<dir> required
+	@if [ "$(_SVC)" = "" ]; then \
+	    echo "ERROR: SERVICE is required.  Example: make attach SERVICE=postgres"; exit 1; \
+	fi
+	@$(MAKE) -s _attach SVC=$(_SVC)
+
+exec: ## Open a bash shell in the container — SERVICE=<dir> required
 	@if [ "$(_SVC)" = "" ]; then \
 	    echo "ERROR: SERVICE is required.  Example: make exec SERVICE=mongodb"; exit 1; \
 	fi
@@ -220,6 +229,6 @@ help: ## Show this help message
 	@echo ""
 
 .PHONY: all dry-run list help \
-        up down clean clean-all logs logs-f exec \
+        up down clean clean-all logs logs-f attach exec \
         _validate _ensure-compose \
-        _up _down _clean _clean-all _logs _logs-f _exec
+        _up _down _clean _clean-all _logs _logs-f _attach _exec
