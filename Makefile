@@ -3,8 +3,10 @@ $(info LOADING MAKEFILE)
 
 # Default values
 export IS_MANUAL ?= false
-export ANYLOG_TYPE ?= 
-export TAG ?= 1.4.2603-beta1
+export ANYLOG_TYPE ?= anylog-generic
+export TAG ?= pre-develop
+export TEST_CONN       ?=
+
 export IMAGE ?= anylogco/anylog-network
 
 # Detect OS type
@@ -24,20 +26,47 @@ endif
 # -------------------
 # Defaults in Make
 # -------------------
-# If not manual and ANYLOG_TYPE is set, read IMAGE and NODE_NAME from .env
 ifeq ($(IS_MANUAL),false)
-    ifneq ($(strip $(ANYLOG_TYPE)),)
-        export IMAGE ?= $(shell grep -m1 '^IMAGE=' "docker-makefiles/$(ANYLOG_TYPE)/.env" | cut -d= -f2- | tr -d '"\r')
-        export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "docker-makefiles/$(ANYLOG_TYPE)/base_configs.env" | cut -d= -f2- | tr -d '"\r')
-    endif
-endif
+  ifneq ($(strip $(ANYLOG_TYPE)),)
+    # Determine config file paths based on multi vs single file layout
+    _ENV_FILE   := docker-makefiles/$(ANYLOG_TYPE)/.env
+    _SINGLE_FILE := docker-makefiles/$(ANYLOG_TYPE)/node_configs.env
 
+    ifneq ($(wildcard $(_ENV_FILE)),)
+      # Multi-file layout
+      export IMAGE     ?= $(shell grep -m1 '^IMAGE='     "$(_ENV_FILE)"  | cut -d= -f2- | tr -d '"\r')
+      export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "$(_BASE_FILE)" | cut -d= -f2- | tr -d '"\r')
+    else ifneq ($(wildcard $(_SINGLE_FILE)),)
+      # Single-file layout
+      export IMAGE     ?= $(shell grep -m1 '^IMAGE='     "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
+      export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
+    else
+      $(error Missing configuration file(s) for $(ANYLOG_TYPE))
+    endif
+  endif
+endif
 
 export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; else echo "docker"; fi)
 export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
 	    elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
 export DOCKER_COMPOSE_FILE := docker-makefiles/docker-compose-files/$(ANYLOG_TYPE)-docker-compose.yaml 
 
+ifeq ($(strip $(TEST_CONN)), )
+    ANYLOG_REST_PORT    = $(shell grep -m1 '^ANYLOG_REST_PORT=' "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
+    NODE_IP          = $(or 127.0.0.1,$(shell $(CONTAINER_CMD) inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(NODE_NAME) 2>/dev/null | grep -v '^$$'),127.0.0.1)
+    export TEST_CONN    := "$(NODE_IP):$(ANYLOG_REST_PORT)"
+endif
+
+# -----------------
+# Prep for Testing
+# -----------------
+ifeq ($(strip $(TEST_CONN)), )
+    ANYLOG_REST_PORT    = $(shell grep -m1 '^ANYLOG_REST_PORT=' "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
+    NODE_IP          = $(or 127.0.0.1,$(shell $(CONTAINER_CMD) inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(NODE_NAME) 2>/dev/null | grep -v '^$$'),127.0.0.1)
+    export TEST_CONN    := "$(NODE_IP):$(ANYLOG_REST_PORT)"
+endif
+
+#====== prep configs =======
 all: help
 
 check-configs:
@@ -50,13 +79,17 @@ check-configs:
 		exit 1; \
 	fi
 	@echo $(IMAGE)
+
 login: ## log into docker hub for AnyLog
 	$(CONTAINER_CMD) login docker.io -u anyloguser --password $(ANYLOG_TYPE)
+
 pull: check-configs ## pull image from docker hub
 	$(CONTAINER_CMD) pull docker.io/$(IMAGE):$(TAG)
 
+# ====== Docker Compose =====
 dry-run: check-configs ## generate docker-compose.yaml
 	@echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
+	bash docker-makefiles/prep_configs.sh $(ANYLOG_TYPE)
 	bash docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG)
 
 up: dry-run ## start AnyLog instance
@@ -88,6 +121,38 @@ attach: check-configs ## attach to container
 exec: check-configs ## attach to bash shell
 	$(CONTAINER_CMD) exec -it $(NODE_NAME) /bin/bash
 
+#========= testing =========
+full-test: test-status test-node test-network ## Execute a full "test suite" validating AnyLog is active and communicating
+
+test-status:  ## execute `get status` against AnyLog node
+	@echo "Check Status: $(TEST_CONN)"
+	@curl -X POST http://$(TEST_CONN) \
+        -H "Content-Type: application/json" \
+        -d '{"command": "get status where format=json", "User-Agent": "AnyLog/1.23"}' \
+        -w "\n\n"
+
+test-node:  ## execute `test node` against AnyLog node
+	@echo "Test node: $(TEST_CONN)"
+	@curl -X POST http://$(TEST_CONN) \
+        -H "Content-Type: application/json" \
+        -d '{"command": "test node", "User-Agent": "AnyLog/1.23"}' \
+        -w "\n\n"
+
+test-network:  ## execute `test network` against AnyLog node
+	@echo "Test Network: $(TEST_CONN)"
+	@curl -X POST http://$(TEST_CONN) \
+        -H "Content-Type: application/json" \
+        -d '{"command": "test network", "User-Agent": "AnyLog/1.23"}' \
+        -w "\n\n"
+
+check-processes: ## execute `get processes` against AnyLog node
+	@echo "View Active / Inactive Services for: $(TEST_CONN)"
+	@curl -X POST http://$(TEST_CONN) \
+        -H "Content-Type: application/json" \
+        -d '{"command": "get processes", "User-Agent": "AnyLog/1.23"}' \
+        -w "\n\n"
+
+#========= validate & help =========
 check-vars: ## Show all environment variables
 	@echo "IS_MANUAL             Default: false              Value: $(IS_MANUAL)"
 	@echo "ANYLOG_TYPE           Default: generic            Value: $(ANYLOG_TYPE)"
