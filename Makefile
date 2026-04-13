@@ -1,6 +1,5 @@
 #!/bin/Makefile
 $(info LOADING MAKEFILE)
-SHELL := /bin/bash
 
 # Default values
 export IS_MANUAL ?= false
@@ -88,29 +87,14 @@ pull: check-configs ## pull image from docker hub
 	$(CONTAINER_CMD) pull docker.io/$(IMAGE):$(TAG)
 
 # ====== Docker Compose =====
-dry-run-debug: dry-run ## generate docker-compose.yaml in debug mode
-
-down-debug: down ## bring down node in debug-mode
-
-clean-debug: clean ## clean node in debug-mode
-
-clean-all-debug: clean-all # clean-all in debug-mode
-
 dry-run: check-configs ## generate docker-compose.yaml
 	@echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
-	@if [[ "$(MAKECMDGOALS)" =~ -debug ]]; then \
-	    bash docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG) docker debug; \
-	else \
-	    bash docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG); \
-	fi
+	bash docker-makefiles/prep_configs.sh $(ANYLOG_TYPE)
+	bash docker-makefiles/build_docker_compose.sh $(ANYLOG_TYPE) $(TAG)
 
 up: dry-run ## start AnyLog instance
 	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
 	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) up -d
-
-up-debug: dry-run ## bring up node in debug mode
-	@echo "Deploy AnyLog $(ANYLOG_TYPE)"
-	$(DOCKER_COMPOSE_CMD) -f $(DOCKER_COMPOSE_FILE) --profile debug up -d
 
 down: dry-run ## stop docker container
 	@echo "Stop AnyLog Agent - $(ANYLOG_TYPE)"
@@ -136,6 +120,9 @@ attach: check-configs ## attach to container
 
 exec: check-configs ## attach to bash shell
 	$(CONTAINER_CMD) exec -it $(NODE_NAME) /bin/bash
+
+exec-root: check-configs ## attach to the executable as root rather than anylog
+	$(CONTAINER_CMD) exec -u root -it $(NODE_NAME) /bin/bash
 
 #========= testing =========
 full-test: test-status test-node test-network ## Execute a full "test suite" validating AnyLog is active and communicating
