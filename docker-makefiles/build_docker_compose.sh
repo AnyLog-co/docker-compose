@@ -18,6 +18,7 @@ fi
 NODE_CONFIGS=${1:-anylog-generic}
 TAG=${2:-latest}
 DEPLOYMENT_TYPE=${3:-docker}
+DEBUG_MODE=${4:-""}
 
 if [[ "${DEPLOYMENT_TYPE}" == "k8s" ]]; then
   die "k8s deployment not yet supported"
@@ -199,6 +200,33 @@ END {
   next
 }1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 fi
+
+# -------- Debug Service --------
+echo "Debug Mode - ${DEBUG_MODE}"
+if [[ -n "${DEBUG_MODE}" ]]; then
+  awk -v node="${NODE_NAME}" '
+/^volumes:/ && !debug_added {
+  print "  " node "-debugger:";
+  print "    image: busybox";
+  print "    container_name: " node "-debugger";
+  print "    command: [\"sh\", \"-c\", \"sleep infinity\"]";
+  print "    network_mode: host";
+  print "    pid: \"host\"";
+  print "    restart: \"no\"";
+  print "    stdin_open: true";
+  print "    tty: true";
+  print "    profiles:";
+  print "      - debug";
+  print "    volumes:";
+  print "      - " node "-anylog:/app/AnyLog-Network/anylog";
+  print "      - " node "-blockchain:/app/AnyLog-Network/blockchain";
+  print "      - " node "-data:/app/AnyLog-Network/data";
+  print "";
+  debug_added=1;
+}
+1' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
+fi
+
 
 # -------- Envsubst & Write Output --------
 echo "Generating final docker-compose.yaml..."
