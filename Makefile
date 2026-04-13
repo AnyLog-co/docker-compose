@@ -4,6 +4,12 @@ $(info LOADING MAKEFILE)
 # Default values
 export IS_MANUAL ?= false
 export ANYLOG_TYPE ?= anylog-generic
+ifeq ($(ANYLOG_TYPE),$(filter $(ANYLOG_TYPE),generic master operator query publisher standalone-operator standalone-publisher))
+    ANYLOG_TYPE := anylog-$(ANYLOG_TYPE)
+    export ANYLOG_TYPE
+endif
+
+
 export TAG ?= pre-develop
 export TEST_CONN       ?=
 
@@ -22,6 +28,7 @@ else ifneq (,$(filter $(UNAME_M),aarch64 arm64))
 else
 	$(error Unsupported architecture: $(UNAME_M))
 endif
+
 
 # -------------------
 # Defaults in Make
