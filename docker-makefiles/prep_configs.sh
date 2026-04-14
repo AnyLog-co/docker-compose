@@ -1,10 +1,26 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 # -------- Helpers --------
 die() {
   echo "Error: $1" >&2
   exit "${2:-1}"
+}
+
+sedi() {
+  local expr="$1"
+  shift
+
+  if [ "$#" -eq 0 ]; then
+    echo "sedi: no files provided" >&2
+    return 1
+  fi
+
+  if sed --version >/dev/null 2>&1; then
+    sed -i "$expr" "$@"
+  else
+    sed -i '' "$expr" "$@"
+  fi
 }
 
 # -------- Args --------
@@ -31,8 +47,8 @@ fi
 normalize_quotes() {
   local file="$1"
   echo "Normalizing quotes in: ${file}"
-  sed -i.bak "s/=''/=\"\"/g" "${file}" && rm -f "$file.bak"
-  sed -E -i.bak "s/^([A-Za-z_][A-Za-z0-9_]*)='([^']*)'/\\1=\"\\2\"/" "$file" && rm -f "$file.bak"
+  sedi "s/=''/=\"\"/g" "${file}"
+  sedi -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${file}"
 }
 
 for cfg in "${CONFIG_FILES[@]}"; do
@@ -64,7 +80,7 @@ else
   else
     # Replace any internal single quotes with double quotes
     UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
-    sed -i.bak "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}" && rm -f "$BASE_ENV.bak"
+    sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
     echo "LICENSE_KEY updated in ${BASE_ENV}"
   fi
 fi
