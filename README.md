@@ -5,13 +5,41 @@ transforms edge environments into scalable data tiers optimized for IoT, allowin
 across industries like manufacturing, utilities, oil & gas, smart cities, retail, robotics, and more.
 
 * [Documentation](https://github.com/AnyLog-co/documentation/)
-* [Surrounding components install](support-tools/README.md)
+* [Support services](support/README.md) — Grafana, PostgreSQL, MongoDB, Remote-GUI
+
+
+## Repository Layout
+
+```
+docker-compose/
+├── Makefile                          # Main lifecycle commands for AnyLog nodes
+├── README.md                         # This file
+├── Deploy_PLC.md                     # PLC deployment guide
+├── docker_run.sh                     # Standalone docker run helper
+├── docker-makefiles/
+│   ├── anylog-generic/
+│   │   └── node_configs.env          # Config template — copy and customise per node
+│   ├── anylog-master/
+│   ├── anylog-operator/
+│   ├── anylog-publisher/
+│   ├── anylog-query/
+│   ├── anylog-standalone-operator/
+│   ├── anylog-standalone-publisher/
+│   ├── build_docker_compose.sh       # Generates docker-compose.yaml from configs
+│   ├── prep_configs.sh               # Pre-flight config validation
+│   ├── docker-compose-template-base.yaml       # Linux template (host networking)
+│   └── docker-compose-template-ports-base.yaml # Mac/Windows template (port mapping)
+└── support/                          # External services (Grafana, Postgres, MongoDB, etc.)
+    └── README.md
+```
+
+Generated compose files land in `docker-makefiles/docker-compose-files/` and are not committed to the repo.
 
 
 ## Prepare Machine
 
 * [Docker & Docker-Compose](https://docs.docker.com/engine/install/)
-* _Makefile_
+
 ```shell
 # Install Docker on Ubuntu
 sudo apt-get -y update
@@ -51,38 +79,41 @@ docker login -u anyloguser -p [Docker Login Passkey]
 
 All AnyLog containers run the same image — configurations determine which services are enabled.
 
-| Node Type         | Description                                             | Server Port | REST Port |
-|-------------------|---------------------------------------------------------|-------------|-----------|
-| `generic`         | Sandbox with only network configured                    | 32548       | 32549     |
-| `master`          | Blockchain emulator ("Oracle" alternative)              | 32048       | 32049     |
-| `operator`        | Stores data from edge devices                           | 32148       | 32149     |
-| `query`           | Dedicated query node (enables `system_query` database)  | 32348       | 32349     |
-| `publisher`       | Distributes data among operator nodes                   | 32248       | 32249     |
-| `master-operator` | Combined master and operator on a single agent          | 32148       | 32149     |
-| `master-publisher`| Combined master and publisher on a single agent         | 32248       | 32249     |
+| Node Type               | Description                                             | Server Port | REST Port |
+|-------------------------|---------------------------------------------------------|-------------|-----------|
+| `generic`               | Sandbox with only network configured                    | 32548       | 32549     |
+| `master`                | Blockchain emulator ("Oracle" alternative)              | 32048       | 32049     |
+| `operator`              | Stores data from edge devices                           | 32148       | 32149     |
+| `query`                 | Dedicated query node (enables `system_query` database)  | 32348       | 32349     |
+| `publisher`             | Distributes data among operator nodes                   | 32248       | 32249     |
+| `standalone-operator`   | Combined master and operator on a single agent          | 32148       | 32149     |
+| `standalone-publisher`  | Combined master and publisher on a single agent         | 32248       | 32249     |
+
+You can pass either the short form (`operator`) or the full directory name (`anylog-operator`) — the Makefile resolves both.
 
 
 ## Deployment via Makefile
 
 The [Makefile](Makefile) supports both _Podman_ and _Docker_, using either manual variable overrides or a
-[configuration file](CONFIG.md) in `docker-makefiles/`.
+configuration file in `docker-makefiles/`.
 
 ```
 Usage: make [target] [VARIABLE=value]
 
 Available targets:
-  login        Log into Docker Hub for AnyLog
-  pull         Pull image from Docker Hub
-  dry-run      Generate docker-compose.yaml from config file(s)
-  up           Start AnyLog instance
-  down         Stop AnyLog instance
-  clean        Stop container and remove volumes
-  clean-all    Stop container, remove volumes and image
-  attach       Attach to container (ctrl-d to detach)
-  exec         Attach to container bash shell
-  logs         View container logs
-  logs-f       Follow container logs
-  check-vars   Show all environment variable values
+  login                 Log into Docker Hub for AnyLog
+  pull                  Pull image from Docker Hub
+  dry-run               Generate docker-compose.yaml from config file(s)
+  up                    Start AnyLog instance
+  down                  Stop AnyLog instance
+  clean                 Stop container and remove volumes
+  clean-all             Stop container, remove volumes and image
+  attach                Attach to container (ctrl-d to detach)
+  exec                  Attach to container bash shell (as anylog user)
+  exec-root             Attach to container bash shell as root
+  logs                  View container logs
+  logs-f                Follow container logs
+  check-vars            Show all environment variable values
 
 Common variables:
   IS_MANUAL             Use manual deployment (true/false)
@@ -134,36 +165,34 @@ make up IS_MANUAL=true ANYLOG_TYPE=publisher LICENSE_KEY=[key] \
 
 ### Configuration-based Deployment
 
-For full control over node behavior, use a `node_configs.env` file. See [CONFIG.md](CONFIG.md) for all parameters.
+For full control over node behavior, use a `node_configs.env` file.
 
 1. **Copy the config template**
 ```shell
 cp -r docker-makefiles/anylog-generic docker-makefiles/my-operator
 ```
 
-2. **Edit `docker-makefiles/my-operator/node_configs.env`** — at minimum, update these in the `basic` section:
+2. **Edit `docker-makefiles/my-operator/node_configs.env`** — at minimum, update these:
    - `NODE_TYPE` — set to your desired node type
    - `NODE_NAME` — must be unique per node
    - `COMPANY_NAME`
    - `ANYLOG_SERVER_PORT`, `ANYLOG_REST_PORT` — must be unique per machine
    - `LEDGER_CONN` — IP:port of the master node
    - `CLUSTER_NAME` — unique per operator unless HA is enabled
-
-3. **Set credentials** in the `secrets` section:
    - `LICENSE_KEY`
    - `DB_USER` / `DB_PASSWD` (if using PostgreSQL)
 
-4. **Deploy**
+3. **Deploy**
 ```shell
 make up ANYLOG_TYPE=my-operator
 ```
 
-5. **Check status**
+4. **Check status**
 ```shell
 make logs ANYLOG_TYPE=my-operator
 ```
 
-6. **Attach to the node** — press Enter twice once attached, `ctrl-d` to detach
+5. **Attach to the node** — press Enter twice once attached, `ctrl-d` to detach
 ```shell
 make attach ANYLOG_TYPE=my-operator
 ```
@@ -176,66 +205,41 @@ cp -r docker-makefiles/my-operator docker-makefiles/my-operator2
 make up ANYLOG_TYPE=my-operator2
 ```
 
+## Testing
 
-## Using Windows & Mac
-
-Docker Desktop uses port-based networking instead of `network_mode: host`, which may cause containers to advertise the
-Docker internal IP rather than the machine IP.
-
-1. Validate Docker network settings — enable host networking in Docker Desktop preferences.
-
-2. Find your machine's local IP:
-```shell
-# Mac
-ifconfig en0 | grep "inet "
-
-# Windows
-ipconfig
-```
-
-3. In `node_configs.env`, set `OVERLAY_IP` under the `advanced` section:
-```dotenv
-OVERLAY_IP=192.168.86.28
-```
-
-4. Optionally set `TCP_BIND=true` under advanced networking for stricter port binding.
-
-5. Deploy:
-```shell
-make up ANYLOG_TYPE=my-operator
-```
-
-
-## Persisting Configs After Reboot
-
-Docker restarts containers using in-memory state, not updated env files. To apply config changes on reboot:
-
-**Option 1** — Rebuild the container after updating configs:
-```shell
-make up ANYLOG_TYPE=my-operator
-```
-
-**Option 2** — Use `systemd` to rebuild on boot:
-```service
-# /etc/systemd/system/anylog-operator-redeploy.service
-[Unit]
-Description=Redeploy AnyLog Node After Reboot
-After=network.target docker.service
-Requires=docker.service
-
-[Service]
-WorkingDirectory=%h/docker-compose
-ExecStart=/usr/bin/make up ANYLOG_TYPE=my-operator
-Restart=on-failure
-User=%u
-
-[Install]
-WantedBy=multi-user.target
-```
+The Makefile includes a set of targets to validate that an AnyLog node is active and reachable via REST.
+These targets work independently of `ANYLOG_TYPE` — you can test any node on the network as long as you know its 
+REST address.
 
 ```shell
-sudo systemctl daemon-reload
-sudo systemctl enable anylog-operator-redeploy.service
+# Default connection (127.0.0.1:32549 — generic node)
+make test-status
+
+# Target a specific node
+make full-test TEST_CONN=192.168.1.10:32149
 ```
 
-Note: Each node requires its own systemd service.
+| Target            | Command sent        | Description                                      |
+|-------------------|---------------------|--------------------------------------------------|
+| `full-test`       | —                   | Runs `test-status`, `test-node`, `test-network` in sequence |
+| `test-status`     | `get status`        | Confirms the node process is running             |
+| `test-node`       | `test node`         | Validates node configuration and connectivity    |
+| `test-network`    | `test network`      | Checks communication with other network members  |
+| `check-processes` | `get processes`     | Lists all active and inactive services on the node |
+
+**Variable:**
+
+| Variable    | Default           | Description                        |
+|-------------|-------------------|------------------------------------|
+| `TEST_CONN` | `127.0.0.1:32549` | `IP:port` of the node to test against |
+
+Port reference — use the `ANYLOG_REST_PORT` for the node type you are testing:
+
+| Node type  | REST port |
+|------------|-----------|
+| generic    | 32549     |
+| master     | 32049     |
+| operator   | 32149     |
+| query      | 32349     |
+| publisher  | 32249     |
+
