@@ -11,7 +11,7 @@ endif
 
 
 export TAG ?= pre-develop
-export TEST_CONN       ?=
+export TEST_CONN ?=
 
 export IMAGE ?= anylogco/anylog-network
 
