@@ -124,7 +124,7 @@ _logs-f: _validate
 # Exec into service — uses the right client per service type:
 #   postgres* -> psql   |   mongo* -> mongosh   |   everything else -> bash
 _attach: _validate
-    @if echo "$(SVC)" | grep -q "^postgres"; then \
+	@if echo "$(SVC)" | grep -q "^postgres"; then \
 	    $(CONTAINER_CMD) exec -it $(SVC) psql -U postgres; \
     elif echo "$(SVC)" | grep -q "^mongo"; then \
 	    $(CONTAINER_CMD) exec -it $(SVC) mongosh; \
@@ -133,7 +133,7 @@ _attach: _validate
     fi
 
 _exec: _validate
-    $(CONTAINER_CMD) exec -it $(SVC) /bin/bash
+	$(CONTAINER_CMD) exec -it $(SVC) /bin/bash
 
 # ======================================================================
 # Public targets — iterate defaults or delegate to _<op> SVC=...
