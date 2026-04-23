@@ -38,60 +38,78 @@ GIT_BRANCH = get_current_branch()
 # Category map — ordered longest prefix first (specificity wins)
 # ---------------------------------------------------------------------------
 CATEGORY_MAP = [
-    # Southbound connectors — specific first
-    ("southbound-industrial-opcua",     "Southbound / OPC-UA"),
-    ("southbound-industrial",           "Southbound / Industrial"),
-    ("southbound-video-streaming",      "Southbound / Video streaming"),
-    ("southbound-monitoring",           "Southbound / Monitoring"),
+    # Support services — specific first
+    ("support/grafana",                 "Support services / Grafana"),
+    ("support/postgres",                "Support services / PostgreSQL"),
+    ("support/mongodb",                 "Support services / MongoDB"),
+    ("support/remote-gui",              "Support services / Remote GUI"),
+    ("support/ollama",                  "Support services / Ollama"),
+    ("support/nebula",                  "Support services / Nebula"),
+    ("support",                         "Support services"),
 
-    # Node deployment
-    ("node-deployment/database",        "Node deployment / Database"),
-    ("node-deployment/policies",        "Node deployment / Policies"),
-    ("node-deployment",                 "Node deployment"),
+    # Docker configs — specific node types first
+    ("docker-makefiles/anylog-master",          "Docker config / Master"),
+    ("docker-makefiles/anylog-query",           "Docker config / Query"),
+    ("docker-makefiles/anylog-operator",        "Docker config / Operator"),
+    ("docker-makefiles/anylog-publisher",       "Docker config / Publisher"),
+    ("docker-makefiles/anylog-standalone",      "Docker config / Standalone"),
+    ("docker-makefiles/anylog-generic",         "Docker config / Generic"),
+    ("docker-makefiles",                        "Docker config"),
 
-    # Data
-    ("data-generator/mapping",          "Data generator / Mapping"),
-    ("data-generator",                  "Data generator"),
-    ("aggregations",                    "Aggregations"),
+    # Node configs
+    ("node-configs/anylog-master",      "Node config / Master"),
+    ("node-configs/anylog-query",       "Node config / Query"),
+    ("node-configs/anylog-operator",    "Node config / Operator"),
+    ("node-configs/anylog-publisher",   "Node config / Publisher"),
+    ("node-configs/anylog-standalone",  "Node config / Standalone"),
+    ("node-configs",                    "Node config"),
 
-    # gRPC
-    ("gRPC",                            "gRPC"),
+    # Makefile and build scripts
+    ("Makefile",                        "Makefile"),
+    ("docker_compose_builder",          "Docker compose builder"),
 
-    # Customers
-    ("customers/smart-city",            "Customers / Smart city"),
-    ("customers/proveit-scripts",       "Customers / ProveIt"),
-    ("customers/machine-builder",       "Customers / Machine builder"),
-    ("customers",                       "Customers"),
+    # Proxy and networking
+    ("proxy-nginx",                     "Proxy / nginx"),
+    ("proxy-generic",                   "Proxy / Flask"),
 
-    # Samples & tests
-    ("sample-scripts",                  "Sample scripts"),
-    ("test-network-local-scripts",      "Test / Network"),
-    ("test",                            "Test"),
-    ("archive",                         "Archive"),
-
-    # Infrastructure
+    # CI/CD and version control
     (".github/workflows",               "CI/CD"),
-    ("Dockerfile",                      "Docker"),
-    ("requirements",                    "Dependencies"),
+    (".github/scripts",                 "CI/CD"),
+
+    # Docs
+    ("CHANGELOG",                       "Changelog"),
+    ("README",                          "Documentation"),
 ]
 
 # Files/paths to skip entirely — no bullet generated
 SKIP_PATTERNS = [
-    "setup.cfg",
-    "setup.py",
     ".md",
-    "docs/",
     "__pycache__",
     ".gitignore",
+    ".gitmodules",
+    ".env.example",
+    "docs/",
 ]
 
 # Commit messages that indicate noise — skip the whole commit
 SKIP_MESSAGES = [
     "chore: update version",
-    "chore: update changelog",  # ← add this
+    "chore: update changelog",
     "merge branch",
     "merge remote-tracking",
-    # "merge pull request",
+    "tmp",
+    "in progress",
+    "to test",
+    "testing",
+    "spacing",
+    "spacing for",
+    "minor fix",
+    "minor change",
+    "revert",
+    "base",
+    "configs",        # too generic on its own
+    "local",
+    "ori code changes",
 ]
 
 # Authors that are bots — skip entirely
