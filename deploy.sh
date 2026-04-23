@@ -154,7 +154,7 @@ cmd_dry_run() {
 
     echo "Manual mode — docker run command:"
     echo ""
-    echo "  ${CONTAINER_CMD} run -d \\"
+    echo "  ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \\"
     echo "    --name ${NODE_NAME} \\"
     echo "    --network host \\"
     echo "    --env-file ${single_file} \\"
@@ -186,7 +186,7 @@ cmd_up() {
       vol_scripts="-v ${NODE_NAME}-local-scripts:/app/deployment-scripts"
     fi
 
-    ${CONTAINER_CMD} run -d \
+    ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \
       --name "${NODE_NAME}" \
       --network host \
       --env-file "${single_file}" \
