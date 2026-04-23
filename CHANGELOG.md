@@ -8,7 +8,12 @@ layout: page
 - 2026-04-23 | Created document
 -->
 
-<!-- last-processed: 86fb6f34b35e2b349235649deb26e4bb9a5423a2 -->
+<!-- last-processed: 2657928 -->
+
+<!-- os-dev: 2657928 (2026-04-23) -->
+
+* **Ori Shadmon** (2026-04-23)
+  * CI/CD: added a changelog logic
 
 This repo does not track a single AnyLog release version. Instead, users now define both the AnyLog image version and the deployment-scripts version independently in their config. The changelog below tracks changes to the **deployment tooling itself** — config structure, Makefile/script behavior, support service management, and Docker compose logic.
 
