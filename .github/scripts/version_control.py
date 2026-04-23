@@ -393,7 +393,10 @@ def main():
     args = parser.parse_args()
 
     if not os.path.isfile(args.changelog):
-        raise FileNotFoundError(f"Failed to locate CHANGLOG - {args.changelog}")
+        try:
+            open(args.changelog, 'w').close()
+        except Exception as error:
+            raise FileNotFoundError(f"Failed to locate CHANGELOG - {args.changelog} (Error: {error})")
 
     # 1. Read current CHANGELOG
     content = read_changelog(args.changelog)
