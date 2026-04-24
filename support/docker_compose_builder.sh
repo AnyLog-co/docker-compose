@@ -135,8 +135,10 @@ SERVICE_NAME="${NAME:-$(basename "$IMAGE" | tr '[:upper:]' '[:lower:]' | tr -cs 
 # VITE_API_URL is only emitted if REMOTE_GUI_NIC key exists in ENV_VARS.
 
 REMOTE_GUI_BE=$(get_section_value "ENV_VARS" "REMOTE_GUI_BE" 2>/dev/null || true)
-
 VITE_API_URL=""
+REMOTE_CONN=$(get_section_value "ENV_VARS" "REMOTE_CONN" 2>/dev/null || true)
+
+
 if has_env_key "REMOTE_GUI_NIC"; then
   REMOTE_GUI_NIC=$(get_section_value "ENV_VARS" "REMOTE_GUI_NIC" 2>/dev/null || true)
   REMOTE_GUI_NIC="${REMOTE_GUI_NIC//\"/}"; REMOTE_GUI_NIC="${REMOTE_GUI_NIC//\'/}"
@@ -156,10 +158,53 @@ if has_env_key "REMOTE_GUI_NIC"; then
   VITE_API_URL="http://${REMOTE_GUI_IP}:${REMOTE_GUI_BE}"
 fi
 
+# ── Resolve REST_CONN ────────────────────────────────────
+# REPLACE the broken block with:
+if [[ -n "${REMOTE_CONN}" ]]; then
+   echo "WARNING: REMOTE_CONN not set — Remote-GUI will start but cannot connect to any AnyLog node." >&2
+   echo "         Set REMOTE_CONN: <ip>:<rest_port> in your config's ENV_VARS section." >&2
+#  _fallback_ip="${REMOTE_GUI_IP:-127.0.0.1}"
+#  REMOTE_CONN="${_fallback_ip}:32349"   # ← see port note below
+fi
+
+
 # ── Collect sections ──────────────────────────────────────────────────────────
 mapfile -t PORTS     < <(get_list_under "NETWORK_CONFIGS" "PORTS")
 mapfile -t ENV_LINES < <(get_env_vars)
 mapfile -t VOL_LINES < <(get_volumes)
+
+# ── Port-conflict check (skipped in host-network mode) ───────────────────────
+# ── Port-conflict check ───────────────────────────────────────────────────────
+if [[ "${NETWORK_MODE,,}" == "ports" && ${#PORTS[@]} -gt 0 ]]; then
+  # Mapped ports: check Docker's port bindings
+  conflict=0
+  for port in "${PORTS[@]}"; do
+    host_port="${port%%:*}"
+    if docker ps --format '{{.Ports}}' 2>/dev/null \
+        | grep -qE "(^|,| )[0-9.]*:${host_port}->"; then
+      echo "ERROR: Port ${host_port} already bound by a running container:" >&2
+      docker ps --format '  {{.Names}}  {{.Ports}}' \
+        | grep -E "[0-9.]*:${host_port}->" >&2
+      conflict=1
+    fi
+  done
+  [[ $conflict -eq 0 ]] || exit 1
+
+elif [[ "${NETWORK_MODE,,}" == "host" && ${#PORTS[@]} -gt 0 ]]; then
+  # Host-network mode: Docker owns no ports, so check the OS directly
+  conflict=0
+  for port in "${PORTS[@]}"; do
+    host_port="${port%%:*}"
+    if ss -tlnp 2>/dev/null | awk '{print $4}' | grep -qE ":${host_port}$"; then
+      echo "ERROR: Port ${host_port} already in use on the host:" >&2
+      ss -tlnp | awk '{print $4, $6}' | grep -E ":${host_port} " >&2
+      conflict=1
+    fi
+  done
+  [[ $conflict -eq 0 ]] || exit 1
+fi
+
+
 
 # ── Write docker-compose.yml ──────────────────────────────────────────────────
 {
@@ -175,6 +220,11 @@ mapfile -t VOL_LINES < <(get_volumes)
   case "${NETWORK_MODE,,}" in
     host)
       echo "    network_mode: host"
+      if [[ "${IMAGE}" =~ "postgres" ]] ; then
+        echo "    command: postgres -p ${PORTS[@]:-5432}"
+      elif [[ "${IMAGE}" =~ "mongo" ]] ; then
+        echo "    command: mongod --port ${PORTS[@]:27017}"
+      fi
       ;;
     ports)
       if [[ ${#PORTS[@]} -gt 0 ]]; then
@@ -199,7 +249,10 @@ mapfile -t VOL_LINES < <(get_volumes)
       [[ -z "$line" ]] && continue
       echo "      - ${line}"
     done
-    [[ -n "$VITE_API_URL" ]] && echo "      - VITE_API_URL=${VITE_API_URL}"
+    [[ -n "$VITE_API_URL" ]]  && echo "      - VITE_API_URL=${VITE_API_URL}"
+    if [[ "${IMAGE}" =~ "grafana" ]] ; then
+      echo "      - GF_SERVER_HTTP_PORT=${PORTS[@]}"
+    fi
   fi
 
   # Volumes (service mounts)

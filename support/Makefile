@@ -1,280 +1,234 @@
+#!/usr/bin/env make
 #----------------------------------------------------------------------
-# The following provides make commands for support functions
-# - Remote-GUI
-# - Grafana
-# - Postgres
-# - Mongodb
+# Support-services Makefile
+#
+# Hardcoded defaults: grafana | remote-gui | postgres | mongodb
+# Custom instances  : add any subdirectory with a configs.yaml —
+#                     no Makefile edits needed.
+#
+# Aliases: gui -> remote-gui | psql -> postgres | mongo -> mongodb
+#
+# Examples:
+#   make up                           # start all 4 default services
+#   make up   SERVICE=grafana         # start one service by dir name
+#   make up   SERVICE=psql            # alias for postgres
+#   make up   SERVICE=postgres-prod   # start a custom extra instance
+#   make down SERVICE=mongo
+#   make logs SERVICE=grafana
+#   make exec SERVICE=postgres-prod
+#   make list                         # show every discovered service
 #----------------------------------------------------------------------
-#!/bin/Makefile
 $(info LOADING MAKEFILE)
 
-export SERVICE ?= ""
-
-export CONTAINER_CMD := $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; else echo "docker"; fi)
-export DOCKER_COMPOSE_CMD := $(shell if command -v podman-compose >/dev/null 2>&1; then echo "podman-compose"; \
-	    elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo "docker compose"; fi)
+export CONTAINER_CMD := \
+    $(shell if command -v podman >/dev/null 2>&1; then echo "podman"; else echo "docker"; fi)
+export DOCKER_COMPOSE_CMD := \
+    $(shell if   command -v podman-compose  >/dev/null 2>&1; then echo "podman-compose"; \
+            elif command -v docker-compose  >/dev/null 2>&1; then echo "docker-compose"; \
+            else echo "docker compose"; fi)
 
 SUPPORT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
+# ── Default set — started / stopped when SERVICE is not specified ──────
+DEFAULT_SERVICES := remote-gui grafana postgres mongodb
+
+# ── Auto-discover every subdir that contains a configs.yaml ───────────
+DISCOVERED_SERVICES := $(patsubst $(SUPPORT_DIR)%/configs.yaml,%,\
+                           $(wildcard $(SUPPORT_DIR)*/configs.yaml))
+
+# ── Resolve common aliases → canonical directory name ─────────────────
+_SVC := $(SERVICE)
+ifeq ($(_SVC),gui)
+  override _SVC := remote-gui
+endif
+ifeq ($(_SVC),psql)
+  override _SVC := postgres
+endif
+ifeq ($(_SVC),mongo)
+  override _SVC := mongodb
+endif
+
 all: help
 
-dry-run: ## Generate docker-compose.yml for all (or one) service configs
-	@if [ "$(SERVICE)" = "" ]; then \
-	    for dir in remote-gui grafana postgres mongodb; do \
-	        echo "→ Building compose for $$dir"; \
-	        bash $(SUPPORT_DIR)docker_compose_builder.sh $(SUPPORT_DIR)$$dir/configs.yaml $(SUPPORT_DIR)$$dir/docker-compose.yml; \
+# ======================================================================
+# dry-run — (re)generate docker-compose.yml from configs.yaml
+# ======================================================================
+dry-run: ## Generate docker-compose.yml for all discovered services (or SERVICE=one)
+	@if [ "$(_SVC)" = "" ]; then \
+	    for svc in $(DISCOVERED_SERVICES); do \
+	        echo "-> Building compose for $$svc"; \
+	        bash $(SUPPORT_DIR)docker_compose_builder.sh \
+	            $(SUPPORT_DIR)$$svc/configs.yaml \
+	            $(SUPPORT_DIR)$$svc/docker-compose.yml; \
 	    done; \
-	elif [ -d "$(SUPPORT_DIR)$(SERVICE)" ]; then \
-	    echo "→ Building compose for $(SERVICE)"; \
-	    bash $(SUPPORT_DIR)docker_compose_builder.sh $(SUPPORT_DIR)$(SERVICE)/configs.yaml $(SUPPORT_DIR)$(SERVICE)/docker-compose.yml; \
+	elif [ -f "$(SUPPORT_DIR)$(_SVC)/configs.yaml" ]; then \
+	    echo "-> Building compose for $(_SVC)"; \
+	    bash $(SUPPORT_DIR)docker_compose_builder.sh \
+	        $(SUPPORT_DIR)$(_SVC)/configs.yaml \
+	        $(SUPPORT_DIR)$(_SVC)/docker-compose.yml; \
 	else \
-	    echo "ERROR: No config directory found for service '$(SERVICE)'"; \
-	    $(MAKE) help; \
+	    echo "ERROR: '$(SUPPORT_DIR)$(_SVC)/configs.yaml' not found"; exit 1; \
+	fi
+
+# ======================================================================
+# Internal targets — always called with SVC=<dirname>
+# ======================================================================
+
+# Abort early if the service directory does not exist
+_validate:
+	@if [ ! -d "$(SUPPORT_DIR)$(SVC)" ]; then \
+	    echo ""; \
+	    echo "ERROR: No directory '$(SUPPORT_DIR)$(SVC)'"; \
+	    echo "       To add a service, create the directory and place a configs.yaml inside."; \
+	    echo "       To list known services, run:  make list"; \
+	    echo ""; \
 	    exit 1; \
 	fi
 
-up: ## Start service(s) — use SERVICE=<name> to target one (gui, grafana, psql/postgres, mongo/mongodb)
-	@if [ "$(SERVICE)" = "" ]; then \
-	    $(MAKE) up-gui ; \
-	    $(MAKE) up-dashboard ; \
-	    $(MAKE) up-psql ; \
-	    $(MAKE) up-mongo ; \
-	elif [ "$(SERVICE)" = "remote-gui" ] || [ "$(SERVICE)" = "gui" ]; then \
-	    $(MAKE) up-gui ; \
-	elif [ "$(SERVICE)" = "grafana" ]; then \
-	    $(MAKE) up-dashboard ; \
-	elif [ "$(SERVICE)" = "postgres" ] || [ "$(SERVICE)" = "psql" ]; then \
-	    $(MAKE) up-psql ; \
-	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
-	    $(MAKE) up-mongo ; \
-	else \
-	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
-	    $(MAKE) help; \
-	    exit 1; \
+# Generate docker-compose.yml on-demand when it is missing
+_ensure-compose: _validate
+	@if [ ! -f "$(SUPPORT_DIR)$(SVC)/docker-compose.yml" ]; then \
+	    if [ ! -f "$(SUPPORT_DIR)$(SVC)/configs.yaml" ]; then \
+	        echo "ERROR: No configs.yaml in '$(SUPPORT_DIR)$(SVC)/'"; exit 1; \
+	    fi; \
+	    echo "  -> Generating docker-compose.yml for $(SVC) ..."; \
+	    bash $(SUPPORT_DIR)docker_compose_builder.sh \
+	        $(SUPPORT_DIR)$(SVC)/configs.yaml \
+	        $(SUPPORT_DIR)$(SVC)/docker-compose.yml; \
 	fi
 
-down: ## Stop service(s) — use SERVICE=<name> to target one
-	@if [ "$(SERVICE)" = "" ]; then \
-	    $(MAKE) down-gui ; \
-	    $(MAKE) down-dashboard ; \
-	    $(MAKE) down-psql ; \
-	    $(MAKE) down-mongo ; \
-	elif [ "$(SERVICE)" = "remote-gui" ] || [ "$(SERVICE)" = "gui" ]; then \
-	    $(MAKE) down-gui ; \
-	elif [ "$(SERVICE)" = "grafana" ]; then \
-	    $(MAKE) down-dashboard ; \
-	elif [ "$(SERVICE)" = "postgres" ] || [ "$(SERVICE)" = "psql" ]; then \
-	    $(MAKE) down-psql ; \
-	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
-	    $(MAKE) down-mongo ; \
+_up: _ensure-compose
+	@echo "Deploying: $(SVC)"
+	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)$(SVC)/docker-compose.yml up -d
+
+_down: _validate
+	@echo "Stopping: $(SVC)"
+	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)$(SVC)/docker-compose.yml down
+
+_clean: _validate
+	@echo "Removing (+ volumes): $(SVC)"
+	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)$(SVC)/docker-compose.yml down -v
+
+_clean-all: _validate
+	@echo "Removing (+ volumes + image): $(SVC)"
+	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)$(SVC)/docker-compose.yml down -v --rmi all
+
+_logs: _validate
+	@echo "Logs: $(SVC)"
+	$(CONTAINER_CMD) logs $(SVC)
+
+_logs-f: _validate
+	@echo "Logs (follow): $(SVC)"
+	$(CONTAINER_CMD) logs -f $(SVC)
+
+# Exec into service — uses the right client per service type:
+#   postgres* -> psql   |   mongo* -> mongosh   |   everything else -> bash
+_attach: _validate
+	@if echo "$(SVC)" | grep -q "^postgres"; then \
+	    $(CONTAINER_CMD) exec -it $(SVC) psql -U postgres; \
+    elif echo "$(SVC)" | grep -q "^mongo"; then \
+	    $(CONTAINER_CMD) exec -it $(SVC) mongosh; \
 	else \
-	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
-	    $(MAKE) help; \
-	    exit 1; \
+	    echo "Unsupported attach option to service $(SERVICE)"; \
+    fi
+
+_exec: _validate
+	$(CONTAINER_CMD) exec -it $(SVC) /bin/bash
+
+# ======================================================================
+# Public targets — iterate defaults or delegate to _<op> SVC=...
+# ======================================================================
+
+# Shared shell snippet: loop over DEFAULT_SERVICES and call an internal target
+# Usage (inside a recipe): $(call _each, _up)
+define _each
+	for svc in $(DEFAULT_SERVICES); do \
+	    if [ -d "$(SUPPORT_DIR)$$svc" ]; then \
+	        $(MAKE) -s $(1) SVC=$$svc || true; \
+	    else \
+	        echo "  (skipping $$svc — directory not found)"; \
+	    fi; \
+	done
+endef
+
+up: ## Start service(s). Omit SERVICE to start all defaults; SERVICE=<dir> for one
+	@if [ "$(_SVC)" = "" ]; then \
+	    $(call _each,_up); \
+	else \
+	    $(MAKE) -s _up SVC=$(_SVC); \
 	fi
 
-clean: ## Stop and remove volumes for service(s) — use SERVICE=<name> to target one
-	@if [ "$(SERVICE)" = "" ]; then \
-	    $(MAKE) clean-gui ; \
-	    $(MAKE) clean-dashboard ; \
-	    $(MAKE) clean-psql ; \
-	    $(MAKE) clean-mongo ; \
-	elif [ "$(SERVICE)" = "remote-gui" ] || [ "$(SERVICE)" = "gui" ]; then \
-	    $(MAKE) clean-gui ; \
-	elif [ "$(SERVICE)" = "grafana" ]; then \
-	    $(MAKE) clean-dashboard ; \
-	elif [ "$(SERVICE)" = "postgres" ] || [ "$(SERVICE)" = "psql" ]; then \
-	    $(MAKE) clean-psql ; \
-	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
-	    $(MAKE) clean-mongo ; \
+down: ## Stop service(s). Omit SERVICE to stop all defaults; SERVICE=<dir> for one
+	@if [ "$(_SVC)" = "" ]; then \
+	    $(call _each,_down); \
 	else \
-	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
-	    $(MAKE) help; \
-	    exit 1; \
+	    $(MAKE) -s _down SVC=$(_SVC); \
 	fi
 
-clean-all: ## Stop, remove volumes and images for service(s) — use SERVICE=<name> to target one
-	@if [ "$(SERVICE)" = "" ]; then \
-	    $(MAKE) clean-all-gui ; \
-	    $(MAKE) clean-all-dashboard ; \
-	    $(MAKE) clean-all-psql ; \
-	    $(MAKE) clean-all-mongo ; \
-	elif [ "$(SERVICE)" = "remote-gui" ] || [ "$(SERVICE)" = "gui" ]; then \
-	    $(MAKE) clean-all-gui ; \
-	elif [ "$(SERVICE)" = "grafana" ]; then \
-	    $(MAKE) clean-all-dashboard ; \
-	elif [ "$(SERVICE)" = "postgres" ] || [ "$(SERVICE)" = "psql" ]; then \
-	    $(MAKE) clean-all-psql ; \
-	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
-	    $(MAKE) clean-all-mongo ; \
+clean: ## Stop + remove volumes. Omit SERVICE for all defaults; SERVICE=<dir> for one
+	@if [ "$(_SVC)" = "" ]; then \
+	    $(call _each,_clean); \
 	else \
-	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
-	    $(MAKE) help; \
-	    exit 1; \
+	    $(MAKE) -s _clean SVC=$(_SVC); \
 	fi
 
-logs: ## Print logs for a specific service (SERVICE=<name> required)
-	@if [ "$(SERVICE)" = "remote-gui" ] || [ "$(SERVICE)" = "gui" ]; then \
-	    $(MAKE) logs-gui ; \
-	elif [ "$(SERVICE)" = "grafana" ]; then \
-	    $(MAKE) logs-dashboard ; \
-	elif [ "$(SERVICE)" = "postgres" ] || [ "$(SERVICE)" = "psql" ]; then \
-	    $(MAKE) logs-psql ; \
-	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
-	    $(MAKE) logs-mongo ; \
+clean-all: ## Stop + remove volumes + images. Omit SERVICE for all defaults; SERVICE=<dir> for one
+	@if [ "$(_SVC)" = "" ]; then \
+	    $(call _each,_clean-all); \
 	else \
-	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
-	    $(MAKE) help; \
-	    exit 1; \
+	    $(MAKE) -s _clean-all SVC=$(_SVC); \
 	fi
 
-logs-f: ## Follow logs for a specific service (SERVICE=<name> required)
-	@if [ "$(SERVICE)" = "remote-gui" ] || [ "$(SERVICE)" = "gui" ]; then \
-	    $(MAKE) logs-f-gui ; \
-	elif [ "$(SERVICE)" = "grafana" ]; then \
-	    $(MAKE) logs-f-dashboard ; \
-	elif [ "$(SERVICE)" = "postgres" ] || [ "$(SERVICE)" = "psql" ]; then \
-	    $(MAKE) logs-f-psql ; \
-	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
-	    $(MAKE) logs-f-mongo ; \
-	else \
-	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
-	    $(MAKE) help; \
-	    exit 1; \
+logs: ## Print logs — SERVICE=<dir> required  (e.g. SERVICE=grafana)
+	@if [ "$(_SVC)" = "" ]; then \
+	    echo "ERROR: SERVICE is required.  Example: make logs SERVICE=grafana"; exit 1; \
 	fi
+	@$(MAKE) -s _logs SVC=$(_SVC)
 
-exec: ## Attach to shell for a specific service (SERVICE=<name> required)
-	@if [ "$(SERVICE)" = "remote-gui" ] || [ "$(SERVICE)" = "gui" ]; then \
-	    $(MAKE) exec-gui ; \
-	elif [ "$(SERVICE)" = "grafana" ]; then \
-	    $(MAKE) exec-dashboard ; \
-	elif [ "$(SERVICE)" = "postgres" ] || [ "$(SERVICE)" = "psql" ]; then \
-	    $(MAKE) exec-psql ; \
-	elif [ "$(SERVICE)" = "mongodb" ] || [ "$(SERVICE)" = "mongo" ]; then \
-	    $(MAKE) exec-mongo ; \
-	else \
-	    echo "ERROR: Unsupported service '$(SERVICE)'"; \
-	    $(MAKE) help; \
-	    exit 1; \
+logs-f: ## Follow logs — SERVICE=<dir> required  (e.g. SERVICE=postgres-prod)
+	@if [ "$(_SVC)" = "" ]; then \
+	    echo "ERROR: SERVICE is required.  Example: make logs-f SERVICE=postgres"; exit 1; \
 	fi
+	@$(MAKE) -s _logs-f SVC=$(_SVC)
 
-#----------------------------------------------------------------------
-# Remote-GUI
-#----------------------------------------------------------------------
-up-gui:
-	@echo "Deploying Service: Remote-GUI"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)remote-gui/docker-compose.yml up -d
-down-gui:
-	@echo "Stopping Service: Remote-GUI"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)remote-gui/docker-compose.yml down
-clean-gui:
-	@echo "Removing Service + Volumes: Remote-GUI"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)remote-gui/docker-compose.yml down -v
-clean-all-gui:
-	@echo "Removing Service + Volumes + Image: Remote-GUI"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)remote-gui/docker-compose.yml down -v --rmi all
-logs-gui:
-	@echo "Logs: Remote-GUI"
-	$(CONTAINER_CMD) logs remote-gui
-logs-f-gui:
-	@echo "Logs (follow): Remote-GUI"
-	$(CONTAINER_CMD) logs -f remote-gui
-exec-gui:
-	@echo "Exec into: Remote-GUI"
-	$(CONTAINER_CMD) exec -it remote-gui /bin/bash
+attach: ## Attach the native client (psql / mongosh) — SERVICE=<dir> required
+	@if [ "$(_SVC)" = "" ]; then \
+	    echo "ERROR: SERVICE is required.  Example: make attach SERVICE=postgres"; exit 1; \
+	fi
+	@$(MAKE) -s _attach SVC=$(_SVC)
 
-#----------------------------------------------------------------------
-# Grafana (dashboard)
-#----------------------------------------------------------------------
-up-dashboard:
-	@echo "Deploying Service: Grafana"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)grafana/docker-compose.yml up -d
-down-dashboard:
-	@echo "Stopping Service: Grafana"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)grafana/docker-compose.yml down
-clean-dashboard:
-	@echo "Removing Service + Volumes: Grafana"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)grafana/docker-compose.yml down -v
-clean-all-dashboard:
-	@echo "Removing Service + Volumes + Image: Grafana"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)grafana/docker-compose.yml down -v --rmi all
-logs-dashboard:
-	@echo "Logs: Grafana"
-	$(CONTAINER_CMD) logs grafana
-logs-f-dashboard:
-	@echo "Logs (follow): Grafana"
-	$(CONTAINER_CMD) logs -f grafana
-exec-dashboard:
-	@echo "Exec into: Grafana"
-	$(CONTAINER_CMD) exec -it grafana /bin/bash
+exec: ## Open a bash shell in the container — SERVICE=<dir> required
+	@if [ "$(_SVC)" = "" ]; then \
+	    echo "ERROR: SERVICE is required.  Example: make exec SERVICE=mongodb"; exit 1; \
+	fi
+	@$(MAKE) -s _exec SVC=$(_SVC)
 
-#----------------------------------------------------------------------
-# Postgres
-#----------------------------------------------------------------------
-up-psql:
-	@echo "Deploying Service: Postgres"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)postgres/docker-compose.yml up -d
-down-psql:
-	@echo "Stopping Service: Postgres"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)postgres/docker-compose.yml down
-clean-psql:
-	@echo "Removing Service + Volumes: Postgres"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)postgres/docker-compose.yml down -v
-clean-all-psql:
-	@echo "Removing Service + Volumes + Image: Postgres"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)postgres/docker-compose.yml down -v --rmi all
-logs-psql:
-	@echo "Logs: Postgres"
-	$(CONTAINER_CMD) logs postgres
-logs-f-psql:
-	@echo "Logs (follow): Postgres"
-	$(CONTAINER_CMD) logs -f postgres
-exec-psql:
-	@echo "Exec into: Postgres"
-	$(CONTAINER_CMD) exec -it postgres psql -U postgres
+# ======================================================================
+# Utility
+# ======================================================================
+list: ## List default and all auto-discovered services
+	@echo ""
+	@echo "Default services   : $(DEFAULT_SERVICES)"
+	@echo "Discovered services: $(DISCOVERED_SERVICES)"
+	@echo ""
+	@echo "Tip: add a new subdir with configs.yaml to register a custom instance."
+	@echo "     Example: postgres-prod/configs.yaml  =>  make up SERVICE=postgres-prod"
+	@echo ""
 
-#----------------------------------------------------------------------
-# MongoDB
-#----------------------------------------------------------------------
-up-mongo:
-	@echo "Deploying Service: MongoDB"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)mongodb/docker-compose.yml up -d
-down-mongo:
-	@echo "Stopping Service: MongoDB"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)mongodb/docker-compose.yml down
-clean-mongo:
-	@echo "Removing Service + Volumes: MongoDB"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)mongodb/docker-compose.yml down -v
-clean-all-mongo:
-	@echo "Removing Service + Volumes + Image: MongoDB"
-	$(DOCKER_COMPOSE_CMD) -f $(SUPPORT_DIR)mongodb/docker-compose.yml down -v --rmi all
-logs-mongo:
-	@echo "Logs: MongoDB"
-	$(CONTAINER_CMD) logs mongodb
-logs-f-mongo:
-	@echo "Logs (follow): MongoDB"
-	$(CONTAINER_CMD) logs -f mongodb
-exec-mongo:
-	@echo "Exec into: MongoDB"
-	$(CONTAINER_CMD) exec -it mongodb mongosh
-
-#----------------------------------------------------------------------
-# Help
-#----------------------------------------------------------------------
 help: ## Show this help message
 	@echo ""
 	@echo "Usage: make <target> [SERVICE=<service>]"
 	@echo ""
-	@echo "Services: remote-gui (gui) | grafana | postgres (psql) | mongodb (mongo)"
+	@echo "  Default services : $(DEFAULT_SERVICES)"
+	@echo "  Aliases          : gui -> remote-gui  |  psql -> postgres  |  mongo -> mongodb"
+	@echo "  Custom instances : create subdir + configs.yaml, then use SERVICE=<dirname>"
 	@echo ""
+	@echo "Targets:"
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) \
-	    | awk 'BEGIN {FS = ":.*##"}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	    | awk 'BEGIN {FS = ":.*##"}; {printf "  \033[36m%-14s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 
-.PHONY: all dry-run \
-        up down clean clean-all logs logs-f exec \
-        up-gui down-gui clean-gui clean-all-gui logs-gui logs-f-gui exec-gui \
-        up-dashboard down-dashboard clean-dashboard clean-all-dashboard logs-dashboard logs-f-dashboard exec-dashboard \
-        up-psql down-psql clean-psql clean-all-psql logs-psql logs-f-psql exec-psql \
-        up-mongo down-mongo clean-mongo clean-all-mongo logs-mongo logs-f-mongo exec-mongo \
-        help
+.PHONY: all dry-run list help \
+        up down clean clean-all logs logs-f attach exec \
+        _validate _ensure-compose \
+        _up _down _clean _clean-all _logs _logs-f _attach _exec
