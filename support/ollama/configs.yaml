@@ -1,0 +1,17 @@
+GENERAL:
+  IMAGE: mongo
+  TAG: latest
+  NAME: mongo
+
+NETWORK_CONFIGS:
+  NETWORK_MODE: ports
+  PORTS:
+    - 27017
+
+ENV_VARS:
+  MONGO_USER: admin
+  MONGO_PASSWORD: passwd
+
+VOLUMES:
+  mongo-data: /data/db
+  mongo-configs: /data/configdb

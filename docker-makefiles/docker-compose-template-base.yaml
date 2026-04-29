@@ -1,23 +1,49 @@
 services:
-  ${NODE_NAME}:
-    image: ${IMAGE}:${TAG}
-    user: "${ANYLOG_UID}:${ANYLOG_GID}"
-    platform: ${DOCKER_PLATFORM}
-    restart: always
-    env_file:
-      -  ../../docker-makefiles/${ANYLOG_TYPE}/base_configs.env
-      - ../../docker-makefiles/${ANYLOG_TYPE}/advance_configs.env
-      - ../../docker-makefiles/${ANYLOG_TYPE}/.env
-    container_name: ${NODE_NAME}
-    stdin_open: true
-    tty: true
-    network_mode: host
+  ${NODE_NAME}-init:
+    image: busybox
+    user: root
+    group_add:
+      - ${DOCKER_GID}
+    restart: "no"
+    command: [
+      "sh", "-c",
+      "chown -R 10001:10001
+        /app/AnyLog-Network/anylog
+        /app/AnyLog-Network/blockchain
+        /app/AnyLog-Network/data
+        /app/deployment-scripts
+      "
+    ]
     volumes:
       - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
       - ${NODE_NAME}-data:/app/AnyLog-Network/data
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
-      - /var/run/docker.sock:/var/run/docker.sock
+  ${NODE_NAME}:
+    image: ${IMAGE}:${TAG}
+    user: "anylog:anylog"
+    pid: "host"
+    group_add:
+      - ${DOCKER_GID}
+    platform: ${DOCKER_PLATFORM}
+    restart: always
+    env_file:
+    container_name: ${NODE_NAME}
+    stdin_open: true
+    tty: true
+    network_mode: host
+    depends_on:
+      ${NODE_NAME}-init:
+        condition: service_completed_successfully
+    volumes:
+      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
+      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
+      - ${NODE_NAME}-data:/app/AnyLog-Network/data
+      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
+      - ${DOCKER_SOCKET}:/var/run/docker.sock
+      - /proc:/host_proc:ro
+      - /:/host:ro
+      - /sys:/host_sys:ro  # optional, useful for cgroup/disk info
 volumes:
   ${NODE_NAME}-anylog:
   ${NODE_NAME}-blockchain:
