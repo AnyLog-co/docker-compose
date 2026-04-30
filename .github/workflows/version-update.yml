@@ -26,7 +26,7 @@ jobs:
           python-version: "3.x"
 
       - name: Run version update script
-        run: python .github/workflows/generate_git_id.py    # 👈 replace with your actual path
+        run: python .github/scripts/generate_git_id.py    # 👈 replace with your actual path
 
       - name: Commit updated setup.cfg
         run: |
@@ -36,4 +36,14 @@ jobs:
           BRANCH=$(git branch --show-current)
           git diff --cached --quiet || git commit -m "chore: update version for ${BRANCH} [skip ci]"
           git pull origin
+          git push
+
+      - name: Update CHANGELOG.md
+        run: |
+          git pull --rebase origin ${GITHUB_REF_NAME}
+          python .github/scripts/version_control.py
+          git config user.name  "anylog-ci-bot[bot]"
+          git config user.email "anylog-ci-bot[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git diff --cached --quiet || git commit -s -m "chore: update CHANGELOG unreleased [skip ci]"
           git push
