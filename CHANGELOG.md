@@ -1,37 +1,11 @@
 ---
 title: Changelog
-description: Notable changes to docker-compose deployment tooling, configs, and support services.
+description: Release history and notable changes for AnyLog deployment scripts.
 layout: page
----
-<!--
-## Changelog
-- 2026-04-23 | Created document
--->
-
-<!-- last-processed: f963369 -->
-
-<!-- os-dev: f963369 (2026-04-30) -->
-
-* **royshadmon** (2026-04-29)
-  * Docker config: updated sed to work with Makefile (#26)
-  * Makefile: updated sed to work with Makefile (#26)
-  * Support services: updated sed to work with Makefile (#26)
-
-<!-- os-dev: 9cbaded (2026-04-30) -->
-
-* **Ori Shadmon** (2026-04-29)
-  * General: flow check
-
-<!-- os-dev: 2657928 (2026-04-23) -->
-
-* **Ori Shadmon** (2026-04-23)
-  * CI/CD: added a changelog logic
-
-This repo does not track a single AnyLog release version. Instead, users now define both the AnyLog image version and the deployment-scripts version independently in their config. The changelog below tracks changes to the **deployment tooling itself** — config structure, Makefile/script behavior, support service management, and Docker compose logic.
-
 ---
 
 ## Unreleased
+<!-- last-processed: 4f8345a (2026-04-29) -->
 
 <!-- Developers: add bullets below as changes land in your branch -->
 
@@ -39,122 +13,101 @@ This repo does not track a single AnyLog release version. Instead, users now def
 
 ## 2026
 
-### April 2026
+### [4f8345a] · 2026-04-29 (latest)
 
-**Makefile and deployment scripting**
-
-The Makefile for support services was refactored to run through a shell script (`docker_compose_builder.sh`), replacing the previous direct `make` invocation pattern. This change improves cross-platform support and makes the builder logic easier to extend. The corresponding README was updated to reflect the new workflow.
-
-`REMOTE_CONN` support was added to the support services builder, allowing users to specify a remote connection endpoint for the GUI. If not provided, it falls back to `127.0.0.1`. The support Makefile now handles multi-container configurations including simultaneous PostgreSQL, MongoDB, and Grafana deployments.
-
-A `version_control.py` script was introduced to automate changelog and version tracking. The script creates a new changelog file if none exists and raises an error if the file is already present but malformed.
-
-**Container management improvements**
-
-`docker attach` now works correctly for database containers. `docker exec` was extended to support all container types. A `--exec-root` option was added to allow attaching into a container as the root user, useful for debugging.
-
-`debug busybox` support was enabled for in-container inspection.
-
-**User-defined image versions**
-
-Users can now specify AnyLog and deployment-scripts image versions without the `anylog-` prefix for default options, simplifying config file entries.
-
-`remote-gui` version pinned to `1.0.0`.
-
-**Config file changes**
-
-Config file structure was updated. If you are upgrading, review your `node_configs.env` against the latest templates — field names and defaults may have shifted.
+| Date | Commit | Author | Summary |
+|------|--------|--------|---------|
+| 2026-04-29 | [4f8345a] | Ori Shadmon | Remove archive / customer logic |
+| 2026-04-28 | [8d556c6] | Ori Shadmon | Validate MQTT logic works |
+| 2026-04-28 | [e7cb791] | Ori Shadmon | Validate MQTT logic works (follow-up fix) |
 
 ---
 
-### March 2026
+### [fc2309d] · 2026-04-17 – 2026-04-18
 
-**Deployment process improvements**
-
-The overall deployment process was significantly improved across March. Key changes include: better support for a local `deployment-scripts` directory, a `sys_query` logical database enabled by default for standalone nodes, and `env var` support across multiple config paths.
-
-**Docker socket support**
-
-Support for Docker socket pass-through was added and refined. macOS-specific socket paths were handled. A fallback for missing Docker sockets was added so deployments don't fail silently when the socket path doesn't exist.
-
-**License key handling**
-
-Better support for user-input license key formatting was added, including `replace exit with else` logic and improved formatting validation. A `sed` fix for `LICENSE_KEY` updates was corrected after a typo was introduced.
-
-**msg client update**
-
-The `run msg client` configuration was updated in the deployment templates to reflect current parameter names.
-
-**Version logic**
-
-Version update logic was corrected after a regression was introduced. The version workflow now triggers reliably on push.
-
-**Nebula overlay**
-
-Nebula overlay network config was reorganized. The Nebula config was moved out of the core deployment directory into its own location.
-
-**Config cleanup (March 30)**
-
-A round of cleanup removed unused files, reset configs to defaults, and updated the README.
+| Date | Commit | Author | Summary |
+|------|--------|--------|---------|
+| 2026-04-18 | [fc2309d] | Ori Shadmon | Litmus single table |
+| 2026-04-17 | [a0c1637] | Ori Shadmon | Litmus 2 tables (supported) |
+| 2026-04-17 | [02731e3] | Ori Shadmon | Telegraf supported |
 
 ---
 
-### January–February 2026
+### [a73584e] · 2026-04-08 – 2026-04-10
 
-**Makefile rewrite**
+| Date | Commit | Author | Summary |
+|------|--------|--------|---------|
+| 2026-04-10 | [6fc2530] | Ori Shadmon | Skip publish to remote master when `!master_configs=true` |
+| 2026-04-10 | [5e1c1c1] | Ori Shadmon | Integration of version control + slight reorg in `.github` dir |
+| 2026-04-10 | [5c1e40f] | Ori Shadmon | Integration of version control + slight reorg in `.github` dir (follow-up) |
+| 2026-04-09 | [3d224e4] | Moshe       | Integrate aggregation example as part of vessel demo |
+| 2026-04-09 | [d5bca98] | Moshe       | Bug fix |
+| 2026-04-08 | [a73584e] | Ori Shadmon | Power plant data |
 
-The Makefile was significantly reworked to support both `docker` and `podman`, clean up `make` targets, and add a proper `help` target. Empty file detection was added.
-
-**Config reorg**
-
-Node configs were reorganized into a cleaner structure supporting standalone, multi-node (operator/publisher split), and HA operator topologies. Single-file vs. multi-file config logic was separated. Publisher node configs were added.
-
-**Ollama example**
-
-An Ollama example configuration was added under `support/`.
-
-**Thread configs**
-
-Thread configuration params were updated across node types.
+> **Note:** This release group supersedes the previous [a73584e] entry — that commit is now covered above.
 
 ---
 
 ## 2025
 
-2025 focused on **networking, Kubernetes removal, support service expansion, and config stabilization**. The overlay network (Nebula) was moved outside the core deployment. Remote GUI support was added and iterated. Podman/Docker dual-support was formalized. License key management was introduced. ARM/AMD image configs were merged. A significant cleanup of unused Docker files and legacy configs happened in September. The `SYNC_TIME` parameter was renamed to `BLOCKCHAIN_SYNC`.
+2025 was defined by **policy maturity, monitoring expansion, and networking improvements**. The blockchain policy system was significantly extended with cluster, license, and relay policy support. Monitoring scripts were expanded across southbound connectors. Syslog integration was refined. Networking and overlay configuration scripts were added for multi-node deployments. Docker-based deployment was introduced for scripts. A major reorg consolidated script paths and naming conventions.
 
-| Date | Summary |
-|---|---|
-| 2025-12 | Docker updates; license key handling added |
-| 2025-11 | Nebula moved outside core; merge cleanup |
-| 2025-10 | Remote GUI added; `enable_remote_cli` enables both CLI and GUI; macOS support; Windows README added |
-| 2025-09 | ARM/AMD config merge; legacy Docker files removed; path and README cleanup; `BLOCKCHAIN_SYNC` rename |
-| 2025-08 | Version bump `1.3.X → 1.4.2508`; Docker image path updates |
-| 2025-05 | EtherNet/IP config added; publisher-only config; NIC type config |
-| 2025-04 | New Makefile; OPC-UA documentation; `docker-compose` restart support; Remote CLI in manual mode |
-| 2025-03 | License change; `CONTAINER_CMD` support; `SYNC_TIME → BLOCKCHAIN_SYNC` rename |
-| 2025-02 | Networking improvements (Linux vs. other OS); template support for broker; auto docker-compose builder; OpenBao configs added |
-| 2025-01 | Network configs; Podman/Docker support; health check removal; Dockerfiles restructured |
+| Date | Commit | Summary |
+|------|--------|---------|
+| 2025-12 | — | Publish workflow scripts; relay and networking configs added |
+|         |   | Cluster policy support in node-deployment |
+|         |   | Monitoring script refactors for southbound connectors |
+| 2025-10 | [423e749] | Blobs folder / dbms based on param |
+|          | [eb0a352] | `blobs_folder` addition |
+|          | [9f9a665] | Rename: `branch` → `branch_name` |
+|          | [07cf288] | Rename: `$BRANCH` → `$BRANCH_NAME` |
+|          | [681e2ff] | Update `node_policy.al` |
+|          | [f4d9f42] | Akave demo scripts |
+|          | [ef12590] | Akave demo support additions |
+| 2025-09 | — | Blockchain policy reorg; path and config cleanup |
+|         |   | Syslog script updates and parameter fixes |
+| 2025-06 | — | License key management scripts added |
+|         |   | Docker deployment support added to scripts |
+| 2025-01 | — | License key integration — initial scripts |
+|         |   | Monitoring improvements for industrial southbound |
 
 ---
 
 ## 2024
 
-2024 focused on **Kubernetes removal, blockchain config improvements, Nebula overlay iteration, and Remote CLI/GUI integration**. The Kubernetes configs were moved to a dedicated `deploy-k8s` repo. Blockchain source was renamed from `platform` to `BLOCKCHAIN_SOURCE`. Overlay network (Nebula) was extensively tested and iterated on. Docker compose configs were aligned across AnyLog, EdgeLake, and OpenHorizon deployments.
+2024 focused on **smart city, gRPC/KubeArmor integration, and policy tooling**. Smart city demo scripts (power plant, waste water, water plant) were built out under the `customers/` directory. KubeArmor gRPC connector scripts were added and debugged. Policy creation and blockchain sync scripts were improved. Syslog ingestion scripts were introduced. Generic deployment configs were extended, and a set of demo and training scripts was organized.
 
-| Date | Summary |
-|---|---|
-| 2024-11 | Version tag `1.3.2411`; config cleanup |
-| 2024-10 | `BLOCKCHAIN_SOURCE` param rename; Nebula/overlay network iteration; `debug_mode` config added; new contract/blockchain configs |
-| 2024-09 | Remote CLI/GUI support added; configs for `DEBUG_MODE`; license and ARM64 param updates |
-| 2024-07 | Docker compose configs; Makefile fixes; Podman support added |
-| 2024-06 | Podman support; Makefile minor changes |
-| 2024-05 | Version tag `1.3.2405`; Windows docker-compose; network bridge mode |
-| 2024-04 | K8s configs moved to `deploy-k8s`; `edgelake → anylog` rename in configs |
-| 2024-03 | Open source docker-compose for master node |
-| 2024-02 | Nebula overlay iteration; k8s testing; cluster networking configs |
-| 2024-01 | Makefile revert; sample docker configs reset |
+| Date | Commit | Summary |
+|------|--------|---------|
+| 2024-12 | — | Generic deployment configs expanded; policy debug scripts added |
+|         |   | Monitoring scripts updated with source and params fixes |
+| 2024-09 | — | Smart city customer scripts — Grafana dashboards for power plant, waste water, water plant |
+|         |   | Syslog ingestion scripts added |
+| 2024-06 | — | gRPC / KubeArmor connector scripts added and debugged |
+|         |   | Policy tooling improved — company/name fields, healthcheck |
+| 2024-01 | [dcd5f17] | Fix KubeArmor integration |
+|         | [62c40f7] | Added company and name fields to policy |
+|         | [5b2e2bc] | gRPC script initial commit |
+|         | [0cf02bf] | KubeArmor healthcheck |
 
 ---
 
-*For full commit-level history, run `git log` or browse the repository on GitHub.*
+## 2023
+
+The `deployment-scripts` repository was established in May 2023. Initial work focused on **repository organization, operator/publisher policy scripts, and EdgeX connector support**. Branch structure was defined, core script paths were laid out, and monitoring and deployment scripts were created for standard AnyLog node roles. License policy scripts were introduced. Training scripts and sample configurations were added to help onboard new users.
+
+| Date | Commit | Summary |
+|------|--------|---------|
+| 2023-12 | — | License policy scripts; monitoring scripts for operator nodes |
+|         |   | Training and sample script additions |
+| 2023-09 | — | Deployment script reorg; policy and config path standardization |
+|         |   | Master node deployment scripts added |
+| 2023-06 | [2ac9aee] | EdgeX connector scripts — initial commit |
+|         | [45315b0] | EdgeX code additions |
+| 2023-05 | [1938fba] | Initial commit — branch structure and repo organization |
+|         | [d4e0bc9] | Reorg of script directories |
+|         | [44ef282] | Rename and path additions |
+
+---
+
+*For the full commit-level history, run `git log` or browse the repository on GitHub.*
