@@ -8,7 +8,14 @@ layout: page
 - 2026-04-23 | Created document
 -->
 
-<!-- last-processed: 9cbaded -->
+<!-- last-processed: f963369 -->
+
+<!-- os-dev: f963369 (2026-04-30) -->
+
+* **royshadmon** (2026-04-29)
+  * Docker config: updated sed to work with Makefile (#26)
+  * Makefile: updated sed to work with Makefile (#26)
+  * Support services: updated sed to work with Makefile (#26)
 
 <!-- os-dev: 9cbaded (2026-04-30) -->
 
