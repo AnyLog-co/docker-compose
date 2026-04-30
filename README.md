@@ -12,10 +12,10 @@ across industries like manufacturing, utilities, oil & gas, smart cities, retail
 
 ```
 docker-compose/
-├── Makefile                          # Main lifecycle commands for AnyLog nodes
+├── Makefile                          # Thin wrapper around deploy.sh
+├── deploy.sh                         # Node lifecycle manager — works without make
 ├── README.md                         # This file
 ├── Deploy_PLC.md                     # PLC deployment guide
-├── docker_run.sh                     # Standalone docker run helper
 ├── docker-makefiles/
 │   ├── anylog-generic/
 │   │   └── node_configs.env          # Config template — copy and customise per node
@@ -34,6 +34,9 @@ docker-compose/
 ```
 
 Generated compose files land in `docker-makefiles/docker-compose-files/` and are not committed to the repo.
+
+> **Note:** The `Makefile` is a thin wrapper — every target delegates to `deploy.sh`. If `make` is not available
+> on your system (e.g. certain ARM/Qualcomm hardware), use `bash deploy.sh` directly with identical behaviour.
 
 
 ## Prepare Machine
@@ -89,44 +92,42 @@ All AnyLog containers run the same image — configurations determine which serv
 | `standalone-operator`   | Combined master and operator on a single agent          | 32148       | 32149     |
 | `standalone-publisher`  | Combined master and publisher on a single agent         | 32248       | 32249     |
 
-You can pass either the short form (`operator`) or the full directory name (`anylog-operator`) — the Makefile resolves both.
+Both the short form (`operator`) and the full directory name (`anylog-operator`) are accepted — both tools resolve
+the alias automatically.
 
 
-## Deployment via Makefile
+## Deployment
 
-The [Makefile](Makefile) supports both _Podman_ and _Docker_, using either manual variable overrides or a
-configuration file in `docker-makefiles/`.
+All commands are available via `make` or `bash deploy.sh` — choose whichever is available on your system.
 
 ```
-Usage: make [target] [VARIABLE=value]
+Commands:
+  login           Log into Docker Hub
+  pull            Pull image from Docker Hub
+  dry-run         Generate docker-compose.yaml (prints docker run command in manual mode)
+  up              Start AnyLog instance
+  down            Stop AnyLog instance
+  clean           Stop and remove volumes
+  clean-all       Stop, remove volumes and image
+  logs            View container logs
+  logs-f          Follow container logs
+  attach          Attach to container (ctrl-d to detach)
+  exec            Shell into container (anylog user)
+  exec-root       Shell into container (root)
+  full-test       Run test-status + test-node + test-network
+  test-status     GET status from node
+  test-node       Test node configuration
+  test-network    Test network connectivity
+  check-processes List active/inactive services
+  check-vars      Show resolved variable values
 
-Available targets:
-  login                 Log into Docker Hub for AnyLog
-  pull                  Pull image from Docker Hub
-  dry-run               Generate docker-compose.yaml from config file(s)
-  up                    Start AnyLog instance
-  down                  Stop AnyLog instance
-  clean                 Stop container and remove volumes
-  clean-all             Stop container, remove volumes and image
-  attach                Attach to container (ctrl-d to detach)
-  exec                  Attach to container bash shell (as anylog user)
-  exec-root             Attach to container bash shell as root
-  logs                  View container logs
-  logs-f                Follow container logs
-  check-vars            Show all environment variable values
-
-Common variables:
-  IS_MANUAL             Use manual deployment (true/false)
-  ANYLOG_TYPE           Node type to deploy (e.g., master, operator)
-  IMAGE                 Docker image repository
-  TAG                   Docker image tag
-  NODE_NAME             Custom container name
-  CLUSTER_NAME          Cluster the operator node is associated with
-  ANYLOG_SERVER_PORT    Port for TCP communication
-  ANYLOG_REST_PORT      Port for REST API
-  ANYLOG_BROKER_PORT    Optional broker port
-  LEDGER_CONN           Master node IP:port
-  LICENSE_KEY           AnyLog license key
+Variables (make) / Options (deploy.sh):
+  IS_MANUAL / --manual      Use docker run instead of docker compose (default: false)
+  ANYLOG_TYPE / --type      Node type to deploy
+  TAG         / --tag       Image tag                    (default: pre-develop)
+  IMAGE       / --image     Image repository
+  NODE_NAME   / --node-name Override container name
+  TEST_CONN   / --test-conn ip:port for test commands    (default: auto-resolved)
 ```
 
 ### Important Notes
@@ -135,32 +136,6 @@ Common variables:
 - **Unique node names**: Each node must have a distinct `NODE_NAME`.
 - **Clusters**: `CLUSTER_NAME` should be unique per operator unless HA is configured.
 - **License key**: A valid `LICENSE_KEY` is required. [Request one here](https://www.anylog.network/download).
-
-
-### Manual Deployment
-
-Uses built-in defaults with a small set of overrides. Database layer is always SQLite in manual mode.
-
-```shell
-# Generic — empty node with only network services
-make up IS_MANUAL=true ANYLOG_TYPE=generic LICENSE_KEY=[key]
-
-# Master — blockchain emulator
-make up IS_MANUAL=true ANYLOG_TYPE=master LICENSE_KEY=[key] ANYLOG_SERVER_PORT=32048 ANYLOG_REST_PORT=32049
-
-# Operator — stores data from devices
-make up IS_MANUAL=true ANYLOG_TYPE=operator LICENSE_KEY=[key] \
-  ANYLOG_SERVER_PORT=32148 ANYLOG_REST_PORT=32149 \
-  LEDGER_CONN=127.0.0.1:32048 CLUSTER_NAME=my-cluster1
-
-# Query — dedicated query node
-make up IS_MANUAL=true ANYLOG_TYPE=query LICENSE_KEY=[key] \
-  ANYLOG_SERVER_PORT=32348 ANYLOG_REST_PORT=32349 LEDGER_CONN=127.0.0.1:32048
-
-# Publisher — distributes data to operators
-make up IS_MANUAL=true ANYLOG_TYPE=publisher LICENSE_KEY=[key] \
-  ANYLOG_SERVER_PORT=32248 ANYLOG_REST_PORT=32249 LEDGER_CONN=127.0.0.1:32048
-```
 
 
 ### Configuration-based Deployment
@@ -184,17 +159,23 @@ cp -r docker-makefiles/anylog-generic docker-makefiles/my-operator
 
 3. **Deploy**
 ```shell
+# via make
 make up ANYLOG_TYPE=my-operator
+
+# via deploy.sh (no make required)
+bash deploy.sh up --type my-operator
 ```
 
 4. **Check status**
 ```shell
 make logs ANYLOG_TYPE=my-operator
+bash deploy.sh logs --type my-operator
 ```
 
 5. **Attach to the node** — press Enter twice once attached, `ctrl-d` to detach
 ```shell
 make attach ANYLOG_TYPE=my-operator
+bash deploy.sh attach --type my-operator
 ```
 
 #### Deploying a Second Node of the Same Type
@@ -203,37 +184,93 @@ make attach ANYLOG_TYPE=my-operator
 cp -r docker-makefiles/my-operator docker-makefiles/my-operator2
 # Edit node_configs.env — update NODE_NAME, ports, CLUSTER_NAME
 make up ANYLOG_TYPE=my-operator2
+bash deploy.sh up --type my-operator2
 ```
+
+
+### Manual Deployment (docker run)
+
+When `IS_MANUAL=true` / `--manual`, the node is started with `docker run --env-file` rather than docker compose.
+This is useful on systems where docker compose is unavailable. The same `node_configs.env` file is used.
+
+Running `dry-run` in manual mode prints the exact `docker run` command that will be executed — useful for
+inspection before committing:
+
+```shell
+make dry-run IS_MANUAL=true ANYLOG_TYPE=operator
+bash deploy.sh dry-run --type operator --manual
+```
+
+To start:
+```shell
+# Generic
+make up IS_MANUAL=true ANYLOG_TYPE=generic
+bash deploy.sh up --type generic --manual
+
+# Operator
+make up IS_MANUAL=true ANYLOG_TYPE=operator
+bash deploy.sh up --type operator --manual
+
+# Master
+make up IS_MANUAL=true ANYLOG_TYPE=master
+bash deploy.sh up --type master --manual
+```
+
+> **Note:** In manual mode the init container that pre-sets volume ownership does not run.
+> Volume directories will be owned by root until AnyLog corrects permissions internally.
+
+
+## Debug Mode
+
+Debug mode starts a lightweight sidecar container alongside the AnyLog node. It shares the node's network stack,
+PID namespace, and data volumes, making it useful for diagnosing connectivity or inspecting files without touching
+the running node. Common network tools (`ping`, `nc`, `curl`, `net-tools`) are pre-installed.
+
+```shell
+make up-debug ANYLOG_TYPE=my-operator
+bash deploy.sh up --type my-operator  # sidecar activated via --profile debug
+
+# Shell into the sidecar
+docker exec -it my-operator-debugger /bin/bash
+
+make down-debug ANYLOG_TYPE=my-operator
+```
+
+### Root Access to the Running Node
+
+The AnyLog container runs as the `anylog` user. To install tools or inspect system state without restarting:
+
+```shell
+make exec-root ANYLOG_TYPE=my-operator
+bash deploy.sh exec-root --type my-operator
+# node process keeps running — changes do not persist across restarts
+apt-get update && apt-get install -y net-tools iputils-ping netcat-traditional
+```
+
 
 ## Testing
 
-The Makefile includes a set of targets to validate that an AnyLog node is active and reachable via REST.
-These targets work independently of `ANYLOG_TYPE` — you can test any node on the network as long as you know its 
-REST address.
+Test targets work independently of `ANYLOG_TYPE` — point them at any reachable node via `TEST_CONN`.
 
 ```shell
-# Default connection (127.0.0.1:32549 — generic node)
-make test-status
+# Default (127.0.0.1 + REST port from config)
+make test-status ANYLOG_TYPE=my-operator
+bash deploy.sh test-status --type my-operator
 
-# Target a specific node
+# Target any node explicitly
 make full-test TEST_CONN=192.168.1.10:32149
+bash deploy.sh full-test --test-conn 192.168.1.10:32149
 ```
 
-| Target            | Command sent        | Description                                      |
-|-------------------|---------------------|--------------------------------------------------|
-| `full-test`       | —                   | Runs `test-status`, `test-node`, `test-network` in sequence |
-| `test-status`     | `get status`        | Confirms the node process is running             |
-| `test-node`       | `test node`         | Validates node configuration and connectivity    |
-| `test-network`    | `test network`      | Checks communication with other network members  |
-| `check-processes` | `get processes`     | Lists all active and inactive services on the node |
+| Target / Command     | AnyLog command sent | Description                                          |
+|----------------------|---------------------|------------------------------------------------------|
+| `full-test`          | —                   | Runs test-status, test-node, test-network in sequence |
+| `test-status`        | `get status`        | Confirms the node process is running                 |
+| `test-node`          | `test node`         | Validates node configuration and connectivity        |
+| `test-network`       | `test network`      | Checks communication with other network members      |
+| `check-processes`    | `get processes`     | Lists all active and inactive services on the node   |
 
-**Variable:**
-
-| Variable    | Default           | Description                        |
-|-------------|-------------------|------------------------------------|
-| `TEST_CONN` | `127.0.0.1:32549` | `IP:port` of the node to test against |
-
-Port reference — use the `ANYLOG_REST_PORT` for the node type you are testing:
+Port reference:
 
 | Node type  | REST port |
 |------------|-----------|
@@ -243,3 +280,88 @@ Port reference — use the `ANYLOG_REST_PORT` for the node type you are testing:
 | query      | 32349     |
 | publisher  | 32249     |
 
+
+## Using Windows & Mac
+
+Docker Desktop uses port-based networking instead of `network_mode: host`, which may cause containers to advertise
+the Docker internal IP rather than the machine IP.
+
+1. Enable host networking in Docker Desktop preferences.
+
+2. Find your machine's local IP:
+```shell
+# Mac
+ifconfig en0 | grep "inet "
+
+# Windows
+ipconfig
+```
+
+3. In `node_configs.env`, set `OVERLAY_IP` under the advanced section:
+```dotenv
+OVERLAY_IP=192.168.86.28
+```
+
+4. Optionally set `TCP_BIND=true` under advanced networking for stricter port binding.
+
+5. Deploy:
+```shell
+make up ANYLOG_TYPE=my-operator
+bash deploy.sh up --type my-operator
+```
+
+
+## Persisting Configs After Reboot
+
+Docker restarts containers using in-memory state, not updated env files. To apply config changes on reboot:
+
+**Option 1** — Rebuild the container after updating configs:
+```shell
+make up ANYLOG_TYPE=my-operator
+bash deploy.sh up --type my-operator
+```
+
+**Option 2** — Use `systemd` to rebuild on boot:
+```
+# /etc/systemd/system/anylog-operator-redeploy.service
+[Unit]
+Description=Redeploy AnyLog Node After Reboot
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+WorkingDirectory=%h/docker-compose
+ExecStart=/usr/bin/bash deploy.sh up --type my-operator
+Restart=on-failure
+User=%u
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```shell
+sudo systemctl daemon-reload
+sudo systemctl enable anylog-operator-redeploy.service
+```
+
+Note: Each node requires its own systemd service.
+
+
+## Support Services
+
+External services that work alongside AnyLog nodes are managed separately under `support/`.
+
+| Service    | Default Port | Notes                        |
+|------------|--------------|------------------------------|
+| Grafana    | 3000         | Dashboards and visualization |
+| PostgreSQL | 5432         | Persistent storage backend   |
+| MongoDB    | 27017        | Document store backend       |
+| Remote-GUI | 8080, 31800  | AnyLog web interface         |
+
+```shell
+cd support/
+make up SERVICE=grafana
+make list    # show all discovered services
+```
+
+See [support/README.md](support/README.md) for full documentation.
