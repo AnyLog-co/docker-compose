@@ -1,0 +1,534 @@
+[
+    {
+        "id": "a23d897f30b13a58",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "4e19993562655604",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "Break code",
+        "func": "let store = flow.get('store') || {};\nlet parts = msg.topic.split(\"/\");\n\nlet current = store;\nfor (let i = 0; i < parts.length - 1; i++) {\n    if (!current[parts[i]]) current[parts[i]] = {};\n    current = current[parts[i]];\n}\n\nlet value;\nif (!isNaN(msg.payload) && msg.payload !== \"\") value = Number(msg.payload);\nelse if (msg.payload === \"true\" || msg.payload === \"false\") value = msg.payload === \"true\";\nelse value = msg.payload;\n\ncurrent[parts[parts.length - 1]] = value;\n\nflow.set('store', store);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 390,
+        "y": 300,
+        "wires": [
+            [
+                "cfddf4e31cb7cf52",
+                "635f9afd390557f8"
+            ]
+        ]
+    },
+    {
+        "id": "113208254cb00502",
+        "type": "mqtt in",
+        "z": "a23d897f30b13a58",
+        "name": "Site 1",
+        "topic": "Enterprise B/Site1/liquidprocessing/tankstorage01/tank01/#",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "d6907155e04a9954",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 300,
+        "wires": [
+            [
+                "4e19993562655604"
+            ]
+        ]
+    },
+    {
+        "id": "cfddf4e31cb7cf52",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "KPI-1",
+        "func": "let site_id = \"Site1\";\nlet store = flow.get('store');\nif (!store) return null;\n\nlet tank = store[\"Enterprise B\"]\n    ?.[site_id]\n    ?.liquidprocessing\n    ?.tankstorage01\n    ?.tank01;\n\nif (!tank?.metric || !tank?.lotnumber) return null;\n\nlet row = {\n    dbms: \"enterprise_b\",\n    table: \"kpi\",\n    timestamp: flow.get(`ts_${site_id}`) || flow.get('factory_timestamp') || new Date().toISOString(),\n    site: site_id,\n    lotnumberid: tank.lotnumber.lotnumber,\n    oee: tank.metric.oee,\n    performance: tank.metric.performance,\n    quality: tank.metric.quality,\n    availability: tank.metric.availability\n};\n\nmsg.payload = JSON.stringify([row]);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 570,
+        "y": 240,
+        "wires": [
+            [
+                "5f06ee2346f3dde4"
+            ]
+        ]
+    },
+    {
+        "id": "635f9afd390557f8",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "Processing-1",
+        "func": "let site = \"Site1\";\nlet store = flow.get('store');\nif (!store) return null;\n\nlet tank = store[\"Enterprise B\"]\n    ?.[site]\n    ?.liquidprocessing\n    ?.tankstorage01\n    ?.tank01;\n\nif (!tank?.processdata || !tank?.lotnumber) return null;\n\nlet row = {\n    dbms: \"enterprise_b\",\n    table: \"processing\",\n    timestamp: flow.get(`ts_${site}`) || flow.get('factory_timestamp') || new Date().toISOString(),\n    site,\n    lotnumberid: tank.lotnumber.lotnumber,\n    state: tank.processdata.state?.name,\n    duration: tank.processdata.state?.duration,\n    flowrate: tank.processdata.process?.flowrate,\n    temperature: tank.processdata.process?.temperature,\n    weight: tank.processdata.process?.weight\n};\n\nmsg.payload = JSON.stringify([row]);\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
+        "y": 360,
+        "wires": [
+            [
+                "92d7a2ac5838af63"
+            ]
+        ]
+    },
+    {
+        "id": "5f06ee2346f3dde4",
+        "type": "mqtt out",
+        "z": "a23d897f30b13a58",
+        "name": "",
+        "topic": "kpi",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "a0fa9c8f135e7a4f",
+        "x": 770,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "92d7a2ac5838af63",
+        "type": "mqtt out",
+        "z": "a23d897f30b13a58",
+        "name": "",
+        "topic": "processing",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "a0fa9c8f135e7a4f",
+        "x": 790,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "aa36647684c24ea0",
+        "type": "mqtt in",
+        "z": "a23d897f30b13a58",
+        "name": "Metadata",
+        "topic": "Enterprise B/metadata",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "d6907155e04a9954",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 180,
+        "y": 200,
+        "wires": [
+            [
+                "200eead5b01025be"
+            ]
+        ]
+    },
+    {
+        "id": "200eead5b01025be",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "Metadata Timestamp",
+        "func": "// Function node: \"Store Metadata Timestamp\"\nlet meta = msg.payload;\nif (typeof meta === \"string\") meta = JSON.parse(meta);\n\n// Store factory-wide timestamp\nflow.set('factory_timestamp', meta.generated_at);\n\n// Optional: store per-site timestamp\nfor (let site in meta.virtual_devices) {\n    flow.set(`ts_${site}`, meta.virtual_devices[site].timestamp);\n}\n\nreturn msg; // just passes it along",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 620,
+        "wires": [
+            [
+                "cfddf4e31cb7cf52",
+                "635f9afd390557f8",
+                "fc7f3ac92d7cafab",
+                "cd783305c71fd1a9",
+                "aaca043e99da34b3",
+                "784bcd56f18c9ccb"
+            ]
+        ]
+    },
+    {
+        "id": "dc4bf242e360fd71",
+        "type": "mqtt in",
+        "z": "a23d897f30b13a58",
+        "name": "Site 2",
+        "topic": "Enterprise B/Site2/liquidprocessing/tankstorage01/tank01/#",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "d6907155e04a9954",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 190,
+        "y": 520,
+        "wires": [
+            [
+                "944aa77034ec9052"
+            ]
+        ]
+    },
+    {
+        "id": "944aa77034ec9052",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "Break code",
+        "func": "let store = flow.get('store') || {};\nlet parts = msg.topic.split(\"/\");\n\nlet current = store;\nfor (let i = 0; i < parts.length - 1; i++) {\n    if (!current[parts[i]]) current[parts[i]] = {};\n    current = current[parts[i]];\n}\n\nlet value;\nif (!isNaN(msg.payload) && msg.payload !== \"\") value = Number(msg.payload);\nelse if (msg.payload === \"true\" || msg.payload === \"false\") value = msg.payload === \"true\";\nelse value = msg.payload;\n\ncurrent[parts[parts.length - 1]] = value;\n\nflow.set('store', store);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 520,
+        "wires": [
+            [
+                "fc7f3ac92d7cafab",
+                "cd783305c71fd1a9"
+            ]
+        ]
+    },
+    {
+        "id": "fc7f3ac92d7cafab",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "KPI-2",
+        "func": "let site_id = \"Site2\";\nlet store = flow.get('store');\nif (!store) return null;\n\nlet tank = store[\"Enterprise B\"]\n    ?.[site_id]\n    ?.liquidprocessing\n    ?.tankstorage01\n    ?.tank01;\n\nif (!tank?.metric || !tank?.lotnumber) return null;\n\nlet row = {\n    dbms: \"enterprise_b\",\n    table: \"kpi\",\n    timestamp: flow.get(`ts_${site_id}`) || flow.get('factory_timestamp') || new Date().toISOString(),\n    site: site_id,\n    lotnumberid: tank.lotnumber.lotnumber,\n    oee: tank.metric.oee,\n    performance: tank.metric.performance,\n    quality: tank.metric.quality,\n    availability: tank.metric.availability\n};\n\nmsg.payload = JSON.stringify([row]);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 460,
+        "wires": [
+            [
+                "68c9afb65d1e4199"
+            ]
+        ]
+    },
+    {
+        "id": "cd783305c71fd1a9",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "Processing-2",
+        "func": "let site = \"Site2\";\nlet store = flow.get('store');\nif (!store) return null;\n\nlet tank = store[\"Enterprise B\"]\n    ?.[site]\n    ?.liquidprocessing\n    ?.tankstorage01\n    ?.tank01;\n\nif (!tank?.processdata || !tank?.lotnumber) return null;\n\nlet row = {\n    dbms: \"enterprise_b\",\n    table: \"process\",\n    timestamp: flow.get(`ts_${site}`) || flow.get('factory_timestamp') || new Date().toISOString(),\n    site,\n    lotnumberid: tank.lotnumber.lotnumber,\n    state: tank.processdata.state?.name,\n    duration: tank.processdata.state?.duration,\n    flowrate: tank.processdata.process?.flowrate,\n    temperature: tank.processdata.process?.temperature,\n    weight: tank.processdata.process?.weight\n};\n\nmsg.payload = JSON.stringify([row]);\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 580,
+        "wires": [
+            [
+                "09407c719448995d"
+            ]
+        ]
+    },
+    {
+        "id": "68c9afb65d1e4199",
+        "type": "mqtt out",
+        "z": "a23d897f30b13a58",
+        "name": "",
+        "topic": "kpi",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "e9ac5cd86baf59b2",
+        "x": 730,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "09407c719448995d",
+        "type": "mqtt out",
+        "z": "a23d897f30b13a58",
+        "name": "",
+        "topic": "processing",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "e9ac5cd86baf59b2",
+        "x": 730,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "83b877712ed9208a",
+        "type": "mqtt in",
+        "z": "a23d897f30b13a58",
+        "name": "Site 3",
+        "topic": "Enterprise B/Site3/liquidprocessing/tankstorage01/tank01/#",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "d6907155e04a9954",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 210,
+        "y": 700,
+        "wires": [
+            [
+                "f13c8229cd634b25"
+            ]
+        ]
+    },
+    {
+        "id": "f13c8229cd634b25",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "Break code",
+        "func": "let store = flow.get('store') || {};\nlet parts = msg.topic.split(\"/\");\n\nlet current = store;\nfor (let i = 0; i < parts.length - 1; i++) {\n    if (!current[parts[i]]) current[parts[i]] = {};\n    current = current[parts[i]];\n}\n\nlet value;\nif (!isNaN(msg.payload) && msg.payload !== \"\") value = Number(msg.payload);\nelse if (msg.payload === \"true\" || msg.payload === \"false\") value = msg.payload === \"true\";\nelse value = msg.payload;\n\ncurrent[parts[parts.length - 1]] = value;\n\nflow.set('store', store);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 700,
+        "wires": [
+            [
+                "aaca043e99da34b3",
+                "784bcd56f18c9ccb"
+            ]
+        ]
+    },
+    {
+        "id": "aaca043e99da34b3",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "KPI-3",
+        "func": "let site_id = \"Site3\";\nlet store = flow.get('store');\nif (!store) return null;\n\nlet tank = store[\"Enterprise B\"]\n    ?.[site_id]\n    ?.liquidprocessing\n    ?.tankstorage01\n    ?.tank01;\n\nif (!tank?.metric || !tank?.lotnumber) return null;\n\nlet row = {\n    dbms: \"enterprise_b\",\n    table: \"kpi\",\n    timestamp: flow.get(`ts_${site_id}`) || flow.get('factory_timestamp') || new Date().toISOString(),\n    site: site_id,\n    lotnumberid: tank.lotnumber.lotnumber,\n    oee: tank.metric.oee,\n    performance: tank.metric.performance,\n    quality: tank.metric.quality,\n    availability: tank.metric.availability\n};\n\nmsg.payload = JSON.stringify([row]);\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 700,
+        "wires": [
+            [
+                "ff94a26a36f1f0da"
+            ]
+        ]
+    },
+    {
+        "id": "ff94a26a36f1f0da",
+        "type": "mqtt out",
+        "z": "a23d897f30b13a58",
+        "name": "",
+        "topic": "kpi",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "917557b03dc7da53",
+        "x": 710,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "784bcd56f18c9ccb",
+        "type": "function",
+        "z": "a23d897f30b13a58",
+        "name": "Processing-2",
+        "func": "let site = \"Site3\";\nlet store = flow.get('store');\nif (!store) return null;\n\nlet tank = store[\"Enterprise B\"]\n    ?.[site]\n    ?.liquidprocessing\n    ?.tankstorage01\n    ?.tank01;\n\nif (!tank?.processdata || !tank?.lotnumber) return null;\n\nlet row = {\n    dbms: \"enterprise_b\",\n    table: \"process\",\n    timestamp: flow.get(`ts_${site}`) || flow.get('factory_timestamp') || new Date().toISOString(),\n    site,\n    lotnumberid: tank.lotnumber.lotnumber,\n    state: tank.processdata.state?.name,\n    duration: tank.processdata.state?.duration,\n    flowrate: tank.processdata.process?.flowrate,\n    temperature: tank.processdata.process?.temperature,\n    weight: tank.processdata.process?.weight\n};\n\nmsg.payload = JSON.stringify([row]);\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 530,
+        "y": 780,
+        "wires": [
+            [
+                "e8eb0f7eb29f3c28"
+            ]
+        ]
+    },
+    {
+        "id": "e8eb0f7eb29f3c28",
+        "type": "mqtt out",
+        "z": "a23d897f30b13a58",
+        "name": "",
+        "topic": "processing",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "917557b03dc7da53",
+        "x": 710,
+        "y": 780,
+        "wires": []
+    },
+    {
+        "id": "d6907155e04a9954",
+        "type": "mqtt-broker",
+        "name": "ProveIT",
+        "broker": "virtualfactory.proveit.services",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "a0fa9c8f135e7a4f",
+        "type": "mqtt-broker",
+        "name": "enterprise-b-site1",
+        "broker": "50.116.13.109",
+        "port": "32150",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "e9ac5cd86baf59b2",
+        "type": "mqtt-broker",
+        "name": "enterprise-b-site2",
+        "broker": "45.33.62.114",
+        "port": "32150",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "917557b03dc7da53",
+        "type": "mqtt-broker",
+        "name": "enterprise-b-site-3",
+        "broker": "45.33.62.114",
+        "port": "32160",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]

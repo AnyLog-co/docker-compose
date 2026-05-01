@@ -1,0 +1,181 @@
+[
+    {
+        "id": "d036c805c711acdc",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "c5ec77f593c1b83f",
+        "type": "comment",
+        "z": "d036c805c711acdc",
+        "name": "WARNING: please check you have started this container with a volume that is mounted to /data\\n otherwise any flow changes are lost when you redeploy or upgrade the container\\n (e.g. upgrade to a more recent node-red docker image).\\n  If you are using named volumes you can ignore this warning.\\n Double click or see info side panel to learn how to start Node-RED in Docker to save your work",
+        "info": "\nTo start docker with a bind mount volume (-v option), for example:\n\n```\ndocker run -it -p 1880:1880 -v /home/user/node_red_data:/data --name mynodered nodered/node-red\n```\n\nwhere `/home/user/node_red_data` is a directory on your host machine where you want to store your flows.\n\nIf you do not do this then you can experiment and redploy flows, but if you restart or upgrade the container the flows will be disconnected and lost. \n\nThey will still exist in a hidden data volume, which can be recovered using standard docker techniques, but that is much more complex than just starting with a named volume as described above.",
+        "x": 350,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "23902b7508f4cf98",
+        "type": "mqtt in",
+        "z": "d036c805c711acdc",
+        "name": "Enterprise C/sub/#",
+        "topic": "Enterprise C/sub/#",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "d6907155e04a9954",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 410,
+        "y": 340,
+        "wires": [
+            [
+                "d58a698d291ac76a"
+            ]
+        ]
+    },
+    {
+        "id": "d58a698d291ac76a",
+        "type": "function",
+        "z": "d036c805c711acdc",
+        "name": "Merge Values + Timestamp",
+        "func": "// --- Get existing content from context ---\nlet content = context.get('store') || [];\n\n// --- Extract last part of topic ---\nlet parts = msg.topic.split(\"/\");\nlet key = parts[parts.length - 1];\n\n// --- Preserve native type ---\nlet value;\nif (typeof msg.payload === \"object\" && msg.payload !== null) {\n    value = JSON.parse(JSON.stringify(msg.payload));\n} else if (typeof msg.payload === \"string\") {\n    if (!isNaN(msg.payload) && msg.payload.trim() !== \"\") {\n        value = Number(msg.payload);\n    } else if (msg.payload === \"true\" || msg.payload === \"false\") {\n        value = msg.payload === \"true\";\n    } else {\n        value = msg.payload;\n    }\n} else {\n    value = msg.payload;\n}\n\n// --- If value is undefined/null, skip sending ---\nif (value === undefined || value === null) {\n    return null;  // exit, do not send\n}\n\n// --- Determine table name ---\nlet keyParts = key.split(\".\");\nlet table = keyParts[0].replace(/-/g, \"_\");\nlet column = keyParts.length > 1 ? keyParts.slice(1).join(\"_\") : \"value\";\n\n// --- If column is empty, skip sending ---\nif (!column || column.trim() === \"\") {\n    return null;\n}\n\n// --- Use updated timestamp from metadata ---\nlet now = flow.get('factory_timestamp_C') || new Date().toISOString();\n\n// --- Merge into content array ---\nlet existingEntry = content.find(e => e.table === table);\nif (existingEntry) {\n    existingEntry[column] = value;\n    existingEntry.timestamp = now;\n} else {\n    let storeEntry = {\n        dbms: \" manufacturing_historian\",\n        table: table,\n        timestamp: now,\n        [column]: value\n    };\n    content.push(storeEntry);\n}\n\n// --- Save back to context ---\ncontext.set('store', content);\n\n// --- Prepare MQTT message ---\n// --- Prepare MQTT message ---\nlet mqttPayload = content\n    .filter(e => e.table !== \"metadata\")   // <--- skip metadata table\n    .map(e => {\n        return {\n            dbms: e.dbms,\n            table: e.table,\n            timestamp: e.timestamp,\n            // only include keys with actual values (skip undefined/null)\n            ...Object.fromEntries(\n                Object.entries(e).filter(([k, v]) => ![\"dbms\", \"table\", \"timestamp\"].includes(k) && v != null)\n            )\n        };\n    });\n\n// --- Skip sending if empty ---\nif (mqttPayload.length === 0) return null;\n\nmsg.topic = \"enterprisec\";\nmsg.payload = JSON.stringify(mqttPayload);\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 700,
+        "y": 280,
+        "wires": [
+            [
+                "894032b1ce0ee227"
+            ]
+        ]
+    },
+    {
+        "id": "230937030fe680bf",
+        "type": "function",
+        "z": "d036c805c711acdc",
+        "name": "Metadata Timestamp",
+        "func": "// --- Parse payload ---\nlet meta = msg.payload;\nif (typeof meta === \"string\") meta = JSON.parse(meta);\n\n// --- Extract 'sum' updated_at (epoch ms) ---\nlet updatedMs = meta?.virtual_devices?.sum?.updated_at;\nif (!updatedMs) return null;\n\n// --- Ensure monotonic milliseconds ---\nlet lastMs = flow.get('last_sum_epoch_ms') || 0;\n\n// If same or older timestamp, bump by 1 ms\nif (updatedMs <= lastMs) {\n    updatedMs = lastMs + 1;\n}\n\n// Save epoch for next comparison\nflow.set('last_sum_epoch_ms', updatedMs);\n\n// --- Convert to ISO-8601 (milliseconds ONLY) ---\nlet isoTimestamp = new Date(updatedMs).toISOString();\n\n// --- Save for data generator ---\nflow.set('factory_timestamp_C', isoTimestamp);\n\n// --- Output (optional) ---\nmsg.payload = { updated_at: isoTimestamp };\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 220,
+        "wires": [
+            [
+                "d58a698d291ac76a"
+            ]
+        ]
+    },
+    {
+        "id": "021643d35ffd279a",
+        "type": "mqtt in",
+        "z": "d036c805c711acdc",
+        "name": "Metadata",
+        "topic": "Enterprise C/metadata",
+        "qos": "0",
+        "datatype": "auto",
+        "broker": "d6907155e04a9954",
+        "nl": false,
+        "rap": false,
+        "rh": 0,
+        "inputs": 0,
+        "x": 340,
+        "y": 220,
+        "wires": [
+            [
+                "230937030fe680bf"
+            ]
+        ]
+    },
+    {
+        "id": "894032b1ce0ee227",
+        "type": "mqtt out",
+        "z": "d036c805c711acdc",
+        "name": "",
+        "topic": "manufacturing_historian",
+        "qos": "1",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7b2d705ca0d8f3cc",
+        "x": 1050,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "d6907155e04a9954",
+        "type": "mqtt-broker",
+        "name": "ProveIT",
+        "broker": "virtualfactory.proveit.services",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "7b2d705ca0d8f3cc",
+        "type": "mqtt-broker",
+        "name": "Enterprise-C",
+        "broker": "50.116.13.109",
+        "port": "32160",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]
