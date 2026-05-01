@@ -4,7 +4,7 @@ $(info LOADING MAKEFILE)
 # Default values
 export IS_MANUAL ?= false
 export ANYLOG_TYPE ?= anylog-generic
-export TAG ?= pre-develop
+export TAG ?= latest
 export TEST_CONN       ?=
 
 export IMAGE ?= anylogco/anylog-network
@@ -41,7 +41,8 @@ ifeq ($(IS_MANUAL),false)
       export IMAGE     ?= $(shell grep -m1 '^IMAGE='     "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
       export NODE_NAME := $(shell grep -m1 '^NODE_NAME=' "$(_SINGLE_FILE)" | cut -d= -f2- | tr -d '"\r')
     else
-      $(error Missing configuration file(s) for $(ANYLOG_TYPE))
+      
+      $(error Missing configuration file(s) for $(_SINGLE_FILE))
     endif
   endif
 endif
