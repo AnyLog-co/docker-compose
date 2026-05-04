@@ -92,6 +92,14 @@ _check_configs() {
 
 DOCKER_COMPOSE_FILE="docker-makefiles/docker-compose-files/${ANYLOG_TYPE}-docker-compose.yaml"
 
+# remove DOCKER_COMPOSE_FILE if exists
+_cmd_clean_compose() {
+  if [[ "$IS_MANUAL" == "false" ]] && [[ -f ${DOCKER_COMPOSE_FILE} ]]; then
+    rm -rf  "${DOCKER_COMPOSE_FILE}"
+  fi
+}
+
+
 # ──────────────────────────────────────────────
 # Parse flags  (--is-manual, --type, --tag, etc.)
 # ──────────────────────────────────────────────
@@ -215,6 +223,7 @@ cmd_down() {
   fi
 }
 
+
 cmd_clean() {
   _check_configs
   _load_configs
@@ -231,6 +240,7 @@ cmd_clean() {
     echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v
   fi
+  _cmd_clean_compose
 }
 
 cmd_clean_all() {
@@ -250,6 +260,7 @@ cmd_clean_all() {
     echo "Stopping + removing volumes + image: ${ANYLOG_TYPE}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v --rmi all
   fi
+  _cmd_clean_compose
 }
 
 cmd_logs() {
