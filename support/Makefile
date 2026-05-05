@@ -125,7 +125,7 @@ _logs-f: _validate
 #   postgres* -> psql   |   mongo* -> mongosh   |   everything else -> bash
 _attach: _validate
 	@if echo "$(SVC)" | grep -q "^postgres"; then \
-	    $(CONTAINER_CMD) exec -it $(SVC) psql -U postgres; \
+	    $(CONTAINER_CMD) exec -it $(SVC) psql -U admin -d postgres; \
     elif echo "$(SVC)" | grep -q "^mongo"; then \
 	    $(CONTAINER_CMD) exec -it $(SVC) mongosh; \
 	else \
