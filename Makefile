@@ -97,7 +97,10 @@ license-check: .license_accepted ## accept license agreement (auto-runs before u
 			if (!ty_ok)  msg = msg "missing/invalid type; "; \
 			print msg; exit \
 		}'); \
-		if [ "$$_RESULT" = "VALID" ]; then break; fi; \
+		if [ "$$_RESULT" = "VALID" ]; then \
+			LICENSE_KEY=$$(echo "$$LICENSE_KEY" | awk -v lq="$$_LQ" -v rq="$$_RQ" '{gsub(/\\"/, "\""); gsub(lq, "\""); gsub(rq, "\""); print}'); \
+			break; \
+		fi; \
 		echo "  ERROR: Invalid license key - $$(echo "$$_RESULT" | cut -d'|' -f2)"; \
 	done; \
 	echo ""; \
