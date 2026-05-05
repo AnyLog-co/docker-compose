@@ -47,7 +47,7 @@ all: help
 license-check: .license_accepted ## accept license agreement (auto-runs before up/pull)
 
 .license_accepted:
-	@cat LICENSE.txt
+	@more LICENSE.txt
 	@echo ""
 	@echo "========================================"
 	@echo "  License Agreement Acceptance Required"
