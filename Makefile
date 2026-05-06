@@ -126,8 +126,8 @@ license-check: .license_accepted ## accept license agreement (auto-runs before u
 		echo "Registration successful."; \
 		echo "$$NAME|$$COMPANY|$$EMAIL|$$PROJECT|$$LICENSE_KEY|$$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .license_accepted; \
 	else \
-		echo "Warning: Registration server returned HTTP $$HTTP_CODE."; \
-		echo "Response: $$(cat /tmp/license_response.txt)"; \
+		echo "We could not complete license registration right now."; \
+		echo "Please contact support@anylog.co with your license information."; \
 		printf "Continue anyway? [yes/no]: "; read CONT; \
 		if [ "$$CONT" != "yes" ]; then \
 			echo "Aborting."; exit 1; \
