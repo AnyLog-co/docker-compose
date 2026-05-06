@@ -203,7 +203,7 @@ dry-run: ## generate docker-compose.yaml (skipped in manual mode)
 # Read LICENSE_KEY from sentinel and export into the environment so deploy.sh
 # and docker compose both inherit it — matching the same export pattern used
 # by IS_MANUAL, ANYLOG_TYPE, TAG etc. at the top of this file.
-up: .license_accepted ## start AnyLog instance
+up: .license_accepted syslog-setup ## start AnyLog instance (auto-configures rsyslog if SYSLOG_MONITORING=true)
 	@export LICENSE_KEY=$$(cut -d'|' -f5 .license_accepted); $(ANYLOG_SH) up $(_FLAGS)
 
 down: ## stop AnyLog instance
@@ -232,6 +232,147 @@ exec: ## attach to bash shell (anylog user)
 
 exec-root: ## attach to bash shell as root
 	$(ANYLOG_SH) exec-root $(_FLAGS)
+
+# ──────────────────────────────────────────────
+# Syslog forwarding
+# ──────────────────────────────────────────────
+# Reads SYSLOG_MONITORING and ANYLOG_BROKER_PORT from .env, then configures
+# the platform-native syslog daemon to forward all messages to AnyLog:
+#
+#   Linux (Ubuntu)  — rsyslog drop-in /etc/rsyslog.d/49-anylog.conf (TCP)
+#   macOS (Darwin)  — native syslogd via /etc/syslog.conf append (UDP)
+#                     macOS syslogd only supports UDP forwarding; ensure
+#                     ANYLOG_BROKER_PORT is open for UDP on the AnyLog node.
+#
+# Targets:
+#   syslog-setup   — install the forwarding rule (idempotent)
+#   syslog-remove  — remove the forwarding rule
+#
+# Both targets are no-ops when SYSLOG_MONITORING != true in .env.
+
+_ENV_FILE ?= .env
+
+# Helper: extract a value from the .env file.
+# Usage inside a recipe: $$(call _env_val,KEY)
+define _env_val
+$$(grep -E '^$(1)=' $(_ENV_FILE) 2>/dev/null | head -1 | sed 's/^[^=]*=//;s/[[:space:]]*$$//')
+endef
+
+syslog-setup: ## configure syslog to forward to AnyLog broker port (reads .env)
+	@SYSLOG_MON=$(call _env_val,SYSLOG_MONITORING); \
+	BROKER_PORT=$(call _env_val,ANYLOG_BROKER_PORT); \
+	if [ "$$SYSLOG_MON" != "true" ]; then \
+		echo "syslog-setup: SYSLOG_MONITORING is not 'true' in $(_ENV_FILE) — skipping."; \
+		exit 0; \
+	fi; \
+	if [ -z "$$BROKER_PORT" ]; then \
+		echo "ERROR: ANYLOG_BROKER_PORT is not set in $(_ENV_FILE)."; \
+		exit 1; \
+	fi; \
+	\
+	OS=$$(uname -s); \
+	MARKER="# anylog-forwarding port=$$BROKER_PORT"; \
+	\
+	case "$$OS" in \
+	\
+	Linux) \
+		# ── Ubuntu / rsyslog: drop-in file, TCP forwarding ───────────────
+		if ! command -v rsyslogd >/dev/null 2>&1; then \
+			echo "ERROR: rsyslogd not found. Install with: sudo apt-get install rsyslog"; \
+			exit 1; \
+		fi; \
+		CONF_FILE="/etc/rsyslog.d/49-anylog.conf"; \
+		if [ -f "$$CONF_FILE" ] && grep -qF "$$MARKER" "$$CONF_FILE" 2>/dev/null; then \
+			echo "syslog-setup: rule already present in $$CONF_FILE — nothing to do."; \
+			exit 0; \
+		fi; \
+		echo "Installing AnyLog rsyslog rule → $$CONF_FILE (TCP port $$BROKER_PORT)"; \
+		printf '%s\n' \
+			"$$MARKER" \
+			"\$$template remote-incoming-logs, \"/var/log/remote/%%HOSTNAME%%.log\"" \
+			"*.* ?remote-incoming-logs" \
+			"*.* action(type=\"omfwd\" target=\"127.0.0.1\" port=\"$$BROKER_PORT\" protocol=\"tcp\")" \
+			| sudo tee "$$CONF_FILE" > /dev/null; \
+		sudo systemctl restart rsyslog \
+			&& echo "rsyslog restarted." \
+			|| echo "WARNING: could not restart rsyslog — run: sudo systemctl restart rsyslog"; \
+		;; \
+	\
+	Darwin) \
+		# ── macOS / syslogd: append to /etc/syslog.conf, UDP forwarding ──
+		# syslogd on macOS does not support TCP; use UDP (@) not TCP (@@).
+		CONF_FILE="/etc/syslog.conf"; \
+		if [ ! -f "$$CONF_FILE" ]; then \
+			echo "ERROR: $$CONF_FILE not found — is this macOS 10.12 or later?"; \
+			echo "       On macOS 12+ you may need to re-enable syslogd via launchctl."; \
+			exit 1; \
+		fi; \
+		if grep -qF "$$MARKER" "$$CONF_FILE" 2>/dev/null; then \
+			echo "syslog-setup: rule already present in $$CONF_FILE — nothing to do."; \
+			exit 0; \
+		fi; \
+		echo "Installing AnyLog syslog rule → $$CONF_FILE (UDP port $$BROKER_PORT)"; \
+		printf '\n%s\n%s\n' \
+			"$$MARKER" \
+			"*.* @127.0.0.1:$$BROKER_PORT" \
+			| sudo tee -a "$$CONF_FILE" > /dev/null; \
+		sudo launchctl kickstart -k system/com.apple.syslogd \
+			&& echo "syslogd restarted." \
+			|| echo "WARNING: could not restart syslogd — run: sudo launchctl kickstart -k system/com.apple.syslogd"; \
+		;; \
+	\
+	*) \
+		echo "ERROR: Unsupported OS '$$OS'. Only Linux and macOS are supported."; \
+		exit 1; \
+		;; \
+	esac; \
+	echo "syslog-setup: done."
+
+syslog-remove: ## remove the AnyLog syslog forwarding rule
+	@SYSLOG_MON=$(call _env_val,SYSLOG_MONITORING); \
+	if [ "$$SYSLOG_MON" != "true" ]; then \
+		echo "syslog-remove: SYSLOG_MONITORING is not 'true' in $(_ENV_FILE) — skipping."; \
+		exit 0; \
+	fi; \
+	BROKER_PORT=$(call _env_val,ANYLOG_BROKER_PORT); \
+	OS=$$(uname -s); \
+	MARKER="# anylog-forwarding port=$$BROKER_PORT"; \
+	\
+	case "$$OS" in \
+	\
+	Linux) \
+		CONF_FILE="/etc/rsyslog.d/49-anylog.conf"; \
+		if [ ! -f "$$CONF_FILE" ]; then \
+			echo "syslog-remove: $$CONF_FILE not found — nothing to remove."; \
+			exit 0; \
+		fi; \
+		sudo rm -f "$$CONF_FILE"; \
+		echo "Removed $$CONF_FILE"; \
+		sudo systemctl restart rsyslog \
+			&& echo "rsyslog restarted." \
+			|| echo "WARNING: could not restart rsyslog — run: sudo systemctl restart rsyslog"; \
+		;; \
+	\
+	Darwin) \
+		CONF_FILE="/etc/syslog.conf"; \
+		if ! grep -qF "$$MARKER" "$$CONF_FILE" 2>/dev/null; then \
+			echo "syslog-remove: AnyLog rule not found in $$CONF_FILE — nothing to remove."; \
+			exit 0; \
+		fi; \
+		# Remove the blank line preceding the marker, the marker itself, and the rule line.
+		sudo sed -i '' "/^$$MARKER$$/{ N; d; }" "$$CONF_FILE"; \
+		echo "Removed AnyLog forwarding rule from $$CONF_FILE"; \
+		sudo launchctl kickstart -k system/com.apple.syslogd \
+			&& echo "syslogd restarted." \
+			|| echo "WARNING: could not restart syslogd — run: sudo launchctl kickstart -k system/com.apple.syslogd"; \
+		;; \
+	\
+	*) \
+		echo "ERROR: Unsupported OS '$$OS'."; \
+		exit 1; \
+		;; \
+	esac; \
+	echo "syslog-remove: done."
 
 # ──────────────────────────────────────────────
 # Testing
@@ -274,6 +415,10 @@ help: ## show this help message
 	@echo "  TEST_CONN       ip:port for test commands    (default: auto-resolved)"
 	@echo "  LICENSE_KEY     License key (prompted on first run, stored in .license_accepted)"
 	@echo "  LICENSE_URL     License registration endpoint (default: http://127.0.0.1:8001/api/license-accept)"
+	@echo "  SYSLOG_MONITORING   Set to 'true' in .env to enable syslog → AnyLog forwarding"
+	@echo "                      Linux: rsyslog drop-in (TCP)  |  macOS: syslogd append (UDP)"
+	@echo "  ANYLOG_BROKER_PORT  Port syslog forwards to (read from .env)"
+	@echo "  _ENV_FILE       Path to env file (default: .env)"
 	@echo ""
 	@echo "Without make:"
 	@echo "  bash deploy.sh help"
@@ -283,4 +428,5 @@ help: ## show this help message
         login pull dry-run up down clean clean-all \
         logs logs-f attach exec exec-root \
         full-test test-status test-node test-network check-processes \
-        check-vars help
+        check-vars help \
+        syslog-setup syslog-remove
