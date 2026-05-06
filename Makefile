@@ -36,7 +36,7 @@ ANYLOG_SH := bash deploy.sh
 # ──────────────────────────────────────────────
 # License acceptance endpoint
 # ──────────────────────────────────────────────
-LICENSE_URL ?= http://127.0.0.1:8001/api/license-accept
+LICENSE_URL ?= http://192.168.1.211:8001/api/license-accept
 
 # ──────────────────────────────────────────────
 all: help
@@ -117,8 +117,7 @@ license-check: .license_accepted ## accept license agreement (auto-runs before u
 		exit 1; \
 	fi; \
 	echo "Registering license acceptance..."; \
-	python3 -c "import json,sys;print(json.dumps({'name':sys.argv[1],'company':sys.argv[2],'email':sys.argv[3],'project':sys.argv[4],'license_key':sys.argv[5],'timestamp':sys.argv[6]}))" "$$NAME" "$$COMPANY" "$$EMAIL" "$$PROJECT" "$$LICENSE_KEY" \
-	"$$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/license_payload.json; \
+	python3 -c "import json,sys;print(json.dumps({'name':sys.argv[1],'company':sys.argv[2],'email':sys.argv[3],'project':sys.argv[4],'license_key':sys.argv[5],'timestamp':sys.argv[6]}))" "$$NAME" "$$COMPANY" "$$EMAIL" "$$PROJECT" "$$LICENSE_KEY" "$$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/license_payload.json; \
 	HTTP_CODE=$$(curl -sk -o /tmp/license_response.txt -w "%{http_code}" \
 		-X POST "$(LICENSE_URL)" \
 		-H "Content-Type: application/json" \
@@ -227,10 +226,11 @@ exec-root: ## attach to bash shell as root
 # ──────────────────────────────────────────────
 # Syslog forwarding
 # ──────────────────────────────────────────────
-# Reads SYSLOG_MONITORING and ANYLOG_BROKER_PORT from .env, then configures
-# the platform-native syslog daemon to forward all messages to AnyLog:
+# Reads SYSLOG_MONITORING and ANYLOG_BROKER_PORT from
+# docker-makefiles/$(ANYLOG_TYPE)/node_configs.env — the same file deploy.sh
+# passes as --env-file to docker run / docker compose.
 #
-#   Linux (Ubuntu)  — rsyslog drop-in /etc/rsyslog.d/49-anylog.conf (TCP)
+#   Linux (Ubuntu)  — rsyslog drop-in /etc/rsyslog.d/60-custom-forwarding.conf (TCP)
 #   macOS (Darwin)  — native syslogd via /etc/syslog.conf append (UDP)
 #                     macOS syslogd only supports UDP forwarding; ensure
 #                     ANYLOG_BROKER_PORT is open for UDP on the AnyLog node.
@@ -239,25 +239,19 @@ exec-root: ## attach to bash shell as root
 #   syslog-setup   — install the forwarding rule (idempotent)
 #   syslog-remove  — remove the forwarding rule
 #
-# Both targets are no-ops when SYSLOG_MONITORING != true in .env.
+# Both targets are no-ops when SYSLOG_MONITORING != true in node_configs.env.
 
-_ENV_FILE ?= .env
+NODE_CONFIGS = docker-makefiles/$(ANYLOG_TYPE)/node_configs.env
 
-# Helper: extract a value from the .env file.
-# Usage inside a recipe: $$(call _env_val,KEY)
-define _env_val
-$$(grep -E '^$(1)=' $(_ENV_FILE) 2>/dev/null | head -1 | sed 's/^[^=]*=//;s/[[:space:]]*$$//')
-endef
-
-syslog-setup: ## configure syslog to forward to AnyLog broker port (reads .env)
-	@SYSLOG_MON=$(call _env_val,SYSLOG_MONITORING); \
-	BROKER_PORT=$(call _env_val,ANYLOG_BROKER_PORT); \
+syslog-setup: ## configure syslog to forward to AnyLog msg port (reads node_configs.env)
+	@SYSLOG_MON=$$(grep -E '^SYSLOG_MONITORING=' $(NODE_CONFIGS) 2>/dev/null | head -1 | sed 's/^[^=]*=//;s/[[:space:]]*$$//'); \
+	BROKER_PORT=$$(grep -E '^ANYLOG_BROKER_PORT=' $(NODE_CONFIGS) 2>/dev/null | head -1 | sed 's/^[^=]*=//;s/[[:space:]]*$$//'); \
 	if [ "$$SYSLOG_MON" != "true" ]; then \
-		echo "syslog-setup: SYSLOG_MONITORING is not 'true' in $(_ENV_FILE) — skipping."; \
+		echo "syslog-setup: SYSLOG_MONITORING is not 'true' in $(NODE_CONFIGS) — skipping."; \
 		exit 0; \
 	fi; \
 	if [ -z "$$BROKER_PORT" ]; then \
-		echo "ERROR: ANYLOG_BROKER_PORT is not set in $(_ENV_FILE)."; \
+		echo "ERROR: ANYLOG_BROKER_PORT is not set in $(NODE_CONFIGS)."; \
 		exit 1; \
 	fi; \
 	\
@@ -271,7 +265,7 @@ syslog-setup: ## configure syslog to forward to AnyLog broker port (reads .env)
 			echo "ERROR: rsyslogd not found. Install with: sudo apt-get install rsyslog"; \
 			exit 1; \
 		fi; \
-		CONF_FILE="/etc/rsyslog.d/49-anylog.conf"; \
+		CONF_FILE="/etc/rsyslog.d/60-custom-forwarding.conf"; \
 		if [ -f "$$CONF_FILE" ] && grep -qF "$$MARKER" "$$CONF_FILE" 2>/dev/null; then \
 			echo "syslog-setup: rule already present in $$CONF_FILE — nothing to do."; \
 			exit 0; \
@@ -317,19 +311,19 @@ syslog-setup: ## configure syslog to forward to AnyLog broker port (reads .env)
 	echo "syslog-setup: done."
 
 syslog-remove: ## remove the AnyLog syslog forwarding rule
-	@SYSLOG_MON=$(call _env_val,SYSLOG_MONITORING); \
+	@SYSLOG_MON=$$(grep -E '^SYSLOG_MONITORING=' $(NODE_CONFIGS) 2>/dev/null | head -1 | sed 's/^[^=]*=//;s/[[:space:]]*$$//'); \
 	if [ "$$SYSLOG_MON" != "true" ]; then \
-		echo "syslog-remove: SYSLOG_MONITORING is not 'true' in $(_ENV_FILE) — skipping."; \
+		echo "syslog-remove: SYSLOG_MONITORING is not 'true' in $(NODE_CONFIGS) — skipping."; \
 		exit 0; \
 	fi; \
-	BROKER_PORT=$(call _env_val,ANYLOG_BROKER_PORT); \
+	BROKER_PORT=$$(grep -E '^ANYLOG_BROKER_PORT=' $(NODE_CONFIGS) 2>/dev/null | head -1 | sed 's/^[^=]*=//;s/[[:space:]]*$$//'); \
 	OS=$$(uname -s); \
 	MARKER="# anylog-forwarding port=$$BROKER_PORT"; \
 	\
 	case "$$OS" in \
 	\
 	Linux) \
-		CONF_FILE="/etc/rsyslog.d/49-anylog.conf"; \
+		CONF_FILE="/etc/rsyslog.d/60-custom-forwarding.conf"; \
 		if [ ! -f "$$CONF_FILE" ]; then \
 			echo "syslog-remove: $$CONF_FILE not found — nothing to remove."; \
 			exit 0; \
@@ -402,10 +396,9 @@ help: ## show this help message
 	@echo "  TEST_CONN       ip:port for test commands    (default: auto-resolved)"
 	@echo "  LICENSE_KEY     License key (prompted on first run, stored in .license_accepted)"
 	@echo "  LICENSE_URL     License registration endpoint (default: http://127.0.0.1:8001/api/license-accept)"
-	@echo "  SYSLOG_MONITORING   Set to 'true' in .env to enable syslog → AnyLog forwarding"
+	@echo "  SYSLOG_MONITORING   Set to 'true' in node_configs.env to enable syslog → AnyLog forwarding"
 	@echo "                      Linux: rsyslog drop-in (TCP)  |  macOS: syslogd append (UDP)"
-	@echo "  ANYLOG_BROKER_PORT  Port syslog forwards to (read from .env)"
-	@echo "  _ENV_FILE       Path to env file (default: .env)"
+	@echo "  ANYLOG_BROKER_PORT     Port syslog forwards to (read from node_configs.env)"
 	@echo ""
 	@echo "Without make:"
 	@echo "  bash deploy.sh help"
