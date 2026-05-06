@@ -117,16 +117,7 @@ license-check: .license_accepted ## accept license agreement (auto-runs before u
 		exit 1; \
 	fi; \
 	echo "Registering license acceptance..."; \
-	python3 -c " \
-import json, sys; \
-print(json.dumps({ \
-    'name':        sys.argv[1], \
-    'company':     sys.argv[2], \
-    'email':       sys.argv[3], \
-    'project':     sys.argv[4], \
-    'license_key': sys.argv[5], \
-    'timestamp':   sys.argv[6]  \
-}))" "$$NAME" "$$COMPANY" "$$EMAIL" "$$PROJECT" "$$LICENSE_KEY" \
+	python3 -c "import json,sys;print(json.dumps({'name':sys.argv[1],'company':sys.argv[2],'email':sys.argv[3],'project':sys.argv[4],'license_key':sys.argv[5],'timestamp':sys.argv[6]}))" "$$NAME" "$$COMPANY" "$$EMAIL" "$$PROJECT" "$$LICENSE_KEY" \
 	"$$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/license_payload.json; \
 	HTTP_CODE=$$(curl -sk -o /tmp/license_response.txt -w "%{http_code}" \
 		-X POST "$(LICENSE_URL)" \
@@ -276,7 +267,6 @@ syslog-setup: ## configure syslog to forward to AnyLog broker port (reads .env)
 	case "$$OS" in \
 	\
 	Linux) \
-		# ── Ubuntu / rsyslog: drop-in file, TCP forwarding ───────────────
 		if ! command -v rsyslogd >/dev/null 2>&1; then \
 			echo "ERROR: rsyslogd not found. Install with: sudo apt-get install rsyslog"; \
 			exit 1; \
@@ -299,8 +289,6 @@ syslog-setup: ## configure syslog to forward to AnyLog broker port (reads .env)
 		;; \
 	\
 	Darwin) \
-		# ── macOS / syslogd: append to /etc/syslog.conf, UDP forwarding ──
-		# syslogd on macOS does not support TCP; use UDP (@) not TCP (@@).
 		CONF_FILE="/etc/syslog.conf"; \
 		if [ ! -f "$$CONF_FILE" ]; then \
 			echo "ERROR: $$CONF_FILE not found — is this macOS 10.12 or later?"; \
@@ -359,7 +347,6 @@ syslog-remove: ## remove the AnyLog syslog forwarding rule
 			echo "syslog-remove: AnyLog rule not found in $$CONF_FILE — nothing to remove."; \
 			exit 0; \
 		fi; \
-		# Remove the blank line preceding the marker, the marker itself, and the rule line.
 		sudo sed -i '' "/^$$MARKER$$/{ N; d; }" "$$CONF_FILE"; \
 		echo "Removed AnyLog forwarding rule from $$CONF_FILE"; \
 		sudo launchctl kickstart -k system/com.apple.syslogd \
