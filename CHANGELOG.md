@@ -8,6 +8,8 @@ layout: page
 <!-- last-processed: 4f8345a (2026-04-29) -->
 
 <!-- Developers: add bullets below as changes land in your branch -->
+- Improved `Makefile` license registration failure messaging to be user-friendly.
+- Removed raw HTTP status code and server response details from license-server contact prompts; users are now directed to email `support@anylog.co` with license information.
 
 ---
 
