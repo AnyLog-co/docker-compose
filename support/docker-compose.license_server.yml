@@ -1,0 +1,13 @@
+services:
+  license-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.license_server
+    container_name: license-server
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      DATA_DIR: /data
+    volumes:
+      - ./shared-license-data:/data
