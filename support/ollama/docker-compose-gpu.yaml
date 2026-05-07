@@ -8,7 +8,16 @@ services:
       - "11434:11434"
     volumes:
       - ollama-data:/root/.ollama
-    restart: unless-stopped
+    restart: always
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     entrypoint: ["/bin/sh", "-c"]
     command: >
       "ollama serve &
