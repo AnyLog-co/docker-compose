@@ -47,7 +47,6 @@ export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export DOCKER_SOCKET=$(grep -m1 '^DOCKER_SOCKET=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-#export DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
 export DEPLOYMENTS_REPO=$(grep -m1 '^DEPLOYMENTS_REPO=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export USER_VOLUMES=$(grep -m1 '^USER_VOLUMES=' ${BASE_ENV} | cut -d= -f2- | tr -d '"\r')
 
@@ -62,7 +61,6 @@ COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 
 if [[ "$(uname -s)" != "Linux" ]]; then
-#  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 fi
 
@@ -97,7 +95,6 @@ if ! ([[ ! -d "${DEPLOYMENTS_REPO}" ]] || [[ -z "$(ls -A "${DEPLOYMENTS_REPO}" 2
   ${SED_INPLACE} "0,/\${NODE_NAME}-local-scripts/s# \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" "${COMPOSE_FILE}"
 fi
 
-
 # -------- Docker Socket --------
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
   ${SED_INPLACE} "s/- \${DOCKER_GID}/#- \${MISSING-DOCKER_GID}/g" "${COMPOSE_FILE}"
@@ -109,7 +106,6 @@ else
     export DOCKER_GID=$(stat -f '%g' "${DOCKER_SOCKET}")   # BSD stat (macOS)
   fi
 fi
-
 
 # -------- macOS: comment out Linux-only directives --------
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -127,7 +123,7 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   export REMOTE_GUI_TAG=$(grep -m1 '^REMOTE_GUI_TAG=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export REMOTE_CONN=$(grep -m1 '^REMOTE_CONN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export OVERLAY_IP=$(grpe -m1 '^OVERLAY_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export OVERLAY_IP=$(grep -m1 '^OVERLAY_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
   REMOTE_GUI_FE="${REMOTE_GUI_FE:-31800}"
   REMOTE_GUI_BE="${REMOTE_GUI_BE:-8080}"
@@ -143,9 +139,9 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
     fi
   fi
 
-  if [[ ! -n "${REMOTE_CONN:-}" ]] && [[ -n "${OVERLAY_IP}" ]] ; then
+  if [[ ! -n "${REMOTE_CONN:-}" ]] && [[ -n "${OVERLAY_IP}" ]]; then
     export REMOTE_CONN="${OVERLAY_IP}:${ANYLOG_REST_PORT}"
-  elif [[ ! -n "${REMOTE_CONN:-}" ]] ; then
+  elif [[ ! -n "${REMOTE_CONN:-}" ]]; then
     export REMOTE_CONN="${REMOTE_GUI_IP}:${ANYLOG_REST_PORT}"
   fi
 
@@ -222,5 +218,3 @@ OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compos
 envsubst < "${COMPOSE_FILE}" > "$OUTPUT_FILE"
 rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak
 echo "Saved: ${OUTPUT_FILE}"
-
-
