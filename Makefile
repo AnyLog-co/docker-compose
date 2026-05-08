@@ -1,6 +1,8 @@
 #!/bin/Makefile
 $(info LOADING MAKEFILE)
 
+SHELL := /bin/bash
+
 # ──────────────────────────────────────────────
 # Default values
 # ──────────────────────────────────────────────
@@ -118,10 +120,43 @@ license-check: .license_accepted ## accept license agreement (auto-runs before u
 	fi; \
 	echo "Registering license acceptance..."; \
 	python3 -c "import json,sys;print(json.dumps({'name':sys.argv[1],'company':sys.argv[2],'email':sys.argv[3],'project':sys.argv[4],'license_key':sys.argv[5],'timestamp':sys.argv[6]}))" "$$NAME" "$$COMPANY" "$$EMAIL" "$$PROJECT" "$$LICENSE_KEY" "$$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /tmp/license_payload.json; \
-	HTTP_CODE=$$(curl -sk -o /tmp/license_response.txt -w "%{http_code}" \
-		-X POST "$(LICENSE_URL)" \
-		-H "Content-Type: application/json" \
-		-d @/tmp/license_payload.json); \
+	post_license_payload() { \
+		_URL="$$1"; _PAYLOAD_FILE="$$2"; _RESPONSE_FILE="$$3"; \
+		if command -v curl >/dev/null 2>&1; then \
+			curl -sk -o "$$_RESPONSE_FILE" -w "%{http_code}" \
+				-X POST "$$_URL" \
+				-H "Content-Type: application/json" \
+				-d @"$$_PAYLOAD_FILE"; \
+			return; \
+		fi; \
+		case "$$_URL" in \
+			http://*) _REST="$${_URL#http://}"; _PORT=80 ;; \
+			https://*) echo "ERROR: curl is not installed and Bash /dev/tcp cannot do HTTPS/TLS by itself." >&2; return 2 ;; \
+			*) echo "ERROR: LICENSE_URL must start with http:// when curl is unavailable." >&2; return 2 ;; \
+		esac; \
+		_HOSTPORT="$${_REST%%/*}"; _PATH="/$${_REST#*/}"; \
+		if [ "$$_HOSTPORT" = "$$_REST" ]; then _PATH="/"; fi; \
+		_HOST="$${_HOSTPORT%%:*}"; \
+		if [ "$$_HOST" != "$$_HOSTPORT" ]; then _PORT="$${_HOSTPORT##*:}"; fi; \
+		_BODY=$$(<"$$_PAYLOAD_FILE"); \
+		: > "$$_RESPONSE_FILE"; \
+		if ! exec 3<>"/dev/tcp/$$_HOST/$$_PORT"; then \
+			echo "ERROR: could not connect to $$_HOST:$$_PORT" >&2; \
+			return 2; \
+		fi; \
+		printf 'POST %s HTTP/1.1\r\n' "$$_PATH" >&3; \
+		printf 'Host: %s\r\n' "$$_HOSTPORT" >&3; \
+		printf 'Content-Type: application/json\r\n' >&3; \
+		printf 'Content-Length: %d\r\n' "$${#_BODY}" >&3; \
+		printf 'Connection: close\r\n' >&3; \
+		printf '\r\n' >&3; \
+		printf '%s' "$$_BODY" >&3; \
+		while IFS= read -r _LINE <&3; do printf '%s\n' "$$_LINE" >> "$$_RESPONSE_FILE"; done; \
+		exec 3<&-; exec 3>&-; \
+		IFS=' ' read -r _HTTP _CODE _MSG < "$$_RESPONSE_FILE"; \
+		printf '%s' "$$_CODE"; \
+	}; \
+	HTTP_CODE=$$(post_license_payload "$(LICENSE_URL)" /tmp/license_payload.json /tmp/license_response.txt); \
 	if [ "$$HTTP_CODE" = "200" ] || [ "$$HTTP_CODE" = "201" ]; then \
 		echo "Registration successful."; \
 		echo "$$NAME|$$COMPANY|$$EMAIL|$$PROJECT|$$LICENSE_KEY|$$(date -u +%Y-%m-%dT%H:%M:%SZ)" > .license_accepted; \
@@ -171,9 +206,31 @@ debug-post: ## test POST to license server and show exact request/response
 	echo "$$BODY"; \
 	echo ""; \
 	echo "Response:"; \
-	curl -sk -v -X POST "$(LICENSE_URL)" \
-		-H "Content-Type: application/json" \
-		-d "$$BODY" 2>&1
+	if command -v curl >/dev/null 2>&1; then \
+		curl -sk -v -X POST "$(LICENSE_URL)" \
+			-H "Content-Type: application/json" \
+			-d "$$BODY" 2>&1; \
+	else \
+		_URL="$(LICENSE_URL)"; \
+		case "$$_URL" in \
+			http://*) _REST="$${_URL#http://}"; _PORT=80 ;; \
+			https://*) echo "ERROR: curl is not installed and Bash /dev/tcp cannot do HTTPS/TLS by itself."; exit 2 ;; \
+			*) echo "ERROR: LICENSE_URL must start with http:// when curl is unavailable."; exit 2 ;; \
+		esac; \
+		_HOSTPORT="$${_REST%%/*}"; _PATH="/$${_REST#*/}"; \
+		if [ "$$_HOSTPORT" = "$$_REST" ]; then _PATH="/"; fi; \
+		_HOST="$${_HOSTPORT%%:*}"; \
+		if [ "$$_HOST" != "$$_HOSTPORT" ]; then _PORT="$${_HOSTPORT##*:}"; fi; \
+		exec 3<>"/dev/tcp/$$_HOST/$$_PORT"; \
+		printf 'POST %s HTTP/1.1\r\n' "$$_PATH" >&3; \
+		printf 'Host: %s\r\n' "$$_HOSTPORT" >&3; \
+		printf 'Content-Type: application/json\r\n' >&3; \
+		printf 'Content-Length: %d\r\n' "$${#BODY}" >&3; \
+		printf 'Connection: close\r\n\r\n' >&3; \
+		printf '%s' "$$BODY" >&3; \
+		cat <&3; \
+		exec 3<&-; exec 3>&-; \
+	fi
 
 # ──────────────────────────────────────────────
 # Docker Hub
