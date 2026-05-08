@@ -49,6 +49,8 @@ export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d
 export DOCKER_SOCKET=$(grep -m1 '^DOCKER_SOCKET=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 #export DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
 export DEPLOYMENTS_REPO=$(grep -m1 '^DEPLOYMENTS_REPO=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export USER_VOLUMES=$(grep -m1 '^USER_VOLUMES=' ${BASE_ENV} | cut -d= -f2- | tr -d '"\r')
+
 
 # -------- LICENSE_KEY: prefer env var (set by Makefile), fall back to config file --------
 if [[ -z "${LICENSE_KEY:-}" ]]; then
@@ -95,6 +97,7 @@ if ! ([[ ! -d "${DEPLOYMENTS_REPO}" ]] || [[ -z "$(ls -A "${DEPLOYMENTS_REPO}" 2
   ${SED_INPLACE} "0,/\${NODE_NAME}-local-scripts/s# \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" "${COMPOSE_FILE}"
 fi
 
+
 # -------- Docker Socket --------
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
   ${SED_INPLACE} "s/- \${DOCKER_GID}/#- \${MISSING-DOCKER_GID}/g" "${COMPOSE_FILE}"
@@ -106,6 +109,7 @@ else
     export DOCKER_GID=$(stat -f '%g' "${DOCKER_SOCKET}")   # BSD stat (macOS)
   fi
 fi
+
 
 # -------- macOS: comment out Linux-only directives --------
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -187,6 +191,29 @@ END {
   next
 }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 fi
+
+# -------- USER VOLUMES --------
+if [[ -n "${USER_VOLUMES}" ]]; then
+  for VOLUME in ${USER_VOLUMES}; do
+
+    if [[ "${VOLUME}" == *"/"* ]]; then
+      MOUNT_NAME=$(basename "${VOLUME}")
+    elif [[ "${VOLUME}" == *"\\"* ]]; then
+      MOUNT_NAME=$(echo "${VOLUME}" | awk -F "\\" '{print $NF}')
+    else
+      MOUNT_NAME="${VOLUME}"
+    fi
+
+    INJECT="      - ${VOLUME:+${VOLUME}:}/app/${MOUNT_NAME}"
+
+    # Insert BEFORE the root-level volumes:
+    ${SED_INPLACE} "/^volumes:/i\\
+${INJECT}
+" "${COMPOSE_FILE}"
+
+  done
+fi
+
 
 # -------- Envsubst & Write Output --------
 echo "Generating final docker-compose.yaml..."
