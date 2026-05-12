@@ -17,6 +17,9 @@
 #   make logs SERVICE=grafana
 #   make exec SERVICE=postgres-prod
 #   make list                         # show every discovered service
+#   make setup  SERVICE=syslog        # install syslog → AnyLog forwarding (prompts for config path)
+#   make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
+#   make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
 #----------------------------------------------------------------------
 $(info LOADING MAKEFILE)
 
@@ -49,6 +52,28 @@ ifeq ($(_SVC),mongo)
 endif
 
 all: help
+
+# ── syslog intercept — resolved before any compose-based targets ───────
+# When SERVICE=syslog the public targets (setup/remove/help) delegate
+# directly to syslog.sh instead of the docker-compose path.
+# NODE_CONFIGS is prompted interactively when not supplied on the command line.
+ifeq ($(_SVC),syslog)
+
+_syslog-config:
+	$(eval _SYSLOG_CFG := $(or $(NODE_CONFIGS),$(shell read -rp "Node config file path: " p && echo "$$p")))
+
+setup: _syslog-config ## (syslog) Install host syslog → AnyLog forwarding rule
+	bash $(SUPPORT_DIR)syslog.sh setup "$(_SYSLOG_CFG)"
+
+remove: _syslog-config ## (syslog) Remove host syslog → AnyLog forwarding rule
+	bash $(SUPPORT_DIR)syslog.sh remove "$(_SYSLOG_CFG)"
+
+help: ## (syslog) Show syslog.sh usage
+	bash $(SUPPORT_DIR)syslog.sh help
+
+.PHONY: _syslog-config setup remove
+
+endif
 
 # ======================================================================
 # dry-run — (re)generate docker-compose.yml from configs.yaml
@@ -222,6 +247,7 @@ help: ## Show this help message
 	@echo "  Default services : $(DEFAULT_SERVICES)"
 	@echo "  Aliases          : gui -> remote-gui  |  psql -> postgres  |  mongo -> mongodb"
 	@echo "  Custom instances : create subdir + configs.yaml, then use SERVICE=<dirname>"
+	@echo "  Host syslog      : SERVICE=syslog  (delegates to syslog.sh, not docker-compose)"
 	@echo ""
 	@echo "Targets:"
 	@grep -E '^[a-zA-Z_-]+:.*##' $(MAKEFILE_LIST) \
@@ -230,5 +256,6 @@ help: ## Show this help message
 
 .PHONY: all dry-run list help \
         up down clean clean-all logs logs-f attach exec \
+        setup remove \
         _validate _ensure-compose \
         _up _down _clean _clean-all _logs _logs-f _attach _exec
