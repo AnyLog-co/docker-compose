@@ -1,8 +1,8 @@
 services:
   license-server:
     build:
-      context: .
-      dockerfile: Dockerfile.license_server
+      context: ../support
+      dockerfile: ../support/Dockerfile.license_server
     container_name: license-server
     restart: unless-stopped
     ports:
