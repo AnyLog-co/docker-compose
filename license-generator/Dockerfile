@@ -2,10 +2,10 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-COPY requirements.license_server.txt .
-RUN pip install --no-cache-dir -r requirements.license_server.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-COPY license-server.py app.py
+COPY src/license-server.py app.py
 
 RUN mkdir -p /data
 

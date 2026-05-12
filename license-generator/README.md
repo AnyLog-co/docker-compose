@@ -20,19 +20,19 @@ The Dockerfile copies `license-server.py` into the container as `app.py` so Guni
 Run from the directory containing `docker-compose.license_server.yml`:
 
 ```bash
-docker compose -f docker-compose.license_server.yml up -d --build
+docker compose -f docker-compose.yml up -d --build
 ```
 
 ## Check Container Status
 
 ```bash
-docker compose -f docker-compose.license_server.yml ps
+docker compose -f docker-compose.yml ps
 ```
 
 ## View Logs
 
 ```bash
-docker compose -f docker-compose.license_server.yml logs -f
+docker compose -f docker-compose.yml logs -f
 ```
 
 ## Health Check
@@ -87,11 +87,11 @@ This file remains available even if the container is restarted or rebuilt.
 ## Stop the Service
 
 ```bash
-docker compose -f docker-compose.license_server.yml down
+docker compose -f docker-compose.yml down
 ```
 
 ## Rebuild After Code Changes
 
 ```bash
-docker compose -f docker-compose.license_server.yml up -d --build
+docker compose -f docker-compose.yml up -d --build
 ```
