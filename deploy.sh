@@ -7,12 +7,7 @@ set -euo pipefail
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
 # ──────────────────────────────────────────────
-IS_MANUAL="${IS_MANUAL:-false}"
-ANYLOG_TYPE="${ANYLOG_TYPE:-anylog-generic}"
-TAG="${TAG:-pre-develop}"
-IMAGE="${IMAGE:-anylogco/anylog-network}"
-TEST_CONN="${TEST_CONN:-}"
-NODE_NAME="${NODE_NAME:-}"
+export LICENSE_KEY="${LICENSE_KEY:-}"
 
 # ──────────────────────────────────────────────
 # Helpers
@@ -113,6 +108,7 @@ while [[ $# -gt 0 ]]; do
     --image)          IMAGE="$2";        shift 2 ;;
     --node-name)      NODE_NAME="$2";    shift 2 ;;
     --test-conn)      TEST_CONN="$2";    shift 2 ;;
+    --license-key)    export LICENSE_KEY="$2";  shift 2 ;;
     --manual)         IS_MANUAL="true";  shift   ;;
     --no-manual)      IS_MANUAL="false"; shift   ;;
     *) die "Unknown option: $1" ;;
@@ -137,6 +133,7 @@ cmd_login() {
 cmd_pull() {
   _check_configs
   _load_configs
+  bash license-generator/license_key.sh "${ANYLOG_TYPE}"
   echo "Pulling ${IMAGE}:${TAG}..."
   ${CONTAINER_CMD} pull "docker.io/${IMAGE}:${TAG}"
 }
@@ -181,6 +178,8 @@ cmd_dry_run() {
 
 cmd_up() {
   cmd_dry_run
+  echo "LICENSE_KEY: ${ANYLOG_TYPE}"
+  bash docker-makefiles/license.sh "${ANYLOG_TYPE}"
   if [[ "$IS_MANUAL" == "true" ]]; then
     echo "Deploying ${ANYLOG_TYPE} [manual / docker run]"
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
@@ -194,10 +193,13 @@ cmd_up() {
       vol_scripts="-v ${NODE_NAME}-local-scripts:/app/deployment-scripts"
     fi
 
+    local license_flag=""
+    [[ -n "$LICENSE_KEY" ]] && license_flag="-e LICENSE_KEY=${LICENSE_KEY}"
     ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \
       --name "${NODE_NAME}" \
       --network host \
       --env-file "${single_file}" \
+      ${license_flag} \
       -v "${NODE_NAME}-anylog:/app/AnyLog-Network/anylog" \
       -v "${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
       -v "${NODE_NAME}-data:/app/AnyLog-Network/data" \
@@ -206,7 +208,7 @@ cmd_up() {
       "${IMAGE}:${TAG}"
   else
     echo "Deploying ${ANYLOG_TYPE}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" up -d
+    LICENSE_KEY="${LICENSE_KEY}" ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" up -d
   fi
 }
 
@@ -342,6 +344,7 @@ cmd_check_vars() {
   printf "%-22s %-30s %s\n" "IMAGE"               "anylogco/anylog-network"  "$IMAGE"
   printf "%-22s %-30s %s\n" "NODE_NAME"           ""                         "${NODE_NAME:-}"
   printf "%-22s %-30s %s\n" "TAG"                 "pre-develop"              "$TAG"
+  printf "%-22s %-30s %s\n" "LICENSE_KEY"         ""                         "${LICENSE_KEY:-}"
   printf "%-22s %-30s %s\n" "TEST_CONN"           "127.0.0.1:<rest-port>"    "$TEST_CONN"
 }
 
@@ -378,6 +381,7 @@ Options:
   --image     <image>   Image repo             (default: anylogco/anylog-network)
   --node-name <name>    Override container name
   --test-conn <ip:port> REST endpoint for test commands
+  --license-key <key>   License key to inject into container env
   --manual              Use docker run instead of docker compose
   --no-manual           Use docker compose (default)
 
