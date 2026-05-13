@@ -10,20 +10,14 @@
 # Environment:
 #   LICENSE_URL   License server endpoint (default: http://23.239.12.151:8001/api/license-accept)
 
+# ── Skip if already accepted ──────────────────────────────────────────
+if [[ -f ".license_accepted" ]]; then
+  exit 0
+fi
+
 LICENSE_KEY="${1:-}"
 LICENSE_URL="${LICENSE_URL:-http://23.239.12.151:8001/api/license-accept}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-
-# ── Show license agreement ────────────────────────────────────────────
-if [[ -f "${SCRIPT_DIR}/../LICENSE.txt" ]]; then
-  more "${SCRIPT_DIR}/../LICENSE.txt"
-fi
-
-echo ""
-echo "========================================"
-echo "  License Agreement Acceptance Required"
-echo "========================================"
-echo ""
 
 # ── Smart quote helpers ───────────────────────────────────────────────
 _LQ=$(printf '\342\200\234')
@@ -38,7 +32,7 @@ _validate_key() {
     hex  = substr($0, 1, brace - 1)
     json = substr($0, brace)
     gsub(/\\"/, "\"", json); gsub(lq, "\"", json); gsub(rq, "\"", json)
-    hex_ok = (length(hex) == 256 && hex ~ /^[0-9a-f]/)
+    hex_ok = (length(hex) == 256 && hex ~ /^[0-9a-f]+$/)
     co_ok  = (json ~ /"company":"[^"]+"/  )
     ex_ok  = (json ~ /"expiration":"[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"/)
     ty_ok  = (json ~ /"type":"[^"]+"/     )
@@ -53,6 +47,8 @@ _validate_key() {
 }
 
 # ── Parse field from license key JSON ────────────────────────────────
+# Extracts the value of a named field from the JSON suffix of the key.
+# Uses index-based substr to avoid greedy-match issues with gsub.
 _parse_key() {
   local field="$1" key="$2"
   echo "${key}" | awk -v lq="${_LQ}" -v rq="${_RQ}" -v field="${field}" '{
@@ -60,15 +56,30 @@ _parse_key() {
     if (brace == 0) { print ""; exit }
     json = substr($0, brace)
     gsub(/\\"/, "\"", json); gsub(lq, "\"", json); gsub(rq, "\"", json)
-    pattern = "\"" field "\":\"[^\"]*\""
-    match(json, pattern)
-    if (RSTART) {
-      val = substr(json, RSTART, RLENGTH)
-      gsub(/.*":"/, "", val); gsub(/".*/, "", val)
-      print val
-    }
+    # Build search needle: "field":"
+    needle = "\"" field "\":\""
+    pos = index(json, needle)
+    if (pos == 0) { print ""; exit }
+    # Advance past the needle to the start of the value
+    val_start = pos + length(needle)
+    rest = substr(json, val_start)
+    # Value ends at the first unescaped double-quote
+    end_pos = index(rest, "\"")
+    if (end_pos == 0) { print ""; exit }
+    print substr(rest, 1, end_pos - 1)
   }'
 }
+
+# ── Show license agreement ────────────────────────────────────────────
+if [[ -f "${SCRIPT_DIR}/../LICENSE.txt" ]]; then
+  more "${SCRIPT_DIR}/../LICENSE.txt"
+fi
+
+echo ""
+echo "========================================"
+echo "  License Agreement Acceptance Required"
+echo "========================================"
+echo ""
 
 # ── Prompt for license key if not provided ────────────────────────────
 if [[ -z "${LICENSE_KEY}" ]]; then
@@ -103,24 +114,32 @@ echo "  Type:       ${TYPE}"
 echo "  Expires:    ${EXPIRATION}"
 echo ""
 
-# ── Collect user info ─────────────────────────────────────────────────
-while true; do
-  printf "Full Name:    "; read -r NAME </dev/tty
-  echo "${NAME}" | grep -qE '^[A-Za-z]{2,}( [A-Za-z]+)+$' && break
-  echo "  ERROR: Please enter a valid full name (first and last name, letters only)."
-done
+# ── Detect interactive TTY ────────────────────────────────────────────
+_tty_available() { [[ -t 0 ]] || { exec 3</dev/tty; } 2>/dev/null; }
+if ! _tty_available 2>/dev/null; then
+  NAME="Unknown"
+  EMAIL="Unknown"
+  PROJECT="Unknown"
+else
+  # ── Collect user info ───────────────────────────────────────────────
+  while true; do
+    printf "Full Name:    "; read -r NAME </dev/tty
+    echo "${NAME}" | grep -qE '^[A-Za-z]{2,}( [A-Za-z]+)+$' && break
+    echo "  ERROR: Please enter a valid full name (first and last name, letters only)."
+  done
 
-while true; do
-  printf "Email:        "; read -r EMAIL </dev/tty
-  echo "${EMAIL}" | grep -qE '^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$' && break
-  echo "  ERROR: Please enter a valid email address (e.g. user@example.com)."
-done
+  while true; do
+    printf "Email:        "; read -r EMAIL </dev/tty
+    echo "${EMAIL}" | grep -qE '^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$' && break
+    echo "  ERROR: Please enter a valid email address (e.g. user@example.com)."
+  done
 
-while true; do
-  printf "Project:      "; read -r PROJECT </dev/tty
-  [[ $(echo "${PROJECT}" | tr -d '[:space:]' | wc -c) -ge 2 ]] && break
-  echo "  ERROR: Project name must be at least 2 characters."
-done
+  while true; do
+    printf "Project:      "; read -r PROJECT </dev/tty
+    [[ $(echo "${PROJECT}" | tr -d '[:space:]' | wc -c) -ge 2 ]] && break
+    echo "  ERROR: Project name must be at least 2 characters."
+  done
+fi
 
 NAME="${NAME:-Unknown}"
 EMAIL="${EMAIL:-Unknown}"

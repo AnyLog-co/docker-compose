@@ -31,7 +31,7 @@ ifneq ($(TEST_CONN),)
     _FLAGS += --test-conn $(TEST_CONN)
 endif
 
-ANYLOG_SH := bash deploy.ori.sh
+ANYLOG_SH := bash deploy.sh
 
 # ──────────────────────────────────────────────
 all: help

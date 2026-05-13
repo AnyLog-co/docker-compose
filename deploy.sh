@@ -176,6 +176,7 @@ cmd_up() {
   cmd_dry_run
   cmd_license_check
 
+  # -e flag is only valid for `docker run`; docker compose reads LICENSE_KEY from the env file
   local license_flag=""
   [[ -n "${LICENSE_KEY}" ]] && license_flag="-e LICENSE_KEY=${LICENSE_KEY}"
 
@@ -205,7 +206,7 @@ cmd_up() {
       "${IMAGE}:${TAG}"
   else
     echo "Deploying ${ANYLOG_TYPE}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" up -d ${license_flag}
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" up -d
   fi
 }
 
@@ -303,7 +304,6 @@ cmd_license_check() {
   fi
 
   export LICENSE_KEY
-  echo ${LICENSE_KEY}
   bash ./license-generator/license_key.sh "${LICENSE_KEY}"
 }
 
