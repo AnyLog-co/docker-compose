@@ -10,7 +10,6 @@ services:
         /app/AnyLog-Network/anylog 
         /app/AnyLog-Network/blockchain 
         /app/AnyLog-Network/data 
-        /app/deployment-scripts
       "
     ]
     restart: "no"
@@ -35,6 +34,7 @@ services:
     ports:
       - ${ANYLOG_SERVER_PORT}:${ANYLOG_SERVER_PORT}
       - ${ANYLOG_REST_PORT}:${ANYLOG_REST_PORT}
+      - ${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}
     volumes:
       - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain

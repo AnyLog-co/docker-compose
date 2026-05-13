@@ -18,6 +18,7 @@ fi
 NODE_CONFIGS=${1:-anylog-generic}
 TAG=${2:-latest}
 DEPLOYMENT_TYPE=${3:-docker}
+export TAG
 
 if [[ "${DEPLOYMENT_TYPE}" == "k8s" ]]; then
   die "k8s deployment not yet supported"
@@ -87,12 +88,16 @@ if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "${ANYLOG_BROKER_PORT:
       "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 fi
 
-# -------- Update Volumes --------
-if ! ([[ ! -d "${DEPLOYMENTS_REPO}" ]] || [[ -z "$(ls -A "${DEPLOYMENTS_REPO}" 2>/dev/null)" ]]); then
-  ${SED_INPLACE} "0,/\/app\/deployment-scripts/s#/app/deployment-scripts#\# /app/deployment-scripts#" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "0,/- \${NODE_NAME}-local-scripts/s#- \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "0,/\${NODE_NAME}-local-scripts/s#\${NODE_NAME}-local-scripts#${DEPLOYMENTS_REPO}#" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "0,/\${NODE_NAME}-local-scripts/s# \${NODE_NAME}-local-scripts#\# - ${NODE_NAME}-local-scripts#" "${COMPOSE_FILE}"
+# -------- Deployment Scripts Volume --------
+if [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
+  # Use a local deployment-scripts checkout when one is explicitly configured.
+  ${SED_INPLACE} "s#- \${NODE_NAME}-local-scripts:/app/deployment-scripts#- ${DEPLOYMENTS_REPO}:/app/deployment-scripts#g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^  \${NODE_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+else
+  # URL-based repos are cloned by the AnyLog container at startup. Do not mount
+  # a named volume over /app/deployment-scripts, or it hides the cloned scripts.
+  ${SED_INPLACE} "/\/app\/deployment-scripts$/d" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^  \${NODE_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
 fi
 
 # -------- Docker Socket --------

@@ -14,6 +14,8 @@ IMAGE="${IMAGE:-anylogco/anylog-network}"
 TEST_CONN="${TEST_CONN:-}"
 NODE_NAME="${NODE_NAME:-}"
 LICENSE_KEY="${LICENSE_KEY:-}"
+LICENSE_KEY_PROVIDED=false
+PROMPT_LICENSE="${PROMPT_LICENSE:-true}"
 
 # ──────────────────────────────────────────────
 # Helpers
@@ -91,6 +93,25 @@ _check_configs() {
     die "Missing directory 'docker-makefiles/${ANYLOG_TYPE}' — run 'bash deploy.sh help' for valid types"
 }
 
+_get_config_value() {
+  local file="$1"
+  local key="$2"
+  grep -m1 "^${key}=" "$file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || true
+}
+
+_resolve_scripts_volume() {
+  local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+  local deployments_repo
+  deployments_repo=$(_get_config_value "$single_file" "DEPLOYMENTS_REPO")
+
+  SCRIPT_VOLUME_ARGS=()
+  SCRIPT_VOLUME_DRY_RUN=""
+  if [[ -n "$deployments_repo" && -d "$deployments_repo" ]]; then
+    SCRIPT_VOLUME_ARGS=(-v "${deployments_repo}:/app/deployment-scripts")
+    SCRIPT_VOLUME_DRY_RUN="-v ${deployments_repo}:/app/deployment-scripts"
+  fi
+}
+
 DOCKER_COMPOSE_FILE="docker-makefiles/docker-compose-files/${ANYLOG_TYPE}-docker-compose.yaml"
 
 # ──────────────────────────────────────────────
@@ -106,6 +127,8 @@ while [[ $# -gt 0 ]]; do
     --image)          IMAGE="$2";        shift 2 ;;
     --node-name)      NODE_NAME="$2";    shift 2 ;;
     --test-conn)      TEST_CONN="$2";    shift 2 ;;
+    --license-key)    LICENSE_KEY="$2"; LICENSE_KEY_PROVIDED=true; shift 2 ;;
+    --prompt-license) PROMPT_LICENSE="true"; shift ;;
     --manual)         IS_MANUAL="true";  shift   ;;
     --no-manual)      IS_MANUAL="false"; shift   ;;
     *) die "Unknown option: $1" ;;
@@ -143,15 +166,7 @@ cmd_dry_run() {
     bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
  elif [[ "${IS_MANUAL}" == "true" ]]; then
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-    local deployments_repo
-    deployments_repo=$(grep -m1 '^DEPLOYMENTS_REPO=' "$single_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || true)
-
-    local vol_scripts
-    if [[ -n "$deployments_repo" && -d "$deployments_repo" ]]; then
-      vol_scripts="-v ${deployments_repo}:/app/deployment-scripts"
-    else
-      vol_scripts="-v ${NODE_NAME}-local-scripts:/app/deployment-scripts"
-    fi
+    _resolve_scripts_volume
 
     echo "Manual mode — docker run command:"
     echo ""
@@ -162,7 +177,7 @@ cmd_dry_run() {
     echo "    -v ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog \\"
     echo "    -v ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain \\"
     echo "    -v ${NODE_NAME}-data:/app/AnyLog-Network/data \\"
-    echo "    ${vol_scripts} \\"
+    [[ -n "${SCRIPT_VOLUME_DRY_RUN}" ]] && echo "    ${SCRIPT_VOLUME_DRY_RUN} \\"
     echo "    --restart always \\"
     echo "    ${IMAGE}:${TAG}"
     echo ""
@@ -173,8 +188,10 @@ cmd_dry_run() {
 }
 
 cmd_up() {
-  cmd_dry_run
+  _check_configs
+  _load_configs
   cmd_license_check
+  cmd_dry_run
 
   # -e flag is only valid for `docker run`; docker compose reads LICENSE_KEY from the env file
   local license_flag=""
@@ -183,15 +200,7 @@ cmd_up() {
   if [[ "$IS_MANUAL" == "true" ]]; then
     echo "Deploying ${ANYLOG_TYPE} [manual / docker run]"
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-    local deployments_repo
-    deployments_repo=$(grep -m1 '^DEPLOYMENTS_REPO=' "$single_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || true)
-
-    local vol_scripts
-    if [[ -n "$deployments_repo" && -d "$deployments_repo" ]]; then
-      vol_scripts="-v ${deployments_repo}:/app/deployment-scripts"
-    else
-      vol_scripts="-v ${NODE_NAME}-local-scripts:/app/deployment-scripts"
-    fi
+    _resolve_scripts_volume
 
     ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \
       --name "${NODE_NAME}" \
@@ -201,7 +210,7 @@ cmd_up() {
       -v "${NODE_NAME}-anylog:/app/AnyLog-Network/anylog" \
       -v "${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
       -v "${NODE_NAME}-data:/app/AnyLog-Network/data" \
-      ${vol_scripts} \
+      "${SCRIPT_VOLUME_ARGS[@]}" \
       --restart always \
       "${IMAGE}:${TAG}"
   else
@@ -292,19 +301,67 @@ cmd_exec_root() {
 cmd_license_check() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+  local license_arg=()
+  local accepted_license=""
 
-  if [[ -z "${LICENSE_KEY}" ]] && [[ -f "${env_file}" ]]; then
-    LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
-  elif [[ -z "${LICENSE_KEY}" ]] && [[ -f "${single_file}" ]]; then
-    LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$single_file" | cut -d= -f2- | tr -d '"\r')
+  case "${PROMPT_LICENSE}" in
+    true|True|TRUE|1|yes|Yes|YES) PROMPT_LICENSE="true" ;;
+    *) PROMPT_LICENSE="false" ;;
+  esac
+
+  if [[ -f ".license_accepted" ]]; then
+    accepted_license=$(awk -F'|' 'NF >= 5 {print $5; exit}' .license_accepted)
+    accepted_license="${accepted_license#\"}" ; accepted_license="${accepted_license%\"}"
+    accepted_license="${accepted_license#\'}" ; accepted_license="${accepted_license%\'}"
   fi
 
-  if [[ -z "${LICENSE_KEY}" ]] ; then
+  if [[ "${LICENSE_KEY_PROVIDED}" != "true" && -n "${accepted_license}" ]]; then
+    LICENSE_KEY="${accepted_license}"
+    export LICENSE_KEY
+    return 0
+  fi
+
+  if [[ "${PROMPT_LICENSE}" == "true" && "${LICENSE_KEY_PROVIDED}" != "true" ]]; then
+    LICENSE_KEY=""
+  fi
+
+  if [[ -z "${LICENSE_KEY}" && -f "${env_file}" ]]; then
+    LICENSE_KEY=$(_get_config_value "$env_file" "LICENSE_KEY")
+  elif [[ -z "${LICENSE_KEY}" && -f "${single_file}" ]]; then
+    LICENSE_KEY=$(_get_config_value "$single_file" "LICENSE_KEY")
+  fi
+
+  LICENSE_KEY="${LICENSE_KEY#\"}" ; LICENSE_KEY="${LICENSE_KEY%\"}"
+  LICENSE_KEY="${LICENSE_KEY#\'}" ; LICENSE_KEY="${LICENSE_KEY%\'}"
+
+  if [[ -z "${LICENSE_KEY}" && "${PROMPT_LICENSE}" != "true" ]] ; then
+    if [[ -t 0 || -r /dev/tty ]]; then
+      echo "A license key is required to deploy AnyLog."
+      read -r -p "License Key: " LICENSE_KEY </dev/tty
+    else
+      die "Missing license key, cannot deploy AnyLog. Pass --license-key or set LICENSE_KEY."
+    fi
+  fi
+
+  if [[ -z "${LICENSE_KEY}" && "${PROMPT_LICENSE}" != "true" ]]; then
     die "Missing license key, cannot deploy AnyLog."
   fi
 
   export LICENSE_KEY
-  bash ./license-generator/license_key.sh "${LICENSE_KEY}"
+  if [[ -n "${LICENSE_KEY}" ]]; then
+    license_arg=("${LICENSE_KEY}")
+  fi
+
+  if ! FORCE_LICENSE_PROMPT="${PROMPT_LICENSE}" bash ./license-generator/license_key.sh "${license_arg[@]}"; then
+    die "License validation or acceptance failed. Deployment aborted."
+  fi
+
+  if [[ -z "${LICENSE_KEY}" && -f ".license_accepted" ]]; then
+    LICENSE_KEY=$(awk -F'|' 'NF >= 5 {print $5; exit}' .license_accepted)
+    export LICENSE_KEY
+  fi
+
+  [[ -n "${LICENSE_KEY}" ]] || die "License key was accepted but could not be read back."
 }
 
 
@@ -398,6 +455,8 @@ Options:
   --image     <image>   Image repo             (default: anylogco/anylog-network)
   --node-name <name>    Override container name
   --test-conn <ip:port> REST endpoint for test commands
+  --license-key <key>   License key to inject into container env
+  --prompt-license      Prompt for license key if no saved license is found
   --manual              Use docker run instead of docker compose
   --no-manual           Use docker compose (default)
 

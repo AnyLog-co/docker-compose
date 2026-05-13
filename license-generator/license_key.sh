@@ -10,14 +10,14 @@
 # Environment:
 #   LICENSE_URL   License server endpoint (default: http://23.239.12.151:8001/api/license-accept)
 
-# ── Skip if already accepted ──────────────────────────────────────────
-if [[ -f ".license_accepted" ]]; then
-  exit 0
-fi
-
 LICENSE_KEY="${1:-}"
 LICENSE_URL="${LICENSE_URL:-http://23.239.12.151:8001/api/license-accept}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ── Skip if already accepted and no new key/prompt was requested ──────
+if [[ -f ".license_accepted" && -z "${LICENSE_KEY}" && "${FORCE_LICENSE_PROMPT:-false}" != "true" ]]; then
+  exit 0
+fi
 
 # ── Smart quote helpers ───────────────────────────────────────────────
 _LQ=$(printf '\342\200\234')
@@ -32,13 +32,13 @@ _validate_key() {
     hex  = substr($0, 1, brace - 1)
     json = substr($0, brace)
     gsub(/\\"/, "\"", json); gsub(lq, "\"", json); gsub(rq, "\"", json)
-    hex_ok = (length(hex) == 256 && hex ~ /^[0-9a-f]+$/)
-    co_ok  = (json ~ /"company":"[^"]+"/  )
-    ex_ok  = (json ~ /"expiration":"[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"/)
-    ty_ok  = (json ~ /"type":"[^"]+"/     )
+    hex_ok = (length(hex) == 256 && hex ~ /^[0-9a-fA-F]+$/)
+    co_ok  = (json ~ /"company"[ \t]*:[ \t]*"[^"]+"/  )
+    ex_ok  = (json ~ /"expiration"[ \t]*:[ \t]*"[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]"/)
+    ty_ok  = (json ~ /"type"[ \t]*:[ \t]*"[^"]+"/     )
     if (hex_ok && co_ok && ex_ok && ty_ok) { print "VALID"; exit }
     msg = "INVALID|"
-    if (!hex_ok) msg = msg "hex must be 256 lowercase hex chars (got " length(hex) "); "
+    if (!hex_ok) msg = msg "hex must be 256 hex chars (got " length(hex) "); "
     if (!co_ok)  msg = msg "missing/invalid company; "
     if (!ex_ok)  msg = msg "missing/invalid expiration YYYY-MM-DD; "
     if (!ty_ok)  msg = msg "missing/invalid type; "
@@ -56,13 +56,17 @@ _parse_key() {
     if (brace == 0) { print ""; exit }
     json = substr($0, brace)
     gsub(/\\"/, "\"", json); gsub(lq, "\"", json); gsub(rq, "\"", json)
-    # Build search needle: "field":"
-    needle = "\"" field "\":\""
+    # Build search needle: "field", then tolerate normal JSON spacing around the colon.
+    needle = "\"" field "\""
     pos = index(json, needle)
     if (pos == 0) { print ""; exit }
-    # Advance past the needle to the start of the value
-    val_start = pos + length(needle)
-    rest = substr(json, val_start)
+    rest = substr(json, pos + length(needle))
+    colon = index(rest, ":")
+    if (colon == 0) { print ""; exit }
+    rest = substr(rest, colon + 1)
+    sub(/^[ \t]*/, "", rest)
+    if (substr(rest, 1, 1) != "\"") { print ""; exit }
+    rest = substr(rest, 2)
     # Value ends at the first unescaped double-quote
     end_pos = index(rest, "\"")
     if (end_pos == 0) { print ""; exit }
@@ -81,26 +85,26 @@ echo "  License Agreement Acceptance Required"
 echo "========================================"
 echo ""
 
-# ── Prompt for license key if not provided ────────────────────────────
-if [[ -z "${LICENSE_KEY}" ]]; then
-  while true; do
+
+# ── Prompt for license key if needed ──────────────────────────────────
+while true; do
+  if [[ -z "${LICENSE_KEY}" ]]; then
     printf "License Key:  "; read -r LICENSE_KEY </dev/tty
-    LICENSE_KEY=$(echo "${LICENSE_KEY}" | awk -v lq="${_LQ}" -v rq="${_RQ}" \
-      '{gsub(/\\"/, "\""); gsub(lq, "\""); gsub(rq, "\""); print}')
-    _RESULT=$(_validate_key "${LICENSE_KEY}")
-    if [[ "${_RESULT}" == "VALID" ]]; then
-      break
-    fi
-    echo "  ERROR: Invalid license key - $(echo "${_RESULT}" | cut -d'|' -f2)"
-  done
-else
-  # Validate key passed as argument
+  fi
+
+  LICENSE_KEY=$(echo "${LICENSE_KEY}" | awk -v lq="${_LQ}" -v rq="${_RQ}" \
+    '{gsub(/\\"/, "\""); gsub(lq, "\""); gsub(rq, "\""); print}')
   _RESULT=$(_validate_key "${LICENSE_KEY}")
-  if [[ "${_RESULT}" != "VALID" ]]; then
-    echo "ERROR: License key is invalid - $(echo "${_RESULT}" | cut -d'|' -f2)" >&2
+  if [[ "${_RESULT}" == "VALID" ]]; then
+    break
+  fi
+
+  echo "  ERROR: Invalid license key - $(echo "${_RESULT}" | cut -d'|' -f2)"
+  if [[ ! -t 0 && ! -r /dev/tty ]]; then
     exit 1
   fi
-fi
+  LICENSE_KEY=""
+done
 
 # ── Extract info from key ─────────────────────────────────────────────
 COMPANY=$(_parse_key "company"    "${LICENSE_KEY}")
