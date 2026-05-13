@@ -18,6 +18,7 @@ fi
 NODE_CONFIGS=${1:-anylog-generic}
 TAG=${2:-latest}
 DEPLOYMENT_TYPE=${3:-docker}
+export TAG
 
 if [[ "${DEPLOYMENT_TYPE}" == "k8s" ]]; then
   die "k8s deployment not yet supported"
