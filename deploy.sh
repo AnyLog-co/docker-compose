@@ -14,6 +14,7 @@ IMAGE="${IMAGE:-anylogco/anylog-network}"
 TEST_CONN="${TEST_CONN:-}"
 NODE_NAME="${NODE_NAME:-}"
 LICENSE_KEY="${LICENSE_KEY:-}"
+PROMPT_LICENSE="${PROMPT_LICENSE:-false}"
 
 # ──────────────────────────────────────────────
 # Helpers
@@ -106,6 +107,8 @@ while [[ $# -gt 0 ]]; do
     --image)          IMAGE="$2";        shift 2 ;;
     --node-name)      NODE_NAME="$2";    shift 2 ;;
     --test-conn)      TEST_CONN="$2";    shift 2 ;;
+    --license-key)    LICENSE_KEY="$2";  shift 2 ;;
+    --prompt-license) PROMPT_LICENSE="true"; shift ;;
     --manual)         IS_MANUAL="true";  shift   ;;
     --no-manual)      IS_MANUAL="false"; shift   ;;
     *) die "Unknown option: $1" ;;
@@ -173,8 +176,10 @@ cmd_dry_run() {
 }
 
 cmd_up() {
-  cmd_dry_run
+  _check_configs
+  _load_configs
   cmd_license_check
+  cmd_dry_run
 
   # -e flag is only valid for `docker run`; docker compose reads LICENSE_KEY from the env file
   local license_flag=""
@@ -293,18 +298,29 @@ cmd_license_check() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
 
-  if [[ -z "${LICENSE_KEY}" ]] && [[ -f "${env_file}" ]]; then
+  if [[ "${PROMPT_LICENSE}" == "true" ]]; then
+    :
+  elif [[ -z "${LICENSE_KEY}" ]] && [[ -f "${env_file}" ]]; then
     LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
   elif [[ -z "${LICENSE_KEY}" ]] && [[ -f "${single_file}" ]]; then
     LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$single_file" | cut -d= -f2- | tr -d '"\r')
   fi
+  LICENSE_KEY="${LICENSE_KEY#\"}" ; LICENSE_KEY="${LICENSE_KEY%\"}"
+  LICENSE_KEY="${LICENSE_KEY#\'}" ; LICENSE_KEY="${LICENSE_KEY%\'}"
 
   if [[ -z "${LICENSE_KEY}" ]] ; then
-    die "Missing license key, cannot deploy AnyLog."
+    if [[ -t 0 || -r /dev/tty ]]; then
+      echo "A license key is required to deploy AnyLog."
+      read -r -p "License Key: " LICENSE_KEY </dev/tty
+    else
+      die "Missing license key, cannot deploy AnyLog. Pass --license-key or set LICENSE_KEY."
+    fi
   fi
 
+  [[ -n "${LICENSE_KEY}" ]] || die "Missing license key, cannot deploy AnyLog."
+
   export LICENSE_KEY
-  bash ./license-generator/license_key.sh "${LICENSE_KEY}"
+  FORCE_LICENSE_PROMPT="${PROMPT_LICENSE}" bash ./license-generator/license_key.sh "${LICENSE_KEY}"
 }
 
 
@@ -398,6 +414,8 @@ Options:
   --image     <image>   Image repo             (default: anylogco/anylog-network)
   --node-name <name>    Override container name
   --test-conn <ip:port> REST endpoint for test commands
+  --license-key <key>   License key to inject into container env
+  --prompt-license      Prompt for license key and acceptance info even if saved
   --manual              Use docker run instead of docker compose
   --no-manual           Use docker compose (default)
 

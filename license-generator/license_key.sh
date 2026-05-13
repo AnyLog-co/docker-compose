@@ -11,7 +11,7 @@
 #   LICENSE_URL   License server endpoint (default: http://23.239.12.151:8001/api/license-accept)
 
 # ── Skip if already accepted ──────────────────────────────────────────
-if [[ -f ".license_accepted" ]]; then
+if [[ -f ".license_accepted" && "${FORCE_LICENSE_PROMPT:-false}" != "true" ]]; then
   exit 0
 fi
 

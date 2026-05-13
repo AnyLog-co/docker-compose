@@ -128,6 +128,8 @@ Variables (make) / Options (deploy.sh):
   IMAGE       / --image     Image repository
   NODE_NAME   / --node-name Override container name
   TEST_CONN   / --test-conn ip:port for test commands    (default: auto-resolved)
+  LICENSE_KEY / --license-key License key for deployment  (prompts if missing)
+  PROMPT_LICENSE / --prompt-license Force license key and acceptance prompts
 ```
 
 ### Important Notes
