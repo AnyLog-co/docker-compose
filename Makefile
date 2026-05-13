@@ -128,7 +128,7 @@ help: ## show this help message
 	@echo "  IMAGE           Image repository             (default: anylogco/anylog-network)"
 	@echo "  TEST_CONN       ip:port for test commands    (default: auto-resolved)"
 	@echo "  LICENSE_KEY     License key for deployment   (prompts if missing)"
-	@echo "  PROMPT_LICENSE  Force license prompts        (default: true)"
+	@echo "  PROMPT_LICENSE  Prompt if no saved license   (default: true)"
 	@echo ""
 	@echo "Without make:"
 	@echo "  bash deploy.sh help"

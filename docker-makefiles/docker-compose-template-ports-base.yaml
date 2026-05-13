@@ -10,7 +10,6 @@ services:
         /app/AnyLog-Network/anylog 
         /app/AnyLog-Network/blockchain 
         /app/AnyLog-Network/data 
-        /app/deployment-scripts
       "
     ]
     restart: "no"

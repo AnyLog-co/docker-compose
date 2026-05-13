@@ -302,21 +302,35 @@ cmd_license_check() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
   local license_arg=()
+  local accepted_license=""
 
   case "${PROMPT_LICENSE}" in
     true|True|TRUE|1|yes|Yes|YES) PROMPT_LICENSE="true" ;;
     *) PROMPT_LICENSE="false" ;;
   esac
 
+  if [[ -f ".license_accepted" ]]; then
+    accepted_license=$(awk -F'|' 'NF >= 5 {print $5; exit}' .license_accepted)
+    accepted_license="${accepted_license#\"}" ; accepted_license="${accepted_license%\"}"
+    accepted_license="${accepted_license#\'}" ; accepted_license="${accepted_license%\'}"
+  fi
+
+  if [[ "${LICENSE_KEY_PROVIDED}" != "true" && -n "${accepted_license}" ]]; then
+    LICENSE_KEY="${accepted_license}"
+    export LICENSE_KEY
+    return 0
+  fi
+
   if [[ "${PROMPT_LICENSE}" == "true" && "${LICENSE_KEY_PROVIDED}" != "true" ]]; then
     LICENSE_KEY=""
-  elif [[ "${PROMPT_LICENSE}" == "true" ]]; then
-    :
-  elif [[ -z "${LICENSE_KEY}" ]] && [[ -f "${env_file}" ]]; then
-    LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
-  elif [[ -z "${LICENSE_KEY}" ]] && [[ -f "${single_file}" ]]; then
-    LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$single_file" | cut -d= -f2- | tr -d '"\r')
   fi
+
+  if [[ -z "${LICENSE_KEY}" && -f "${env_file}" ]]; then
+    LICENSE_KEY=$(_get_config_value "$env_file" "LICENSE_KEY")
+  elif [[ -z "${LICENSE_KEY}" && -f "${single_file}" ]]; then
+    LICENSE_KEY=$(_get_config_value "$single_file" "LICENSE_KEY")
+  fi
+
   LICENSE_KEY="${LICENSE_KEY#\"}" ; LICENSE_KEY="${LICENSE_KEY%\"}"
   LICENSE_KEY="${LICENSE_KEY#\'}" ; LICENSE_KEY="${LICENSE_KEY%\'}"
 
@@ -442,7 +456,7 @@ Options:
   --node-name <name>    Override container name
   --test-conn <ip:port> REST endpoint for test commands
   --license-key <key>   License key to inject into container env
-  --prompt-license      Prompt for license key and acceptance info even if saved
+  --prompt-license      Prompt for license key if no saved license is found
   --manual              Use docker run instead of docker compose
   --no-manual           Use docker compose (default)
 
