@@ -47,9 +47,8 @@ fi
 normalize_quotes() {
   local file="$1"
   echo "Normalizing quotes in: ${file}"
-  sedi "s/=''$/=/g" "${file}"
-  sedi -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\2/" "${file}"
-  sedi -E "s/^([A-Za-z_][A-Za-z0-9_]*)=\"(.*)\"/\1=\2/" "${file}"
+  sedi "s/=''/=\"\"/g" "${file}"
+  sedi -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${file}"
 }
 
 for cfg in "${CONFIG_FILES[@]}"; do
