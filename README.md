@@ -129,7 +129,7 @@ Variables (make) / Options (deploy.sh):
   NODE_NAME   / --node-name Override container name
   TEST_CONN   / --test-conn ip:port for test commands    (default: auto-resolved)
   LICENSE_KEY / --license-key License key for deployment  (prompts if missing)
-  PROMPT_LICENSE / --prompt-license Force license key and acceptance prompts
+  PROMPT_LICENSE / --prompt-license Force license key and acceptance prompts (default: true)
 ```
 
 ### Important Notes
