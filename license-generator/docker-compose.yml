@@ -10,4 +10,7 @@ services:
     environment:
       DATA_DIR: /data
     volumes:
-      - ./shared-license-data:/data
+      - license-data:/data
+
+volumes:
+  license-data:

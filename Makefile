@@ -1,8 +1,6 @@
 #!/bin/Makefile
 $(info LOADING MAKEFILE)
 
-SHELL := /bin/bash
-
 # ──────────────────────────────────────────────
 # Default values
 # ──────────────────────────────────────────────
@@ -33,8 +31,10 @@ ifneq ($(TEST_CONN),)
     _FLAGS += --test-conn $(TEST_CONN)
 endif
 
-ANYLOG_SH := bash -x ./docker-makefiles/deploy.sh
+ANYLOG_SH := bash deploy.ori.sh
 
+# ──────────────────────────────────────────────
+all: help
 
 # ──────────────────────────────────────────────
 # Docker Hub
@@ -51,11 +51,8 @@ pull: ## pull image from Docker Hub
 dry-run: ## generate docker-compose.yaml (skipped in manual mode)
 	$(ANYLOG_SH) dry-run $(_FLAGS)
 
-# Read LICENSE_KEY from sentinel and export into the environment so deploy.sh
-# and docker compose both inherit it — matching the same export pattern used
-# by IS_MANUAL, ANYLOG_TYPE, TAG etc. at the top of this file.
-up: ## start AnyLog instance (auto-configures rsyslog if SYSLOG_MONITORING=true)
-	@export LICENSE_KEY=$$(cut -d'|' -f5); $(ANYLOG_SH) up $(_FLAGS)
+up: ## start AnyLog instance
+	$(ANYLOG_SH) up $(_FLAGS)
 
 down: ## stop AnyLog instance
 	$(ANYLOG_SH) down $(_FLAGS)
@@ -120,22 +117,15 @@ help: ## show this help message
 	@echo "  IS_MANUAL       Use docker run instead of docker compose (default: false)"
 	@echo "  ANYLOG_TYPE     Node type: generic master operator query publisher"
 	@echo "                            standalone-operator standalone-publisher"
-	@echo "  TAG             Image tag                    (default: 1.4.2604)"
+	@echo "  TAG             Image tag                    (default: pre-develop)"
 	@echo "  IMAGE           Image repository             (default: anylogco/anylog-network)"
 	@echo "  TEST_CONN       ip:port for test commands    (default: auto-resolved)"
-	@echo "  LICENSE_KEY     License key (prompted on first run, stored in)"
-	@echo "  LICENSE_URL     License registration endpoint (default: http://127.0.0.1:8001/api/license-accept)"
-	@echo "  SYSLOG_MONITORING   Set to 'true' in node_configs.env to enable syslog → AnyLog forwarding"
-	@echo "                      Linux: rsyslog drop-in (TCP)  |  macOS: syslogd append (UDP)"
-	@echo "  ANYLOG_BROKER_PORT     Port syslog forwards to (read from node_configs.env)"
 	@echo ""
 	@echo "Without make:"
 	@echo "  bash deploy.sh help"
 	@echo ""
 
-.PHONY: license-check clean-license debug-key debug-post \
-        login pull dry-run up down clean clean-all \
+.PHONY: login pull dry-run up down clean clean-all \
         logs logs-f attach exec exec-root \
         full-test test-status test-node test-network check-processes \
-        check-vars help \
-        syslog-setup syslog-remove
+        check-vars help

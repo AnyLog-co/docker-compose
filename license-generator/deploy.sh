@@ -7,6 +7,12 @@ set -euo pipefail
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
 # ──────────────────────────────────────────────
+IS_MANUAL="${IS_MANUAL:-false}"
+ANYLOG_TYPE="${ANYLOG_TYPE:-anylog-generic}"
+TAG="${TAG:-pre-develop}"
+IMAGE="${IMAGE:-anylogco/anylog-network}"
+TEST_CONN="${TEST_CONN:-}"
+NODE_NAME="${NODE_NAME:-}"
 export LICENSE_KEY="${LICENSE_KEY:-}"
 
 # ──────────────────────────────────────────────
