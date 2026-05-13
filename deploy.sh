@@ -14,6 +14,7 @@ IMAGE="${IMAGE:-anylogco/anylog-network}"
 TEST_CONN="${TEST_CONN:-}"
 NODE_NAME="${NODE_NAME:-}"
 LICENSE_KEY="${LICENSE_KEY:-}"
+LICENSE_KEY_PROVIDED=false
 PROMPT_LICENSE="${PROMPT_LICENSE:-false}"
 
 # ──────────────────────────────────────────────
@@ -107,7 +108,7 @@ while [[ $# -gt 0 ]]; do
     --image)          IMAGE="$2";        shift 2 ;;
     --node-name)      NODE_NAME="$2";    shift 2 ;;
     --test-conn)      TEST_CONN="$2";    shift 2 ;;
-    --license-key)    LICENSE_KEY="$2";  shift 2 ;;
+    --license-key)    LICENSE_KEY="$2"; LICENSE_KEY_PROVIDED=true; shift 2 ;;
     --prompt-license) PROMPT_LICENSE="true"; shift ;;
     --manual)         IS_MANUAL="true";  shift   ;;
     --no-manual)      IS_MANUAL="false"; shift   ;;
@@ -298,7 +299,9 @@ cmd_license_check() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
 
-  if [[ "${PROMPT_LICENSE}" == "true" ]]; then
+  if [[ "${PROMPT_LICENSE}" == "true" && "${LICENSE_KEY_PROVIDED}" != "true" ]]; then
+    LICENSE_KEY=""
+  elif [[ "${PROMPT_LICENSE}" == "true" ]]; then
     :
   elif [[ -z "${LICENSE_KEY}" ]] && [[ -f "${env_file}" ]]; then
     LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
@@ -320,7 +323,9 @@ cmd_license_check() {
   [[ -n "${LICENSE_KEY}" ]] || die "Missing license key, cannot deploy AnyLog."
 
   export LICENSE_KEY
-  FORCE_LICENSE_PROMPT="${PROMPT_LICENSE}" bash ./license-generator/license_key.sh "${LICENSE_KEY}"
+  if ! FORCE_LICENSE_PROMPT="${PROMPT_LICENSE}" bash ./license-generator/license_key.sh "${LICENSE_KEY}"; then
+    die "License validation or acceptance failed. Deployment aborted."
+  fi
 }
 
 
