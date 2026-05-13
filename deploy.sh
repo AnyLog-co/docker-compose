@@ -2,17 +2,18 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
-set -euo pipefail
+#set -euo pipefail
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
 # ──────────────────────────────────────────────
 IS_MANUAL="${IS_MANUAL:-false}"
 ANYLOG_TYPE="${ANYLOG_TYPE:-anylog-generic}"
-TAG="${TAG:-pre-develop}"
+TAG="${TAG:-1.4.2604}"
 IMAGE="${IMAGE:-anylogco/anylog-network}"
 TEST_CONN="${TEST_CONN:-}"
 NODE_NAME="${NODE_NAME:-}"
+LICENSE_KEY="${LICENSE_KEY:-}"
 
 # ──────────────────────────────────────────────
 # Helpers
@@ -173,6 +174,12 @@ cmd_dry_run() {
 
 cmd_up() {
   cmd_dry_run
+  cmd_license_check
+
+  # -e flag is only valid for `docker run`; docker compose reads LICENSE_KEY from the env file
+  local license_flag=""
+  [[ -n "${LICENSE_KEY}" ]] && license_flag="-e LICENSE_KEY=${LICENSE_KEY}"
+
   if [[ "$IS_MANUAL" == "true" ]]; then
     echo "Deploying ${ANYLOG_TYPE} [manual / docker run]"
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
@@ -190,6 +197,7 @@ cmd_up() {
       --name "${NODE_NAME}" \
       --network host \
       --env-file "${single_file}" \
+      ${license_flag} \
       -v "${NODE_NAME}-anylog:/app/AnyLog-Network/anylog" \
       -v "${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
       -v "${NODE_NAME}-data:/app/AnyLog-Network/data" \
@@ -201,6 +209,7 @@ cmd_up() {
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" up -d
   fi
 }
+
 
 cmd_down() {
   _check_configs
@@ -276,6 +285,28 @@ cmd_exec_root() {
   _check_configs; _load_configs
   ${CONTAINER_CMD} exec -u root -it "${NODE_NAME}" /bin/bash
 }
+
+# ──────────────────────────────────────────────
+# License Key logic
+# ──────────────────────────────────────────────
+cmd_license_check() {
+  local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
+  local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+
+  if [[ -z "${LICENSE_KEY}" ]] && [[ -f "${env_file}" ]]; then
+    LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
+  elif [[ -z "${LICENSE_KEY}" ]] && [[ -f "${single_file}" ]]; then
+    LICENSE_KEY=$(grep -m1 '^LICENSE_KEY='     "$single_file" | cut -d= -f2- | tr -d '"\r')
+  fi
+
+  if [[ -z "${LICENSE_KEY}" ]] ; then
+    die "Missing license key, cannot deploy AnyLog."
+  fi
+
+  export LICENSE_KEY
+  bash ./license-generator/license_key.sh "${LICENSE_KEY}"
+}
+
 
 # ──────────────────────────────────────────────
 # Testing
