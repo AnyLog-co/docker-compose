@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -67,29 +67,21 @@ fi
 if [[ ! -f "${BASE_ENV}" ]]; then
   echo "Failed to locate file: ${BASE_ENV} — skipping LICENSE_KEY update"
 else
-  # If LICENSE_KEY is set in the environment (passed from Makefile), write it
-  # into the config file so docker compose env_file picks it up too.
-  if [[ -n "${LICENSE_KEY:-}" ]]; then
-    if grep -q '^LICENSE_KEY=' "${BASE_ENV}"; then
-      sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${LICENSE_KEY}|" "${BASE_ENV}"
-      echo "LICENSE_KEY written to ${BASE_ENV} from environment"
-    else
-      echo "LICENSE_KEY=${LICENSE_KEY}" >> "${BASE_ENV}"
-      echo "LICENSE_KEY appended to ${BASE_ENV} from environment"
-    fi
+  # Extract raw value (everything after LICENSE_KEY=)
+  CURRENT_LICENSE_KEY=$(sed -n 's/^LICENSE_KEY=//p' "${BASE_ENV}")
+
+  # Strip trailing carriage return and any surrounding quotes
+  CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%$'\r'}"
+  CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\"}" ; CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\"}"
+  CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\'}" ; CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\'}"
+
+  if [[ -z "${CURRENT_LICENSE_KEY}" ]]; then
+    echo "No LICENSE_KEY found in ${BASE_ENV} — skipping"
   else
-    # Fall back: normalize whatever is already in the file
-    CURRENT_LICENSE_KEY=$(sed -n 's/^LICENSE_KEY=//p' "${BASE_ENV}")
-    CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%$'\r'}"
-    CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\"}" ; CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\"}"
-    CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\'}" ; CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\'}"
-    if [[ -z "${CURRENT_LICENSE_KEY}" ]]; then
-      echo "No LICENSE_KEY in environment or ${BASE_ENV} — skipping"
-    else
-      UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
-      sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
-      echo "LICENSE_KEY updated in ${BASE_ENV}"
-    fi
+    # Replace any internal single quotes with double quotes
+    UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
+    sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
+    echo "LICENSE_KEY updated in ${BASE_ENV}"
   fi
 fi
 
