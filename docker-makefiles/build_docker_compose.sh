@@ -33,11 +33,15 @@ if [[ -f "docker-makefiles/${NODE_CONFIGS}/.env" ]] && \
   ENV_FILE="docker-makefiles/${NODE_CONFIGS}/.env"
   BASE_ENV="docker-makefiles/${NODE_CONFIGS}/base_configs.env"
 elif [[ -f "docker-makefiles/${NODE_CONFIGS}/node_configs.env" ]]; then
-  ENV_FILE="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
-  BASE_ENV="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
+  ENV_FILE="docker-makefiles/${NODE_CONFIGS}/formatted_node_configs.env"
+  BASE_ENV="docker-makefiles/${NODE_CONFIGS}/formatted_node_configs.env"
 else
   die "Missing configuration file(s) for '${NODE_CONFIGS}', cannot continue"
 fi
+
+# -------- Generate Read-Only Snapshot Copy --------
+bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
+
 
 # -------- Load Configs --------
 export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
@@ -76,7 +80,7 @@ if [[ "$MULTI_FILE" == "true" ]]; then
       '/    env_file:/ {print; print "      - " env; print "      - " base; print "      - " adv; next}1' \
       "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 else
-  awk -v cfg="../../docker-makefiles/${NODE_CONFIGS}/node_configs.env" \
+  awk -v cfg="../../docker-makefiles/${NODE_CONFIGS}/formatted_node_configs.env" \
       '/    env_file:/ {print; print "      - " cfg; next}1' \
       "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 fi
@@ -215,7 +219,6 @@ ${INJECT}
   done
 fi
 
-
 # -------- Envsubst & Write Output --------
 echo "Generating final docker-compose.yaml..."
 mkdir -p docker-makefiles/docker-compose-files
@@ -223,3 +226,31 @@ OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compos
 envsubst < "${COMPOSE_FILE}" > "$OUTPUT_FILE"
 rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak
 echo "Saved: ${OUTPUT_FILE}"
+
+
+
+## Filename: {formatted_node_name}.env  (hyphens -> underscores, lowercased)
+## Empty-value vars ( VAR="" ) are commented out in the copy.
+##FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
+#SNAPSHOT_DIR="docker-makefiles/${NODE_CONFIGS}"
+#SNAPSHOT_FILE="${SNAPSHOT_DIR}/formatted_node_configs.env"
+#
+#echo "Generating read-only snapshot: ${SNAPSHOT_FILE}"
+#
+## Collect config files that were used
+#if [[ "$MULTI_FILE" == "true" ]]; then
+#  SNAPSHOT_SOURCES=("${ENV_FILE}" "${BASE_ENV}" "docker-makefiles/${NODE_CONFIGS}/advance_configs.env")
+#else
+#  SNAPSHOT_SOURCES=("${ENV_FILE}")
+#fi
+#
+#{
+#  for src in "${SNAPSHOT_SOURCES[@]}"; do
+#    echo "# ---- $(basename "${src}") ----"
+#    sed -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${src}"
+#    echo ""
+#  done
+#} > "${SNAPSHOT_FILE}"
+#
+#chmod 444 "${SNAPSHOT_FILE}"
+#echo "Snapshot saved (read-only): ${SNAPSHOT_FILE}"

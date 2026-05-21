@@ -20,7 +20,7 @@ services:
       - ${NODE_NAME}-local-scripts:/app/deployment-scripts
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
-    user: "anylog:anylog"
+    user: root
     pid: "host"
     group_add:
       - ${DOCKER_GID}

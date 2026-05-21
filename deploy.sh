@@ -162,7 +162,7 @@ cmd_dry_run() {
   _load_configs
   if [[ "$IS_MANUAL" == "false" ]]; then
     echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
-    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
+#    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
     bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
  elif [[ "${IS_MANUAL}" == "true" ]]; then
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
@@ -219,7 +219,6 @@ cmd_up() {
   fi
 }
 
-
 cmd_down() {
   _check_configs
   _load_configs
@@ -249,6 +248,7 @@ cmd_clean() {
     echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v
   fi
+  bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
 
 cmd_clean_all() {
@@ -268,6 +268,7 @@ cmd_clean_all() {
     echo "Stopping + removing volumes + image: ${ANYLOG_TYPE}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v --rmi all
   fi
+  bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
 
 cmd_logs() {
