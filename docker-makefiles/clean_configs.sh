@@ -55,4 +55,6 @@ DOCKER_FILE="${DOCKER_DIR}/${NODE_CONFIGS}-docker-compose.yaml"
 # -------- Remove files --------
 rm -rf ${DOCKER_FILE} "${SNAPSHOT_FILE}"
 
-if [[ -z "$(ls -A ${DOCKER_DIR})" ]] ; then rm -rf "${DOCKER_DIR}" ; fi
+if [[ -d "${DOCKER_DIR}" && -z "$(ls -A "${DOCKER_DIR}")" ]]; then
+  rm -rf "${DOCKER_DIR}"
+fi
