@@ -39,6 +39,10 @@ else
   die "Missing configuration file(s) for '${NODE_CONFIGS}', cannot continue"
 fi
 
+# -------- Generate Read-Only Snapshot Copy --------
+bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
+
+
 # -------- Load Configs --------
 export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
@@ -223,29 +227,30 @@ envsubst < "${COMPOSE_FILE}" > "$OUTPUT_FILE"
 rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak
 echo "Saved: ${OUTPUT_FILE}"
 
-# -------- Generate Read-Only Snapshot Copy --------
-# Filename: {formatted_node_name}.env  (hyphens -> underscores, lowercased)
-# Empty-value vars ( VAR="" ) are commented out in the copy.
-#FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
-SNAPSHOT_DIR="docker-makefiles/${NODE_CONFIGS}"
-SNAPSHOT_FILE="${SNAPSHOT_DIR}/formatted_node_configs.env"
 
-echo "Generating read-only snapshot: ${SNAPSHOT_FILE}"
 
-# Collect config files that were used
-if [[ "$MULTI_FILE" == "true" ]]; then
-  SNAPSHOT_SOURCES=("${ENV_FILE}" "${BASE_ENV}" "docker-makefiles/${NODE_CONFIGS}/advance_configs.env")
-else
-  SNAPSHOT_SOURCES=("${ENV_FILE}")
-fi
-
-{
-  for src in "${SNAPSHOT_SOURCES[@]}"; do
-    echo "# ---- $(basename "${src}") ----"
-    sed -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${src}"
-    echo ""
-  done
-} > "${SNAPSHOT_FILE}"
-
-chmod 444 "${SNAPSHOT_FILE}"
-echo "Snapshot saved (read-only): ${SNAPSHOT_FILE}"
+## Filename: {formatted_node_name}.env  (hyphens -> underscores, lowercased)
+## Empty-value vars ( VAR="" ) are commented out in the copy.
+##FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
+#SNAPSHOT_DIR="docker-makefiles/${NODE_CONFIGS}"
+#SNAPSHOT_FILE="${SNAPSHOT_DIR}/formatted_node_configs.env"
+#
+#echo "Generating read-only snapshot: ${SNAPSHOT_FILE}"
+#
+## Collect config files that were used
+#if [[ "$MULTI_FILE" == "true" ]]; then
+#  SNAPSHOT_SOURCES=("${ENV_FILE}" "${BASE_ENV}" "docker-makefiles/${NODE_CONFIGS}/advance_configs.env")
+#else
+#  SNAPSHOT_SOURCES=("${ENV_FILE}")
+#fi
+#
+#{
+#  for src in "${SNAPSHOT_SOURCES[@]}"; do
+#    echo "# ---- $(basename "${src}") ----"
+#    sed -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${src}"
+#    echo ""
+#  done
+#} > "${SNAPSHOT_FILE}"
+#
+#chmod 444 "${SNAPSHOT_FILE}"
+#echo "Snapshot saved (read-only): ${SNAPSHOT_FILE}"

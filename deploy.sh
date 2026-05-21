@@ -162,7 +162,7 @@ cmd_dry_run() {
   _load_configs
   if [[ "$IS_MANUAL" == "false" ]]; then
     echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
-    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
+#    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
     bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
  elif [[ "${IS_MANUAL}" == "true" ]]; then
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
