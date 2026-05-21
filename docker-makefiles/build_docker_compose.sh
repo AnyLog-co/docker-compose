@@ -226,9 +226,9 @@ echo "Saved: ${OUTPUT_FILE}"
 # -------- Generate Read-Only Snapshot Copy --------
 # Filename: {formatted_node_name}.env  (hyphens -> underscores, lowercased)
 # Empty-value vars ( VAR="" ) are commented out in the copy.
-FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
+#FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
 SNAPSHOT_DIR="docker-makefiles/${NODE_CONFIGS}"
-SNAPSHOT_FILE="${SNAPSHOT_DIR}/${FORMATTED_NODE_NAME}.env"
+SNAPSHOT_FILE="${SNAPSHOT_DIR}/formatted_node_configs.env"
 
 echo "Generating read-only snapshot: ${SNAPSHOT_FILE}"
 

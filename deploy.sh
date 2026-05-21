@@ -219,7 +219,6 @@ cmd_up() {
   fi
 }
 
-
 cmd_down() {
   _check_configs
   _load_configs
@@ -249,6 +248,7 @@ cmd_clean() {
     echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v
   fi
+  bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
 
 cmd_clean_all() {
@@ -268,6 +268,7 @@ cmd_clean_all() {
     echo "Stopping + removing volumes + image: ${ANYLOG_TYPE}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v --rmi all
   fi
+  bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
 
 cmd_logs() {
