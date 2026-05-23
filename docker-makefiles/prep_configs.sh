@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#set -euo pipefail
+set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -91,6 +91,7 @@ fi
 FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
 SNAPSHOT_DIR="docker-makefiles/${NODE_CONFIGS}"
 SNAPSHOT_FILE="${SNAPSHOT_DIR}/formatted_node_configs.env"
+if [[ -f "${SNAPSHOT_FILE}" ]] ; then rm -rf ${SNAPSHOT_FILE} ; fi
 
 echo "Generating read-only snapshot: ${SNAPSHOT_FILE}"
 
