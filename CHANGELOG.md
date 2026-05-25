@@ -4,7 +4,18 @@ description: Release history and notable changes for AnyLog deployment scripts.
 layout: page
 ---
 
-<!-- last-processed: 7b03268 -->
+<!-- last-processed: 2b9a13e -->
+
+<!-- osdev-predev: 2b9a13e (2026-05-25) -->
+
+* **Ori Shadmon** (2026-05-25)
+  * Docker config / Generic: default configs for nodes
+  * Docker config / Master: default configs for nodes
+  * Docker config / Operator: default configs for nodes
+  * Docker config / Publisher: default configs for nodes
+  * Docker config / Query: default configs for nodes
+  * Docker config / Standalone: default configs for nodes
+  * General: setup.cfg version update
 
 <!-- osdev-predev: 7b03268 (2026-05-25) -->
 
