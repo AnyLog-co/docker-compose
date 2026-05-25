@@ -6,9 +6,11 @@ $(info LOADING MAKEFILE)
 # ──────────────────────────────────────────────
 export IS_MANUAL    ?= false
 export ANYLOG_TYPE  ?= anylog-generic
-export TAG          ?= 1.4.2604
+export TAG          ?= 1.5.2606
 export IMAGE        ?= anylogco/anylog-network
 export TEST_CONN    ?=
+export LICENSE_KEY  ?=
+export PROMPT_LICENSE ?= true
 
 # Resolve short-form aliases (operator → anylog-operator)
 ifeq ($(ANYLOG_TYPE),$(filter $(ANYLOG_TYPE),generic master operator query publisher standalone-operator standalone-publisher))
@@ -28,6 +30,12 @@ ifeq ($(IS_MANUAL),true)
 endif
 ifneq ($(TEST_CONN),)
     _FLAGS += --test-conn $(TEST_CONN)
+endif
+ifeq ($(origin LICENSE_KEY),command line)
+    _FLAGS += --license-key '$(LICENSE_KEY)'
+endif
+ifneq ($(filter true True TRUE 1 yes Yes YES,$(PROMPT_LICENSE)),)
+    _FLAGS += --prompt-license
 endif
 
 ANYLOG_SH := bash deploy.sh
@@ -119,6 +127,8 @@ help: ## show this help message
 	@echo "  TAG             Image tag                    (default: pre-develop)"
 	@echo "  IMAGE           Image repository             (default: anylogco/anylog-network)"
 	@echo "  TEST_CONN       ip:port for test commands    (default: auto-resolved)"
+	@echo "  LICENSE_KEY     License key for deployment   (prompts if missing)"
+	@echo "  PROMPT_LICENSE  Prompt if no saved license   (default: true)"
 	@echo ""
 	@echo "Without make:"
 	@echo "  bash deploy.sh help"

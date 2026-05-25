@@ -10,7 +10,7 @@ across industries like manufacturing, utilities, oil & gas, smart cities, retail
 
 ## Repository Layout
 
-```
+```tree
 docker-compose/
 ├── Makefile                          # Thin wrapper around deploy.sh
 ├── deploy.sh                         # Node lifecycle manager — works without make
@@ -29,6 +29,16 @@ docker-compose/
 │   ├── prep_configs.sh               # Pre-flight config validation
 │   ├── docker-compose-template-base.yaml       # Linux template (host networking)
 │   └── docker-compose-template-ports-base.yaml # Mac/Windows template (port mapping)
+├── license-generator                  # code base for licnese verification + storage (Docker) 
+│   ├── Dockerfile
+│   ├── README.md
+│   ├── deploy.sh
+│   ├── docker-compose.yml
+│   ├── license_key.sh
+│   ├── requirements.txt
+│   └── src
+    │   ├── __init__.py
+    │   └── license-server.py
 └── support/                          # External services (Grafana, Postgres, MongoDB, etc.)
     └── README.md
 ```
@@ -128,6 +138,8 @@ Variables (make) / Options (deploy.sh):
   IMAGE       / --image     Image repository
   NODE_NAME   / --node-name Override container name
   TEST_CONN   / --test-conn ip:port for test commands    (default: auto-resolved)
+  LICENSE_KEY / --license-key License key (skips acceptance form if set in config file; runs form if passed manually)
+  PROMPT_LICENSE / --prompt-license Force the acceptance form even when a key is already saved (default: true)
 ```
 
 ### Important Notes
@@ -136,6 +148,52 @@ Variables (make) / Options (deploy.sh):
 - **Unique node names**: Each node must have a distinct `NODE_NAME`.
 - **Clusters**: `CLUSTER_NAME` should be unique per operator unless HA is configured.
 - **License key**: A valid `LICENSE_KEY` is required. [Request one here](https://www.anylog.network/download).
+
+
+### License Key
+
+Every `up` command validates a license before starting the node. The behavior depends on where the key comes from.
+
+**Resolution order**
+
+1. `--license-key <key>` flag (or `LICENSE_KEY=<key>` env var / make variable)
+2. `LICENSE_KEY=` line in `docker-makefiles/<type>/.env` or `node_configs.env`
+3. Interactive prompt (if a TTY is available)
+
+**If the key is found in the config file** — deployment proceeds immediately. No prompts, no registration form, no network call to the license server.
+
+**If the key comes from manual input** (flag or interactive prompt) — the full acceptance flow runs:
+1. Displays `LICENSE.txt` for review
+2. Prompts for name, email, and project
+3. Asks for explicit `yes/no` acceptance of the license agreement
+4. POSTs the registration to the AnyLog license server
+5. Writes the accepted key back into the config file (`LICENSE_KEY="<key>"`) so future deployments skip the form
+
+**Passing the key explicitly**
+
+```shell
+# deploy.sh
+bash deploy.sh up --type operator --license-key "<key>"
+
+# make
+make up ANYLOG_TYPE=operator LICENSE_KEY="<key>"
+```
+
+**Setting the key in the config file** (skips the form on all future runs)
+
+```dotenv
+# docker-makefiles/my-operator/node_configs.env
+LICENSE_KEY="<key>"
+```
+
+**`--prompt-license` / `PROMPT_LICENSE`**
+
+Forces the acceptance form even when a key is already saved, useful for re-registering under a new name or project:
+
+```shell
+bash deploy.sh up --type operator --prompt-license
+make up ANYLOG_TYPE=operator PROMPT_LICENSE=true
+```
 
 
 ### Configuration-based Deployment

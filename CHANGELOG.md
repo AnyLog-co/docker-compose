@@ -4,14 +4,61 @@ description: Release history and notable changes for AnyLog deployment scripts.
 layout: page
 ---
 
-## Unreleased
-<!-- last-processed: 4f8345a (2026-04-29) -->
+<!-- last-processed: 2b9a13e -->
 
 <!-- Developers: add bullets below as changes land in your branch -->
-
 ---
 
 ## 2026
+
+## v.1.5.2606 (May 2026 · 2b9a13e · 2026-05-25)
+
+### ✨ New Features
+- **Default node configs**: baseline default configurations added for all node types (Master, Query, Operator, Publisher, Generic, Standalone)
+- **Syslog Makefile support**: `make` targets added for syslog inclusion across deployments
+- **PostgreSQL and MongoDB Makefiles**: dedicated support-service Makefiles added for postgres and mongo (#27)
+- **`--exec-root` option**: attach into any container as the root user for debugging
+- **`debug busybox` support**: enabled for in-container inspection
+- **`REMOTE_CONN` support**: users can specify a remote connection endpoint for the GUI; falls back to `127.0.0.1` if not set
+- **`remote-gui` version pinned**: locked to `1.0.0` for stability
+- **Ollama example**: Ollama support-service configuration added under `support/`
+- **License key from file**: if a license key is provided via file, the license registration process is now skipped automatically
+- **User-defined image versions**: AnyLog and deployment-scripts versions can now be specified without the `anylog-` prefix
+
+### 🐛 Bug Fixes
+- Fixed `docker attach` for database containers
+- Fixed accidentally removed `psql` support service entry
+- Fixed `sed` command for `LICENSE_KEY` updates — multiple passes to correct typo, regex escaping, quote normalization, and backup-file handling (Mark Davidson, 2026-03-24)
+- Fixed `sedi` function to accept multiple arguments
+- Fixed license server IP address in Makefile
+- Fixed quotes in license key handling
+- Fixed volume issues in `deploy.sh`
+- Fixed `setup.cfg` version update for release
+
+### 🔧 Improvements
+- `docker exec` extended to support all container types
+- Support Makefile now handles multi-container configurations (PostgreSQL + MongoDB + Grafana simultaneously)
+- `remote-gui` hostname support added to Docker configs
+- Master node monitoring (`bmonitoring`) support added
+- Standalone node: `sys_query` logical database enabled by default; `REMOTE_CONN` integrated
+- Config files cleaned up and aligned to Mark's template structure across all node types
+- `replace exit with else` logic added for license key formatting validation
+- License key generator consolidated to a single location; license key info merged into a single file
+- `msg client` configuration updated across deployment templates
+- Docker socket pass-through support added and refined (Linux, macOS, fallback for missing socket)
+- Support for local `deployment-scripts` directory path
+- `docker compose builder` (`docker_compose_builder.sh`) introduced for support services; README updated
+- Personal scripts can now be injected into the Docker container at deploy time
+- Customer archive code removed from main deployment path
+- Unused Docker env files removed
+
+### ⚙️ Infrastructure & DevOps
+- `version_control.py` introduced to automate changelog and version tracking
+- CI/CD: changelog automation added; error raised if CHANGELOG is present but malformed
+- `sed` updated to work correctly within Makefile context (royshadmon, #26)
+- Version update logic corrected after regression; workflow now triggers reliably on push
+- `setup.cfg` version bump for `v.1.5.2606`
+- Added user-friendly license registration failure messaging; raw HTTP status removed — users directed to `support@anylog.co`
 
 ### [4f8345a] · 2026-04-29 (latest)
 
