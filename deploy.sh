@@ -9,7 +9,7 @@ set -euo pipefail
 # ──────────────────────────────────────────────
 IS_MANUAL="${IS_MANUAL:-false}"
 ANYLOG_TYPE="${ANYLOG_TYPE:-anylog-generic}"
-TAG="${TAG:-1.4.2604}"
+TAG="${TAG:-1.5.2606}"
 IMAGE="${IMAGE:-anylogco/anylog-network}"
 TEST_CONN="${TEST_CONN:-}"
 NODE_NAME="${NODE_NAME:-}"
