@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -224,7 +224,7 @@ echo "Generating final docker-compose.yaml..."
 mkdir -p docker-makefiles/docker-compose-files
 OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compose.yaml"
 envsubst < "${COMPOSE_FILE}" > "$OUTPUT_FILE"
-rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak
+rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak docker-makefiles/${NODE_CONFIGS}/*.bak
 echo "Saved: ${OUTPUT_FILE}"
 
 
