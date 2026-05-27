@@ -2,7 +2,7 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
-set -euo pipefail
+#set -euo pipefail
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
