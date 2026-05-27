@@ -44,7 +44,7 @@ bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
 
 
 # -------- Load Configs --------
-export NETWORK_TYPE=(grep -m1 '^NETWORK_TYPE' "${ENV_FILE}" | cut -d= -f2- | tr -d '"\r')
+export NETWORK_TYPE=$(grep -m1 '^NETWORK_TYPE' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
