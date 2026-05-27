@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -44,6 +44,7 @@ bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
 
 
 # -------- Load Configs --------
+export FORCE_TEMPLATE=(grep -m1 '^FORCE_TEMPLATE' "${ENV_FILE}" | cut -d= -f2- | tr -d '"\r')
 export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
@@ -65,7 +66,16 @@ fi
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 
-if [[ "$(uname -s)" != "Linux" ]]; then
+# -------- Select Template --------
+COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
+
+if [[ "${FORCE_TEMPLATE}" == "ports" ]]; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
+elif [[ "${FORCE_TEMPLATE}" == "network" ]]; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
+elif [[ -z "${FORCE_TEMPLATE}" ]] && [[ "$(uname -s)" != "Linux" ]]; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
+else
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 fi
 
@@ -224,7 +234,7 @@ echo "Generating final docker-compose.yaml..."
 mkdir -p docker-makefiles/docker-compose-files
 OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compose.yaml"
 envsubst < "${COMPOSE_FILE}" > "$OUTPUT_FILE"
-rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak
+rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak docker-makefiles/${NODE_CONFIGS}/*.bak
 echo "Saved: ${OUTPUT_FILE}"
 
 
