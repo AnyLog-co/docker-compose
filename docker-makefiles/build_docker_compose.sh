@@ -44,7 +44,7 @@ bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
 
 
 # -------- Load Configs --------
-export FORCE_TEMPLATE=(grep -m1 '^FORCE_TEMPLATE' "${ENV_FILE}" | cut -d= -f2- | tr -d '"\r')
+export NETWORK_TYPE=(grep -m1 '^NETWORK_TYPE' "${ENV_FILE}" | cut -d= -f2- | tr -d '"\r')
 export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
@@ -69,11 +69,13 @@ TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 # -------- Select Template --------
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 
-if [[ "${FORCE_TEMPLATE}" == "ports" ]]; then
+if [[ -n "${NETWORK_TYPE}" ]] && [[ "${NETWORK_TYPE}" != "network" ]] && [[ "${NETWORK_TYPE}" != "ports" ]]; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-specific-base.yaml"
+elif [[ "${NETWORK_TYPE}" == "ports" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
-elif [[ "${FORCE_TEMPLATE}" == "network" ]]; then
+elif [[ "${NETWORK_TYPE}" == "network" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
-elif [[ -z "${FORCE_TEMPLATE}" ]] && [[ "$(uname -s)" != "Linux" ]]; then
+elif [[ -z "${NETWORK_TYPE}" ]] && [[ "$(uname -s)" != "Linux" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 else
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
