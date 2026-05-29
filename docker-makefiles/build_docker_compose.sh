@@ -153,6 +153,47 @@ END {
   print "  image-vol:"; print "  usr-mgm-vol:"; print "  report-configs:";
 }' "$COMPOSE_FILE" > temp.yaml && mv temp.yaml "$COMPOSE_FILE"
 
+
+detect_network() {
+  NIC_TYPE=""
+  IP_ADDR=""
+
+  if [ "$OS_TYPE" = "macos" ]; then
+    NIC_TYPE=$(route -n get default 2>/dev/null | awk '/interface:/{print $2; exit}')
+    if [ -z "$NIC_TYPE" ]; then
+      NIC_TYPE=$(route get default 2>/dev/null | awk '/interface:/{print $2; exit}')
+    fi
+
+    if [ -n "$NIC_TYPE" ]; then
+      IP_ADDR=$(ipconfig getifaddr "$NIC_TYPE" 2>/dev/null)
+      if [ -z "$IP_ADDR" ]; then
+        IP_ADDR=$(ifconfig "$NIC_TYPE" 2>/dev/null | awk '/inet /{print $2}' | grep -v '^127\.' | head -n 1)
+      fi
+    fi
+  else
+    if command -v ip >/dev/null 2>&1; then
+      NIC_TYPE=$(ip route show default 2>/dev/null | awk '{print $5; exit}')
+      if [ -n "$NIC_TYPE" ]; then
+        IP_ADDR=$(ip -4 addr show "$NIC_TYPE" 2>/dev/null | awk '/inet /{sub(/\/.*/, "", $2); print $2; exit}')
+      fi
+    else
+      NIC_TYPE=$(netstat -rn 2>/dev/null | awk '/^(0\.0\.0\.0|default)/{print $NF; exit}')
+      if [ -n "$NIC_TYPE" ]; then
+        IP_ADDR=$(ifconfig "$NIC_TYPE" 2>/dev/null | awk '/inet /{print $2}' | grep -v '^127\.' | head -n 1)
+      fi
+    fi
+  fi
+
+  [ -n "$IP_ADDR" ]
+}
+
+detect_network || {
+  echo "Could not detect host inet IP" >&2
+  exit 1
+}
+
+REMOTE_CONN="${IP_ADDR}:32149"
+
   # Add remote-gui service
   awk -v remote_ip="$REMOTE_GUI_IP" \
       -v grafana="${GRAFANA_URL:-}" \
