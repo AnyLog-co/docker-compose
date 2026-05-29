@@ -163,7 +163,7 @@ END {
 /services:/ {
   print;
   print "  remote-gui:";
-  print "    image: anylogco/remote-gui:" tag;
+  print "    image: ghcr.io/anylog-co/remote-gui:" tag;
   print "    container_name: remote-gui";
   print "    hostname: remote-gui";
   print "    restart: always";
