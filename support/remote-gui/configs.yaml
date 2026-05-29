@@ -1,6 +1,6 @@
 GENERAL:
   IMAGE: anylogco/remote-gui
-  TAG: 1.0.0
+  TAG: ova-demo
   NAME: remote-gui
 
 NETWORK_CONFIGS:
