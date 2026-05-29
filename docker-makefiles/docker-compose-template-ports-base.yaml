@@ -1,29 +1,9 @@
+version: "2.4"
+
 services:
-  ${NODE_NAME}-init:
-    image: busybox
-    user: root
-    group_add:
-    - ${DOCKER_GID}
-    command: [
-      "sh", "-c",
-      "chown -R 10001:10001 
-        /app/AnyLog-Network/anylog 
-        /app/AnyLog-Network/blockchain 
-        /app/AnyLog-Network/data 
-        /app/deployment-scripts
-      "
-    ]
-    restart: "no"
-    volumes:
-      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
-      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
-      - ${NODE_NAME}-data:/app/AnyLog-Network/data
-      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
-      - ${DOCKER_SOCKET}:/var/run/docker.sock
   ${NODE_NAME}:
     image: ${IMAGE}:${TAG}
-    user: "anylog:anylog"
-    pid: "host"
+    user: "root"
     group_add:
       - ${DOCKER_GID}
     platform: ${DOCKER_PLATFORM}
@@ -43,7 +23,8 @@ services:
       - ${DOCKER_SOCKET}:/var/run/docker.sock
       - /proc:/host_proc:ro
       - /:/host:ro
-      - /sys:/host_sys:ro  # optional, useful for cgroup/disk info
+      - /sys:/host_sys:ro
+
 volumes:
   ${NODE_NAME}-anylog:
   ${NODE_NAME}-blockchain:
