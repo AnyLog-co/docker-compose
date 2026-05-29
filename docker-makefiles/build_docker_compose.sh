@@ -204,7 +204,7 @@ REMOTE_CONN="${IP_ADDR}:32149"
 /services:/ {
   print;
   print "  remote-gui:";
-  print "    image: ghcr.io/anylog-co/remote-gui:" tag;
+  print "    image: anylogco/remote-gui:" tag;
   print "    container_name: remote-gui";
   print "    hostname: remote-gui";
   print "    restart: always";
