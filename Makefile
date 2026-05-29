@@ -36,7 +36,7 @@ ANYLOG_SH := bash deploy.sh
 # ──────────────────────────────────────────────
 # License acceptance endpoint
 # ──────────────────────────────────────────────
-LICENSE_URL ?= http://192.168.1.211:8001/api/license-accept
+LICENSE_URL ?= http://23.239.12.151:8001/api/license-accept
 
 # ──────────────────────────────────────────────
 all: help
