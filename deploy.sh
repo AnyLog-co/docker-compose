@@ -2,7 +2,7 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
-#set -euo pipefail
+set -euo pipefail
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
@@ -64,6 +64,7 @@ _detect_platform() {
 _load_configs() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+  local dir_name="docker-makefiles/${ANYLOG_TYPE}"
 
   if [[ -f "$env_file" ]]; then
     IMAGE=$(grep -m1 '^IMAGE='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
@@ -74,7 +75,13 @@ _load_configs() {
   else
     die "Missing configuration file(s) for '${ANYLOG_TYPE}'"
   fi
+
+  # If NODE_NAME not set in config, fall back to saved slug
+  if [[ -z "${NODE_NAME}" ]] && [[ -f "${dir_name}/NODE_NAME.txt" ]]; then
+    NODE_NAME=$(cat "${dir_name}/NODE_NAME.txt")
+  fi
 }
+
 
 # Resolve TEST_CONN if not set
 _resolve_test_conn() {
