@@ -57,8 +57,8 @@ services:
     stdin_open: true
     tty: true
     restart: "no"
-    profiles:
-      - debug
+#    profiles:
+#      - debug
     depends_on:
       ${CONTAINER_NAME}:
         condition: service_started
