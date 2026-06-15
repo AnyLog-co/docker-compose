@@ -51,14 +51,18 @@ export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
 export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-if [[ -z ${NODE_NAME} ]] ; then
+EXISTING_CONTAINER=$(grep -m1 '^CONTAINER_NAME=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+
+if [[ -z ${NODE_NAME} ]] && [[ -z "${EXISTING_CONTAINER}" ]]; then
   UID_VALUE=$(tr -dc 'a-z0-9' < /dev/urandom | head -c 6)
   CONTAINER_NAME="$(basename ${DIR_NAME})-${UID_VALUE}"
+elif [[ -z ${NODE_NAME} ]] && [[ -n "${EXISTING_CONTAINER}" ]]; then
+  CONTAINER_NAME="${EXISTING_CONTAINER}"
 else
   CONTAINER_NAME="${NODE_NAME}"
 fi
 export CONTAINER_NAME=$(echo "${CONTAINER_NAME}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr '_' '-')
-${SED_INPLACE} "s/CONTAINER_NAME=\"\"/CONTAINER_NAME=\"${CONTAINER_NAME}\"/g" "$ENV_FILE"
+${SED_INPLACE} "s/^#\?CONTAINER_NAME=\"\"/CONTAINER_NAME=\"${CONTAINER_NAME}\"/g" "$ENV_FILE"
 
 
 export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
