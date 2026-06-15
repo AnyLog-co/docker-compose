@@ -50,15 +50,14 @@ export NETWORK_TYPE=$(grep -m1 '^NETWORK_TYPE' "$ENV_FILE" | cut -d= -f2- | tr -
 export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
-export CLUSTER_NAME=$(grep -m1 '^CLUSTER_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-if [[ -z ${NODE_NAME} ]] ; then
-  NODE_TYPE=$(grep -m1 '^NODE_TYPE=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+if [[ -z ${NODE _NAME} ]] ; then
   UID_VALUE=$(tr -dc 'a-z0-9' < /dev/urandom | head -c 6)
-  export CONTAINER_NAME="$(hostname)-${NODE_TYPE}-${UID_VALUE}"
+  CONTAINER_NAME="$(basename ${DIR_NAME})-${UID_VALUE}"
 else
-  export CONTAINER_NAME="${NODE_NAME}"
+  CONTAINER_NAME="${NODE_NAME}"
 fi
+export CONTAINER_NAME=$(echo "${CONTAINER_NAME}" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr '_' '-')
 ${SED_INPLACE} "s/CONTAINER_NAME=\"\"/CONTAINER_NAME=\"${CONTAINER_NAME}\"/g" "$ENV_FILE"
 
 

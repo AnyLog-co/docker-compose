@@ -13,7 +13,6 @@ TAG="${TAG:-1.4.2604}"
 IMAGE="${IMAGE:-anylogco/anylog-network}"
 TEST_CONN="${TEST_CONN:-}"
 NODE_NAME="${NODE_NAME:-}"
-CONTAINER_NAME="${CONTAINER_NAME:-}"
 LICENSE_KEY="${LICENSE_KEY:-}"
 LICENSE_KEY_PROVIDED=false
 PROMPT_LICENSE="${PROMPT_LICENSE:-true}"
@@ -61,33 +60,25 @@ _detect_platform() {
   export ANYLOG_GID=$(id -g)
 }
 
-# Load IMAGE, NODE_NAME, and CONTAINER_NAME from config files
+# Load IMAGE and NODE_NAME from config files
 _load_configs() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
   local dir_name="docker-makefiles/${ANYLOG_TYPE}"
 
   if [[ -f "$env_file" ]]; then
-    IMAGE=$(grep -m1 '^IMAGE='          "$env_file" | cut -d= -f2- | tr -d '"\r')
-    NODE_NAME=$(grep -m1 '^NODE_NAME='  "$env_file" | cut -d= -f2- | tr -d '"\r')
-    CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$env_file" | cut -d= -f2- | tr -d '"\r')
+    IMAGE=$(grep -m1 '^IMAGE='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
+    NODE_NAME=$(grep -m1 '^NODE_NAME=' "$env_file" | cut -d= -f2- | tr -d '"\r')
   elif [[ -f "$single_file" ]]; then
-    IMAGE=$(grep -m1 '^IMAGE='          "$single_file" | cut -d= -f2- | tr -d '"\r')
-    NODE_NAME=$(grep -m1 '^NODE_NAME='  "$single_file" | cut -d= -f2- | tr -d '"\r')
-    CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$single_file" | cut -d= -f2- | tr -d '"\r')
+    IMAGE=$(grep -m1 '^IMAGE='     "$single_file" | cut -d= -f2- | tr -d '"\r')
+    NODE_NAME=$(grep -m1 '^NODE_NAME=' "$single_file" | cut -d= -f2- | tr -d '"\r')
   else
     die "Missing configuration file(s) for '${ANYLOG_TYPE}'"
   fi
 
-  # CONTAINER_NAME is the actual Docker target — fall back chain:
-  #   1. CONTAINER_NAME from .env (set by build_docker_compose.sh)
-  #   2. NODE_NAME (user-specified, same value was used for both)
-  #   3. Saved slug from prior run
-  if [[ -z "${CONTAINER_NAME}" ]]; then
-    CONTAINER_NAME="${NODE_NAME}"
-  fi
-  if [[ -z "${CONTAINER_NAME}" ]] && [[ -f "${dir_name}/CONTAINER_NAME.txt" ]]; then
-    CONTAINER_NAME=$(cat "${dir_name}/CONTAINER_NAME.txt")
+  # If NODE_NAME not set in config, fall back to saved slug
+  if [[ -z "${NODE_NAME}" ]] && [[ -f "${dir_name}/NODE_NAME.txt" ]]; then
+    NODE_NAME=$(cat "${dir_name}/NODE_NAME.txt")
   fi
 }
 
@@ -177,7 +168,7 @@ cmd_dry_run() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "false" ]]; then
-    echo "Dry Run ${ANYLOG_TYPE} - ${CONTAINER_NAME}"
+    echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
 #    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
     bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
  elif [[ "${IS_MANUAL}" == "true" ]]; then
@@ -187,12 +178,12 @@ cmd_dry_run() {
     echo "Manual mode — docker run command:"
     echo ""
     echo "  ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \\"
-    echo "    --name ${CONTAINER_NAME} \\"
+    echo "    --name ${NODE_NAME} \\"
     echo "    --network host \\"
     echo "    --env-file ${single_file} \\"
-    echo "    -v ${CONTAINER_NAME}-anylog:/app/AnyLog-Network/anylog \\"
-    echo "    -v ${CONTAINER_NAME}-blockchain:/app/AnyLog-Network/blockchain \\"
-    echo "    -v ${CONTAINER_NAME}-data:/app/AnyLog-Network/data \\"
+    echo "    -v ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog \\"
+    echo "    -v ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain \\"
+    echo "    -v ${NODE_NAME}-data:/app/AnyLog-Network/data \\"
     [[ -n "${SCRIPT_VOLUME_DRY_RUN}" ]] && echo "    ${SCRIPT_VOLUME_DRY_RUN} \\"
     echo "    --restart always \\"
     echo "    ${IMAGE}:${TAG}"
@@ -219,13 +210,13 @@ cmd_up() {
     _resolve_scripts_volume
 
     ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \
-      --name "${CONTAINER_NAME}" \
+      --name "${NODE_NAME}" \
       --network host \
       --env-file "${single_file}" \
       ${license_flag} \
-      -v "${CONTAINER_NAME}-anylog:/app/AnyLog-Network/anylog" \
-      -v "${CONTAINER_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
-      -v "${CONTAINER_NAME}-data:/app/AnyLog-Network/data" \
+      -v "${NODE_NAME}-anylog:/app/AnyLog-Network/anylog" \
+      -v "${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
+      -v "${NODE_NAME}-data:/app/AnyLog-Network/data" \
       "${SCRIPT_VOLUME_ARGS[@]}" \
       --restart always \
       "${IMAGE}:${TAG}"
@@ -239,8 +230,8 @@ cmd_down() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping ${CONTAINER_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${CONTAINER_NAME}" && ${CONTAINER_CMD} rm "${CONTAINER_NAME}"
+    echo "Stopping ${NODE_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
   else
     cmd_dry_run
     echo "Stopping ${ANYLOG_TYPE}"
@@ -252,13 +243,13 @@ cmd_clean() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping + removing volumes: ${CONTAINER_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${CONTAINER_NAME}" && ${CONTAINER_CMD} rm "${CONTAINER_NAME}"
+    echo "Stopping + removing volumes: ${NODE_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
     ${CONTAINER_CMD} volume rm \
-      "${CONTAINER_NAME}-anylog" \
-      "${CONTAINER_NAME}-blockchain" \
-      "${CONTAINER_NAME}-data" \
-      "${CONTAINER_NAME}-local-scripts" 2>/dev/null || true
+      "${NODE_NAME}-anylog" \
+      "${NODE_NAME}-blockchain" \
+      "${NODE_NAME}-data" \
+      "${NODE_NAME}-local-scripts" 2>/dev/null || true
   else
     cmd_dry_run
     echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
@@ -271,13 +262,13 @@ cmd_clean_all() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping + removing volumes + image: ${CONTAINER_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${CONTAINER_NAME}" && ${CONTAINER_CMD} rm "${CONTAINER_NAME}"
+    echo "Stopping + removing volumes + image: ${NODE_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
     ${CONTAINER_CMD} volume rm \
-      "${CONTAINER_NAME}-anylog" \
-      "${CONTAINER_NAME}-blockchain" \
-      "${CONTAINER_NAME}-data" \
-      "${CONTAINER_NAME}-local-scripts" 2>/dev/null || true
+      "${NODE_NAME}-anylog" \
+      "${NODE_NAME}-blockchain" \
+      "${NODE_NAME}-data" \
+      "${NODE_NAME}-local-scripts" 2>/dev/null || true
     ${CONTAINER_CMD} rmi "${IMAGE}:${TAG}" 2>/dev/null || true
   else
     cmd_dry_run
@@ -289,27 +280,27 @@ cmd_clean_all() {
 
 cmd_logs() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} logs "${CONTAINER_NAME}"
+  ${CONTAINER_CMD} logs "${NODE_NAME}"
 }
 
 cmd_logs_f() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} logs -f "${CONTAINER_NAME}"
+  ${CONTAINER_CMD} logs -f "${NODE_NAME}"
 }
 
 cmd_attach() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} attach --detach-keys=ctrl-d "${CONTAINER_NAME}"
+  ${CONTAINER_CMD} attach --detach-keys=ctrl-d "${NODE_NAME}"
 }
 
 cmd_exec() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} exec -it "${CONTAINER_NAME}" /bin/bash
+  ${CONTAINER_CMD} exec -it "${NODE_NAME}" /bin/bash
 }
 
 cmd_exec_root() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} exec -u root -it "${CONTAINER_NAME}" /bin/bash
+  ${CONTAINER_CMD} exec -u root -it "${NODE_NAME}" /bin/bash
 }
 
 # ──────────────────────────────────────────────
@@ -438,7 +429,6 @@ cmd_check_vars() {
   printf "%-22s %-30s %s\n" "ANYLOG_TYPE"         "anylog-generic"           "$ANYLOG_TYPE"
   printf "%-22s %-30s %s\n" "IMAGE"               "anylogco/anylog-network"  "$IMAGE"
   printf "%-22s %-30s %s\n" "NODE_NAME"           ""                         "${NODE_NAME:-}"
-  printf "%-22s %-30s %s\n" "CONTAINER_NAME"      ""                         "${CONTAINER_NAME:-}"
   printf "%-22s %-30s %s\n" "TAG"                 "pre-develop"              "$TAG"
   printf "%-22s %-30s %s\n" "TEST_CONN"           "127.0.0.1:<rest-port>"    "$TEST_CONN"
 }
