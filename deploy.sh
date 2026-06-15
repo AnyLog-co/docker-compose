@@ -13,6 +13,7 @@ TAG="${TAG:-1.4.2604}"
 IMAGE="${IMAGE:-anylogco/anylog-network}"
 TEST_CONN="${TEST_CONN:-}"
 NODE_NAME="${NODE_NAME:-}"
+CONTAINER_NAME="${CONTAINER_NAME:-}"
 LICENSE_KEY="${LICENSE_KEY:-}"
 LICENSE_KEY_PROVIDED=false
 PROMPT_LICENSE="${PROMPT_LICENSE:-true}"
@@ -60,11 +61,11 @@ _detect_platform() {
   export ANYLOG_GID=$(id -g)
 }
 
-# Load IMAGE and NODE_NAME from config files
+# Load IMAGE, NODE_NAME, and CONTAINER_NAME from config files
 _load_configs() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-  local dir_name="docker-makefiles/${ANYLOG_TYPE}"
+  local formatted_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
 
   if [[ -f "$env_file" ]]; then
     IMAGE=$(grep -m1 '^IMAGE='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
@@ -76,9 +77,17 @@ _load_configs() {
     die "Missing configuration file(s) for '${ANYLOG_TYPE}'"
   fi
 
-  # If NODE_NAME not set in config, fall back to saved slug
-  if [[ -z "${NODE_NAME}" ]] && [[ -f "${dir_name}/NODE_NAME.txt" ]]; then
-    NODE_NAME=$(cat "${dir_name}/NODE_NAME.txt")
+  # CONTAINER_NAME is the actual Docker target:
+  #   1. If NODE_NAME is set, they match
+  #   2. Otherwise read CONTAINER_NAME from .env (written by build_docker_compose.sh)
+  #   3. Fall back to formatted_node_configs.env
+  if [[ -n "${NODE_NAME}" ]]; then
+    CONTAINER_NAME="${NODE_NAME}"
+  else
+    CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$env_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r')
+    if [[ -z "${CONTAINER_NAME}" ]]; then
+      CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$formatted_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r')
+    fi
   fi
 }
 
@@ -168,7 +177,7 @@ cmd_dry_run() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "false" ]]; then
-    echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
+    echo "Dry Run ${ANYLOG_TYPE} - ${CONTAINER_NAME}"
 #    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
     bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
  elif [[ "${IS_MANUAL}" == "true" ]]; then
@@ -178,12 +187,12 @@ cmd_dry_run() {
     echo "Manual mode — docker run command:"
     echo ""
     echo "  ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \\"
-    echo "    --name ${NODE_NAME} \\"
+    echo "    --name ${CONTAINER_NAME} \\"
     echo "    --network host \\"
     echo "    --env-file ${single_file} \\"
-    echo "    -v ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog \\"
-    echo "    -v ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain \\"
-    echo "    -v ${NODE_NAME}-data:/app/AnyLog-Network/data \\"
+    echo "    -v ${CONTAINER_NAME}-anylog:/app/AnyLog-Network/anylog \\"
+    echo "    -v ${CONTAINER_NAME}-blockchain:/app/AnyLog-Network/blockchain \\"
+    echo "    -v ${CONTAINER_NAME}-data:/app/AnyLog-Network/data \\"
     [[ -n "${SCRIPT_VOLUME_DRY_RUN}" ]] && echo "    ${SCRIPT_VOLUME_DRY_RUN} \\"
     echo "    --restart always \\"
     echo "    ${IMAGE}:${TAG}"
@@ -210,13 +219,13 @@ cmd_up() {
     _resolve_scripts_volume
 
     ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \
-      --name "${NODE_NAME}" \
+      --name "${CONTAINER_NAME}" \
       --network host \
       --env-file "${single_file}" \
       ${license_flag} \
-      -v "${NODE_NAME}-anylog:/app/AnyLog-Network/anylog" \
-      -v "${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
-      -v "${NODE_NAME}-data:/app/AnyLog-Network/data" \
+      -v "${CONTAINER_NAME}-anylog:/app/AnyLog-Network/anylog" \
+      -v "${CONTAINER_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
+      -v "${CONTAINER_NAME}-data:/app/AnyLog-Network/data" \
       "${SCRIPT_VOLUME_ARGS[@]}" \
       --restart always \
       "${IMAGE}:${TAG}"
@@ -230,8 +239,8 @@ cmd_down() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping ${NODE_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
+    echo "Stopping ${CONTAINER_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${CONTAINER_NAME}" && ${CONTAINER_CMD} rm "${CONTAINER_NAME}"
   else
     cmd_dry_run
     echo "Stopping ${ANYLOG_TYPE}"
@@ -243,13 +252,13 @@ cmd_clean() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping + removing volumes: ${NODE_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
+    echo "Stopping + removing volumes: ${CONTAINER_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${CONTAINER_NAME}" && ${CONTAINER_CMD} rm "${CONTAINER_NAME}"
     ${CONTAINER_CMD} volume rm \
-      "${NODE_NAME}-anylog" \
-      "${NODE_NAME}-blockchain" \
-      "${NODE_NAME}-data" \
-      "${NODE_NAME}-local-scripts" 2>/dev/null || true
+      "${CONTAINER_NAME}-anylog" \
+      "${CONTAINER_NAME}-blockchain" \
+      "${CONTAINER_NAME}-data" \
+      "${CONTAINER_NAME}-local-scripts" 2>/dev/null || true
   else
     cmd_dry_run
     echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
@@ -262,13 +271,13 @@ cmd_clean_all() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping + removing volumes + image: ${NODE_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
+    echo "Stopping + removing volumes + image: ${CONTAINER_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${CONTAINER_NAME}" && ${CONTAINER_CMD} rm "${CONTAINER_NAME}"
     ${CONTAINER_CMD} volume rm \
-      "${NODE_NAME}-anylog" \
-      "${NODE_NAME}-blockchain" \
-      "${NODE_NAME}-data" \
-      "${NODE_NAME}-local-scripts" 2>/dev/null || true
+      "${CONTAINER_NAME}-anylog" \
+      "${CONTAINER_NAME}-blockchain" \
+      "${CONTAINER_NAME}-data" \
+      "${CONTAINER_NAME}-local-scripts" 2>/dev/null || true
     ${CONTAINER_CMD} rmi "${IMAGE}:${TAG}" 2>/dev/null || true
   else
     cmd_dry_run
@@ -280,27 +289,27 @@ cmd_clean_all() {
 
 cmd_logs() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} logs "${NODE_NAME}"
+  ${CONTAINER_CMD} logs "${CONTAINER_NAME}"
 }
 
 cmd_logs_f() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} logs -f "${NODE_NAME}"
+  ${CONTAINER_CMD} logs -f "${CONTAINER_NAME}"
 }
 
 cmd_attach() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} attach --detach-keys=ctrl-d "${NODE_NAME}"
+  ${CONTAINER_CMD} attach --detach-keys=ctrl-d "${CONTAINER_NAME}"
 }
 
 cmd_exec() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} exec -it "${NODE_NAME}" /bin/bash
+  ${CONTAINER_CMD} exec -it "${CONTAINER_NAME}" /bin/bash
 }
 
 cmd_exec_root() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} exec -u root -it "${NODE_NAME}" /bin/bash
+  ${CONTAINER_CMD} exec -u root -it "${CONTAINER_NAME}" /bin/bash
 }
 
 # ──────────────────────────────────────────────
@@ -429,6 +438,7 @@ cmd_check_vars() {
   printf "%-22s %-30s %s\n" "ANYLOG_TYPE"         "anylog-generic"           "$ANYLOG_TYPE"
   printf "%-22s %-30s %s\n" "IMAGE"               "anylogco/anylog-network"  "$IMAGE"
   printf "%-22s %-30s %s\n" "NODE_NAME"           ""                         "${NODE_NAME:-}"
+  printf "%-22s %-30s %s\n" "CONTAINER_NAME"      ""                         "${CONTAINER_NAME:-}"
   printf "%-22s %-30s %s\n" "TAG"                 "pre-develop"              "$TAG"
   printf "%-22s %-30s %s\n" "TEST_CONN"           "127.0.0.1:<rest-port>"    "$TEST_CONN"
 }
