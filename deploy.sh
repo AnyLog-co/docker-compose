@@ -231,7 +231,7 @@ cmd_up() {
       "${IMAGE}:${TAG}"
   else
     echo "Deploying ${ANYLOG_TYPE}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" up -d
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${CONTAINER_NAME}" up -d
   fi
 }
 
@@ -244,7 +244,7 @@ cmd_down() {
   else
     cmd_dry_run
     echo "Stopping ${ANYLOG_TYPE}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${CONTAINER_NAME}" down
   fi
 }
 
@@ -262,7 +262,7 @@ cmd_clean() {
   else
     cmd_dry_run
     echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${CONTAINER_NAME}" down -v
   fi
   bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
@@ -282,7 +282,7 @@ cmd_clean_all() {
   else
     cmd_dry_run
     echo "Stopping + removing volumes + image: ${ANYLOG_TYPE}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v --rmi all
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${CONTAINER_NAME}" down -v --rmi all
   fi
   bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
