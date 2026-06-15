@@ -55,22 +55,11 @@ export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\
 if [[ -z ${NODE_NAME} ]] ; then
   NODE_TYPE=$(grep -m1 '^NODE_TYPE=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
   UID_VALUE=$(tr -dc 'a-z0-9' < /dev/urandom | head -c 6)
-  echo "${UID_VALUE}"
-  export NODE_NAME="$(hostname)-${NODE_TYPE}-${UID_VALUE}"
-
-  if [[ -n "${CLUSTER_NAME}" ]] && [[ "${NODE_TYPE}" =~ operator ]]; then
-    export NODE_NAME="${NODE_NAME}-bkup"
-  elif [[ -z ${CLUSTER_NAME} ]] && [[ "${NODE_TYPE}" =~ operator ]]; then
-    export CLUSTER_NAME="$(hostname)-cluster-${UID_VALUE}"
-  fi
-
-  ${SED_INPLACE} "s/NODE_NAME=\"\"/NODE_NAME=\"${NODE_NAME}\"/g" "$BASE_ENV"
-  ${SED_INPLACE} "s/NODE_NAME=\"\"/NODE_NAME=\"${NODE_NAME}\"/g" "${DIR_NAME}/node_configs.env"
-  if [[ "${NODE_TYPE}" =~ operator ]]; then
-    ${SED_INPLACE} "s/CLUSTER_NAME=\"\"/CLUSTER_NAME=\"${CLUSTER_NAME}\"/g" "$BASE_ENV"
-    ${SED_INPLACE} "s/CLUSTER_NAME=\"\"/CLUSTER_NAME=\"${CLUSTER_NAME}\"/g" "${DIR_NAME}/node_configs.env"
-  fi
+  export CONTAINER_NAME="$(hostname)-${NODE_TYPE}-${UID_VALUE}"
+else
+  export CONTAINER_NAME="${NODE_NAME}"
 fi
+${SED_INPLACE} "s/CONTAINER_NAME=\"\"/CONTAINER_NAME=\"${CONTAINER_NAME}\"/g" "$ENV_FILE"
 
 
 export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
@@ -138,14 +127,14 @@ if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMNETS_BRANCH}" ]]  || \
 
 elif [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
   # Options 2: use deployment-scripts on host directory
-  ${SED_INPLACE} "s#- \${NODE_NAME}-local-scripts:/app/deployment-scripts#- ${DEPLOYMENTS_REPO}:/app/deployment-scripts#g" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^  \${NODE_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "s#- \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts#- ${DEPLOYMENTS_REPO}:/app/deployment-scripts#g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
 
 elif [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* ]]; then
   # Option 3: reclone deployment-scripts based on  `DEPLOYMENTS_REPO` & `DEPLOYMENTS_BRANCH` if one or both are not default
   #   Cloning happens inside the container during start-up
   ${SED_INPLACE} "/\/app\/deployment-scripts$/d" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^  \${NODE_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
 
 elif [[ -n "${DEPLOYMENTS_REPO}" ]] ; then
   # Option 4: Use a secondary docker container with `deployment-scripts`
@@ -154,7 +143,7 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]] ; then
   # Inject deployment-scripts service before the main node service
   awk -v repo="${DEPLOYMENTS_REPO}" \
       -v branch="${DEPLOYMENTS_BRANCH}" \
-      -v node="${NODE_NAME}" '
+      -v node="${CONTAINER_NAME}" '
   /^services:/ {
     print;
     print "  " node "-deployment-scripts:";
@@ -168,18 +157,18 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]] ; then
   }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 
   # Add depends_on for deployment-scripts alongside existing init depends_on
-  ${SED_INPLACE} "s/condition: service_completed_successfully/condition: service_completed_successfully\n      ${NODE_NAME}-deployment-scripts:\n        condition: service_completed_successfully/g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "s/condition: service_completed_successfully/condition: service_completed_successfully\n      ${CONTAINER_NAME}-deployment-scripts:\n        condition: service_completed_successfully/g" "${COMPOSE_FILE}"
 
   # Replace named volume reference
-  ${SED_INPLACE} "s#- \${NODE_NAME}-local-scripts:/app/deployment-scripts#- ${NODE_NAME}-deployment-scripts:/app/deployment-scripts#g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "s#- \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts#- ${CONTAINER_NAME}-deployment-scripts:/app/deployment-scripts#g" "${COMPOSE_FILE}"
 
-  awk -v node="${NODE_NAME}" '
+  awk -v node="${CONTAINER_NAME}" '
   /^  [^ ]/ { in_init = ($0 ~ node "-init:") }
   in_init && /deployment-scripts:\/app\/deployment-scripts/ { next }
   1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 
   # Add volume declaration
-  echo "  ${NODE_NAME}-deployment-scripts:" >> "${COMPOSE_FILE}"
+  echo "  ${CONTAINER_NAME}-deployment-scripts:" >> "${COMPOSE_FILE}"
 fi
 
 # -------- Docker Socket --------
@@ -304,4 +293,3 @@ OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compos
 envsubst < "${COMPOSE_FILE}" > "$OUTPUT_FILE"
 rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak docker-makefiles/${NODE_CONFIGS}/*.bak
 echo "Saved: ${OUTPUT_FILE}"
-

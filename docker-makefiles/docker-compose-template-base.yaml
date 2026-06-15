@@ -1,5 +1,5 @@
 services:
-  ${NODE_NAME}-init:
+  ${CONTAINER_NAME}-init:
     image: busybox
     user: root
     group_add:
@@ -15,12 +15,12 @@ services:
       "
     ]
     volumes:
-      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
-      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
-      - ${NODE_NAME}-data:/app/AnyLog-Network/data
-#      - ${NODE_NAME}-tpm:/app/AnyLog-Network/tpm_dir
-      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
-  ${NODE_NAME}:
+      - ${CONTAINER_NAME}-anylog:/app/AnyLog-Network/anylog
+      - ${CONTAINER_NAME}-blockchain:/app/AnyLog-Network/blockchain
+      - ${CONTAINER_NAME}-data:/app/AnyLog-Network/data
+#      - ${CONTAINER_NAME}-tpm:/app/AnyLog-Network/tpm_dir
+      - ${CONTAINER_NAME}-local-scripts:/app/deployment-scripts
+  ${CONTAINER_NAME}:
     image: ${IMAGE}:${TAG}
     user: root
     pid: "host"
@@ -29,26 +29,26 @@ services:
     platform: ${DOCKER_PLATFORM}
     restart: always
     env_file:
-    container_name: ${NODE_NAME}
+    container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
     network_mode: host
     depends_on:
-      ${NODE_NAME}-init:
+      ${CONTAINER_NAME}-init:
         condition: service_completed_successfully
     volumes:
-      - ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog
-      - ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain
-      - ${NODE_NAME}-data:/app/AnyLog-Network/data
+      - ${CONTAINER_NAME}-anylog:/app/AnyLog-Network/anylog
+      - ${CONTAINER_NAME}-blockchain:/app/AnyLog-Network/blockchain
+      - ${CONTAINER_NAME}-data:/app/AnyLog-Network/data
 #      - ${NODE_NAME}-tpm:/app/AnyLog-Network/tpm_diry
-      - ${NODE_NAME}-local-scripts:/app/deployment-scripts
+      - ${CONTAINER_NAME}-local-scripts:/app/deployment-scripts
       - ${DOCKER_SOCKET}:/var/run/docker.sock
       - /proc:/host_proc:ro
       - /:/host:ro
       - /sys:/host_sys:ro  # optional, useful for cgroup/disk info
 volumes:
-  ${NODE_NAME}-anylog:
-  ${NODE_NAME}-blockchain:
-  ${NODE_NAME}-data:
-#  ${NODE_NAME}-tpm:
-  ${NODE_NAME}-local-scripts:
+  ${CONTAINER_NAME}-anylog:
+  ${CONTAINER_NAME}-blockchain:
+  ${CONTAINER_NAME}-data:
+#  ${CONTAINER_NAME}-tpm:
+  ${CONTAINER_NAME}-local-scripts:
