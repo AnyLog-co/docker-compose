@@ -32,7 +32,7 @@ services:
     container_name: ${CONTAINER_NAME}
     stdin_open: true
     tty: true
-    network_mode: host
+    network_mode: ${NETWORK_TYPE}
     depends_on:
       ${CONTAINER_NAME}-init:
         condition: service_completed_successfully
@@ -58,6 +58,9 @@ services:
     depends_on:
       ${CONTAINER_NAME}:
         condition: service_started
+networks:
+  ${NETWORK_TYPE}:
+    external: true
 volumes:
   ${CONTAINER_NAME}-anylog:
   ${CONTAINER_NAME}-blockchain:

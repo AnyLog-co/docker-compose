@@ -51,7 +51,7 @@ export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
 export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
-if [[ -z ${NODE _NAME} ]] ; then
+if [[ -z ${NODE_NAME} ]] ; then
   UID_VALUE=$(tr -dc 'a-z0-9' < /dev/urandom | head -c 6)
   CONTAINER_NAME="$(basename ${DIR_NAME})-${UID_VALUE}"
 else
@@ -82,7 +82,7 @@ TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 
 if [[ -n "${NETWORK_TYPE}" ]] && [[ "${NETWORK_TYPE}" != "network" ]] && [[ "${NETWORK_TYPE}" != "ports" ]]; then
-  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-specific-base.yaml"
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-net-specific-base.yaml"
 elif [[ "${NETWORK_TYPE}" == "ports" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 elif [[ "${NETWORK_TYPE}" == "network" ]]; then
@@ -183,12 +183,24 @@ else
 fi
 
 # -------- macOS: comment out Linux-only directives --------
-if [[ "$(uname)" == "Darwin" ]]; then
-  ${SED_INPLACE} 's|pid: "host"|# pid: "host"|g'                   "${COMPOSE_FILE}"
-  ${SED_INPLACE} 's|- /proc:/host_proc:ro|# - /proc:/host_proc:ro|g' "${COMPOSE_FILE}"
-  ${SED_INPLACE} 's|- /:/host:ro|# - /:/host:ro|g'                 "${COMPOSE_FILE}"
-  ${SED_INPLACE} 's|- /sys:/host_sys:ro|# - /sys:/host_sys:ro|g'   "${COMPOSE_FILE}"
-fi
+# -------- Host Mounts --------
+export HOST_PROC=$(grep -m1 '^HOST_PROC=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export HOST_ROOT=$(grep -m1 '^HOST_ROOT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export HOST_SYS=$(grep -m1  '^HOST_SYS='  "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+
+for VAR_NAME in HOST_PROC HOST_ROOT HOST_SYS; do
+  HOST_PATH="${!VAR_NAME}"
+  if [[ -z "${HOST_PATH}" ]] || [[ ! -e "${HOST_PATH}" ]]; then
+    ${SED_INPLACE} "s|- \${${VAR_NAME}}:.*|# - \${MISSING-${VAR_NAME}}|g" "${COMPOSE_FILE}"
+  fi
+done
+
+#if [[ "$(uname)" == "Darwin" ]]; then
+#  ${SED_INPLACE} 's|pid: "host"|# pid: "host"|g'                   "${COMPOSE_FILE}"
+#  ${SED_INPLACE} 's|- /proc:/host_proc:ro|# - /proc:/host_proc:ro|g' "${COMPOSE_FILE}"
+#  ${SED_INPLACE} 's|- /:/host:ro|# - /:/host:ro|g'                 "${COMPOSE_FILE}"
+#  ${SED_INPLACE} 's|- /sys:/host_sys:ro|# - /sys:/host_sys:ro|g'   "${COMPOSE_FILE}"
+#fi
 
 # -------- Remote-GUI --------
 if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
