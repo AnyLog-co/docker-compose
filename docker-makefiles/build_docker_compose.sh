@@ -284,8 +284,8 @@ fi
 
 # -------- USER VOLUMES --------
 if [[ -n "${USER_VOLUMES}" ]]; then
+  VOLUME_INJECT=""
   for VOLUME in ${USER_VOLUMES}; do
-
     if [[ "${VOLUME}" == *"/"* ]]; then
       MOUNT_NAME=$(basename "${VOLUME}")
     elif [[ "${VOLUME}" == *"\\"* ]]; then
@@ -293,15 +293,11 @@ if [[ -n "${USER_VOLUMES}" ]]; then
     else
       MOUNT_NAME="${VOLUME}"
     fi
-
-    INJECT="      - ${VOLUME:+${VOLUME}:}/app/${MOUNT_NAME}"
-
-    # Insert BEFORE the root-level volumes:
-    ${SED_INPLACE} "/^volumes:/i\\
-${INJECT}
-" "${COMPOSE_FILE}"
-
+    VOLUME_INJECT="${VOLUME_INJECT}\n      - ${VOLUME}:/app/${MOUNT_NAME}"
   done
+
+  # Insert all user volumes after the data volume in the main service
+  ${SED_INPLACE} "s#- \${CONTAINER_NAME}-data:/app/AnyLog-Network/data#- \${CONTAINER_NAME}-data:/app/AnyLog-Network/data${VOLUME_INJECT}#g" "${COMPOSE_FILE}"
 fi
 
 # -------- Envsubst & Write Output --------
