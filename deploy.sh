@@ -2,7 +2,7 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
-#set -euo pipefail
+set -euo pipefail
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
@@ -162,7 +162,7 @@ cmd_dry_run() {
   _load_configs
   if [[ "$IS_MANUAL" == "false" ]]; then
     echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
-    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
+#    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
     bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
  elif [[ "${IS_MANUAL}" == "true" ]]; then
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
@@ -219,7 +219,6 @@ cmd_up() {
   fi
 }
 
-
 cmd_down() {
   _check_configs
   _load_configs
@@ -249,6 +248,7 @@ cmd_clean() {
     echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v
   fi
+  bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
 
 cmd_clean_all() {
@@ -268,6 +268,7 @@ cmd_clean_all() {
     echo "Stopping + removing volumes + image: ${ANYLOG_TYPE}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v --rmi all
   fi
+  bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
 
 cmd_logs() {
@@ -302,39 +303,33 @@ cmd_license_check() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
   local license_arg=()
-  local accepted_license=""
+  local license_from_file=false
 
   case "${PROMPT_LICENSE}" in
     true|True|TRUE|1|yes|Yes|YES) PROMPT_LICENSE="true" ;;
     *) PROMPT_LICENSE="false" ;;
   esac
 
-  if [[ -f ".license_accepted" ]]; then
-    accepted_license=$(awk -F'|' 'NF >= 5 {print $5; exit}' .license_accepted)
-    accepted_license="${accepted_license#\"}" ; accepted_license="${accepted_license%\"}"
-    accepted_license="${accepted_license#\'}" ; accepted_license="${accepted_license%\'}"
-  fi
-
-  if [[ "${LICENSE_KEY_PROVIDED}" != "true" && -n "${accepted_license}" ]]; then
-    LICENSE_KEY="${accepted_license}"
-    export LICENSE_KEY
-    return 0
-  fi
-
-  if [[ "${PROMPT_LICENSE}" == "true" && "${LICENSE_KEY_PROVIDED}" != "true" ]]; then
-    LICENSE_KEY=""
-  fi
-
+  # ── Resolve key from file ─────────────────────────────────────────
   if [[ -z "${LICENSE_KEY}" && -f "${env_file}" ]]; then
     LICENSE_KEY=$(_get_config_value "$env_file" "LICENSE_KEY")
+    [[ -n "${LICENSE_KEY}" ]] && license_from_file=true
   elif [[ -z "${LICENSE_KEY}" && -f "${single_file}" ]]; then
     LICENSE_KEY=$(_get_config_value "$single_file" "LICENSE_KEY")
+    [[ -n "${LICENSE_KEY}" ]] && license_from_file=true
   fi
 
   LICENSE_KEY="${LICENSE_KEY#\"}" ; LICENSE_KEY="${LICENSE_KEY%\"}"
   LICENSE_KEY="${LICENSE_KEY#\'}" ; LICENSE_KEY="${LICENSE_KEY%\'}"
 
-  if [[ -z "${LICENSE_KEY}" && "${PROMPT_LICENSE}" != "true" ]] ; then
+  # ── If key came from file, skip the entire acceptance process ─────
+  if [[ "${license_from_file}" == "true" && "${LICENSE_KEY_PROVIDED}" != "true" ]]; then
+    export LICENSE_KEY
+    return 0
+  fi
+
+  # ── No key yet — prompt if possible ──────────────────────────────
+  if [[ -z "${LICENSE_KEY}" ]]; then
     if [[ -t 0 || -r /dev/tty ]]; then
       echo "A license key is required to deploy AnyLog."
       read -r -p "License Key: " LICENSE_KEY </dev/tty
@@ -343,14 +338,11 @@ cmd_license_check() {
     fi
   fi
 
-  if [[ -z "${LICENSE_KEY}" && "${PROMPT_LICENSE}" != "true" ]]; then
-    die "Missing license key, cannot deploy AnyLog."
-  fi
+  [[ -n "${LICENSE_KEY}" ]] || die "Missing license key, cannot deploy AnyLog."
 
+  # ── Run acceptance flow ───────────────────────────────────────────
   export LICENSE_KEY
-  if [[ -n "${LICENSE_KEY}" ]]; then
-    license_arg=("${LICENSE_KEY}")
-  fi
+  license_arg=("${LICENSE_KEY}")
 
   if ! FORCE_LICENSE_PROMPT="${PROMPT_LICENSE}" bash ./license-generator/license_key.sh "${license_arg[@]}"; then
     die "License validation or acceptance failed. Deployment aborted."
@@ -362,6 +354,18 @@ cmd_license_check() {
   fi
 
   [[ -n "${LICENSE_KEY}" ]] || die "License key was accepted but could not be read back."
+
+  # ── Write key back to env file ────────────────────────────────────
+  local target_file="${env_file}"
+  [[ ! -f "${env_file}" && -f "${single_file}" ]] && target_file="${single_file}"
+
+  if [[ -f "${target_file}" ]]; then
+    if grep -q '^LICENSE_KEY=' "${target_file}"; then
+      ${SED_INPLACE} "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${target_file}"
+    else
+      echo "LICENSE_KEY=\"${LICENSE_KEY}\"" >> "${target_file}"
+    fi
+  fi
 }
 
 

@@ -9,6 +9,7 @@
 #
 # Environment:
 #   LICENSE_URL   License server endpoint (default: http://23.239.12.151:8001/api/license-accept)
+set -euo pipefail
 
 LICENSE_KEY="${1:-}"
 LICENSE_URL="${LICENSE_URL:-http://23.239.12.151:8001/api/license-accept}"
@@ -84,6 +85,7 @@ echo "========================================"
 echo "  License Agreement Acceptance Required"
 echo "========================================"
 echo ""
+
 
 # ── Prompt for license key if needed ──────────────────────────────────
 while true; do
