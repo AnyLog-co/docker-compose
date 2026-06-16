@@ -61,34 +61,42 @@ _detect_platform() {
   export ANYLOG_GID=$(id -g)
 }
 
-# Load IMAGE, NODE_NAME, and CONTAINER_NAME from config files
+# Load IMAGE, NODE_NAME, and CONTAINER_NAME from config files.
+# CONTAINER_NAME is always resolved before returning — running
+# build_docker_compose.sh if necessary to generate and persist one.
 _load_configs() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-  local formatted_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
 
+  # Determine which file to read IMAGE and NODE_NAME from
+  local read_file=""
   if [[ -f "$env_file" ]]; then
-    IMAGE=$(grep -m1 '^IMAGE='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
-    NODE_NAME=$(grep -m1 '^NODE_NAME=' "$env_file" | cut -d= -f2- | tr -d '"\r')
+    read_file="$env_file"
   elif [[ -f "$single_file" ]]; then
-    IMAGE=$(grep -m1 '^IMAGE='     "$single_file" | cut -d= -f2- | tr -d '"\r')
-    NODE_NAME=$(grep -m1 '^NODE_NAME=' "$single_file" | cut -d= -f2- | tr -d '"\r')
+    read_file="$single_file"
   else
     die "Missing configuration file(s) for '${ANYLOG_TYPE}'"
   fi
 
-  # CONTAINER_NAME is the actual Docker target:
-  #   1. If NODE_NAME is set, they match
-  #   2. Otherwise read CONTAINER_NAME from .env (written by build_docker_compose.sh)
-  #   3. Fall back to formatted_node_configs.env
+  IMAGE=$(grep -m1 '^IMAGE='     "$read_file" | cut -d= -f2- | tr -d '"\r')
+  NODE_NAME=$(grep -m1 '^NODE_NAME=' "$read_file" | cut -d= -f2- | tr -d '"\r')
+
+  # Resolve CONTAINER_NAME:
+  #   1. NODE_NAME set by user — use it directly
+  #   2. CONTAINER_NAME already written to config by a previous build — use it
+  #   3. Neither set — run build_docker_compose.sh to generate and persist one,
+  #      then read it back
   if [[ -n "${NODE_NAME}" ]]; then
     CONTAINER_NAME="${NODE_NAME}"
   else
-    CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$env_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r')
+    CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$read_file" | cut -d= -f2- | tr -d '"\r')
     if [[ -z "${CONTAINER_NAME}" ]]; then
-      CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$formatted_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r')
+      bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
+      CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$read_file" | cut -d= -f2- | tr -d '"\r')
     fi
   fi
+
+  [[ -n "${CONTAINER_NAME}" ]] || die "Failed to resolve CONTAINER_NAME for '${ANYLOG_TYPE}'"
 }
 
 
@@ -245,8 +253,7 @@ cmd_down() {
     echo "Stopping ${CONTAINER_NAME} [manual]"
     ${CONTAINER_CMD} stop "${CONTAINER_NAME}" && ${CONTAINER_CMD} rm "${CONTAINER_NAME}"
   else
-    cmd_dry_run
-    echo "Stopping ${ANYLOG_TYPE}"
+    echo "Stopping ${ANYLOG_TYPE} - ${CONTAINER_NAME}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${CONTAINER_NAME}" down
   fi
 }
@@ -263,8 +270,7 @@ cmd_clean() {
       "${CONTAINER_NAME}-data" \
       "${CONTAINER_NAME}-local-scripts" 2>/dev/null || true
   else
-    cmd_dry_run
-    echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
+    echo "Stopping + removing volumes: ${ANYLOG_TYPE} - ${CONTAINER_NAME}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${CONTAINER_NAME}" down -v
   fi
   bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
@@ -283,8 +289,7 @@ cmd_clean_all() {
       "${CONTAINER_NAME}-local-scripts" 2>/dev/null || true
     ${CONTAINER_CMD} rmi "${IMAGE}:${TAG}" 2>/dev/null || true
   else
-    cmd_dry_run
-    echo "Stopping + removing volumes + image: ${ANYLOG_TYPE}"
+    echo "Stopping + removing volumes + image: ${ANYLOG_TYPE} - ${CONTAINER_NAME}"
     ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${CONTAINER_NAME}" down -v --rmi all
   fi
   bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
