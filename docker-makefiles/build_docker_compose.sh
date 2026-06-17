@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -32,9 +32,11 @@ if [[ -f "docker-makefiles/${NODE_CONFIGS}/.env" ]] && \
   MULTI_FILE=true
   ENV_FILE="docker-makefiles/${NODE_CONFIGS}/.env"
   BASE_ENV="docker-makefiles/${NODE_CONFIGS}/base_configs.env"
+  DIR_NAME=$(dirname "$BASE_ENV")
 elif [[ -f "docker-makefiles/${NODE_CONFIGS}/node_configs.env" ]]; then
   ENV_FILE="docker-makefiles/${NODE_CONFIGS}/formatted_node_configs.env"
   BASE_ENV="docker-makefiles/${NODE_CONFIGS}/formatted_node_configs.env"
+  DIR_NAME=$(dirname "$BASE_ENV")
 else
   die "Missing configuration file(s) for '${NODE_CONFIGS}', cannot continue"
 fi
@@ -44,10 +46,27 @@ bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
 
 
 # -------- Load Configs --------
+export NETWORK_TYPE=$(grep -m1 '^NETWORK_TYPE' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export IMAGE=$(grep -m1 '^IMAGE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export ENABLE_REMOTE_GUI=$(grep -m1 '^ENABLE_REMOTE_GUI=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
-export NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+
+NODE_NAME=$(grep -m1 '^NODE_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+UPDATE_SED="true"
+
+if [[ -n "${CONTAINER_NAME}" ]] ; then
+  export CONTAINER_NAME
+  UPDATE_SED="false"
+elif [[ -n "${NODE_NAME}" ]] ; then
+  export CONTAINER_NAME="${NODE_NAME}"
+else
+  export CONTAINER_NAME="${NODE_CONFIGS}"
+fi
+if [[ "${UPDATE_SED}" == "true" ]] ; then
+  ${SED_INPLACE} "s/^CONTAINER_NAME=\"\"/CONTAINER_NAME=\"${CONTAINER_NAME}\"/g" "${DIR_NAME}/node_configs.env"
+fi
+
 export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
@@ -65,7 +84,18 @@ fi
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 
-if [[ "$(uname -s)" != "Linux" ]]; then
+# -------- Select Template --------
+COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
+
+if [[ -n "${NETWORK_TYPE}" ]] && [[ "${NETWORK_TYPE}" != "network" ]] && [[ "${NETWORK_TYPE}" != "ports" ]]; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-specific-base.yaml"
+elif [[ "${NETWORK_TYPE}" == "ports" ]]; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
+elif [[ "${NETWORK_TYPE}" == "network" ]]; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
+elif [[ -z "${NETWORK_TYPE}" ]] && [[ "$(uname -s)" != "Linux" ]]; then
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
+else
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 fi
 
@@ -93,15 +123,57 @@ if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "${ANYLOG_BROKER_PORT:
 fi
 
 # -------- Deployment Scripts Volume --------
-if [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
-  # Use a local deployment-scripts checkout when one is explicitly configured.
-  ${SED_INPLACE} "s#- \${NODE_NAME}-local-scripts:/app/deployment-scripts#- ${DEPLOYMENTS_REPO}:/app/deployment-scripts#g" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^  \${NODE_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
-else
-  # URL-based repos are cloned by the AnyLog container at startup. Do not mount
-  # a named volume over /app/deployment-scripts, or it hides the cloned scripts.
+if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMNETS_BRANCH}" ]]  || \
+   [[ "${DEPLOYMENTS_REPO}" == "https://github.com/AnyLog-co/deployment-scripts" && "${DEPLOYMENTS_BRANCH}" == "pre-develop" ]] ; then
+  # Option 1: default deployment-scripts built into the image
+  echo "Use built-in default option"
+  ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
+
+elif [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
+  # Option 2: host directory — replace commented line in both init and main service
+  ${SED_INPLACE} "s##      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts#      - ${DEPLOYMENTS_REPO}:/app/deployment-scripts#g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+  # Remove from init — host dir mounts directly into main service only
+  awk '/"-init:"/ { in_init=1 } in_init && /deployment-scripts/ { next } /^  [^ ]/ && !/-init:/ { in_init=0 } 1' \
+    "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+
+elif [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* ]]; then
+  # Option 3: reclone at startup — no volume needed at all
   ${SED_INPLACE} "/\/app\/deployment-scripts$/d" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^  \${NODE_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+
+elif [[ -n "${DEPLOYMENTS_REPO}" ]] ; then
+  # Option 4: secondary deployment-scripts container
+  export DEPLOYMENTS_BRANCH=$(grep -m1 '^DEPLOYMENTS_BRANCH=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+
+  # Inject deployment-scripts service before the main node service
+  awk -v repo="${DEPLOYMENTS_REPO}" \
+      -v branch="${DEPLOYMENTS_BRANCH}" \
+      -v node="${CONTAINER_NAME}" '
+  /^services:/ {
+    print;
+    print "  " node "-deployment-scripts:";
+    print "    image: " repo ":" branch;
+    print "    container_name: " node "-deployment-scripts";
+    print "    command: [\"sh\", \"-c\", \"cp -r /app/deployment-scripts/. /volume/\"]";
+    print "    restart: \"no\"";
+    print "    volumes:";
+    print "      - " node "-deployment-scripts:/app/deployment-scripts";
+    next
+  }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+
+  # Add depends_on for deployment-scripts alongside existing init depends_on
+  ${SED_INPLACE} "s/condition: service_completed_successfully/condition: service_completed_successfully\n      ${CONTAINER_NAME}-deployment-scripts:\n        condition: service_completed_successfully/g" "${COMPOSE_FILE}"
+
+  # Replace commented local-scripts with deployment-scripts volume in main service
+  ${SED_INPLACE} "s##      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts#      - ${CONTAINER_NAME}-deployment-scripts:/app/deployment-scripts#g" "${COMPOSE_FILE}"
+
+  # Remove unused local-scripts volume declaration
+  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+
+  # Add deployment-scripts volume declaration
+  echo "  ${CONTAINER_NAME}-deployment-scripts:" >> "${COMPOSE_FILE}"
 fi
 
 # -------- Docker Socket --------
@@ -117,12 +189,25 @@ else
 fi
 
 # -------- macOS: comment out Linux-only directives --------
-if [[ "$(uname)" == "Darwin" ]]; then
-  ${SED_INPLACE} 's|pid: "host"|# pid: "host"|g'                   "${COMPOSE_FILE}"
-  ${SED_INPLACE} 's|- /proc:/host_proc:ro|# - /proc:/host_proc:ro|g' "${COMPOSE_FILE}"
-  ${SED_INPLACE} 's|- /:/host:ro|# - /:/host:ro|g'                 "${COMPOSE_FILE}"
-  ${SED_INPLACE} 's|- /sys:/host_sys:ro|# - /sys:/host_sys:ro|g'   "${COMPOSE_FILE}"
-fi
+# -------- Host Mounts --------
+export HOST_PROC=$(grep -m1 '^HOST_PROC=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export HOST_ROOT=$(grep -m1 '^HOST_ROOT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+export HOST_SYS=$(grep -m1  '^HOST_SYS='  "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+
+for VAR_NAME in HOST_PROC HOST_ROOT HOST_SYS; do
+  HOST_PATH="${!VAR_NAME}"
+  if [[ -z "${HOST_PATH}" ]] || [[ ! -e "${HOST_PATH}" ]]; then
+    ${SED_INPLACE} "s|- \${${VAR_NAME}}:.*|# - \${MISSING-${VAR_NAME}}|g" "${COMPOSE_FILE}"
+  fi
+done
+
+#if [[ "$(uname)" == "Darwin" ]]; then
+#  ${SED_INPLACE} 's|pid: "host"|# pid: "host"|g'                   "${COMPOSE_FILE}"
+#  ${SED_INPLACE} 's|- /proc:/host_proc:ro|# - /proc:/host_proc:ro|g' "${COMPOSE_FILE}"
+#  ${SED_INPLACE} 's|- /:/host:ro|# - /:/host:ro|g'                 "${COMPOSE_FILE}"
+#  ${SED_INPLACE} 's|- /sys:/host_sys:ro|# - /sys:/host_sys:ro|g'   "${COMPOSE_FILE}"
+#fi
+
 
 # -------- Remote-GUI --------
 if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
@@ -199,8 +284,8 @@ fi
 
 # -------- USER VOLUMES --------
 if [[ -n "${USER_VOLUMES}" ]]; then
+  VOLUME_INJECT=""
   for VOLUME in ${USER_VOLUMES}; do
-
     if [[ "${VOLUME}" == *"/"* ]]; then
       MOUNT_NAME=$(basename "${VOLUME}")
     elif [[ "${VOLUME}" == *"\\"* ]]; then
@@ -208,15 +293,11 @@ if [[ -n "${USER_VOLUMES}" ]]; then
     else
       MOUNT_NAME="${VOLUME}"
     fi
-
-    INJECT="      - ${VOLUME:+${VOLUME}:}/app/${MOUNT_NAME}"
-
-    # Insert BEFORE the root-level volumes:
-    ${SED_INPLACE} "/^volumes:/i\\
-${INJECT}
-" "${COMPOSE_FILE}"
-
+    VOLUME_INJECT="${VOLUME_INJECT}\n      - ${VOLUME}:/app/${MOUNT_NAME}"
   done
+
+  # Insert all user volumes after the data volume in the main service
+  ${SED_INPLACE} "s#- \${CONTAINER_NAME}-data:/app/AnyLog-Network/data#- \${CONTAINER_NAME}-data:/app/AnyLog-Network/data${VOLUME_INJECT}#g" "${COMPOSE_FILE}"
 fi
 
 # -------- Envsubst & Write Output --------
@@ -224,33 +305,6 @@ echo "Generating final docker-compose.yaml..."
 mkdir -p docker-makefiles/docker-compose-files
 OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compose.yaml"
 envsubst < "${COMPOSE_FILE}" > "$OUTPUT_FILE"
-rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak
+rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak docker-makefiles/${NODE_CONFIGS}/*.bak
 echo "Saved: ${OUTPUT_FILE}"
 
-
-
-## Filename: {formatted_node_name}.env  (hyphens -> underscores, lowercased)
-## Empty-value vars ( VAR="" ) are commented out in the copy.
-##FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
-#SNAPSHOT_DIR="docker-makefiles/${NODE_CONFIGS}"
-#SNAPSHOT_FILE="${SNAPSHOT_DIR}/formatted_node_configs.env"
-#
-#echo "Generating read-only snapshot: ${SNAPSHOT_FILE}"
-#
-## Collect config files that were used
-#if [[ "$MULTI_FILE" == "true" ]]; then
-#  SNAPSHOT_SOURCES=("${ENV_FILE}" "${BASE_ENV}" "docker-makefiles/${NODE_CONFIGS}/advance_configs.env")
-#else
-#  SNAPSHOT_SOURCES=("${ENV_FILE}")
-#fi
-#
-#{
-#  for src in "${SNAPSHOT_SOURCES[@]}"; do
-#    echo "# ---- $(basename "${src}") ----"
-#    sed -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${src}"
-#    echo ""
-#  done
-#} > "${SNAPSHOT_FILE}"
-#
-#chmod 444 "${SNAPSHOT_FILE}"
-#echo "Snapshot saved (read-only): ${SNAPSHOT_FILE}"
