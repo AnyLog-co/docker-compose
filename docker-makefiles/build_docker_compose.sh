@@ -129,11 +129,12 @@ if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMNETS_BRANCH}" ]]  || \
   echo "Use built-in default option"
   ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
   ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
-
 elif [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
-  # Option 2: host directory — replace commented line in both init and main service
-  ${SED_INPLACE} "s##      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts#      - ${DEPLOYMENTS_REPO}:/app/deployment-scripts#g" "${COMPOSE_FILE}"
+  # Option 2: host directory — update main service, remove from init and volumes
+  ${SED_INPLACE} "s|      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|      - ${DEPLOYMENTS_REPO}:/app/deployment-scripts|g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/d" "${COMPOSE_FILE}"
   ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+
   # Remove from init — host dir mounts directly into main service only
   awk '/"-init:"/ { in_init=1 } in_init && /deployment-scripts/ { next } /^  [^ ]/ && !/-init:/ { in_init=0 } 1' \
     "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
@@ -167,8 +168,7 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]] ; then
   ${SED_INPLACE} "s/condition: service_completed_successfully/condition: service_completed_successfully\n      ${CONTAINER_NAME}-deployment-scripts:\n        condition: service_completed_successfully/g" "${COMPOSE_FILE}"
 
   # Replace commented local-scripts with deployment-scripts volume in main service
-  ${SED_INPLACE} "s##      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts#      - ${CONTAINER_NAME}-deployment-scripts:/app/deployment-scripts#g" "${COMPOSE_FILE}"
-
+  ${SED_INPLACE} "s|#      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|      - ${CONTAINER_NAME}-deployment-scripts:/app/deployment-scripts|g" "${COMPOSE_FILE}"
   # Remove unused local-scripts volume declaration
   ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
 
