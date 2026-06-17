@@ -62,18 +62,18 @@ ${CONTAINER_NAME}:
     depends_on:
       ${CONTAINER_NAME}:
         condition: service_started
-  ${CONTAINER_NAME}-debug:
-    image: nicolaka/netshoot
-    container_name: ${CONTAINER_NAME}-debug
-    network_mode: "container:${CONTAINER_NAME}"
-    stdin_open: true
-    tty: true
-    restart: "no"
-#    profiles:
-#      - debug
-    depends_on:
-      ${CONTAINER_NAME}:
-        condition: service_started
+#  ${CONTAINER_NAME}-debug:
+#    image: nicolaka/netshoot
+#    container_name: ${CONTAINER_NAME}-debug
+#    network_mode: "container:${CONTAINER_NAME}"
+#    stdin_open: true
+#    tty: true
+#    restart: "no"
+##    profiles:
+##      - debug
+#    depends_on:
+#      ${CONTAINER_NAME}:
+#        condition: service_started
 volumes:
   ${CONTAINER_NAME}-anylog:
   ${CONTAINER_NAME}-blockchain:

@@ -46,18 +46,18 @@ services:
       - ${HOST_PROC}:/host_proc:ro
       - ${HOST_ROOT}:/host:ro
       - ${HOST_SYS}:/host_sys:ro
-  ${CONTAINER_NAME}-debug:
-    image: nicolaka/netshoot
-    container_name: ${CONTAINER_NAME}-debug
-    network_mode: "container:${CONTAINER_NAME}"
-    stdin_open: true
-    tty: true
-    restart: "no"
-#    profiles:
-#      - debug
-    depends_on:
-      ${CONTAINER_NAME}:
-        condition: service_started
+#  ${CONTAINER_NAME}-debug:
+#    image: nicolaka/netshoot
+#    container_name: ${CONTAINER_NAME}-debug
+#    network_mode: "container:${CONTAINER_NAME}"
+#    stdin_open: true
+#    tty: true
+#    restart: "no"
+##    profiles:
+##      - debug
+#    depends_on:
+#      ${CONTAINER_NAME}:
+#        condition: service_started
 networks:
   ${NETWORK_TYPE}:
     external: true
