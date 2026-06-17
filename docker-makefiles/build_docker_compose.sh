@@ -160,20 +160,16 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]] ; then
     print "    command: [\"sh\", \"-c\", \"cp -r /app/deployment-scripts/. /volume/\"]";
     print "    restart: \"no\"";
     print "    volumes:";
-    print "      - " node "-deployment-scripts:/app/deployment-scripts";
+    print "      - " node "-local-scripts:/app/deployment-scripts";
     next
   }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 
   # Add depends_on for deployment-scripts alongside existing init depends_on
   ${SED_INPLACE} "s/condition: service_completed_successfully/condition: service_completed_successfully\n      ${CONTAINER_NAME}-deployment-scripts:\n        condition: service_completed_successfully/g" "${COMPOSE_FILE}"
 
-  # Replace commented local-scripts with deployment-scripts volume in main service
-  ${SED_INPLACE} "s|#      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|      - ${CONTAINER_NAME}-deployment-scripts:/app/deployment-scripts|g" "${COMPOSE_FILE}"
-  # Remove unused local-scripts volume declaration
-  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
-
-  # Add deployment-scripts volume declaration
-  echo "  ${CONTAINER_NAME}-deployment-scripts:" >> "${COMPOSE_FILE}"
+  # Uncomment local-scripts in main service — populated by deployment-scripts container
+  ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
 fi
 
 # -------- Docker Socket --------
