@@ -2,7 +2,7 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
-#set -euo pipefail
+set -euo pipefail
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
@@ -16,13 +16,6 @@ NODE_NAME="${NODE_NAME:-}"
 LICENSE_KEY="${LICENSE_KEY:-}"
 LICENSE_KEY_PROVIDED=false
 PROMPT_LICENSE="${PROMPT_LICENSE:-true}"
-
-OS_TYPE=$(uname)
-if [[ "$OS_TYPE" == "Darwin" ]]; then
-  SED_INPLACE="sed -i .bak"
-else
-  SED_INPLACE="sed -i.bak"
-fi
 
 # ──────────────────────────────────────────────
 # Helpers
