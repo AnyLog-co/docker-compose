@@ -6,3 +6,6 @@ docker-makefiles/docker-compose-files
 support/*/docker-compose.yml
 support/*/docker-compose.yaml
 *venv*/
+.license*
+*operator
+*standalone

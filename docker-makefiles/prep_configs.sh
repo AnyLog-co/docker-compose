@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#set -euo pipefail
+set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -84,5 +84,27 @@ else
     echo "LICENSE_KEY updated in ${BASE_ENV}"
   fi
 fi
+
+# -------- Step 3: Generate Read-Only Snapshot Copy --------
+# Filename: {formatted_node_name}.env  (hyphens -> underscores, lowercased)
+# Empty-value vars ( VAR="" ) are commented out in the copy.
+FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
+SNAPSHOT_DIR="docker-makefiles/${NODE_CONFIGS}"
+SNAPSHOT_FILE="${SNAPSHOT_DIR}/formatted_node_configs.env"
+if [[ -f "${SNAPSHOT_FILE}" ]] ; then rm -rf ${SNAPSHOT_FILE} ; fi
+
+echo "Generating read-only snapshot: ${SNAPSHOT_FILE}"
+
+# Concatenate all config files, comment out empty-value lines, write snapshot
+{
+  for cfg in "${CONFIG_FILES[@]}"; do
+    echo "# ---- $(basename "${cfg}") ----"
+    sed -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${cfg}"
+    echo ""
+  done
+} > "${SNAPSHOT_FILE}"
+
+chmod 444 "${SNAPSHOT_FILE}"
+#echo "Snapshot saved (read-only): ${SNAPSHOT_FILE}"
 
 echo "Config update complete."

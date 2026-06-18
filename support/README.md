@@ -8,6 +8,7 @@ Tooling to configure, generate, and manage the Docker/Podman containers that run
 * **[Ollama](Ollama.md)** — local LLM runtime for MCP function calling
 * **[Video Inference Models](https://github.com/AnyLog-co/AnyLog-Video-Inference-Models)** — CV/ML inference on edge video streams
 * **[Nebula Overlay Network](https://github.com/oshadmon/nebula-anylog)** — encrypted peer-to-peer overlay so AnyLog nodes on separate physical networks communicate as a single unified network
+* **[Syslog Forwarding](#syslog-forwarding)** — configure the host syslog daemon to forward all log traffic to the AnyLog broker port
 
 ## Requirements
 
@@ -31,6 +32,7 @@ Tooling to configure, generate, and manage the Docker/Podman containers that run
   - [Ollama](#ollama)
   - [Video Inference Models](#video-inference-models)
   - [Nebula Overlay](#nebula-overlay-network)
+  - [Syslog Forwarding](#syslog-forwarding)
 - [docker_compose_builder.sh](#docker_compose_buildersh)
 - [Makefile Reference](#makefile-reference)
   - [Targets](#targets)
@@ -50,6 +52,7 @@ support/
 ├── Video-Inferences.md           # Video inference models guide
 ├── Nebula.md                     # Nebula overlay network setup guide
 ├── docker_compose_builder.sh     # Generates docker-compose.yml from configs.yaml
+├── syslog.sh                     # Configures host syslog daemon → AnyLog broker port
 ├── grafana/
 │   ├── configs.yaml
 │   └── docker-compose.yml        # generated — do not edit by hand
@@ -193,6 +196,32 @@ Nebula creates an encrypted peer-to-peer mesh across physically separated machin
 → Full setup guide: [Nebula.md](Nebula.md)  
 → Source repository: [oshadmon/nebula-anylog](https://github.com/oshadmon/nebula-anylog)
 
+### Syslog Forwarding
+
+`syslog.sh` configures the host syslog daemon to forward all log traffic to the AnyLog broker port. It reads `SYSLOG_MONITORING` and `ANYLOG_BROKER_PORT` directly from a `node_configs.env` file, so no extra arguments are needed once the node config is set up.
+
+Both commands are **no-ops** when `SYSLOG_MONITORING != "true"` in the config. `setup` is idempotent — safe to call repeatedly.
+
+| Field | Value |
+|---|---|
+| Config keys | `SYSLOG_MONITORING` (must be `"true"`), `ANYLOG_BROKER_PORT` |
+| Linux | rsyslog drop-in `/etc/rsyslog.d/60-custom-forwarding.conf` (TCP) |
+| macOS | `/etc/syslog.conf` append (UDP) — ensure the broker port is open for UDP |
+
+```bash
+# via deploy.sh
+bash syslog.sh setup  [NODE_CONFIGS]
+bash syslog.sh remove [NODE_CONFIGS]
+
+# via make (SERVICE=syslog intercepts before docker-compose logic)
+make setup  SERVICE=syslog                                                               # prompts for config path
+make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
+make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
+```
+
+Default `NODE_CONFIGS` path when not supplied: `docker-makefiles/anylog-generic/node_configs.env`.
+
+
 ---
 
 ## `docker_compose_builder.sh`
@@ -248,6 +277,8 @@ Any subdirectory containing a `configs.yaml` is automatically recognised as a se
 | `logs-f` | Follow container logs (`SERVICE=` required) |
 | `exec` | Attach to container shell/client (`SERVICE=` required) |
 | `list` | Print default and all auto-discovered services |
+| `setup` | `SERVICE=syslog` — install host syslog → AnyLog forwarding rule |
+| `remove` | `SERVICE=syslog` — remove host syslog → AnyLog forwarding rule |
 
 Omit `SERVICE` to act on all four default services (`remote-gui`, `grafana`, `postgres`, `mongodb`).
 
@@ -303,6 +334,11 @@ make exec SERVICE=gui                  # /bin/bash
 make exec SERVICE=psql                 # psql -U postgres  ← remove this
 make exec SERVICE=mongo                # mongosh           ← remove this
 make exec SERVICE=postgres-prod        # psql -U postgres  ← remove this
+
+# Syslog forwarding
+make setup  SERVICE=syslog             # prompts for node config path
+make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
+make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
 
 # Discovery
 make list                              # show default + all discovered services
