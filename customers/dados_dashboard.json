@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "description": "Sparkplug B hierarchy specification for IIoT data normalization",
+  "hierarchy_fields": [
+    { "name": "protocol" },
+    { "name": "enterprise" },
+    { "name": "message_type" },
+    { "name": "site" },
+    { "name": "area" },
+    { "name": "line" },
+    { "name": "workcenter" }
+  ],
+  "category_markers": [
+    { "token": "node", "category": "node" },
+    { "token": "Node", "category": "Node" },
+    { "token": "metric", "category": "metric" },
+    { "token": "Metric", "category": "Metric" },
+    { "token": "processdata", "category": "processdata" },
+    { "token": "lotnumber", "category": "lotnumber" },
+    { "token": "workorder", "category": "workorder" },
+    { "token": "item", "category": "item" }
+  ],
+  "delimiter": "/",
+  "short_path_behavior": "null_pad"
+}

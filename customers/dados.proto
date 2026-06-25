@@ -1,0 +1,19 @@
+syntax = "proto3";
+package persistence;
+
+service PersistenceService {
+  rpc WatchTable (WatchRequest) returns (stream DataRow);
+}
+
+message WatchRequest {
+  string table_id = 1;
+}
+
+message DataRow {
+  string data = 1;
+}
+
+// missing reply function
+message ReplyMessage {
+  int32 Retval = 1;
+}
