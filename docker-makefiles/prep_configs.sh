@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -55,6 +55,30 @@ for cfg in "${CONFIG_FILES[@]}"; do
   normalize_quotes "${cfg}"
 done
 
+_parse_license_field() {
+  local field="$1"
+  local key="$2"
+  echo "${key}" | awk -v field="${field}" '{
+    brace = index($0, "{")
+    if (brace == 0) { print ""; exit }
+    json = substr($0, brace)
+    gsub(/\\"/, "\"", json)
+    needle = "\"" field "\""
+    pos = index(json, needle)
+    if (pos == 0) { print ""; exit }
+    rest = substr(json, pos + length(needle))
+    colon = index(rest, ":")
+    if (colon == 0) { print ""; exit }
+    rest = substr(rest, colon + 1)
+    sub(/^[ \t]*/, "", rest)
+    if (substr(rest, 1, 1) != "\"") { print ""; exit }
+    rest = substr(rest, 2)
+    end_pos = index(rest, "\"")
+    if (end_pos == 0) { print ""; exit }
+    print substr(rest, 1, end_pos - 1)
+  }'
+}
+
 # -------- Step 2: Update LICENSE_KEY --------
 # Multi-file layout: LICENSE_KEY lives in base_configs.env (index 1).
 # Single-file layout: LICENSE_KEY lives in node_configs.env (index 0).
@@ -82,6 +106,34 @@ else
     UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
     sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
     echo "LICENSE_KEY updated in ${BASE_ENV}"
+  fi
+fi
+
+# -------- Step 2.5: Resolve COMPANY_NAME --------
+# Priority: explicit COMPANY_NAME > non-Guest license company > acme
+COMPANY_ENV_FILE=""
+for cfg in "${CONFIG_FILES[@]}"; do
+  if grep -q '^COMPANY_NAME=' "${cfg}" 2>/dev/null; then
+    COMPANY_ENV_FILE="${cfg}"
+    break
+  fi
+done
+
+if [[ -n "${COMPANY_ENV_FILE}" ]]; then
+  CURRENT_COMPANY_NAME=$(grep -m1 '^COMPANY_NAME=' "${COMPANY_ENV_FILE}" | cut -d= -f2- | tr -d '"\r')
+
+  if [[ -n "${CURRENT_COMPANY_NAME}" ]]; then
+    echo "COMPANY_NAME already set: ${CURRENT_COMPANY_NAME}"
+  else
+    RESOLVED_COMPANY_NAME="acme"
+    if [[ -n "${CURRENT_LICENSE_KEY:-}" ]]; then
+      LICENSE_COMPANY=$(_parse_license_field "company" "${CURRENT_LICENSE_KEY}")
+      if [[ -n "${LICENSE_COMPANY}" && "${LICENSE_COMPANY}" != "Guest" ]]; then
+        RESOLVED_COMPANY_NAME="${LICENSE_COMPANY}"
+      fi
+    fi
+    sedi "s|^COMPANY_NAME=.*|COMPANY_NAME=\"${RESOLVED_COMPANY_NAME}\"|" "${COMPANY_ENV_FILE}"
+    echo "COMPANY_NAME resolved to: ${RESOLVED_COMPANY_NAME}"
   fi
 fi
 
