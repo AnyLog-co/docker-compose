@@ -21,12 +21,6 @@ PROMPT_LICENSE="${PROMPT_LICENSE:-true}"
 # ──────────────────────────────────────────────
 # Helpers
 # ──────────────────────────────────────────────
-if [[ "$(uname)" == "Darwin" ]]; then
-  SED_INPLACE="sed -i .bak"
-else
-  SED_INPLACE="sed -i.bak"
-fi
-
 die() { echo "ERROR: $1" >&2; exit "${2:-1}"; }
 
 # Resolve short-form aliases  (operator → anylog-operator)
@@ -228,7 +222,7 @@ cmd_up() {
       "${IMAGE}:${TAG}"
   else
     echo "Deploying ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${TARGET_NAME}" up -d --build --force-recreate
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${TARGET_NAME}" up -d
   fi
 }
 

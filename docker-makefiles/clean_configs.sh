@@ -55,18 +55,10 @@ NODE_NAME_FILE="$(dirname "${SNAPSHOT_FILE}")/NODE_NAME.txt"
 
 # -------- Remove files --------
 
-printf "Warning: this will fully reset this node's deployment configuration.\nThe node will be treated as new on next startup and assigned a new identity.\n"
-while true; do
-  printf "Proceed? [y/N]: "
-  read -r CONFIRM_DELETE
-  case "${CONFIRM_DELETE}" in
-    y|Y) CONFIRMED=yes; break ;;
-    n|N|"") CONFIRMED=no; break ;;
-    *) echo "Please enter y or n." ;;
-  esac
-done
+printf "Warning: this will fully reset this node's deployment configuration.\nThe node will be treated as new on next startup and assigned a new identity.\nProceed? [y/N]: "
+read -r CONFIRM_DELETE
 
-if [[ "${CONFIRMED}" == "yes" ]]; then
+if [[ "${CONFIRM_DELETE}" == "y" || "${CONFIRM_DELETE}" == "Y" ]]; then
   rm -rf "${DOCKER_FILE}" "${SNAPSHOT_FILE}" "${NODE_NAME_FILE}"
   if [[ -d "${DOCKER_DIR}" && -z "$(ls -A "${DOCKER_DIR}")" ]]; then
     rm -rf "${DOCKER_DIR}"

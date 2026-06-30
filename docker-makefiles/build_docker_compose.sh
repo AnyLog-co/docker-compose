@@ -7,33 +7,6 @@ die() {
   exit "${2:-1}"
 }
 
-# WSL reports uname -s as Linux; detect it for compose template auto-selection.
-_is_wsl() {
-  if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
-    return 0
-  fi
-  if grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null; then
-    return 0
-  fi
-  return 1
-}
-
-# Auto-select ports-based compose on WSL, macOS, and other non-native-Linux hosts.
-_auto_use_ports_template() {
-  local os
-  os=$(uname -s)
-  if [[ "${os}" == "Darwin" ]]; then
-    return 0
-  fi
-  if _is_wsl; then
-    return 0
-  fi
-  if [[ "${os}" != "Linux" ]]; then
-    return 0
-  fi
-  return 1
-}
-
 OS_TYPE=$(uname)
 if [[ "$OS_TYPE" == "Darwin" ]]; then
   SED_INPLACE="sed -i .bak"
@@ -69,7 +42,7 @@ else
 fi
 
 # -------- Generate Read-Only Snapshot Copy --------
-bash docker-makefiles/prep_configs.sh "${NODE_CONFIGS}"
+bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
 
 
 # -------- Load Configs --------
@@ -115,19 +88,18 @@ TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 COMPOSE_FILE="docker-makefiles/docker-compose-template.yaml"
 
 if [[ -n "${NETWORK_TYPE}" ]] && [[ "${NETWORK_TYPE}" != "network" ]] && [[ "${NETWORK_TYPE}" != "ports" ]]; then
-  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-net-specific-base.yaml"
+  TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-specific-base.yaml"
 elif [[ "${NETWORK_TYPE}" == "ports" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 elif [[ "${NETWORK_TYPE}" == "network" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
-elif [[ -z "${NETWORK_TYPE}" ]] && _auto_use_ports_template; then
+elif [[ -z "${NETWORK_TYPE}" ]] && [[ "$(uname -s)" != "Linux" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 else
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
 fi
 
 [[ -f "$TEMPLATE_COMPOSE_FILE" ]] || die "$TEMPLATE_COMPOSE_FILE not found"
-echo "Compose template: ${TEMPLATE_COMPOSE_FILE}"
 cp "$TEMPLATE_COMPOSE_FILE" "${COMPOSE_FILE}"
 
 # -------- Inject env_file --------
@@ -144,94 +116,60 @@ else
 fi
 
 # -------- Inject Broker Port --------
-# Ports template already maps server, REST, and broker; no extra injection needed.
-
-# -------- Deployment Scripts Volume --------
-SOURCE_ENV="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
-if [[ -f "${SOURCE_ENV}" ]]; then
-  DEPLOYMENTS_REPO=$(grep -m1 '^DEPLOYMENTS_REPO=' "${SOURCE_ENV}" | cut -d= -f2- | tr -d '"\r')
-  DEPLOYMENTS_BRANCH=$(grep -m1 '^DEPLOYMENTS_BRANCH=' "${SOURCE_ENV}" | cut -d= -f2- | tr -d '"\r')
+if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "${ANYLOG_BROKER_PORT:-}" ]]; then
+  awk -v port="${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}" \
+      '/    ports:/ {print; print "      - " port; next}1' \
+      "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 fi
 
-if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMNETS_BRANCH}" ]]  || \
-   [[ "${DEPLOYMENTS_REPO}" == "https://github.com/AnyLog-co/deployment-scripts" && "${DEPLOYMENTS_BRANCH}" == "pre-develop" ]] ; then
+# -------- Deployment Scripts Volume --------
+if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMENTS_BRANCH}" ]]  || \
+   [[ "${DEPLOYMENTS_REPO}" == "https://github.com/AnyLog-co/deployment-scripts" && "${DEPLOYMENTS_BRANCH}" == "main" ]] ; then
   # Option 1: default deployment-scripts built into the image
   echo "Use built-in default option"
   ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
   ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
 elif [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
-  # Option 2: bake deployment-scripts into the init image (COPY at build time).
-  # Docker Desktop cannot reliably bind-mount /home/... or tarball files from WSL.
-  DEPLOYMENTS_REPO=$(cd "${DEPLOYMENTS_REPO}" && pwd)
-  [[ -f "${DEPLOYMENTS_REPO}/node-deployment/main.al" ]] || \
-    die "deployment-scripts missing main.al at: ${DEPLOYMENTS_REPO}/node-deployment/main.al"
+  # Option 2: host directory — update main service, remove from init and volumes
+  ${SED_INPLACE} "s|      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|      - ${DEPLOYMENTS_REPO}:/app/deployment-scripts|g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/d" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
 
-  SCRIPTS_BUILD_DIR="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-scripts-build"
-  rm -rf "${SCRIPTS_BUILD_DIR}"
-  mkdir -p "${SCRIPTS_BUILD_DIR}"
-  echo "Packaging deployment-scripts from ${DEPLOYMENTS_REPO} -> ${SCRIPTS_BUILD_DIR}"
-  tar czf "${SCRIPTS_BUILD_DIR}/deployment-scripts.tar.gz" -C "${DEPLOYMENTS_REPO}" .
-  cat > "${SCRIPTS_BUILD_DIR}/Dockerfile" <<'EOF'
-FROM busybox
-COPY deployment-scripts.tar.gz /deployment-scripts-seed.tar.gz
-EOF
-
-  # Init container: extract baked-in tarball into named volume; fail loudly if main.al missing
-  awk '
-    /^      "chown -R 10001:10001/ {
-      print "      \"rm -rf /app/deployment-scripts/* /app/deployment-scripts/.[!.]* 2>/dev/null; tar xzf /deployment-scripts-seed.tar.gz -C /app/deployment-scripts && test -f /app/deployment-scripts/node-deployment/main.al || { echo \\\"init: deployment-scripts seed failed\\\" >&2; exit 1; }; chown -R 10001:10001"
-      next
-    }
-    { print }
-  ' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
-
-  awk '
-    /"tar xzf \/deployment-scripts-seed/ { in_cmd=1 }
-    in_cmd && /^        \/app\/AnyLog-Network\/data$/ {
-      print
-      print "        /app/deployment-scripts"
-      next
-    }
-    /^      "\]/ { in_cmd=0 }
-    { print }
-  ' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
-
-  awk -v ctx="./${NODE_CONFIGS}-scripts-build" -v tag="${NODE_CONFIGS}-scripts-init" '
-    /\$\{CONTAINER_NAME\}-init:/ { in_init=1 }
-    in_init && /^    image: busybox/ {
-      print "    build:"
-      print "      context: " ctx
-      print "      dockerfile: Dockerfile"
-      print "    image: " tag
-      next
-    }
-    in_init && /-data:\/app\/AnyLog-Network\/data$/ && !scripts_seeded {
-      print
-      print "      - ${CONTAINER_NAME}-local-scripts:/app/deployment-scripts"
-      scripts_seeded=1
-      next
-    }
-    { print }
-  ' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
-
-  # Main service already mounts local-scripts in the template; remove stale host bind-mounts
-  ${SED_INPLACE} '\|- /home/[^ ]*:/app/deployment-scripts|d' "${COMPOSE_FILE}"
-  ${SED_INPLACE} '\|- //wsl[^ ]*:/app/deployment-scripts|d' "${COMPOSE_FILE}"
-  ${SED_INPLACE} '\|- \./[^ ]*-deployment-scripts\.tar\.gz:/deployment-scripts-seed\.tar\.gz:ro|d' "${COMPOSE_FILE}"
-  if ! grep -q 'local-scripts:/app/deployment-scripts' "${COMPOSE_FILE}"; then
-    ${SED_INPLACE} "s|- \${CONTAINER_NAME}-data:/app/AnyLog-Network/data|- \${CONTAINER_NAME}-data:/app/AnyLog-Network/data\n      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|" "${COMPOSE_FILE}"
-  fi
-  ${SED_INPLACE} "s/^#  \${CONTAINER_NAME}-local-scripts:$/  \${CONTAINER_NAME}-local-scripts:/" "${COMPOSE_FILE}"
+  # Remove from init — host dir mounts directly into main service only
+  awk '/"-init:"/ { in_init=1 } in_init && /deployment-scripts/ { next } /^  [^ ]/ && !/-init:/ { in_init=0 } 1' \
+    "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 
 elif [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* ]]; then
   # Option 3: reclone at startup — no volume needed at all
-  echo "Using GitHub reclone at startup: ${DEPLOYMENTS_REPO}@${DEPLOYMENTS_BRANCH}"
   ${SED_INPLACE} "/\/app\/deployment-scripts$/d" "${COMPOSE_FILE}"
   ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
 
 elif [[ -n "${DEPLOYMENTS_REPO}" ]] ; then
-  die "DEPLOYMENTS_REPO path does not exist: '${DEPLOYMENTS_REPO}'. Use a valid host directory or a https:// GitHub URL."
+  # Option 4: secondary deployment-scripts container
+  export DEPLOYMENTS_BRANCH=$(grep -m1 '^DEPLOYMENTS_BRANCH=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+
+  # Inject deployment-scripts service before the main node service
+  awk -v repo="${DEPLOYMENTS_REPO}" \
+      -v branch="${DEPLOYMENTS_BRANCH}" \
+      -v node="${CONTAINER_NAME}" '
+  /^services:/ {
+    print;
+    print "  " node "-deployment-scripts:";
+    print "    image: " repo ":" branch;
+    print "    container_name: " node "-deployment-scripts";
+    print "    command: [\"sh\", \"-c\", \"cp -r /app/deployment-scripts/. /volume/\"]";
+    print "    restart: \"no\"";
+    print "    volumes:";
+    print "      - " node "-local-scripts:/app/deployment-scripts";
+    next
+  }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+
+  # Add depends_on for deployment-scripts alongside existing init depends_on
+  ${SED_INPLACE} "s/condition: service_completed_successfully/condition: service_completed_successfully\n      ${CONTAINER_NAME}-deployment-scripts:\n        condition: service_completed_successfully/g" "${COMPOSE_FILE}"
+
+  # Uncomment local-scripts in main service — populated by deployment-scripts container
+  ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
 fi
 
 # -------- Docker Socket --------
@@ -359,13 +297,6 @@ if [[ -n "${USER_VOLUMES}" ]]; then
 fi
 
 # -------- Envsubst & Write Output --------
-UNAME_M=$(uname -m)
-case "$UNAME_M" in
-  x86_64)          export DOCKER_PLATFORM="linux/amd64" ;;
-  aarch64|arm64)   export DOCKER_PLATFORM="linux/arm64" ;;
-  *)               export DOCKER_PLATFORM="linux/amd64" ;;
-esac
-
 echo "Generating final docker-compose.yaml..."
 mkdir -p docker-makefiles/docker-compose-files
 OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compose.yaml"
