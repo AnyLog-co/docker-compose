@@ -20,7 +20,7 @@ services:
       - ${CONTAINER_NAME}-data:/app/AnyLog-Network/data
 #      - ${CONTAINER_NAME}-tpm:/app/AnyLog-Network/tpm_dir
 #      - ${CONTAINER_NAME}-local-scripts:/app/deployment-scripts
-${CONTAINER_NAME}:
+  ${CONTAINER_NAME}:
     image: ${IMAGE}:${TAG}
     user: root
     pid: "host"
@@ -30,6 +30,8 @@ ${CONTAINER_NAME}:
     restart: always
     env_file:
     container_name: ${CONTAINER_NAME}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     stdin_open: true
     tty: true
     ports:
