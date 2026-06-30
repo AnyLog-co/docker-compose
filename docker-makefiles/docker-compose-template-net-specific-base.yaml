@@ -40,6 +40,7 @@ services:
       - ${CONTAINER_NAME}-anylog:/app/AnyLog-Network/anylog
       - ${CONTAINER_NAME}-blockchain:/app/AnyLog-Network/blockchain
       - ${CONTAINER_NAME}-data:/app/AnyLog-Network/data
+      - ${CONTAINER_NAME}-external-lib:/app/AnyLog-Network/external_lib
 #      - ${CONTAINER_NAME}-tpm:/app/AnyLog-Network/tpm_dir
       - ${CONTAINER_NAME}-local-scripts:/app/deployment-scripts
       - ${DOCKER_SOCKET}:/var/run/docker.sock
@@ -65,5 +66,6 @@ volumes:
   ${CONTAINER_NAME}-anylog:
   ${CONTAINER_NAME}-blockchain:
   ${CONTAINER_NAME}-data:
+  ${CONTAINER_NAME}-external-lib:
 #  ${CONTAINER_NAME}-tpm:
   ${CONTAINER_NAME}-local-scripts:

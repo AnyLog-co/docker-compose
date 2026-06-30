@@ -123,8 +123,8 @@ if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "${ANYLOG_BROKER_PORT:
 fi
 
 # -------- Deployment Scripts Volume --------
-if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMNETS_BRANCH}" ]]  || \
-   [[ "${DEPLOYMENTS_REPO}" == "https://github.com/AnyLog-co/deployment-scripts" && "${DEPLOYMENTS_BRANCH}" == "pre-develop" ]] ; then
+if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMENTS_BRANCH}" ]]  || \
+   [[ "${DEPLOYMENTS_REPO}" == "https://github.com/AnyLog-co/deployment-scripts" && "${DEPLOYMENTS_BRANCH}" == "main" ]] ; then
   # Option 1: default deployment-scripts built into the image
   echo "Use built-in default option"
   ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
