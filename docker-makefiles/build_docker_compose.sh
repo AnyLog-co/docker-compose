@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -42,7 +41,7 @@ else
 fi
 
 # -------- Generate Read-Only Snapshot Copy --------
-bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
+bash docker-makefiles/prep_configs.sh "${NODE_CONFIGS}"
 
 
 # -------- Load Configs --------
@@ -64,14 +63,18 @@ else
   export CONTAINER_NAME="${NODE_CONFIGS}"
 fi
 if [[ "${UPDATE_SED}" == "true" ]] ; then
-  ${SED_INPLACE} "s/^CONTAINER_NAME=\"\"/CONTAINER_NAME=\"${CONTAINER_NAME}\"/g" "${DIR_NAME}/node_configs.env"
+  ${SED_INPLACE} "s/^#\{0,1\}CONTAINER_NAME=.*/CONTAINER_NAME=\"${CONTAINER_NAME}\"/g" "${ENV_FILE}"
 fi
+
+# Comment out remaining empty-value vars so they are not passed to the container
+${SED_INPLACE} -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${ENV_FILE}"
 
 export ANYLOG_SERVER_PORT=$(grep -m1 '^ANYLOG_SERVER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export DOCKER_SOCKET=$(grep -m1 '^DOCKER_SOCKET=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
 export DEPLOYMENTS_REPO=$(grep -m1 '^DEPLOYMENTS_REPO=' "$BASE_ENV" | cut -d= -f2- | tr -d '"\r')
+DEPLOYMENTS_BRANCH="${DEPLOYMENTS_BRANCH:-}"
 export USER_VOLUMES=$(grep -m1 '^USER_VOLUMES=' ${BASE_ENV} | cut -d= -f2- | tr -d '"\r')
 
 
@@ -303,4 +306,3 @@ OUTPUT_FILE="docker-makefiles/docker-compose-files/${NODE_CONFIGS}-docker-compos
 envsubst < "${COMPOSE_FILE}" > "$OUTPUT_FILE"
 rm -rf ${COMPOSE_FILE} ${COMPOSE_FILE}.bak docker-makefiles/${NODE_CONFIGS}/*.bak
 echo "Saved: ${OUTPUT_FILE}"
-

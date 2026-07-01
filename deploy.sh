@@ -2,7 +2,6 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
-#set -euo pipefail
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
@@ -64,7 +63,7 @@ _detect_platform() {
 # Load IMAGE, NODE_NAME, and CONTAINER_NAME from config files
 _load_configs() {
   local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
-  local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+  local single_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
 
   if [[ -f "$env_file" ]]; then
     IMAGE=$(grep -m1 '^IMAGE='        "$env_file"   | cut -d= -f2- | tr -d '"\r')
