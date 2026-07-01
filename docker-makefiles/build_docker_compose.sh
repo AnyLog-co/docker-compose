@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-setup -x
 
 # -------- Helpers --------
 die() {
@@ -95,10 +94,17 @@ awk -v cfg="../../docker-makefiles/${NODE_CONFIGS}/formatted_node_configs.env" \
     "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 
 # -------- Inject Broker Port --------
-if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ -n "${ANYLOG_BROKER_PORT:-}" ]]; then
+if [[ "${TEMPLATE_COMPOSE_FILE}" == *"ports"* ]] && [[ "${ANYLOG_BROKER_PORT}" =~ ^[0-9]+$ ]]; then
   awk -v port="${ANYLOG_BROKER_PORT}:${ANYLOG_BROKER_PORT}" \
       '/    ports:/ {print; print "      - " port; next}1' \
       "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+fi
+
+# -------- Remove unresolved placeholders --------
+# If ANYLOG_BROKER_PORT is not a valid port number, remove its placeholder
+# line from the template so envsubst doesn't produce an invalid "- :" entry.
+if [[ ! "${ANYLOG_BROKER_PORT:-}" =~ ^[0-9]+$ ]]; then
+  ${SED_INPLACE} '/\${ANYLOG_BROKER_PORT}/d' "${COMPOSE_FILE}"
 fi
 
 # -------- Deployment Scripts Volume --------

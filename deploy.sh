@@ -2,7 +2,6 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
-setup -x
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
@@ -83,7 +82,6 @@ _load_configs() {
   # TARGET_NAME is what Docker actually uses — NODE_NAME wins if set, else CONTAINER_NAME
   TARGET_NAME="${NODE_NAME:-${CONTAINER_NAME}}"
 }
-
 
 # Resolve TEST_CONN if not set
 _resolve_test_conn() {
@@ -173,9 +171,8 @@ cmd_dry_run() {
   _load_configs
   if [[ "$IS_MANUAL" == "false" ]]; then
     echo "Dry Run ${ANYLOG_TYPE} - ${TARGET_NAME}"
-#    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
     bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
- elif [[ "${IS_MANUAL}" == "true" ]]; then
+  elif [[ "${IS_MANUAL}" == "true" ]]; then
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
     _resolve_scripts_volume
 
@@ -226,7 +223,7 @@ cmd_up() {
       "${IMAGE}:${TAG}"
   else
     echo "Deploying ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${TARGET_NAME}" up -d
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  up -d
   fi
 }
 
@@ -238,7 +235,7 @@ cmd_down() {
     ${CONTAINER_CMD} stop "${TARGET_NAME}" && ${CONTAINER_CMD} rm "${TARGET_NAME}"
   else
     echo "Stopping ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${TARGET_NAME}" down
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  down
   fi
 }
 
@@ -255,7 +252,8 @@ cmd_clean() {
       "${TARGET_NAME}-local-scripts" 2>/dev/null || true
   else
     echo "Stopping + removing volumes: ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${TARGET_NAME}" down -v
+    echo ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  down -v
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  down -v
   fi
   bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
@@ -274,7 +272,7 @@ cmd_clean_all() {
     ${CONTAINER_CMD} rmi "${IMAGE}:${TAG}" 2>/dev/null || true
   else
     echo "Stopping + removing volumes + image: ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" --project-name "${TARGET_NAME}" down -v --rmi all
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  down -v --rmi all
   fi
   bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
 }
@@ -359,17 +357,19 @@ cmd_license_check() {
 
   [[ -n "${LICENSE_KEY}" ]] || die "License key was accepted but could not be read back."
 
-  # ── Write key back to env file ────────────────────────────────────
+  # ── Write key back to node_configs.env ───────────────────────────
   if [[ -f "${single_file}" ]]; then
-    local target_file="${single_file}"
-    if grep -q '^LICENSE_KEY=' "${target_file}"; then
-      ${SED_INPLACE} "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${target_file}"
+    if grep -q '^LICENSE_KEY=' "${single_file}"; then
+      if sed --version >/dev/null 2>&1; then
+        sed -i "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${single_file}"
+      else
+        sed -i '' "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${single_file}"
+      fi
     else
-      echo "LICENSE_KEY=\"${LICENSE_KEY}\"" >> "${target_file}"
+      echo "LICENSE_KEY=\"${LICENSE_KEY}\"" >> "${single_file}"
     fi
   fi
 }
-
 
 # ──────────────────────────────────────────────
 # Testing
