@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
 # -------- Helpers --------
 die() {
@@ -10,12 +9,10 @@ die() {
 sedi() {
   local expr="$1"
   shift
-
   if [ "$#" -eq 0 ]; then
     echo "sedi: no files provided" >&2
     return 1
   fi
-
   if sed --version >/dev/null 2>&1; then
     sed -i "$expr" "$@"
   else
@@ -26,85 +23,42 @@ sedi() {
 # -------- Args --------
 NODE_CONFIGS=${1:-anylog-generic}
 
-# -------- Locate Config Files --------
-if [[ -f "docker-makefiles/${NODE_CONFIGS}/.env" ]] && \
-   [[ -f "docker-makefiles/${NODE_CONFIGS}/base_configs.env" ]] && \
-   [[ -f "docker-makefiles/${NODE_CONFIGS}/advance_configs.env" ]]; then
-  CONFIG_FILES=(
-    "docker-makefiles/${NODE_CONFIGS}/.env"
-    "docker-makefiles/${NODE_CONFIGS}/base_configs.env"
-    "docker-makefiles/${NODE_CONFIGS}/advance_configs.env"
-  )
-elif [[ -f "docker-makefiles/${NODE_CONFIGS}/node_configs.env" ]]; then
-  CONFIG_FILES=("docker-makefiles/${NODE_CONFIGS}/node_configs.env")
-else
-  die "Missing configuration file(s) for '${NODE_CONFIGS}', cannot continue"
-fi
+# -------- Locate Config File --------
+SOURCE_FILE="docker-makefiles/${NODE_CONFIGS}/node_configs.env"
+SNAPSHOT_FILE="docker-makefiles/${NODE_CONFIGS}/formatted_node_configs.env"
 
-# -------- Step 1: Normalize Single-Quoted Values to Double-Quoted --------
+[[ -f "${SOURCE_FILE}" ]] || die "Missing configuration file: ${SOURCE_FILE}"
+
+# -------- Step 1: Copy node_configs.env -> formatted_node_configs.env --------
+# node_configs.env is never modified — all transformations happen on the snapshot only.
+[[ -f "${SNAPSHOT_FILE}" ]] && rm -f "${SNAPSHOT_FILE}"
+echo "Generating snapshot: ${SNAPSHOT_FILE}"
+cp "${SOURCE_FILE}" "${SNAPSHOT_FILE}"
+
+# -------- Step 2: Fix quotation issues in snapshot --------
 # Transforms:  MY_VAR='XXX'  ->  MY_VAR="XXX"
 # Leaves already-double-quoted, unquoted, and comment lines untouched.
-normalize_quotes() {
-  local file="$1"
-  echo "Normalizing quotes in: ${file}"
-  sedi "s/=''/=\"\"/g" "${file}"
-  sedi -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${file}"
-}
+sedi "s/=''/=\"\"/g" "${SNAPSHOT_FILE}"
+sedi -E "s/^([A-Za-z_][A-Za-z0-9_]*)='(.*)'/\1=\"\2\"/" "${SNAPSHOT_FILE}"
 
-for cfg in "${CONFIG_FILES[@]}"; do
-  normalize_quotes "${cfg}"
-done
+# -------- Step 3: Normalize LICENSE_KEY in snapshot --------
+# Strip surrounding quotes, replace internal single quotes with double quotes.
+CURRENT_LICENSE_KEY=$(sed -n 's/^LICENSE_KEY=//p' "${SOURCE_FILE}")
+CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%$'\r'}"
+CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\"}" ; CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\"}"
+CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\'}" ; CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\'}"
 
-# -------- Step 2: Update LICENSE_KEY --------
-# Multi-file layout: LICENSE_KEY lives in base_configs.env (index 1).
-# Single-file layout: LICENSE_KEY lives in node_configs.env (index 0).
-if [[ ${#CONFIG_FILES[@]} -gt 1 ]]; then
-  BASE_ENV="${CONFIG_FILES[1]}"
+if [[ -z "${CURRENT_LICENSE_KEY}" ]]; then
+  echo "No LICENSE_KEY found in ${SOURCE_FILE} — skipping"
 else
-  BASE_ENV="${CONFIG_FILES[0]}"
+  UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
+  sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${SNAPSHOT_FILE}"
+  echo "LICENSE_KEY updated in snapshot"
 fi
 
-if [[ ! -f "${BASE_ENV}" ]]; then
-  echo "Failed to locate file: ${BASE_ENV} — skipping LICENSE_KEY update"
-else
-  # Extract raw value (everything after LICENSE_KEY=)
-  CURRENT_LICENSE_KEY=$(sed -n 's/^LICENSE_KEY=//p' "${BASE_ENV}")
-
-  # Strip trailing carriage return and any surrounding quotes
-  CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%$'\r'}"
-  CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\"}" ; CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\"}"
-  CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY#\'}" ; CURRENT_LICENSE_KEY="${CURRENT_LICENSE_KEY%\'}"
-
-  if [[ -z "${CURRENT_LICENSE_KEY}" ]]; then
-    echo "No LICENSE_KEY found in ${BASE_ENV} — skipping"
-  else
-    # Replace any internal single quotes with double quotes
-    UPDATED_LICENSE_KEY="${CURRENT_LICENSE_KEY//\'/\"}"
-    sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=${UPDATED_LICENSE_KEY}|" "${BASE_ENV}"
-    echo "LICENSE_KEY updated in ${BASE_ENV}"
-  fi
-fi
-
-# -------- Step 3: Generate Read-Only Snapshot Copy --------
-# Filename: {formatted_node_name}.env  (hyphens -> underscores, lowercased)
-# Empty-value vars ( VAR="" ) are commented out in the copy.
-FORMATTED_NODE_NAME=$(echo "${NODE_CONFIGS}" | tr '[:upper:]' '[:lower:]' | tr '-' '_')
-SNAPSHOT_DIR="docker-makefiles/${NODE_CONFIGS}"
-SNAPSHOT_FILE="${SNAPSHOT_DIR}/formatted_node_configs.env"
-if [[ -f "${SNAPSHOT_FILE}" ]] ; then rm -rf ${SNAPSHOT_FILE} ; fi
-
-echo "Generating read-only snapshot: ${SNAPSHOT_FILE}"
-
-# Concatenate all config files, comment out empty-value lines, write snapshot
-{
-  for cfg in "${CONFIG_FILES[@]}"; do
-    echo "# ---- $(basename "${cfg}") ----"
-    sed -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${cfg}"
-    echo ""
-  done
-} > "${SNAPSHOT_FILE}"
-
-chmod 444 "${SNAPSHOT_FILE}"
-#echo "Snapshot saved (read-only): ${SNAPSHOT_FILE}"
+# -------- Step 4: Set permissions --------
+# 644: owner-writable so build_docker_compose.sh can resolve and write vars (e.g. CONTAINER_NAME);
+# group/other read-only so it's not accidentally hand-edited.
+chmod 644 "${SNAPSHOT_FILE}"
 
 echo "Config update complete."
