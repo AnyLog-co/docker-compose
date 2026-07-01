@@ -62,20 +62,22 @@ _detect_platform() {
 
 # Load IMAGE, NODE_NAME, and CONTAINER_NAME from config files
 _load_configs() {
-  local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
-  local single_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
+  local formatted_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
+  local source_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+  local cfg_file
 
-  if [[ -f "$env_file" ]]; then
-    IMAGE=$(grep -m1 '^IMAGE='        "$env_file"   | cut -d= -f2- | tr -d '"\r')
-    NODE_NAME=$(grep -m1 '^NODE_NAME=' "$env_file"   | cut -d= -f2- | tr -d '"\r')
-    CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$env_file" | cut -d= -f2- | tr -d '"\r')
-  elif [[ -f "$single_file" ]]; then
-    IMAGE=$(grep -m1 '^IMAGE='        "$single_file" | cut -d= -f2- | tr -d '"\r')
-    NODE_NAME=$(grep -m1 '^NODE_NAME=' "$single_file" | cut -d= -f2- | tr -d '"\r')
-    CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$single_file" | cut -d= -f2- | tr -d '"\r')
+  # Prefer formatted (post-run, has resolved CONTAINER_NAME); fall back to source on first run
+  if [[ -f "$formatted_file" ]]; then
+    cfg_file="$formatted_file"
+  elif [[ -f "$source_file" ]]; then
+    cfg_file="$source_file"
   else
     die "Missing configuration file(s) for '${ANYLOG_TYPE}'"
   fi
+
+  IMAGE=$(grep -m1 '^IMAGE=' "$cfg_file" | cut -d= -f2- | tr -d '"\r')
+  NODE_NAME=$(grep -m1 '^NODE_NAME=' "$cfg_file" | cut -d= -f2- | tr -d '"\r')
+  CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$cfg_file" | cut -d= -f2- | tr -d '"\r')
 
   # TARGET_NAME is what Docker actually uses — NODE_NAME wins if set, else CONTAINER_NAME
   TARGET_NAME="${NODE_NAME:-${CONTAINER_NAME}}"
@@ -85,9 +87,10 @@ _load_configs() {
 # Resolve TEST_CONN if not set
 _resolve_test_conn() {
   if [[ -z "$TEST_CONN" ]]; then
-    local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+    local cfg_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
+    [[ -f "$cfg_file" ]] || cfg_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
     local rest_port
-    rest_port=$(grep -m1 '^ANYLOG_REST_PORT=' "$single_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || echo "32549")
+    rest_port=$(grep -m1 '^ANYLOG_REST_PORT=' "$cfg_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || echo "32549")
     TEST_CONN="127.0.0.1:${rest_port}"
   fi
 }
@@ -106,9 +109,10 @@ _get_config_value() {
 }
 
 _resolve_scripts_volume() {
-  local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+  local cfg_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
+  [[ -f "$cfg_file" ]] || cfg_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
   local deployments_repo
-  deployments_repo=$(_get_config_value "$single_file" "DEPLOYMENTS_REPO")
+  deployments_repo=$(_get_config_value "$cfg_file" "DEPLOYMENTS_REPO")
 
   SCRIPT_VOLUME_ARGS=()
   SCRIPT_VOLUME_DRY_RUN=""
@@ -303,7 +307,6 @@ cmd_exec_root() {
 # License Key logic
 # ──────────────────────────────────────────────
 cmd_license_check() {
-  local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
   local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
   local license_arg=()
   local license_from_file=false
@@ -314,10 +317,7 @@ cmd_license_check() {
   esac
 
   # ── Resolve key from file ─────────────────────────────────────────
-  if [[ -z "${LICENSE_KEY}" && -f "${env_file}" ]]; then
-    LICENSE_KEY=$(_get_config_value "$env_file" "LICENSE_KEY")
-    [[ -n "${LICENSE_KEY}" ]] && license_from_file=true
-  elif [[ -z "${LICENSE_KEY}" && -f "${single_file}" ]]; then
+  if [[ -z "${LICENSE_KEY}" && -f "${single_file}" ]]; then
     LICENSE_KEY=$(_get_config_value "$single_file" "LICENSE_KEY")
     [[ -n "${LICENSE_KEY}" ]] && license_from_file=true
   fi
@@ -359,10 +359,8 @@ cmd_license_check() {
   [[ -n "${LICENSE_KEY}" ]] || die "License key was accepted but could not be read back."
 
   # ── Write key back to env file ────────────────────────────────────
-  local target_file="${env_file}"
-  [[ ! -f "${env_file}" && -f "${single_file}" ]] && target_file="${single_file}"
-
-  if [[ -f "${target_file}" ]]; then
+  if [[ -f "${single_file}" ]]; then
+    local target_file="${single_file}"
     if grep -q '^LICENSE_KEY=' "${target_file}"; then
       ${SED_INPLACE} "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${target_file}"
     else
