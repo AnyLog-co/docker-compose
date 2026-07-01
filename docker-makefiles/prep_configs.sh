@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+setup -x
 
 # -------- Helpers --------
 die() {

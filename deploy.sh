@@ -2,6 +2,7 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
+setup -x
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
