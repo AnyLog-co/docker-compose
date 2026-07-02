@@ -9,7 +9,7 @@
 #
 # Environment:
 #   LICENSE_URL   License server endpoint (default: http://23.239.12.151:8001/api/license-accept)
-set -euo pipefail
+#set -euo pipefail
 
 LICENSE_KEY="${1:-}"
 LICENSE_URL="${LICENSE_URL:-http://23.239.12.151:8001/api/license-accept}"
