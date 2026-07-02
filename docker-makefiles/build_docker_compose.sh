@@ -7,6 +7,9 @@ die() {
 }
 
 OS_TYPE=$(uname)
+IS_WSL=false
+grep -qi microsoft /proc/version 2>/dev/null && IS_WSL=true
+
 if [[ "$OS_TYPE" == "Darwin" ]]; then
   SED_INPLACE="sed -i .bak"
 else
@@ -79,7 +82,7 @@ elif [[ "${NETWORK_TYPE}" == "ports" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 elif [[ "${NETWORK_TYPE}" == "network" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
-elif [[ -z "${NETWORK_TYPE}" ]] && [[ "$(uname -s)" != "Linux" ]]; then
+elif [[ -z "${NETWORK_TYPE}" ]] && [[ "${OS_TYPE}" != "Linux" || "${IS_WSL}" == "true" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 else
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
