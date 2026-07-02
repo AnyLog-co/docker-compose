@@ -6,9 +6,32 @@ die() {
   exit "${2:-1}"
 }
 
-OS_TYPE=$(uname)
-IS_WSL=false
-grep -qi microsoft /proc/version 2>/dev/null && IS_WSL=true
+OS_TYPE=$(uname -s)
+
+# WSL reports uname -s as Linux; detect it for compose template auto-selection.
+_is_wsl() {
+  if [[ -n "${WSL_DISTRO_NAME:-}" ]]; then
+    return 0
+  fi
+  if grep -qiE 'microsoft|wsl' /proc/version 2>/dev/null; then
+    return 0
+  fi
+  return 1
+}
+
+# Auto-select ports-based compose on WSL, macOS, and other non-native-Linux hosts.
+_auto_use_ports_template() {
+  if [[ "${OS_TYPE}" == "Darwin" ]]; then
+    return 0
+  fi
+  if _is_wsl; then
+    return 0
+  fi
+  if [[ "${OS_TYPE}" != "Linux" ]]; then
+    return 0
+  fi
+  return 1
+}
 
 if [[ "$OS_TYPE" == "Darwin" ]]; then
   SED_INPLACE="sed -i .bak"
@@ -82,7 +105,7 @@ elif [[ "${NETWORK_TYPE}" == "ports" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 elif [[ "${NETWORK_TYPE}" == "network" ]]; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
-elif [[ -z "${NETWORK_TYPE}" ]] && [[ "${OS_TYPE}" != "Linux" || "${IS_WSL}" == "true" ]]; then
+elif [[ -z "${NETWORK_TYPE}" ]] && _auto_use_ports_template; then
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-ports-base.yaml"
 else
   TEMPLATE_COMPOSE_FILE="docker-makefiles/docker-compose-template-base.yaml"
