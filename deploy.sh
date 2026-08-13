@@ -22,6 +22,28 @@ PROMPT_LICENSE="${PROMPT_LICENSE:-true}"
 # ──────────────────────────────────────────────
 die() { echo "ERROR: $1" >&2; exit "${2:-1}"; }
 
+# In-place sed  (GNU and BSD/macOS)
+sedi() {
+  local expr="$1"
+  shift
+
+  if [ "$#" -eq 0 ]; then
+    echo "sedi: no files provided" >&2
+    return 1
+  fi
+
+  if sed --version >/dev/null 2>&1; then
+    sed -i "$expr" "$@"
+  else
+    sed -i '' "$expr" "$@"
+  fi
+}
+
+# Escape a value for use on the replacement side of a sed s|...|...| expression
+_sed_escape_replacement() {
+  printf '%s' "$1" | sed -e 's/[\\|&]/\\&/g'
+}
+
 # Resolve short-form aliases  (operator → anylog-operator)
 _resolve_type() {
   case "$ANYLOG_TYPE" in
@@ -96,7 +118,13 @@ _check_configs() {
 _get_config_value() {
   local file="$1"
   local key="$2"
-  grep -m1 "^${key}=" "$file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || true
+  local value
+  # Strip only the surrounding quote pair — values such as a license key carry
+  # quotes of their own that must survive the read.
+  value=$(grep -m1 "^${key}=" "$file" 2>/dev/null | cut -d= -f2- | tr -d '\r' || true)
+  value="${value#\"}" ; value="${value%\"}"
+  value="${value#\'}" ; value="${value%\'}"
+  printf '%s' "${value}"
 }
 
 _resolve_scripts_volume() {
@@ -361,7 +389,10 @@ cmd_license_check() {
 
   if [[ -f "${target_file}" ]]; then
     if grep -q '^LICENSE_KEY=' "${target_file}"; then
-      ${SED_INPLACE} "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${target_file}"
+      local escaped_key
+      escaped_key=$(_sed_escape_replacement "${LICENSE_KEY}")
+      sedi "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${escaped_key}\"|" "${target_file}" || \
+        die "Could not write the license key into '${target_file}'."
     else
       echo "LICENSE_KEY=\"${LICENSE_KEY}\"" >> "${target_file}"
     fi
