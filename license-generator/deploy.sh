@@ -2,20 +2,18 @@
 # deploy.sh — AnyLog node lifecycle manager
 # Usage: bash deploy.sh <command> [OPTIONS]
 # Run:   bash deploy.sh help
+#setup -euo pipefail
 
 # ──────────────────────────────────────────────
 # Defaults  (override via environment or flags)
 # ──────────────────────────────────────────────
 IS_MANUAL="${IS_MANUAL:-false}"
 ANYLOG_TYPE="${ANYLOG_TYPE:-anylog-generic}"
-TAG="${TAG:-1.4.2604}"
+TAG="${TAG:-pre-develop}"
 IMAGE="${IMAGE:-anylogco/anylog-network}"
 TEST_CONN="${TEST_CONN:-}"
 NODE_NAME="${NODE_NAME:-}"
-CONTAINER_NAME="${CONTAINER_NAME:-}"
-LICENSE_KEY="${LICENSE_KEY:-}"
-LICENSE_KEY_PROVIDED=false
-PROMPT_LICENSE="${PROMPT_LICENSE:-true}"
+export LICENSE_KEY="${LICENSE_KEY:-}"
 
 # ──────────────────────────────────────────────
 # Helpers
@@ -60,36 +58,28 @@ _detect_platform() {
   export ANYLOG_GID=$(id -g)
 }
 
-# Load IMAGE, NODE_NAME, and CONTAINER_NAME from config files
+# Load IMAGE and NODE_NAME from config files
 _load_configs() {
-  local formatted_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
-  local source_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-  local cfg_file
+  local env_file="docker-makefiles/${ANYLOG_TYPE}/.env"
+  local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
 
-  # Prefer formatted (post-run, has resolved CONTAINER_NAME); fall back to source on first run
-  if [[ -f "$formatted_file" ]]; then
-    cfg_file="$formatted_file"
-  elif [[ -f "$source_file" ]]; then
-    cfg_file="$source_file"
+  if [[ -f "$env_file" ]]; then
+    IMAGE=$(grep -m1 '^IMAGE='     "$env_file"    | cut -d= -f2- | tr -d '"\r')
+    NODE_NAME=$(grep -m1 '^NODE_NAME=' "$env_file" | cut -d= -f2- | tr -d '"\r')
+  elif [[ -f "$single_file" ]]; then
+    IMAGE=$(grep -m1 '^IMAGE='     "$single_file" | cut -d= -f2- | tr -d '"\r')
+    NODE_NAME=$(grep -m1 '^NODE_NAME=' "$single_file" | cut -d= -f2- | tr -d '"\r')
   else
     die "Missing configuration file(s) for '${ANYLOG_TYPE}'"
   fi
-
-  IMAGE=$(grep -m1 '^IMAGE=' "$cfg_file" | cut -d= -f2- | tr -d '"\r')
-  NODE_NAME=$(grep -m1 '^NODE_NAME=' "$cfg_file" | cut -d= -f2- | tr -d '"\r')
-  CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$cfg_file" | cut -d= -f2- | tr -d '"\r')
-
-  # TARGET_NAME is what Docker actually uses — NODE_NAME wins if set, else CONTAINER_NAME
-  TARGET_NAME="${NODE_NAME:-${CONTAINER_NAME}}"
 }
 
 # Resolve TEST_CONN if not set
 _resolve_test_conn() {
   if [[ -z "$TEST_CONN" ]]; then
-    local cfg_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
-    [[ -f "$cfg_file" ]] || cfg_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
+    local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
     local rest_port
-    rest_port=$(grep -m1 '^ANYLOG_REST_PORT=' "$cfg_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || echo "32549")
+    rest_port=$(grep -m1 '^ANYLOG_REST_PORT=' "$single_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || echo "32549")
     TEST_CONN="127.0.0.1:${rest_port}"
   fi
 }
@@ -101,27 +91,15 @@ _check_configs() {
     die "Missing directory 'docker-makefiles/${ANYLOG_TYPE}' — run 'bash deploy.sh help' for valid types"
 }
 
-_get_config_value() {
-  local file="$1"
-  local key="$2"
-  grep -m1 "^${key}=" "$file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || true
-}
+DOCKER_COMPOSE_FILE="docker-makefiles/docker-compose-files/${ANYLOG_TYPE}-docker-compose.yaml"
 
-_resolve_scripts_volume() {
-  local cfg_file="docker-makefiles/${ANYLOG_TYPE}/formatted_node_configs.env"
-  [[ -f "$cfg_file" ]] || cfg_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-  local deployments_repo
-  deployments_repo=$(_get_config_value "$cfg_file" "DEPLOYMENTS_REPO")
-
-  SCRIPT_VOLUME_ARGS=()
-  SCRIPT_VOLUME_DRY_RUN=""
-  if [[ -n "$deployments_repo" && -d "$deployments_repo" ]]; then
-    SCRIPT_VOLUME_ARGS=(-v "${deployments_repo}:/app/deployment-scripts")
-    SCRIPT_VOLUME_DRY_RUN="-v ${deployments_repo}:/app/deployment-scripts"
+# remove DOCKER_COMPOSE_FILE if exists
+_cmd_clean_compose() {
+  if [[ "$IS_MANUAL" == "false" ]] && [[ -f ${DOCKER_COMPOSE_FILE} ]]; then
+    rm -rf  "${DOCKER_COMPOSE_FILE}"
   fi
 }
 
-DOCKER_COMPOSE_FILE="docker-makefiles/docker-compose-files/${ANYLOG_TYPE}-docker-compose.yaml"
 
 # ──────────────────────────────────────────────
 # Parse flags  (--is-manual, --type, --tag, etc.)
@@ -136,8 +114,7 @@ while [[ $# -gt 0 ]]; do
     --image)          IMAGE="$2";        shift 2 ;;
     --node-name)      NODE_NAME="$2";    shift 2 ;;
     --test-conn)      TEST_CONN="$2";    shift 2 ;;
-    --license-key)    LICENSE_KEY="$2"; LICENSE_KEY_PROVIDED=true; shift 2 ;;
-    --prompt-license) PROMPT_LICENSE="true"; shift ;;
+    --license-key)    export LICENSE_KEY="$2";  shift 2 ;;
     --manual)         IS_MANUAL="true";  shift   ;;
     --no-manual)      IS_MANUAL="false"; shift   ;;
     *) die "Unknown option: $1" ;;
@@ -170,22 +147,31 @@ cmd_dry_run() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "false" ]]; then
-    echo "Dry Run ${ANYLOG_TYPE} - ${TARGET_NAME}"
+    echo "Dry Run ${ANYLOG_TYPE} - ${NODE_NAME}"
+    bash docker-makefiles/prep_configs.sh "${ANYLOG_TYPE}"
     bash docker-makefiles/build_docker_compose.sh "${ANYLOG_TYPE}" "${TAG}"
-  elif [[ "${IS_MANUAL}" == "true" ]]; then
+ elif [[ "${IS_MANUAL}" == "true" ]]; then
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-    _resolve_scripts_volume
+    local deployments_repo
+    deployments_repo=$(grep -m1 '^DEPLOYMENTS_REPO=' "$single_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || true)
+
+    local vol_scripts
+    if [[ -n "$deployments_repo" && -d "$deployments_repo" ]]; then
+      vol_scripts="-v ${deployments_repo}:/app/deployment-scripts"
+    else
+      vol_scripts="-v ${NODE_NAME}-local-scripts:/app/deployment-scripts"
+    fi
 
     echo "Manual mode — docker run command:"
     echo ""
     echo "  ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \\"
-    echo "    --name ${TARGET_NAME} \\"
+    echo "    --name ${NODE_NAME} \\"
     echo "    --network host \\"
     echo "    --env-file ${single_file} \\"
-    echo "    -v ${TARGET_NAME}-anylog:/app/AnyLog-Network/anylog \\"
-    echo "    -v ${TARGET_NAME}-blockchain:/app/AnyLog-Network/blockchain \\"
-    echo "    -v ${TARGET_NAME}-data:/app/AnyLog-Network/data \\"
-    [[ -n "${SCRIPT_VOLUME_DRY_RUN}" ]] && echo "    ${SCRIPT_VOLUME_DRY_RUN} \\"
+    echo "    -v ${NODE_NAME}-anylog:/app/AnyLog-Network/anylog \\"
+    echo "    -v ${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain \\"
+    echo "    -v ${NODE_NAME}-data:/app/AnyLog-Network/data \\"
+    echo "    ${vol_scripts} \\"
     echo "    --restart always \\"
     echo "    ${IMAGE}:${TAG}"
     echo ""
@@ -196,34 +182,36 @@ cmd_dry_run() {
 }
 
 cmd_up() {
-  _check_configs
-  _load_configs
-  cmd_license_check
   cmd_dry_run
-
-  # -e flag is only valid for `docker run`; docker compose reads LICENSE_KEY from the env file
-  local license_flag=""
-  [[ -n "${LICENSE_KEY}" ]] && license_flag="-e LICENSE_KEY=${LICENSE_KEY}"
-
   if [[ "$IS_MANUAL" == "true" ]]; then
     echo "Deploying ${ANYLOG_TYPE} [manual / docker run]"
     local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-    _resolve_scripts_volume
+    local deployments_repo
+    deployments_repo=$(grep -m1 '^DEPLOYMENTS_REPO=' "$single_file" 2>/dev/null | cut -d= -f2- | tr -d '"\r' || true)
 
+    local vol_scripts
+    if [[ -n "$deployments_repo" && -d "$deployments_repo" ]]; then
+      vol_scripts="-v ${deployments_repo}:/app/deployment-scripts"
+    else
+      vol_scripts="-v ${NODE_NAME}-local-scripts:/app/deployment-scripts"
+    fi
+
+    local license_flag=""
+    [[ -n "$LICENSE_KEY" ]] && license_flag="-e LICENSE_KEY=${LICENSE_KEY}"
     ${CONTAINER_CMD} run -it -d --detach-keys=ctrl-d \
-      --name "${TARGET_NAME}" \
+      --name "${NODE_NAME}" \
       --network host \
       --env-file "${single_file}" \
       ${license_flag} \
-      -v "${TARGET_NAME}-anylog:/app/AnyLog-Network/anylog" \
-      -v "${TARGET_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
-      -v "${TARGET_NAME}-data:/app/AnyLog-Network/data" \
-      "${SCRIPT_VOLUME_ARGS[@]}" \
+      -v "${NODE_NAME}-anylog:/app/AnyLog-Network/anylog" \
+      -v "${NODE_NAME}-blockchain:/app/AnyLog-Network/blockchain" \
+      -v "${NODE_NAME}-data:/app/AnyLog-Network/data" \
+      ${vol_scripts} \
       --restart always \
       "${IMAGE}:${TAG}"
   else
-    echo "Deploying ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  up -d
+    echo "Deploying ${ANYLOG_TYPE}"
+    LICENSE_KEY="${LICENSE_KEY}" ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" up -d
   fi
 }
 
@@ -231,144 +219,78 @@ cmd_down() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping ${TARGET_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${TARGET_NAME}" && ${CONTAINER_CMD} rm "${TARGET_NAME}"
+    echo "Stopping ${NODE_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
   else
-    echo "Stopping ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  down
+    cmd_dry_run
+    echo "Stopping ${ANYLOG_TYPE}"
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down
   fi
 }
+
 
 cmd_clean() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping + removing volumes: ${TARGET_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${TARGET_NAME}" && ${CONTAINER_CMD} rm "${TARGET_NAME}"
+    echo "Stopping + removing volumes: ${NODE_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
     ${CONTAINER_CMD} volume rm \
-      "${TARGET_NAME}-anylog" \
-      "${TARGET_NAME}-blockchain" \
-      "${TARGET_NAME}-data" \
-      "${TARGET_NAME}-local-scripts" 2>/dev/null || true
+      "${NODE_NAME}-anylog" \
+      "${NODE_NAME}-blockchain" \
+      "${NODE_NAME}-data" \
+      "${NODE_NAME}-local-scripts" 2>/dev/null || true
   else
-    echo "Stopping + removing volumes: ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    echo ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  down -v
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  down -v
+    cmd_dry_run
+    echo "Stopping + removing volumes: ${ANYLOG_TYPE}"
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v
   fi
-  bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
+  _cmd_clean_compose
 }
 
 cmd_clean_all() {
   _check_configs
   _load_configs
   if [[ "$IS_MANUAL" == "true" ]]; then
-    echo "Stopping + removing volumes + image: ${TARGET_NAME} [manual]"
-    ${CONTAINER_CMD} stop "${TARGET_NAME}" && ${CONTAINER_CMD} rm "${TARGET_NAME}"
+    echo "Stopping + removing volumes + image: ${NODE_NAME} [manual]"
+    ${CONTAINER_CMD} stop "${NODE_NAME}" && ${CONTAINER_CMD} rm "${NODE_NAME}"
     ${CONTAINER_CMD} volume rm \
-      "${TARGET_NAME}-anylog" \
-      "${TARGET_NAME}-blockchain" \
-      "${TARGET_NAME}-data" \
-      "${TARGET_NAME}-local-scripts" 2>/dev/null || true
+      "${NODE_NAME}-anylog" \
+      "${NODE_NAME}-blockchain" \
+      "${NODE_NAME}-data" \
+      "${NODE_NAME}-local-scripts" 2>/dev/null || true
     ${CONTAINER_CMD} rmi "${IMAGE}:${TAG}" 2>/dev/null || true
   else
-    echo "Stopping + removing volumes + image: ${ANYLOG_TYPE} - ${TARGET_NAME}"
-    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}"  down -v --rmi all
+    cmd_dry_run
+    echo "Stopping + removing volumes + image: ${ANYLOG_TYPE}"
+    ${DOCKER_COMPOSE_CMD} -f "${DOCKER_COMPOSE_FILE}" down -v --rmi all
   fi
-  bash docker-makefiles/clean_configs.sh "${ANYLOG_TYPE}"
+  _cmd_clean_compose
 }
 
 cmd_logs() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} logs "${TARGET_NAME}"
+  ${CONTAINER_CMD} logs "${NODE_NAME}"
 }
 
 cmd_logs_f() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} logs -f "${TARGET_NAME}"
+  ${CONTAINER_CMD} logs -f "${NODE_NAME}"
 }
 
 cmd_attach() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} attach --detach-keys=ctrl-d "${TARGET_NAME}"
+  ${CONTAINER_CMD} attach --detach-keys=ctrl-d "${NODE_NAME}"
 }
 
 cmd_exec() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} exec -it "${TARGET_NAME}" /bin/bash
+  ${CONTAINER_CMD} exec -it "${NODE_NAME}" /bin/bash
 }
 
 cmd_exec_root() {
   _check_configs; _load_configs
-  ${CONTAINER_CMD} exec -u root -it "${TARGET_NAME}" /bin/bash
-}
-
-# ──────────────────────────────────────────────
-# License Key logic
-# ──────────────────────────────────────────────
-cmd_license_check() {
-  local single_file="docker-makefiles/${ANYLOG_TYPE}/node_configs.env"
-  local license_arg=()
-  local license_from_file=false
-
-  case "${PROMPT_LICENSE}" in
-    true|True|TRUE|1|yes|Yes|YES) PROMPT_LICENSE="true" ;;
-    *) PROMPT_LICENSE="false" ;;
-  esac
-
-  # ── Resolve key from file ─────────────────────────────────────────
-  if [[ -z "${LICENSE_KEY}" && -f "${single_file}" ]]; then
-    LICENSE_KEY=$(_get_config_value "$single_file" "LICENSE_KEY")
-    [[ -n "${LICENSE_KEY}" ]] && license_from_file=true
-  fi
-
-  LICENSE_KEY="${LICENSE_KEY#\"}" ; LICENSE_KEY="${LICENSE_KEY%\"}"
-  LICENSE_KEY="${LICENSE_KEY#\'}" ; LICENSE_KEY="${LICENSE_KEY%\'}"
-
-  # ── If key came from file, skip the entire acceptance process ─────
-  if [[ "${license_from_file}" == "true" && "${LICENSE_KEY_PROVIDED}" != "true" ]]; then
-    export LICENSE_KEY
-    return 0
-  fi
-
-  # ── No key yet — prompt if possible ──────────────────────────────
-  if [[ -z "${LICENSE_KEY}" ]]; then
-    if [[ -t 0 || -r /dev/tty ]]; then
-      echo "A license key is required to deploy AnyLog."
-      read -r -p "License Key: " LICENSE_KEY </dev/tty
-    else
-      die "Missing license key, cannot deploy AnyLog. Pass --license-key or set LICENSE_KEY."
-    fi
-  fi
-
-  [[ -n "${LICENSE_KEY}" ]] || die "Missing license key, cannot deploy AnyLog."
-
-  # ── Run acceptance flow ───────────────────────────────────────────
-  export LICENSE_KEY
-  license_arg=("${LICENSE_KEY}")
-
-  if ! FORCE_LICENSE_PROMPT="${PROMPT_LICENSE}" bash ./license-generator/license_key.sh "${license_arg[@]}"; then
-    die "License validation or acceptance failed. Deployment aborted."
-  fi
-
-  if [[ -z "${LICENSE_KEY}" && -f ".license_accepted" ]]; then
-    LICENSE_KEY=$(awk -F'|' 'NF >= 5 {print $5; exit}' .license_accepted)
-    export LICENSE_KEY
-  fi
-
-  [[ -n "${LICENSE_KEY}" ]] || die "License key was accepted but could not be read back."
-
-  # ── Write key back to node_configs.env ───────────────────────────
-  if [[ -f "${single_file}" ]]; then
-    if grep -q '^LICENSE_KEY=' "${single_file}"; then
-      if sed --version >/dev/null 2>&1; then
-        sed -i "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${single_file}"
-      else
-        sed -i '' "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${single_file}"
-      fi
-    else
-      echo "LICENSE_KEY=\"${LICENSE_KEY}\"" >> "${single_file}"
-    fi
-  fi
+  ${CONTAINER_CMD} exec -u root -it "${NODE_NAME}" /bin/bash
 }
 
 # ──────────────────────────────────────────────
@@ -424,9 +346,8 @@ cmd_check_vars() {
   printf "%-22s %-30s %s\n" "ANYLOG_TYPE"         "anylog-generic"           "$ANYLOG_TYPE"
   printf "%-22s %-30s %s\n" "IMAGE"               "anylogco/anylog-network"  "$IMAGE"
   printf "%-22s %-30s %s\n" "NODE_NAME"           ""                         "${NODE_NAME:-}"
-  printf "%-22s %-30s %s\n" "CONTAINER_NAME"      ""                         "${CONTAINER_NAME:-}"
-  printf "%-22s %-30s %s\n" "TARGET_NAME"         ""                         "${TARGET_NAME:-}"
   printf "%-22s %-30s %s\n" "TAG"                 "pre-develop"              "$TAG"
+  printf "%-22s %-30s %s\n" "LICENSE_KEY"         ""                         "${LICENSE_KEY:-}"
   printf "%-22s %-30s %s\n" "TEST_CONN"           "127.0.0.1:<rest-port>"    "$TEST_CONN"
 }
 
@@ -464,7 +385,6 @@ Options:
   --node-name <name>    Override container name
   --test-conn <ip:port> REST endpoint for test commands
   --license-key <key>   License key to inject into container env
-  --prompt-license      Prompt for license key if no saved license is found
   --manual              Use docker run instead of docker compose
   --no-manual           Use docker compose (default)
 
