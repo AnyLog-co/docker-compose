@@ -204,12 +204,13 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   export REMOTE_GUI_BE=$(grep -m1 '^REMOTE_GUI_BE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export REMOTE_GUI_TAG=$(grep -m1 '^REMOTE_GUI_TAG=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export REMOTE_CONN=$(grep -m1 '^REMOTE_CONN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+#  export REMOTE_CONN=$(grep -m1 '^REMOTE_CONN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export OVERLAY_IP=$(grep -m1 '^OVERLAY_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
   REMOTE_GUI_FE="${REMOTE_GUI_FE:-31800}"
   REMOTE_GUI_BE="${REMOTE_GUI_BE:-8080}"
   REMOTE_GUI_TAG="${REMOTE_GUI_TAG:-latest}"
+  REMOTE_CONN="host.docker.internal:${ANYLOG_REST_PORT}"
 
   REMOTE_GUI_IP="127.0.0.1"
   if [[ -n "${REMOTE_GUI_NIC:-}" ]]; then
@@ -232,7 +233,7 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   print; print "      - " vol1; print "      - " vol2; vol_found=1; next
 }1
 END {
-  print "  image-vol:"; print "  usr-mgm-vol:"; print "  report-configs:";
+  print "  image-vol:"; print "  usr-mgm-vol:"; print "  report-configs:"; print "  backend-logs:"
 }' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 
   awk -v remote_ip="$REMOTE_GUI_IP" \
@@ -263,6 +264,7 @@ END {
   print "      - image-vol:/app/CLI/local-cli-backend/static/";
   print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
   print "      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates";
+  print "      - backend-logs:/app/CLI/local-cli-backend/logs";
   next
 }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 fi
