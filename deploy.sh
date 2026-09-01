@@ -361,13 +361,20 @@ cmd_license_check() {
 
   if [[ -f "${target_file}" ]]; then
     if grep -q '^LICENSE_KEY=' "${target_file}"; then
-      ${SED_INPLACE} "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${LICENSE_KEY}\"|" "${target_file}"
+      escaped_license_key="${LICENSE_KEY//\\/\\\\}"
+      escaped_license_key="${escaped_license_key//&/\\&}"
+      escaped_license_key="${escaped_license_key//|/\\|}"
+
+      sed -i.bak \
+        "s|^LICENSE_KEY=.*|LICENSE_KEY=\"${escaped_license_key}\"|" \
+        "${target_file}"
+
+      rm -f "${target_file}.bak"
     else
-      echo "LICENSE_KEY=\"${LICENSE_KEY}\"" >> "${target_file}"
+      printf 'LICENSE_KEY="%s"\n' "${LICENSE_KEY}" >> "${target_file}"
     fi
   fi
 }
-
 
 # ──────────────────────────────────────────────
 # Testing
