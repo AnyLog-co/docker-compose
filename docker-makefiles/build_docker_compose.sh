@@ -134,25 +134,16 @@ if [[ ! "${ANYLOG_BROKER_PORT:-}" =~ ^[0-9]+$ ]]; then
 fi
 
 # -------- Deployment Scripts Volume --------
-if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMENTS_BRANCH}" ]] || \
-   [[ "${DEPLOYMENTS_REPO}" == "https://github.com/AnyLog-co/deployment-scripts" && "${DEPLOYMENTS_BRANCH}" == "main" ]]; then
-  # Option 1: default deployment-scripts built into the image
-  echo "Use built-in default option"
+
+if [[ ! -n "${DEPLOYMENTS_REPO}" ]] ||  [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* ]]; then
+  # Option 1: define a local scripts volume
   ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
   ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
-elif [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
-  # Option 2: host directory — update main service, remove from init and volumes
+elif [[ -d "${DEPLOYMENTS_REPO}" ]] ; then
+  # Option 2: local directory on the host — bind-mount it in place of the named volume
   ${SED_INPLACE} "s|      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|      - ${DEPLOYMENTS_REPO}:/app/deployment-scripts|g" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/d" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
-  awk '/"-init:"/ { in_init=1 } in_init && /deployment-scripts/ { next } /^  [^ ]/ && !/-init:/ { in_init=0 } 1' \
-    "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
-elif [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* ]]; then
-  # Option 3: reclone at startup — no volume needed at all
-  ${SED_INPLACE} "/\/app\/deployment-scripts$/d" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
-elif [[ -n "${DEPLOYMENTS_REPO}" ]]; then
-  # Option 4: secondary deployment-scripts container
+else
+  # Option 3: Docker container containing deployment-scripts
   export DEPLOYMENTS_BRANCH=$(grep -m1 '^DEPLOYMENTS_BRANCH=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   awk -v repo="${DEPLOYMENTS_REPO}" \
       -v branch="${DEPLOYMENTS_BRANCH}" \
@@ -172,6 +163,45 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]]; then
   ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
   ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
 fi
+
+
+#if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMENTS_BRANCH}" ]] || \
+#   [[ "${DEPLOYMENTS_REPO}" == "https://github.com/AnyLog-co/deployment-scripts" && "${DEPLOYMENTS_BRANCH}" == "main" ]]; then
+#  # Option 1: default deployment-scripts built into the image
+#  echo "Use built-in default option"
+
+#elif [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
+#  # Option 2: host directory — update main service, remove from init and volumes
+#  ${SED_INPLACE} "s|      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|      - ${DEPLOYMENTS_REPO}:/app/deployment-scripts|g" "${COMPOSE_FILE}"
+#  ${SED_INPLACE} "/^#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/d" "${COMPOSE_FILE}"
+#  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+#  awk '/"-init:"/ { in_init=1 } in_init && /deployment-scripts/ { next } /^  [^ ]/ && !/-init:/ { in_init=0 } 1' \
+#    "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+#elif [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* ]]; then
+#  # Option 3: reclone at startup — no volume needed at all
+#  ${SED_INPLACE} "/\/app\/deployment-scripts$/d" "${COMPOSE_FILE}"
+#  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
+#elif [[ -n "${DEPLOYMENTS_REPO}" ]]; then
+#  # Option 4: secondary deployment-scripts container
+#  export DEPLOYMENTS_BRANCH=$(grep -m1 '^DEPLOYMENTS_BRANCH=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+#  awk -v repo="${DEPLOYMENTS_REPO}" \
+#      -v branch="${DEPLOYMENTS_BRANCH}" \
+#      -v node="${CONTAINER_NAME}" '
+#  /^services:/ {
+#    print;
+#    print "  " node "-deployment-scripts:";
+#    print "    image: " repo ":" branch;
+#    print "    container_name: " node "-deployment-scripts";
+#    print "    command: [\"sh\", \"-c\", \"cp -r /app/deployment-scripts/. /volume/\"]";
+#    print "    restart: \"no\"";
+#    print "    volumes:";
+#    print "      - " node "-local-scripts:/app/deployment-scripts";
+#    next
+#  }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+#  ${SED_INPLACE} "s/condition: service_completed_successfully/condition: service_completed_successfully\n      ${CONTAINER_NAME}-deployment-scripts:\n        condition: service_completed_successfully/g" "${COMPOSE_FILE}"
+#  ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
+#  ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
+#fi
 
 # -------- Docker Socket --------
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
