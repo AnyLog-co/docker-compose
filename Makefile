@@ -11,6 +11,7 @@ export IMAGE        ?= anylogco/anylog-network
 export TEST_CONN    ?=
 export LICENSE_KEY  ?=
 export PROMPT_LICENSE ?= true
+export DOCKER_LOGIN ?=
 
 # Resolve short-form aliases (operator → anylog-operator)
 ifeq ($(ANYLOG_TYPE),$(filter $(ANYLOG_TYPE),generic master operator query publisher standalone-operator standalone-publisher))

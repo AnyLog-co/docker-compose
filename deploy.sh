@@ -155,9 +155,25 @@ DOCKER_COMPOSE_FILE="docker-makefiles/docker-compose-files/${ANYLOG_TYPE}-docker
 # ──────────────────────────────────────────────
 
 cmd_login() {
-  echo "Logging into Docker Hub..."
-  ${CONTAINER_CMD} login docker.io -u anyloguser --password-stdin
+  echo "Note: this will replace any existing ${CONTAINER_CMD} credentials for docker.io with AnyLog's login."
+  echo "If you need to restore your previous credentials afterward, run '${CONTAINER_CMD} login docker.io' again with your own username and password/token."
+  read -r -p "To continue type 'confirm': " user_confirm
+
+  if [[ "${user_confirm}" == "confirm" ]]; then
+      DOCKER_USER="anyloguser"
+    if [[ "${DOCKER_LOGIN}" == *:* ]]; then
+      DOCKER_USER="${DOCKER_LOGIN%%:*}"
+      DOCKER_LOGIN="${DOCKER_LOGIN#*:}"
+    fi
+    echo ${CONTAINER_CMD} login docker.io -u "${DOCKER_USER}" -p "${DOCKER_LOGIN}"
+    ${CONTAINER_CMD} login docker.io -u "${DOCKER_USER}" -p "${DOCKER_LOGIN}"
+    echo "Docker Hub credentials for docker.io have been updated to AnyLog's account."
+
+  else
+    echo "Login cancelled — no credentials were changed."
+  fi
 }
+
 
 cmd_pull() {
   _check_configs
