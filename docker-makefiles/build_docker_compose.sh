@@ -173,9 +173,48 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]]; then
   ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
 fi
 
-# -------- Docker Socket --------
+if [[ -z "${DOCKER_SOCKET}" ]]; then
+  if command -v docker >/dev/null 2>&1; then
+    CONTEXT_SOCK=$(docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null)
+    CONTEXT_SOCK="${CONTEXT_SOCK#unix://}"   # strip scheme, e.g. unix:///var/run/docker.sock -> /var/run/docker.sock
+    if [[ -n "${CONTEXT_SOCK}" ]] && [[ -S "${CONTEXT_SOCK}" ]]; then
+      DOCKER_SOCKET="${CONTEXT_SOCK}"
+    fi
+  fi
+fi
+
+# Fallback to common known paths if context lookup didn't resolve one
+if [[ -z "${DOCKER_SOCKET}" ]]; then
+  for candidate in \
+    "/var/run/docker.sock" \
+    "${XDG_RUNTIME_DIR:-}/docker.sock" \
+    "${XDG_RUNTIME_DIR:-}/podman/podman.sock" \
+    "${HOME}/.docker/run/docker.sock"
+  do
+    if [[ -n "${candidate}" ]] && [[ -S "${candidate}" ]]; then
+      DOCKER_SOCKET="${candidate}"
+      break
+    fi
+  done
+fi
+export DOCKER_SOCKET
+
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
-  ${SED_INPLACE} "s/- \${DOCKER_GID}/#- \${MISSING-DOCKER_GID}/g" "${COMPOSE_FILE}"
+  # Comment out group_add's key AND its item together — leaving `group_add:`
+  # with only a comment underneath parses as `group_add: null`, which
+  # docker compose rejects with "must be a array".
+  awk '
+    /^[[:space:]]*group_add:[[:space:]]*$/ {
+      indent = $0; sub(/group_add:.*/, "", indent)
+      print indent "#group_add:"
+      getline nextline
+      sub(/^[[:space:]]*/, "", nextline)
+      print indent "  #" nextline
+      next
+    }
+    { print }
+  ' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+
   ${SED_INPLACE} "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - \${MISSING-DOCKER_SOCKET}#" "${COMPOSE_FILE}"
 else
   if stat -c '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
@@ -204,12 +243,13 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   export REMOTE_GUI_BE=$(grep -m1 '^REMOTE_GUI_BE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export REMOTE_GUI_TAG=$(grep -m1 '^REMOTE_GUI_TAG=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-  export REMOTE_CONN=$(grep -m1 '^REMOTE_CONN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+#  export REMOTE_CONN=$(grep -m1 '^REMOTE_CONN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export OVERLAY_IP=$(grep -m1 '^OVERLAY_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
   REMOTE_GUI_FE="${REMOTE_GUI_FE:-31800}"
   REMOTE_GUI_BE="${REMOTE_GUI_BE:-8080}"
   REMOTE_GUI_TAG="${REMOTE_GUI_TAG:-latest}"
+  REMOTE_CONN="host.docker.internal:${ANYLOG_REST_PORT}"
 
   REMOTE_GUI_IP="127.0.0.1"
   if [[ -n "${REMOTE_GUI_NIC:-}" ]]; then
@@ -232,7 +272,7 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   print; print "      - " vol1; print "      - " vol2; vol_found=1; next
 }1
 END {
-  print "  image-vol:"; print "  usr-mgm-vol:"; print "  report-configs:";
+  print "  image-vol:"; print "  usr-mgm-vol:"; print "  report-configs:"; print "  backend-logs:"
 }' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 
   awk -v remote_ip="$REMOTE_GUI_IP" \
@@ -263,6 +303,7 @@ END {
   print "      - image-vol:/app/CLI/local-cli-backend/static/";
   print "      - usr-mgm-vol:/app/CLI/local-cli/backend/usr-mgm/";
   print "      - report-configs:/app/CLI/local-cli-backend/plugins/reportgenerator/templates";
+  print "      - backend-logs:/app/CLI/local-cli-backend/logs";
   next
 }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
 fi
