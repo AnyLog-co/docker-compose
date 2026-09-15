@@ -173,9 +173,48 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]]; then
   ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
 fi
 
-# -------- Docker Socket --------
+if [[ -z "${DOCKER_SOCKET}" ]]; then
+  if command -v docker >/dev/null 2>&1; then
+    CONTEXT_SOCK=$(docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null)
+    CONTEXT_SOCK="${CONTEXT_SOCK#unix://}"   # strip scheme, e.g. unix:///var/run/docker.sock -> /var/run/docker.sock
+    if [[ -n "${CONTEXT_SOCK}" ]] && [[ -S "${CONTEXT_SOCK}" ]]; then
+      DOCKER_SOCKET="${CONTEXT_SOCK}"
+    fi
+  fi
+fi
+
+# Fallback to common known paths if context lookup didn't resolve one
+if [[ -z "${DOCKER_SOCKET}" ]]; then
+  for candidate in \
+    "/var/run/docker.sock" \
+    "${XDG_RUNTIME_DIR:-}/docker.sock" \
+    "${XDG_RUNTIME_DIR:-}/podman/podman.sock" \
+    "${HOME}/.docker/run/docker.sock"
+  do
+    if [[ -n "${candidate}" ]] && [[ -S "${candidate}" ]]; then
+      DOCKER_SOCKET="${candidate}"
+      break
+    fi
+  done
+fi
+export DOCKER_SOCKET
+
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
-  ${SED_INPLACE} "s/- \${DOCKER_GID}/#- \${MISSING-DOCKER_GID}/g" "${COMPOSE_FILE}"
+  # Comment out group_add's key AND its item together — leaving `group_add:`
+  # with only a comment underneath parses as `group_add: null`, which
+  # docker compose rejects with "must be a array".
+  awk '
+    /^[[:space:]]*group_add:[[:space:]]*$/ {
+      indent = $0; sub(/group_add:.*/, "", indent)
+      print indent "#group_add:"
+      getline nextline
+      sub(/^[[:space:]]*/, "", nextline)
+      print indent "  #" nextline
+      next
+    }
+    { print }
+  ' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+
   ${SED_INPLACE} "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - \${MISSING-DOCKER_SOCKET}#" "${COMPOSE_FILE}"
 else
   if stat -c '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
