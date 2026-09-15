@@ -173,17 +173,27 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]]; then
   ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
 fi
 
+#----- Docker Sockets ----#
+# -------- Docker Socket --------
 if [[ -z "${DOCKER_SOCKET}" ]]; then
   if command -v docker >/dev/null 2>&1; then
     CONTEXT_SOCK=$(docker context inspect --format '{{.Endpoints.docker.Host}}' 2>/dev/null)
-    CONTEXT_SOCK="${CONTEXT_SOCK#unix://}"   # strip scheme, e.g. unix:///var/run/docker.sock -> /var/run/docker.sock
-    if [[ -n "${CONTEXT_SOCK}" ]] && [[ -S "${CONTEXT_SOCK}" ]]; then
+    CONTEXT_SOCK="${CONTEXT_SOCK#unix://}"
+
+    if [[ "${CONTEXT_SOCK}" == *"/.colima/"* ]]; then
+      # Colima's context path is a host-side forwarding socket, not a real
+      # file inside the VM where the daemon actually runs. Bind-mounting it
+      # into a container fails ("operation not supported") because the
+      # daemon can't resolve that path in its own (VM) filesystem. The
+      # daemon's real socket, as it sees it, is the standard guest path.
+      DOCKER_SOCKET="/var/run/docker.sock"
+    elif [[ -n "${CONTEXT_SOCK}" ]] && [[ -S "${CONTEXT_SOCK}" ]]; then
       DOCKER_SOCKET="${CONTEXT_SOCK}"
     fi
   fi
 fi
 
-# Fallback to common known paths if context lookup didn't resolve one
+# Fallback to common known paths if nothing resolved above
 if [[ -z "${DOCKER_SOCKET}" ]]; then
   for candidate in \
     "/var/run/docker.sock" \
@@ -200,9 +210,6 @@ fi
 export DOCKER_SOCKET
 
 if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
-  # Comment out group_add's key AND its item together — leaving `group_add:`
-  # with only a comment underneath parses as `group_add: null`, which
-  # docker compose rejects with "must be a array".
   awk '
     /^[[:space:]]*group_add:[[:space:]]*$/ {
       indent = $0; sub(/group_add:.*/, "", indent)
@@ -218,9 +225,9 @@ if [[ -z "${DOCKER_SOCKET}" ]] || [[ ! -S "${DOCKER_SOCKET}" ]]; then
   ${SED_INPLACE} "0,/- \${DOCKER_SOCKET}/s#- \${DOCKER_SOCKET}#\# - \${MISSING-DOCKER_SOCKET}#" "${COMPOSE_FILE}"
 else
   if stat -c '%g' "${DOCKER_SOCKET}" >/dev/null 2>&1; then
-    export DOCKER_GID=$(stat -c '%g' "${DOCKER_SOCKET}")   # GNU stat (Linux)
+    export DOCKER_GID=$(stat -c '%g' "${DOCKER_SOCKET}")
   else
-    export DOCKER_GID=$(stat -f '%g' "${DOCKER_SOCKET}")   # BSD stat (macOS)
+    export DOCKER_GID=$(stat -f '%g' "${DOCKER_SOCKET}")
   fi
 fi
 
