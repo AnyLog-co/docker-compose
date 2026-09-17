@@ -77,12 +77,12 @@ if [[ -n "${CONTAINER_NAME}" && -z "${NODE_NAME}" ]]; then
   # CONTAINER_NAME set, NODE_NAME missing -> mirror it
   NODE_NAME="${CONTAINER_NAME}"
   SYNC_SOURCE="true"
-  printf '\n# Warning: NODE_NAME was missing; setting it to match CONTAINER_NAME (\"${CONTAINER_NAME}\") in ${SOURCE_FILE}." >&2
+  printf "\n# Warning: NODE_NAME was missing; setting it to match CONTAINER_NAME (\"${CONTAINER_NAME}\") in ${SOURCE_FILE}." >&2
 elif [[ -n "${NODE_NAME}" && -z "${CONTAINER_NAME}" ]]; then
   # NODE_NAME set, CONTAINER_NAME missing -> mirror it
   CONTAINER_NAME="${NODE_NAME}"
   SYNC_SOURCE="true"
-  printf '\n# Warning: CONTAINER_NAME was missing; setting it to match NODE_NAME (\"${NODE_NAME}\") in ${SOURCE_FILE}." >&2
+  printf "\n# Warning: CONTAINER_NAME was missing; setting it to match NODE_NAME (\"${NODE_NAME}\") in ${SOURCE_FILE}." >&2
 elif [[ -z "${NODE_NAME}" && -z "${CONTAINER_NAME}" ]]; then
   # Neither set -> generate: ${NODE_TYPE}-${COMPANY_NAME-${HOSTNAME}}-${RANDOM}
   NAME_HOST="${COMPANY_NAME:-$(hostname)}"
@@ -90,7 +90,7 @@ elif [[ -z "${NODE_NAME}" && -z "${CONTAINER_NAME}" ]]; then
   NODE_NAME="${GENERATED_NAME}"
   CONTAINER_NAME="${GENERATED_NAME}"
   SYNC_SOURCE="true"
-  printf '\n# Warning: NODE_NAME and CONTAINER_NAME were both missing; generated \"${GENERATED_NAME}\" and wrote it to ${SOURCE_FILE}." >&2
+  printf "\n# Warning: NODE_NAME and CONTAINER_NAME were both missing; generated \"${GENERATED_NAME}\" and wrote it to ${SOURCE_FILE}." >&2
 fi
 # else: both already set (and possibly different) -> leave as-is
 
@@ -118,13 +118,13 @@ if [[ "${SYNC_SOURCE}" == "true" ]]; then
   fi
 
   if grep -q '^#\{0,1\}CONTAINER_NAME=' "${SOURCE_FILE}"; then
-    ${SED_INPLACE} "s/^#\{0,1\}CONTAINER_NAME=.*/CONTAINER_NAME=\"${CONTAINER_NAME}\"/g" "${SOURCE_FILE}"
+    ${SED_INPLACE} "s/^#\{0,1\}CONTAINER_NAME=.*/CONTAINER_NAME=${CONTAINER_NAME}/g" "${SOURCE_FILE}"
   else
     printf 'CONTAINER_NAME="%s"\n' "${CONTAINER_NAME}" >> "${SOURCE_FILE}"
   fi
 
   if grep -q '^#\{0,1\}NODE_NAME=' "${SOURCE_FILE}"; then
-    ${SED_INPLACE} "s/^#\{0,1\}NODE_NAME=.*/NODE_NAME=\"${NODE_NAME}\"/g" "${SOURCE_FILE}"
+    ${SED_INPLACE} "s/^#\{0,1\}NODE_NAME=.*/NODE_NAME=${NODE_NAME}/g" "${SOURCE_FILE}"
   else
     printf 'NODE_NAME="%s"\n' "${NODE_NAME}" >> "${SOURCE_FILE}"
   fi
@@ -138,14 +138,11 @@ if [[ "${SYNC_CLUSTER}" == "true" ]]; then
   fi
 
   if grep -q '^#\{0,1\}CLUSTER_NAME=' "${SOURCE_FILE}"; then
-    ${SED_INPLACE} "s/^#\{0,1\}CLUSTER_NAME=.*/CLUSTER_NAME=\"${CLUSTER_NAME}\"/g" "${SOURCE_FILE}"
+    ${SED_INPLACE} "s/^#\{0,1\}CLUSTER_NAME=.*/CLUSTER_NAME=${CLUSTER_NAME}/g" "${SOURCE_FILE}"
   else
     printf 'CLUSTER_NAME="%s"\n' "${CLUSTER_NAME}" >> "${SOURCE_FILE}"
   fi
 fi
-
-# Comment out remaining empty-value vars so they are not passed to the container
-${SED_INPLACE} -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${ENV_FILE}"
 
 # Comment out remaining empty-value vars so they are not passed to the container
 ${SED_INPLACE} -E 's/^([A-Za-z_][A-Za-z0-9_]*)=""(\s*(#.*)?)$/#\1=""\2/' "${ENV_FILE}"
