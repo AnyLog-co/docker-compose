@@ -68,21 +68,21 @@ NODE_NAME=$(grep -m1 '^NODE_NAME=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 CONTAINER_NAME=$(grep -m1 '^CONTAINER_NAME=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 NODE_TYPE=$(grep -m1 '^NODE_TYPE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 COMPANY_NAME=$(grep -m1 '^COMPANY_NAME=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-CLUSTER_NAME=$(grep -m '^CLUSTER_NAME='  "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+CLUSTER_NAME=$(grep -m1 '^CLUSTER_NAME=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
 SYNC_SOURCE="false"   # did we have to fill in/derive a value?
 SYNC_CLUSTER="false"  # did we have to fill in/derive cluster?
 
 if [[ -n "${CONTAINER_NAME}" && -z "${NODE_NAME}" ]]; then
   # CONTAINER_NAME set, NODE_NAME missing -> mirror it
+  # NODE_NAME is only mirrored in memory (not written to the config), so this is informational.
   NODE_NAME="${CONTAINER_NAME}"
-  SYNC_SOURCE="true"
-  printf "\n# Warning: NODE_NAME was missing; setting it to match CONTAINER_NAME (\"${CONTAINER_NAME}\") in ${SOURCE_FILE}." >&2
+  printf "# Info: NODE_NAME not set; using CONTAINER_NAME (\"%s\") for this build.\n" "${CONTAINER_NAME}" >&2
 elif [[ -n "${NODE_NAME}" && -z "${CONTAINER_NAME}" ]]; then
   # NODE_NAME set, CONTAINER_NAME missing -> mirror it
   CONTAINER_NAME="${NODE_NAME}"
   SYNC_SOURCE="true"
-  printf "\n# Warning: CONTAINER_NAME was missing; setting it to match NODE_NAME (\"${NODE_NAME}\") in ${SOURCE_FILE}." >&2
+  printf "\n# Warning: CONTAINER_NAME was missing; setting it to match NODE_NAME (\"${NODE_NAME}\") in ${SOURCE_FILE}.\n" >&2
 elif [[ -z "${NODE_NAME}" && -z "${CONTAINER_NAME}" ]]; then
   # Neither set -> generate: ${NODE_TYPE}-${COMPANY_NAME-${HOSTNAME}}-${RANDOM}
   NAME_HOST="${COMPANY_NAME:-$(hostname)}"
@@ -90,7 +90,7 @@ elif [[ -z "${NODE_NAME}" && -z "${CONTAINER_NAME}" ]]; then
   NODE_NAME="${GENERATED_NAME}"
   CONTAINER_NAME="${GENERATED_NAME}"
   SYNC_SOURCE="true"
-  printf "\n# Warning: NODE_NAME and CONTAINER_NAME were both missing; generated \"${GENERATED_NAME}\" and wrote it to ${SOURCE_FILE}." >&2
+  printf "\n# Warning: NODE_NAME and CONTAINER_NAME were both missing; generated \"${GENERATED_NAME}\" and wrote it to ${SOURCE_FILE}.\n" >&2
 fi
 # else: both already set (and possibly different) -> leave as-is
 
@@ -152,7 +152,8 @@ export ANYLOG_REST_PORT=$(grep -m1 '^ANYLOG_REST_PORT=' "$ENV_FILE" | cut -d= -f
 export ANYLOG_BROKER_PORT=$(grep -m1 '^ANYLOG_BROKER_PORT=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export DOCKER_SOCKET=$(grep -m1 '^DOCKER_SOCKET=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 export DEPLOYMENTS_REPO=$(grep -m1 '^DEPLOYMENTS_REPO=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-DEPLOYMENTS_BRANCH="${DEPLOYMENTS_BRANCH:-}"
+DEPLOYMENTS_BRANCH="${DEPLOYMENTS_BRANCH:-$(grep -m1 '^DEPLOYMENTS_BRANCH=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')}"
+export DEPLOYMENTS_BRANCH
 export USER_VOLUMES=$(grep -m1 '^USER_VOLUMES=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
 # -------- LICENSE_KEY: prefer env var (set by Makefile), fall back to config file --------
@@ -197,27 +198,67 @@ if [[ ! "${ANYLOG_BROKER_PORT:-}" =~ ^[0-9]+$ ]]; then
   ${SED_INPLACE} '/\${ANYLOG_BROKER_PORT}/d' "${COMPOSE_FILE}"
 fi
 
+# -------- Debug Sidecar (netshoot) --------
+# Strip any debug service already in the template (active or commented-out copies),
+# then add exactly one when DEBUG=true in node_configs.env.
+DEBUG="$(grep -m1 '^DEBUG=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r' | tr '[:upper:]' '[:lower:]')"
+DEBUG="${DEBUG:-false}"
+
+awk '
+  /^#?  \$\{CONTAINER_NAME\}-debug:[[:space:]]*$/ { skip=1; commented=($0 ~ /^#/); next }
+  skip && commented  && /^#(#|    )/                                    { next }
+  skip && !commented && (/^    / || /^##?    / || /^[[:space:]]*$/)     { next }
+  { skip=0; print }
+' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+
+if [[ "${DEBUG}" == "true" ]]; then
+  echo "Debug sidecar: enabled (${CONTAINER_NAME}-debug)"
+  awk '
+    /^volumes:/ && !done {
+      print "  # netshoot: a container packed with network troubleshooting tools (tcpdump, dig, curl, iperf, nmap, etc.)."
+      print "  # It shares the AnyLog container network namespace, so you can debug its networking without installing anything in it or on the host."
+      print "  ${CONTAINER_NAME}-debug:"
+      print "    image: nicolaka/netshoot"
+      print "    container_name: ${CONTAINER_NAME}-debug"
+      print "    network_mode: \"container:${CONTAINER_NAME}\""
+      print "    stdin_open: true"
+      print "    tty: true"
+      print "    restart: \"no\""
+      print "    depends_on:"
+      print "      ${CONTAINER_NAME}:"
+      print "        condition: service_started"
+      done=1
+    }
+    { print }
+  ' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+else
+  echo "Debug sidecar: disabled (set DEBUG=true in node_configs.env to enable)"
+fi
+
 # -------- Deployment Scripts Volume --------
-if [[ -z "${DEPLOYMENTS_REPO}" && -z "${DEPLOYMENTS_BRANCH}" ]] || \
-   [[ "${DEPLOYMENTS_REPO}" == "https://github.com/AnyLog-co/deployment-scripts" && "${DEPLOYMENTS_BRANCH}" == "main" ]]; then
-  # Option 1: default deployment-scripts built into the image
-  echo "Use built-in default option"
-  ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
-elif [[ -n "${DEPLOYMENTS_REPO}" && -d "${DEPLOYMENTS_REPO}" ]]; then
-  # Option 2: host directory — update main service, remove from init and volumes
-  ${SED_INPLACE} "s|      - \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|      - ${DEPLOYMENTS_REPO}:/app/deployment-scripts|g" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/d" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
-  awk '/"-init:"/ { in_init=1 } in_init && /deployment-scripts/ { next } /^  [^ ]/ && !/-init:/ { in_init=0 } 1' \
-    "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+# A local-scripts mount at /app/deployment-scripts is ALWAYS present:
+#   - named volume ${CONTAINER_NAME}-local-scripts by default
+#   - bind mount instead, only when DEPLOYMENTS_REPO is a local host directory
+# Step 1: unconditionally enable the named volume (mount lines + top-level declaration),
+#         whether the template ships them commented or not.
+${SED_INPLACE} 's|^#\([[:space:]]*- \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts\)|\1|' "${COMPOSE_FILE}"
+${SED_INPLACE} 's|^#\(  \${CONTAINER_NAME}-local-scripts:\)[[:space:]]*$|\1|' "${COMPOSE_FILE}"
+
+# Step 2: decide what fills it.
+if [[ -z "${DEPLOYMENTS_REPO}" ]]; then
+  # Option 1: built-in deployment-scripts from the image seed the named volume
+  echo "Deployment scripts: built-in (named volume ${CONTAINER_NAME}-local-scripts)"
+elif [[ -d "${DEPLOYMENTS_REPO}" ]]; then
+  # Option 2: host directory -> bind mount replaces the named volume
+  echo "Deployment scripts: host directory ${DEPLOYMENTS_REPO} (bind mount)"
+  ${SED_INPLACE} "s|- \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|- ${DEPLOYMENTS_REPO}:/app/deployment-scripts|g" "${COMPOSE_FILE}"
+  ${SED_INPLACE} "/^  \${CONTAINER_NAME}-local-scripts:[[:space:]]*$/d" "${COMPOSE_FILE}"
 elif [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* ]]; then
-  # Option 3: reclone at startup — no volume needed at all
-  ${SED_INPLACE} "/\/app\/deployment-scripts$/d" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "/^#  \${CONTAINER_NAME}-local-scripts:$/d" "${COMPOSE_FILE}"
-elif [[ -n "${DEPLOYMENTS_REPO}" ]]; then
-  # Option 4: secondary deployment-scripts container
-  export DEPLOYMENTS_BRANCH=$(grep -m1 '^DEPLOYMENTS_BRANCH=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  # Option 3: git URL -> cloned at startup INTO the named volume (branch ${DEPLOYMENTS_BRANCH:-default})
+  echo "Deployment scripts: git ${DEPLOYMENTS_REPO} @ ${DEPLOYMENTS_BRANCH:-default} (named volume ${CONTAINER_NAME}-local-scripts)"
+else
+  # Option 4: image reference -> helper container copies scripts into the named volume
+  echo "Deployment scripts: image ${DEPLOYMENTS_REPO}:${DEPLOYMENTS_BRANCH} (named volume ${CONTAINER_NAME}-local-scripts)"
   awk -v repo="${DEPLOYMENTS_REPO}" \
       -v branch="${DEPLOYMENTS_BRANCH}" \
       -v node="${CONTAINER_NAME}" '
@@ -229,12 +270,10 @@ elif [[ -n "${DEPLOYMENTS_REPO}" ]]; then
     print "    command: [\"sh\", \"-c\", \"cp -r /app/deployment-scripts/. /volume/\"]";
     print "    restart: \"no\"";
     print "    volumes:";
-    print "      - " node "-local-scripts:/app/deployment-scripts";
+    print "      - " node "-local-scripts:/volume";
     next
   }1' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
   ${SED_INPLACE} "s/condition: service_completed_successfully/condition: service_completed_successfully\n      ${CONTAINER_NAME}-deployment-scripts:\n        condition: service_completed_successfully/g" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "s/#      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/      - \${CONTAINER_NAME}-local-scripts:\/app\/deployment-scripts/g" "${COMPOSE_FILE}"
-  ${SED_INPLACE} "s/#  \${CONTAINER_NAME}-local-scripts:/  \${CONTAINER_NAME}-local-scripts:/g" "${COMPOSE_FILE}"
 fi
 
 #----- Docker Sockets ----#
