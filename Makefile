@@ -6,11 +6,12 @@ $(info LOADING MAKEFILE)
 # ──────────────────────────────────────────────
 export IS_MANUAL    ?= false
 export ANYLOG_TYPE  ?= anylog-generic
-export TAG          ?= 2.0.2606
+export TAG          ?= 2.1.2609-9cf217
 export IMAGE        ?= anylogco/anylog-network
 export TEST_CONN    ?=
 export LICENSE_KEY  ?=
 export PROMPT_LICENSE ?= true
+export DOCKER_LOGIN ?=
 
 # Resolve short-form aliases (operator → anylog-operator)
 ifeq ($(ANYLOG_TYPE),$(filter $(ANYLOG_TYPE),generic master operator query publisher standalone-operator standalone-publisher))
@@ -129,6 +130,7 @@ help: ## show this help message
 	@echo "  TEST_CONN       ip:port for test commands    (default: auto-resolved)"
 	@echo "  LICENSE_KEY     License key for deployment   (prompts if missing)"
 	@echo "  PROMPT_LICENSE  Prompt if no saved license   (default: true)"
+	@echo "  DOCKER_LOGIN    Docker Hub password, or user:password"
 	@echo ""
 	@echo "Without make:"
 	@echo "  bash deploy.sh help"
