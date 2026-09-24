@@ -353,13 +353,13 @@ if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   export REMOTE_GUI_BE=$(grep -m1 '^REMOTE_GUI_BE=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export REMOTE_GUI_TAG=$(grep -m1 '^REMOTE_GUI_TAG=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export GRAFANA_URL=$(grep -m1 '^GRAFANA_URL=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
-#  export REMOTE_CONN=$(grep -m1 '^REMOTE_CONN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+  export REMOTE_CONN=$(grep -m1 '^REMOTE_CONN=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
   export OVERLAY_IP=$(grep -m1 '^OVERLAY_IP=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
 
   REMOTE_GUI_FE="${REMOTE_GUI_FE:-31800}"
   REMOTE_GUI_BE="${REMOTE_GUI_BE:-8080}"
   REMOTE_GUI_TAG="${REMOTE_GUI_TAG:-latest}"
-  REMOTE_CONN="host.docker.internal:${ANYLOG_REST_PORT}"
+  REMOTE_CONN="${REMOTE_CONN:-host.docker.internal:${ANYLOG_REST_PORT}}"
 
   REMOTE_GUI_IP="127.0.0.1"
   if [[ -n "${REMOTE_GUI_NIC:-}" ]]; then
