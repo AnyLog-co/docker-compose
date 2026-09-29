@@ -215,8 +215,8 @@ bash syslog.sh remove [NODE_CONFIGS]
 
 # via make (SERVICE=syslog intercepts before docker-compose logic)
 make setup  SERVICE=syslog                                                               # prompts for config path
-make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
-make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
+make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator1/node_configs.env
+make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator1/node_configs.env
 ```
 
 Default `NODE_CONFIGS` path when not supplied: `docker-makefiles/anylog-generic/node_configs.env`.
@@ -337,8 +337,8 @@ make exec SERVICE=postgres-prod        # psql -U postgres  ← remove this
 
 # Syslog forwarding
 make setup  SERVICE=syslog             # prompts for node config path
-make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
-make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
+make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator1/node_configs.env
+make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator1/node_configs.env
 
 # Discovery
 make list                              # show default + all discovered services
