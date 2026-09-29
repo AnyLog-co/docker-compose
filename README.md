@@ -20,7 +20,8 @@ docker-compose/
 │   ├── anylog-generic/
 │   │   └── node_configs.env          # Config template — copy and customise per node
 │   ├── anylog-master/
-│   ├── anylog-operator/
+│   ├── anylog-operator1/
+│   ├── anylog-operator2/
 │   ├── anylog-publisher/
 │   ├── anylog-query/
 │   ├── anylog-standalone-operator/
@@ -96,14 +97,15 @@ All AnyLog containers run the same image — configurations determine which serv
 |-------------------------|---------------------------------------------------------|-------------|-----------|
 | `generic`               | Sandbox with only network configured                    | 32548       | 32549     |
 | `master`                | Blockchain emulator ("Oracle" alternative)              | 32048       | 32049     |
-| `operator`              | Stores data from edge devices                           | 32148       | 32149     |
+| `operator1`             | Stores data from edge devices                           | 32148       | 32149     |
+| `operator2`             | Second operator, same role as operator1                 | 32248       | 32249     |
 | `query`                 | Dedicated query node (enables `system_query` database)  | 32348       | 32349     |
 | `publisher`             | Distributes data among operator nodes                   | 32248       | 32249     |
 | `standalone-operator`   | Combined master and operator on a single agent          | 32148       | 32149     |
 | `standalone-publisher`  | Combined master and publisher on a single agent         | 32248       | 32249     |
 
-Both the short form (`operator`) and the full directory name (`anylog-operator`) are accepted — both tools resolve
-the alias automatically.
+Short forms resolve to a directory under `docker-makefiles/`. `operator` and `operator1` both map to
+`anylog-operator1`. `operator2` maps to `anylog-operator2`. The full directory name is also accepted.
 
 
 ## Deployment
