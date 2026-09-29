@@ -6,7 +6,7 @@ $(info LOADING MAKEFILE)
 # ──────────────────────────────────────────────
 export IS_MANUAL    ?= false
 export ANYLOG_TYPE  ?= anylog-generic
-export TAG          ?= 2.1.2608
+export TAG          ?= 2.1.2609-9cf217
 export IMAGE        ?= anylogco/anylog-network
 export TEST_CONN    ?=
 export LICENSE_KEY  ?=
