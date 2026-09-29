@@ -245,36 +245,19 @@ ${SED_INPLACE} 's|^#\([[:space:]]*- \${CONTAINER_NAME}-local-scripts:/app/deploy
 ${SED_INPLACE} 's|^#\(  \${CONTAINER_NAME}-local-scripts:\)[[:space:]]*$|\1|' "${COMPOSE_FILE}"
 
 # Step 2: decide what fills it.
-# Keep this detection in sync with deploy_anylog.sh inside the container:
-#   empty -> built-in / default repo, git URL -> clone into volume, anything else -> leave volume alone
 if [[ -z "${DEPLOYMENTS_REPO}" ]]; then
-  # Option 1: built-in deployment-scripts from the image seed the named volume.
-  # A non-default branch with no repo means "default repo at that branch"; the container clones it.
-  if [[ -n "${DEPLOYMENTS_BRANCH}" && "${DEPLOYMENTS_BRANCH}" != "main" ]]; then
-    echo "Deployment scripts: default repo @ ${DEPLOYMENTS_BRANCH} (cloned at startup into named volume ${CONTAINER_NAME}-local-scripts)"
-  else
-    echo "Deployment scripts: built-in (named volume ${CONTAINER_NAME}-local-scripts)"
-  fi
+  # Option 1: built-in deployment-scripts from the image seed the named volume
+  echo "Deployment scripts: built-in (named volume ${CONTAINER_NAME}-local-scripts)"
 elif [[ -d "${DEPLOYMENTS_REPO}" ]]; then
-  # Option 2: host directory -> bind mount replaces the named volume.
-  # The directory is mounted as-is; DEPLOYMENTS_BRANCH is NOT checked out, so warn on a mismatch.
+  # Option 2: host directory -> bind mount replaces the named volume
   echo "Deployment scripts: host directory ${DEPLOYMENTS_REPO} (bind mount)"
-  HOST_BRANCH=$(git -c safe.directory="${DEPLOYMENTS_REPO}" -C "${DEPLOYMENTS_REPO}" rev-parse --abbrev-ref HEAD 2>/dev/null)
-  if [[ -n "${DEPLOYMENTS_BRANCH}" && -n "${HOST_BRANCH}" && "${HOST_BRANCH}" != "${DEPLOYMENTS_BRANCH}" ]]; then
-    echo "Warning: ${DEPLOYMENTS_REPO} is on branch '${HOST_BRANCH}', but DEPLOYMENTS_BRANCH=${DEPLOYMENTS_BRANCH}. The directory is mounted as-is (no checkout)." >&2
-  fi
   ${SED_INPLACE} "s|- \${CONTAINER_NAME}-local-scripts:/app/deployment-scripts|- ${DEPLOYMENTS_REPO}:/app/deployment-scripts|g" "${COMPOSE_FILE}"
   ${SED_INPLACE} "/^  \${CONTAINER_NAME}-local-scripts:[[:space:]]*$/d" "${COMPOSE_FILE}"
-elif [[ "${DEPLOYMENTS_REPO}" == /* || "${DEPLOYMENTS_REPO}" == ./* || "${DEPLOYMENTS_REPO}" == ../* || "${DEPLOYMENTS_REPO}" == ~* ]]; then
-  # Looks like a host path but doesn't exist -- fail here instead of treating it as an image name
-  die "DEPLOYMENTS_REPO looks like a local path but the directory does not exist: ${DEPLOYMENTS_REPO}"
-elif [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* || "${DEPLOYMENTS_REPO}" == git@* || "${DEPLOYMENTS_REPO}" == ssh://* ]]; then
-  # Option 3: git URL -> cloned at startup INTO the named volume (branch ${DEPLOYMENTS_BRANCH:-main}).
-  # The container only reclones when the volume holds a different repo/branch.
-  echo "Deployment scripts: git ${DEPLOYMENTS_REPO} @ ${DEPLOYMENTS_BRANCH:-main} (named volume ${CONTAINER_NAME}-local-scripts)"
+elif [[ "${DEPLOYMENTS_REPO}" == http://* || "${DEPLOYMENTS_REPO}" == https://* ]]; then
+  # Option 3: git URL -> cloned at startup INTO the named volume (branch ${DEPLOYMENTS_BRANCH:-default})
+  echo "Deployment scripts: git ${DEPLOYMENTS_REPO} @ ${DEPLOYMENTS_BRANCH:-default} (named volume ${CONTAINER_NAME}-local-scripts)"
 else
-  # Option 4: image reference -> helper container copies scripts into the named volume.
-  # The volume is emptied first so nothing is left over from a previous source (e.g. an old git clone's .git).
+  # Option 4: image reference -> helper container copies scripts into the named volume
   echo "Deployment scripts: image ${DEPLOYMENTS_REPO}:${DEPLOYMENTS_BRANCH} (named volume ${CONTAINER_NAME}-local-scripts)"
   awk -v repo="${DEPLOYMENTS_REPO}" \
       -v branch="${DEPLOYMENTS_BRANCH}" \
@@ -284,7 +267,7 @@ else
     print "  " node "-deployment-scripts:";
     print "    image: " repo ":" branch;
     print "    container_name: " node "-deployment-scripts";
-    print "    command: [\"sh\", \"-c\", \"rm -rf /volume/* /volume/.[!.]* /volume/..?* && cp -r /app/deployment-scripts/. /volume/\"]";
+    print "    command: [\"sh\", \"-c\", \"cp -r /app/deployment-scripts/. /volume/\"]";
     print "    restart: \"no\"";
     print "    volumes:";
     print "      - " node "-local-scripts:/volume";
