@@ -6,15 +6,18 @@ $(info LOADING MAKEFILE)
 # ──────────────────────────────────────────────
 export IS_MANUAL    ?= false
 export ANYLOG_TYPE  ?= anylog-generic
-export TAG          ?= 2.1.2609-9cf217
+export TAG          ?= 2.1.2609-f71ca6
 export IMAGE        ?= anylogco/anylog-network
 export TEST_CONN    ?=
 export LICENSE_KEY  ?=
 export PROMPT_LICENSE ?= true
 export DOCKER_LOGIN ?=
 
-# Resolve short-form aliases (operator → anylog-operator)
-ifeq ($(ANYLOG_TYPE),$(filter $(ANYLOG_TYPE),generic master operator query publisher standalone-operator standalone-publisher))
+# Resolve short-form aliases (operator / operator1 → anylog-operator1)
+ifeq ($(ANYLOG_TYPE),operator)
+    ANYLOG_TYPE := anylog-operator1
+    export ANYLOG_TYPE
+else ifeq ($(ANYLOG_TYPE),$(filter $(ANYLOG_TYPE),generic master operator1 operator2 query publisher standalone-operator standalone-publisher))
     ANYLOG_TYPE := anylog-$(ANYLOG_TYPE)
     export ANYLOG_TYPE
 endif
