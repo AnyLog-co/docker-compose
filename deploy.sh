@@ -22,10 +22,11 @@ PROMPT_LICENSE="${PROMPT_LICENSE:-true}"
 # ──────────────────────────────────────────────
 die() { echo "ERROR: $1" >&2; exit "${2:-1}"; }
 
-# Resolve short-form aliases  (operator → anylog-operator)
+# Resolve short-form aliases  (operator / operator1 → anylog-operator1)
 _resolve_type() {
   case "$ANYLOG_TYPE" in
-    generic|master|operator|query|publisher|standalone-operator|standalone-publisher)
+    operator) ANYLOG_TYPE="anylog-operator1" ;;
+    generic|master|operator1|operator2|query|publisher|standalone-operator|standalone-publisher)
       ANYLOG_TYPE="anylog-${ANYLOG_TYPE}" ;;
   esac
 }
@@ -155,9 +156,25 @@ DOCKER_COMPOSE_FILE="docker-makefiles/docker-compose-files/${ANYLOG_TYPE}-docker
 # ──────────────────────────────────────────────
 
 cmd_login() {
-  echo "Logging into Docker Hub..."
-  ${CONTAINER_CMD} login docker.io -u anyloguser --password-stdin
+  echo "Note: this will replace any existing ${CONTAINER_CMD} credentials for docker.io with AnyLog's login."
+  echo "If you need to restore your previous credentials afterward, run '${CONTAINER_CMD} login docker.io' again with your own username and password/token."
+  read -r -p "To continue type 'confirm': " user_confirm
+
+  if [[ "${user_confirm}" == "confirm" ]]; then
+      DOCKER_USER="anyloguser"
+    if [[ "${DOCKER_LOGIN}" == *:* ]]; then
+      DOCKER_USER="${DOCKER_LOGIN%%:*}"
+      DOCKER_LOGIN="${DOCKER_LOGIN#*:}"
+    fi
+    echo ${CONTAINER_CMD} login docker.io -u "${DOCKER_USER}" -p "${DOCKER_LOGIN}"
+    ${CONTAINER_CMD} login docker.io -u "${DOCKER_USER}" -p "${DOCKER_LOGIN}"
+    echo "Docker Hub credentials for docker.io have been updated to AnyLog's account."
+
+  else
+    echo "Login cancelled — no credentials were changed."
+  fi
 }
+
 
 cmd_pull() {
   _check_configs
@@ -457,8 +474,8 @@ Commands:
   help                  Show this message
 
 Options:
-  --type,  -t <type>    Node type (generic, master, operator, query, publisher,
-                        standalone-operator, standalone-publisher)
+  --type,  -t <type>    Node type (generic, master, operator, operator1, operator2,
+                        query, publisher, standalone-operator, standalone-publisher)
   --tag       <tag>     Image tag              (default: pre-develop)
   --image     <image>   Image repo             (default: anylogco/anylog-network)
   --node-name <name>    Override container name
@@ -471,7 +488,7 @@ Options:
 Examples:
   bash deploy.sh up --type operator
   bash deploy.sh up --type operator --manual
-  bash deploy.sh down --type anylog-operator
+  bash deploy.sh down --type anylog-operator1
   bash deploy.sh full-test --test-conn 192.168.1.10:32149
   bash deploy.sh exec-root --type master
   bash deploy.sh check-vars --type query
