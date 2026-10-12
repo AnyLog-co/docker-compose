@@ -18,8 +18,8 @@
 #   make exec SERVICE=postgres-prod
 #   make list                         # show every discovered service
 #   make setup  SERVICE=syslog        # install syslog → AnyLog forwarding (prompts for config path)
-#   make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
-#   make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator/node_configs.env
+#   make setup  SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator1/node_configs.env
+#   make remove SERVICE=syslog NODE_CONFIGS=../docker-makefiles/anylog-operator1/node_configs.env
 #----------------------------------------------------------------------
 $(info LOADING MAKEFILE)
 
