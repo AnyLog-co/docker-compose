@@ -4,7 +4,7 @@
 #   config_file  defaults to configs.yaml
 #   output_file  defaults to docker-compose.yml
 
-#set -euo pipefail
+set -euo pipefail
 
 CONFIG_FILE="${1:-configs.yaml}"
 OUTPUT_FILE="${2:-docker-compose.yml}"
