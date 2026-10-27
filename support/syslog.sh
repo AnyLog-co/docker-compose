@@ -208,8 +208,8 @@ Platform behaviour:
 
 Examples:
   bash syslog.sh setup
-  bash syslog.sh setup  docker-makefiles/anylog-operator/node_configs.env
-  bash syslog.sh remove docker-makefiles/anylog-operator/node_configs.env
+  bash syslog.sh setup  docker-makefiles/anylog-operator1/node_configs.env
+  bash syslog.sh remove docker-makefiles/anylog-operator1/node_configs.env
 
 EOF
 }
