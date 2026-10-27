@@ -4,7 +4,31 @@ description: Release history and notable changes for AnyLog deployment scripts.
 layout: page
 ---
 
-<!-- last-processed: 2b9a13e -->
+<!-- last-processed: e90caf9 -->
+
+<!-- main: e90caf9 (2026-09-01) -->
+
+* **royshadmon** (2026-09-01)
+  * General: sed fix (#39)
+* **Ori Shadmon** (2026-02-01 – 2026-06-18)
+  * CI/CD: Predevelop main (#34); Main predevelop (#30)
+  * Docker config: Predevelop main (#34); Main predevelop (#30); Update main (#22)
+  * Docker config / Generic: Predevelop main (#34); Main predevelop (#30)
+  * Docker config / Master: Predevelop main (#34); Main predevelop (#30)
+  * Docker config / Operator: Predevelop main (#34); Main predevelop (#30)
+  * Docker config / Publisher: Predevelop main (#34); Main predevelop (#30)
+  * Docker config / Query: Predevelop main (#34); Main predevelop (#30)
+  * Docker config / Standalone: Predevelop main (#34); Main predevelop (#30)
+  * General: Predevelop main (#34); Main predevelop (#30)
+  * Makefile: Predevelop main (#34); Main predevelop (#30); Update main (#22)
+  * Support services: Predevelop main (#34); Main predevelop (#30)
+  * Support services / Grafana: Main predevelop (#30)
+  * Support services / MongoDB: Main predevelop (#30)
+  * Support services / Ollama: Main predevelop (#30)
+  * Support services / PostgreSQL: Main predevelop (#30)
+  * Support services / Remote GUI: Predevelop main (#34); Main predevelop (#30)
+* **Mark Davidson** (2026-05-26)
+  * Docker config: Export TAG variable in build_docker_compose.sh
 
 <!-- Developers: add bullets below as changes land in your branch -->
 ---
