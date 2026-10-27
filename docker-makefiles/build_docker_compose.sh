@@ -363,6 +363,42 @@ for VAR_NAME in HOST_PROC HOST_ROOT HOST_SYS; do
   fi
 done
 
+# -------- Third-party license page --------
+# Serve "Third-Party Software Used by AnyLog.html" once per machine.
+# Skipped when this host already serves it (another AnyLog node deployed it first).
+#LICENSE_PORT=$(grep -m1 '^LICENSE_PORT=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
+LICENSE_PORT="${LICENSE_PORT:-32000}"
+LICENSE_URL="http://127.0.0.1:${LICENSE_PORT}/"
+
+if docker ps --format '{{.Names}}' 2>/dev/null | grep -qx 'anylog-licenses' ; then
+  echo "License page: already served by container anylog-licenses (${LICENSE_URL}); skipping"
+elif curl -fsS --max-time 2 "${LICENSE_URL}" 2>/dev/null | grep -qi 'third-party' ; then
+  echo "License page: ${LICENSE_URL} already serves it; skipping"
+else
+  echo "License page: will be served at ${LICENSE_URL}"
+  awk -v port="${LICENSE_PORT}" '
+  /^services:/ && !done {
+    print
+    print "  anylog-licenses:"
+    print "    image: ${IMAGE}:${TAG}"
+    print "    container_name: anylog-licenses"
+    print "    user: \"10001:10001\""
+    print "    restart: always"
+    print "    entrypoint:"
+    print "      - python3"
+    print "      - -c"
+    print "      - |"
+    print "        import functools, http.server as h"
+    print "        H = h.SimpleHTTPRequestHandler"
+    print "        H.extensions_map.update({\".md\": \"text/plain; charset=utf-8\", \".csv\": \"text/plain; charset=utf-8\", \".txt\": \"text/plain; charset=utf-8\"})"
+    print "        h.ThreadingHTTPServer((\"\", 8080), functools.partial(H, directory=\"/app/AnyLog-Network/license_files\")).serve_forever()"
+    print "    ports:"
+    print "      - \"" port ":8080\""
+    done=1; next
+  }
+  { print }' "${COMPOSE_FILE}" > temp.yaml && mv temp.yaml "${COMPOSE_FILE}"
+fi
+
 # -------- Remote-GUI --------
 if [[ "${ENABLE_REMOTE_GUI}" == "true" ]]; then
   export REMOTE_GUI_NIC=$(grep -m1 '^REMOTE_GUI_NIC=' "$ENV_FILE" | cut -d= -f2- | tr -d '"\r')
