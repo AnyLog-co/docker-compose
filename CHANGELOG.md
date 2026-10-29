@@ -4,7 +4,12 @@ description: Release history and notable changes for AnyLog deployment scripts.
 layout: page
 ---
 
-<!-- last-processed: e90caf9 -->
+<!-- last-processed: fbe10f1 -->
+
+<!-- main: fbe10f1 (2026-10-29) -->
+
+* **royshadmon** (2026-10-29)
+  * Docker config / Standalone: Enable Remote-GUI and update version tag
 
 <!-- main: e90caf9 (2026-09-01) -->
 
